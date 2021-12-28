@@ -1,0 +1,24 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+
+  "extends": 
+  ["next/core-web-vitals", 
+  "eslint:recommended",
+  "@typescript-eslint/eslint-plugin",
+  "@typescript-eslint/parser"
+  ],
+
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "ecmaFeatures": { 
+      "jsx": true,
+      "tsx": true
+    },
+    "parser": "babel-eslint"
+  },
+
+  "ignorePatterns": ["node_modules/*", ".next/*"],
+}
