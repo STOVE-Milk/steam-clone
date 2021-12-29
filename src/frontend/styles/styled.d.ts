@@ -5,11 +5,10 @@ declare module 'styled-components' {
     breakPoint: string;
 
     colors: {
-      black: string;
-      yellow: string;
-      orange: string;
-      gray: string;
-      gray_background: string;
+      main: string;
+      header: string;
+      input: string;
+      text: string;
     };
   }
 }

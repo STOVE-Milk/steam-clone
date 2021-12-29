@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { NextPage } from 'next';
 import styled from 'styled-components';
 
 const Title = styled.div`
@@ -6,11 +6,7 @@ const Title = styled.div`
 `;
 
 const Home: NextPage = () => {
-  return (
-     <Title>
-       main
-     </Title>
-  )
-}
+  return <Title>main</Title>;
+};
 
-export default Home
+export default Home;
