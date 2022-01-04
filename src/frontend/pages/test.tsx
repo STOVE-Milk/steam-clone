@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import Button from 'components/common/Button';
+import Button from 'components/atoms/Button';
 
 const Test: NextPage = () => {
   return (

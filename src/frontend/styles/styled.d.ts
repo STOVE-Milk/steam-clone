@@ -2,13 +2,33 @@ import 'styled-components';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
-    breakPoint: string;
+    breakpoints: {
+      small: string;
+      medium: string;
+      large: string;
+    };
 
     colors: {
-      main: string;
-      header: string;
-      input: string;
-      text: string;
+      dark: {
+        primaryBg: string;
+        secondaryBg: string;
+        activeBg: string;
+
+        primaryText: string;
+        secondaryText: string;
+
+        divider: string;
+      };
+      light: {
+        primaryBg: string;
+        secondaryBg: string;
+        activeBg: string;
+
+        primaryText: string;
+        secondaryText: string;
+
+        divider: string;
+      };
     };
   }
 }

@@ -1,12 +1,21 @@
+import React, { useState } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
+import SearchBar from 'components/organisms/SearchBar';
+import Button from 'components/atoms/Button';
 
-const Title = styled.div`
-  color: blue;
+const MainWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 const Home: NextPage = () => {
-  return <Title>main</Title>;
+  return (
+    <MainWrapper>
+      <SearchBar />
+      {/* <Button>버튼</Button> */}
+    </MainWrapper>
+  );
 };
 
 export default Home;
