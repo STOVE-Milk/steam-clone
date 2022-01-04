@@ -33,5 +33,5 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ]
+, "components/atoms/DefaultButton.tsx"  ]
 }

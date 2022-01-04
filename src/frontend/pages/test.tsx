@@ -1,13 +1,13 @@
 import type { NextPage } from 'next';
-import Button from 'components/atoms/Button';
-
+import FilledButton from 'components/atoms/FilledButton';
+import DefaultButton from 'components/atoms/DefaultButton';
 const Test: NextPage = () => {
   return (
     <>
-      <Button color={'#203153'}>Default button</Button>
-      <Button color={'#C03C3C'} primary>
-        Red button
-      </Button>
+      <FilledButton types={'primary'}>Default button</FilledButton>
+      <FilledButton types={'secondary'}>Red button</FilledButton>
+      <DefaultButton types={'primary'}>Red button</DefaultButton>
+      <DefaultButton types={'secondary'}>Red button</DefaultButton>
     </>
   );
 };

@@ -9,26 +9,15 @@ declare module 'styled-components' {
     };
 
     colors: {
-      dark: {
-        primaryBg: string;
-        secondaryBg: string;
-        activeBg: string;
+      [index: string]: string;
+      primaryBg: string;
+      secondaryBg: string;
+      activeBg: string;
 
-        primaryText: string;
-        secondaryText: string;
+      primaryText: string;
+      secondaryText: string;
 
-        divider: string;
-      };
-      light: {
-        primaryBg: string;
-        secondaryBg: string;
-        activeBg: string;
-
-        primaryText: string;
-        secondaryText: string;
-
-        divider: string;
-      };
+      divider: string;
     };
   }
 }
