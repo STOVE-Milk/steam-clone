@@ -8,7 +8,7 @@ const MainWrapper = styled.div`
 `;
 
 const Home: NextPage = () => {
-  return <MainWrapper>dd</MainWrapper>;
+  return <MainWrapper></MainWrapper>;
 };
 
 export default Home;

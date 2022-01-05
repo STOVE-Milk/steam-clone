@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import SubTitle from 'components/atoms/SubTitle';
+import SubTitle, { SubTitleStyle } from 'components/atoms/SubTitle';
 
 export interface MenuBoxProps {
   icon: JSX.Element;
@@ -12,10 +12,21 @@ const MenuBoxWrapper = styled.div`
   padding: 10px 10px 10px 20px;
   height: 50px;
   align-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+
+  :hover {
+    background: ${(props) => props.theme.colors.activeBg};
+  }
+
+  :hover ${SubTitleStyle} {
+    color: ${(props) => props.theme.colors.primaryText};
+  }
 `;
 
 const MenuTitle = styled(SubTitle)`
   margin-left: 20px;
+  margin-top: 5px;
 `;
 
 export default function MenuBox(props: MenuBoxProps) {

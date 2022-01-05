@@ -5,9 +5,10 @@ export interface SubTitleProps {
   children: React.ReactNode;
 }
 
-const SubTitleStyle = styled.div`
-  font-size: 1rem;
+export const SubTitleStyle = styled.div`
+  font-size: 1.2rem;
   color: ${(props) => props.theme.colors.secondaryText};
+  font-weight: bold;
 `;
 
 export default function SubTitle(props: SubTitleProps) {

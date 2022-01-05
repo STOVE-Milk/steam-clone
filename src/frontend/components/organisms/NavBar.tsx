@@ -25,6 +25,7 @@ const ToggleBtn = styled.div``;
 
 const MenuSection = styled.div`
   height: 200px;
+  padding: 10px;
 `;
 
 const FriendSection = styled.div`
@@ -39,7 +40,7 @@ export default function NavBar() {
         <ToggleBtn></ToggleBtn>
       </TitleSection>
       <MenuSection>
-        <MenuBox icon={<FontAwesomeIcon icon={faGamepad} />} name={'New Feed'} />
+        <MenuBox icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Games'} />
       </MenuSection>
       <FriendSection></FriendSection>
     </NavBarWrapper>
