@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { createLogicalOr } from 'typescript';
+import SubTitle from 'components/atoms/SubTitle';
 
 const NavBarWrapper = styled.div`
   width: 100px;
