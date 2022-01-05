@@ -2,9 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import MenuBox from 'components/molecules/MenuBox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGamepad } from '@fortawesome/free-solid-svg-icons';
+import { faGamepad, faUser } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import Logo from 'public/steam_logo.png';
+import Profile from 'components/atoms/Profile';
 
 const NavBarWrapper = styled.div`
   width: 250px;
@@ -52,6 +53,7 @@ const SectionDivider = styled.div`
   margin: 0 auto;
   background: ${(props) => props.theme.colors.divider};
 `;
+
 const FriendSection = styled.div`
   padding: 20px 10px 20px 20px;
   flex: 1;
@@ -77,7 +79,7 @@ export default function NavBar() {
       <SectionDivider />
       <SectionTitle>Friends</SectionTitle>
       <FriendSection>
-          
+        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />}></Profile>
       </FriendSection>
     </NavBarWrapper>
   );
