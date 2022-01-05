@@ -9,7 +9,6 @@ export interface MenuBoxProps {
 
 const MenuBoxWrapper = styled.div`
   display: flex;
-  padding: 10px 10px 10px 20px;
   height: 50px;
   align-items: center;
   border-radius: 10px;
