@@ -18,6 +18,9 @@ declare module 'styled-components' {
       secondaryText: string;
 
       divider: string;
+
+      online: string;
+      offline: string;
     };
   }
 }

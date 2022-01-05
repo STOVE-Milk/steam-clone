@@ -6,8 +6,8 @@ export interface DotProps {
 }
 
 const DotStyle = styled.div<DotProps>`
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   border-radius: 30px;
   background: ${(props) => props.color};
   display: flex;

@@ -6,20 +6,23 @@ import { faGamepad, faUser } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import Logo from 'public/steam_logo.png';
 import Profile from 'components/atoms/Profile';
+import FriendBox from 'components/molecules/FriendBox';
 
 const NavBarWrapper = styled.div`
   width: 250px;
-  height: 100%;
+  height: 100vh;
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   flex-direction: column;
   padding: 10px;
+  overflow-y: hidden;
 `;
 
 const LogoSection = styled.div`
   height: 50px;
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
+  cursor: pointer;
 `;
 
 const LogoBox = styled.div`
@@ -44,7 +47,7 @@ const SectionTitle = styled.div`
 `;
 
 const MenuSection = styled.div`
-  padding: 20px 10px 20px 20px;
+  padding: 20px 10px 20px 10px;
 `;
 
 const SectionDivider = styled.div`
@@ -55,8 +58,9 @@ const SectionDivider = styled.div`
 `;
 
 const FriendSection = styled.div`
-  padding: 20px 10px 20px 20px;
+  padding: 20px 10px 20px 10px;
   flex: 1;
+  overflow-y: scroll;
 `;
 
 export default function NavBar() {
@@ -79,7 +83,16 @@ export default function NavBar() {
       <SectionDivider />
       <SectionTitle>Friends</SectionTitle>
       <FriendSection>
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />}></Profile>
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
       </FriendSection>
     </NavBarWrapper>
   );

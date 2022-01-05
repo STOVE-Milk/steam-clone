@@ -13,6 +13,7 @@ const MenuBoxWrapper = styled.div`
   align-items: center;
   border-radius: 10px;
   cursor: pointer;
+  padding-left: 10px;
 
   :hover {
     background: ${(props) => props.theme.colors.activeBg};

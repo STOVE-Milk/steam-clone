@@ -35,7 +35,7 @@ export const theme: DefaultTheme = {
   colors: {
     primaryBg: '#2F3137',
     secondaryBg: '#3E4149',
-    
+
     activeBg: '#7372FE',
 
     plain: '#ffffff',
@@ -44,6 +44,9 @@ export const theme: DefaultTheme = {
     secondaryText: '#C7CED4',
 
     divider: '#C7CED4',
+
+    online: '#ADD1D4',
+    offline: '',
   },
 };
 
