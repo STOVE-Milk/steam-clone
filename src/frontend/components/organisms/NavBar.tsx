@@ -1,9 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import SubTitle from 'components/atoms/SubTitle';
+import MenuBox from 'components/molecules/MenuBox';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGamepad } from '@fortawesome/free-solid-svg-icons';
 
 const NavBarWrapper = styled.div`
-  width: 100px;
+  width: 200px;
   height: 100%;
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
@@ -36,7 +38,9 @@ export default function NavBar() {
         <LogoBox></LogoBox>
         <ToggleBtn></ToggleBtn>
       </TitleSection>
-      <MenuSection></MenuSection>
+      <MenuSection>
+        <MenuBox icon={<FontAwesomeIcon icon={faGamepad} />} name={'New Feed'} />
+      </MenuSection>
       <FriendSection></FriendSection>
     </NavBarWrapper>
   );
