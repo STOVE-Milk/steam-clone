@@ -27,11 +27,9 @@ const ButtonStyle = styled.button<ButtonProps>`
 
 function FilledButton(props: ButtonProps) {
   return (
-    <>
-      <ButtonStyle {...props} onClick={props.onClick}>
-        {props.children}
-      </ButtonStyle>
-    </>
+    <ButtonStyle {...props} onClick={props.onClick}>
+      {props.children}
+    </ButtonStyle>
   );
 }
 

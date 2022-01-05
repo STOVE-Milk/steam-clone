@@ -1,4 +1,3 @@
-import Header from 'components/organisms/Header';
 import React from 'react';
 
 interface LayoutProps {
@@ -6,10 +5,5 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  return (
-    <>
-      <Header />
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

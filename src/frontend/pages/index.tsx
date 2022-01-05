@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
-import SearchBar from 'components/organisms/SearchBar';
-import Button from 'components/atoms/FilledButton';
 
 const MainWrapper = styled.div`
   display: flex;
@@ -10,12 +8,7 @@ const MainWrapper = styled.div`
 `;
 
 const Home: NextPage = () => {
-  return (
-    <MainWrapper>
-      <SearchBar />
-      {/* <Button>버튼</Button> */}
-    </MainWrapper>
-  );
+  return <MainWrapper>dd</MainWrapper>;
 };
 
 export default Home;
