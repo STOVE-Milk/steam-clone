@@ -20,7 +20,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <MainWrapper>
       <NavBar />
-      {children}
+      <ContentSection>{children}</ContentSection>
     </MainWrapper>
   );
 }
