@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import SubTitle, { SubTitleStyle } from 'components/atoms/SubTitle';
+import Text, { TextStyle } from 'components/atoms/Text';
 
 export interface MenuBoxProps {
   icon: JSX.Element;
@@ -19,12 +19,12 @@ const MenuBoxWrapper = styled.div`
     background: ${(props) => props.theme.colors.activeBg};
   }
 
-  :hover ${SubTitleStyle} {
+  :hover ${TextStyle} {
     color: ${(props) => props.theme.colors.primaryText};
   }
 `;
 
-const MenuTitle = styled(SubTitle)`
+const MenuTitle = styled(Text)`
   margin-left: 20px;
   margin-top: 5px;
 `;
@@ -33,7 +33,7 @@ export default function MenuBox(props: MenuBoxProps) {
   return (
     <MenuBoxWrapper>
       {props.icon}
-      <MenuTitle>{props.name}</MenuTitle>
+      <MenuTitle types={'small'}>{props.name}</MenuTitle>
     </MenuBoxWrapper>
   );
 }

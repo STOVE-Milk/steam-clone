@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import SubTitle, { SubTitleStyle } from 'components/atoms/SubTitle';
+import Text, { TextStyle } from 'components/atoms/Text';
 import Dot from 'components/atoms/Dot';
 import { theme } from 'styles/theme';
 
@@ -21,12 +21,12 @@ const FriendBoxWrapper = styled.div`
     background: ${(props) => props.theme.colors.activeBg};
   }
 
-  :hover ${SubTitleStyle} {
+  :hover ${TextStyle} {
     color: ${(props) => props.theme.colors.primaryText};
   }
 `;
 
-const FriendName = styled(SubTitle)`
+const FriendName = styled(Text)`
   margin-left: 20px;
   margin-top: 5px;
   flex: 1;
@@ -41,7 +41,7 @@ export default function FriendBox(props: FriendBoxProps) {
   return (
     <FriendBoxWrapper>
       {props.icon}
-      <FriendName>{props.name}</FriendName>
+      <FriendName types={'small'}>{props.name}</FriendName>
       <FriendStatus color={theme.colors.online} />
     </FriendBoxWrapper>
   );

@@ -18,7 +18,7 @@ const ButtonStyle = styled.button<ButtonProps>`
   padding: 0.25em 1em;
   border: 1px solid ${(props) => props.theme.colors[props.types + 'Bg']};
   border-radius: 3px;
-
+  
   &:hover {
     box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
   }

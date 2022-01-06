@@ -18,7 +18,7 @@ const NavBarWrapper = styled.div`
   overflow-y: hidden;
 `;
 
-const LogoSection = styled.div`
+const LogoSection = styled.section`
   height: 50px;
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
@@ -83,6 +83,8 @@ export default function NavBar() {
       <SectionDivider />
       <SectionTitle>Friends</SectionTitle>
       <FriendSection>
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
         <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
         <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
         <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
