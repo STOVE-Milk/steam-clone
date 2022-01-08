@@ -1,6 +1,7 @@
 import React from 'react';
-import NavBar from 'components/organisms/NavBar';
 import styled from 'styled-components';
+import NavBar from 'components/organisms/Navbar';
+import Header from 'components/organisms/Header';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,7 +21,10 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <MainWrapper>
       <NavBar />
-      {children}
+      <ContentSection>
+        <Header />
+        {children}
+      </ContentSection>
     </MainWrapper>
   );
 }

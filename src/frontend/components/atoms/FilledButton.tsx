@@ -13,10 +13,13 @@ const ButtonStyle = styled.button<ButtonProps>`
   color: ${(props) => props.theme.colors['primaryText']};
   font-size: 1em;
   cursor: pointer;
-  margin: 1em;
+  margin: 0 1em;
   padding: 0.25em 1em;
   border: 1px solid ${(props) => props.theme.colors[props.types + 'Bg']};
-  border-radius: 3px;
+  border-radius: 10px;
+  height: 50px;
+  width: fit-content;
+  white-space: nowrap;
 
   &:hover {
     box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
@@ -25,7 +28,7 @@ const ButtonStyle = styled.button<ButtonProps>`
   }
 `;
 
-function FilledButton(props: ButtonProps) {
+export default function FilledButton(props: ButtonProps) {
   return (
     <ButtonStyle {...props} onClick={props.onClick}>
       {props.children}
@@ -36,5 +39,3 @@ function FilledButton(props: ButtonProps) {
 FilledButton.defaultProps = {
   onClick: () => console.log('clicked'),
 };
-
-export default FilledButton;

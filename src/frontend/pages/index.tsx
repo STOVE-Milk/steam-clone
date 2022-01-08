@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
+import DefaultButton from 'components/atoms/DefaultButton';
 
 const MainWrapper = styled.div`
   display: flex;
@@ -8,7 +9,11 @@ const MainWrapper = styled.div`
 `;
 
 const Home: NextPage = () => {
-  return <MainWrapper></MainWrapper>;
+  return (
+    <MainWrapper>
+      <DefaultButton types="primary">검색</DefaultButton>
+    </MainWrapper>
+  );
 };
 
 export default Home;
