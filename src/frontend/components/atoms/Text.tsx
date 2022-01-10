@@ -58,3 +58,7 @@ export const TextStyle = styled.div<TextProps>`
 export default function Text(props: TextProps) {
   return <TextStyle {...props}>{props.children}</TextStyle>;
 }
+
+Text.defaultProps = {
+  types: 'main',
+};
