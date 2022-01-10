@@ -12,19 +12,21 @@ const MainWrapper = styled.div`
   height: 100%;
   display: flex;
 `;
-
-const ContentSection = styled.div`
+const ContentSectionWrapper = styled.div`
   flex: 1;
+`;
+const ContentSection = styled.div`
+  margin-top: 80px;
 `;
 
 export default function Layout({ children }: LayoutProps) {
   return (
     <MainWrapper>
       <NavBar />
-      <ContentSection>
+      <ContentSectionWrapper>
         <Header />
-        {children}
-      </ContentSection>
+        <ContentSection>{children}</ContentSection>
+      </ContentSectionWrapper>
     </MainWrapper>
   );
 }
