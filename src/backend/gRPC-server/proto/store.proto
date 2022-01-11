@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package store;
 
-option go_package = "github.com/STOVE-Milk/steam-clone/gRPC-gateway;store";
+option go_package = "github.com/STOVE-Milk/steam-clone/gRPC-gateway/proto;store";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
