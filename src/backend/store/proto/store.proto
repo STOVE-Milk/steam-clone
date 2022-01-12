@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package store;
+package storepb;
 
-option go_package = "github.com/STOVE-Milk/steam-clone/store/proto;store";
+option go_package = "github.com/STOVE-Milk/steam-clone/store/proto;storepb";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";

@@ -4,7 +4,7 @@
 // - protoc             v3.6.1
 // source: proto/store.proto
 
-package store
+package storepb
 
 import (
 	context "context"
@@ -36,7 +36,7 @@ func NewStoreClient(cc grpc.ClientConnInterface) StoreClient {
 
 func (c *storeClient) GetCategories(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*CategoryListRequest, error) {
 	out := new(CategoryListRequest)
-	err := c.cc.Invoke(ctx, "/store.Store/GetCategories", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/storepb.Store/GetCategories", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func _Store_GetCategories_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/store.Store/GetCategories",
+		FullMethod: "/storepb.Store/GetCategories",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServer).GetCategories(ctx, req.(*empty.Empty))
@@ -93,7 +93,7 @@ func _Store_GetCategories_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Store_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "store.Store",
+	ServiceName: "storepb.Store",
 	HandlerType: (*StoreServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
