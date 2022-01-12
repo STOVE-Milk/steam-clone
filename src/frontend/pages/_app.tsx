@@ -3,6 +3,7 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from 'styles/global-styles';
 import { theme } from 'styles/theme';
 import Layout from 'templates/Layout';
+import 'styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
