@@ -1,49 +1,67 @@
-import React from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import DefaultButton from 'components/atoms/DefaultButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import Text from 'components/atoms/Text';
+import SelectBox from 'components/atoms/SelectBox';
 
+interface ISearchbox {
+  option: string;
+  inputText: string;
+  setOption: (e: any) => void;
+  setInputText: (e: any) => void;
+}
 const SearchBoxWrapper = styled.div`
-  width: 40%;
+  width: 60%;
   display: flex;
-  ${(props) => props.theme.breakpoints.medium} {
-    display: none;
-  }
-`;
-
-const SelectTagBox = styled.select`
-  border: none;
-  padding: 0.8rem 0.5rem;
-  font-family: inherit;
-  border-radius: 0px;
-  background-color: ${(props) => props.theme.colors.secondaryBg};
-  color: ${(props) => props.theme.colors.secondaryText};
+  align-items: center;
 `;
 
 const InputStyle = styled.input`
   flex: 1;
   padding: 0.25rem 0.25rem;
-  border: 1px solid ${(props) => props.theme.colors.secondaryBg};
-  background-color: ${(props) => props.theme.colors.secondaryBg};
+  border: 1px solid ${(props) => props.theme.colors.primaryBg};
+  border-radius: 10px;
+  background-color: ${(props) => props.theme.colors.primaryBg};
   color: ${(props) => props.theme.colors.secondaryText};
 `;
+const FontAwesomeIconStyle = styled(FontAwesomeIcon)`
+  cursor: pointer;
+`;
 
-export default function Search() {
+export default function Search({ option, inputText, setOption, setInputText }: ISearchbox) {
+  const optionName = [
+    { en: 'name', kr: '게임이름' },
+    { en: 'tag', kr: '태그' },
+  ];
+
+  const handleSelect = useCallback((e: any) => {
+    setOption(e.target.value);
+  }, []);
+
+  const handleInputText = useCallback(() => {
+    const searchText = document.querySelector('#searchText')?.value;
+    setInputText(searchText);
+  }, []);
+
+  const submitSearchInfo = () => {
+    // option, inputText을 이용해서 검색 통신 할때 사용될 예쟝
+    console.log(option, inputText);
+    if (inputText === '') alert('검색어를 입력해주세요!');
+  };
+
   return (
     <SearchBoxWrapper>
-      <SelectTagBox>
-        <option value="gamename" className="fa icon">
-          게임이름
-        </option>
-        <option value="tag">태그</option>
-      </SelectTagBox>
-      <InputStyle placeholder={'Search Everything!'} />
-      <DefaultButton types="primary">
-        <FontAwesomeIcon icon={faSearch} />
-        검색
-      </DefaultButton>
+      <SelectBox optionArr={optionName} handleSelect={(e) => handleSelect(e)} />
+      {/* TO DO(양하): enter 이벤트 넣기 */}
+      <InputStyle
+        type="text"
+        placeholder={'Search Everything!'}
+        id="searchText"
+        defaultValue=""
+        onChange={handleInputText}
+      />
+      <FontAwesomeIconStyle icon={faSearch} inverse onClick={() => submitSearchInfo()} />
     </SearchBoxWrapper>
   );
 }
