@@ -2,11 +2,11 @@
 // source: proto/store.proto
 
 /*
-Package store is a reverse proxy.
+Package storepb is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package store
+package storepb
 
 import (
 	"context"
@@ -62,7 +62,7 @@ func RegisterStoreHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/store.Store/GetCategories", runtime.WithHTTPPathPattern("/store/categories"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/storepb.Store/GetCategories", runtime.WithHTTPPathPattern("/store/categories"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -124,7 +124,7 @@ func RegisterStoreHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/store.Store/GetCategories", runtime.WithHTTPPathPattern("/store/categories"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/storepb.Store/GetCategories", runtime.WithHTTPPathPattern("/store/categories"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
