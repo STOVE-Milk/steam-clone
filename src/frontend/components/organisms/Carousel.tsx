@@ -2,6 +2,8 @@ import React from 'react';
 import Carousel from 'react-multi-carousel';
 import styled from 'styled-components';
 import 'react-multi-carousel/lib/styles.css';
+import gameImage2 from 'public/game2.jpg';
+import Image from 'next/image';
 
 interface CarouselProps {
   slides: Object;
@@ -42,23 +44,17 @@ export default function CarouselComponent(props: CarouselProps) {
   };
 
   return (
-    <CustomCarousel
-      swipeable={true}
-      draggable={true}
-      responsive={responsive}
-      ssr={true} // means to render carousel on server-side.
-      infinite={true}
-      autoPlay={true}
-      autoPlaySpeed={3000}
-      keyBoardControl={true}
-      customTransition="all .5"
-      transitionDuration={500}
-      containerClass="carousel-container"
-      removeArrowOnDeviceType={['mobile']}
-      dotListClass="custom-dot-list-style"
-      itemClass="carousel-item-padding-40-px"
-    >
-      {props.slides}
-    </CustomCarousel>
+    <div>
+      <CustomCarousel
+        responsive={responsive}
+        ssr={true} // means to render carousel on server-side.
+        autoPlay={true}
+        autoPlaySpeed={2000}
+        infinite
+        removeArrowOnDeviceType={['mobile']}
+      >
+        {props.slides}
+      </CustomCarousel>
+    </div>
   );
 }
