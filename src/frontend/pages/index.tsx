@@ -1,16 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
-import gameImage from 'public/game.png';
-import gameImage2 from 'public/game2.jpeg';
-import Image from 'next/image';
-import dynamic from 'next/dynamic';
-
-const NoSSRComponent = dynamic(() => import('components/organisms/map'), {
-  ssr: false,
-});
+import CarouselComponent from 'components/organisms/Carousel';
 
 const MainWrapper = styled.div`
   display: flex;
@@ -22,55 +13,14 @@ const CarouselSection = styled.div`
   border: 1px solid black;
 `;
 
-const Home: NextPage = () => {
-  const responsive = {
-    superLargeDesktop: {
-      // the naming can be any, depends on you.
-      breakpoint: { max: 4000, min: 3000 },
-      items: 5,
-    },
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 3,
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 2,
-    },
-    mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1,
-    },
-  };
-
+const Main: NextPage = () => {
   return (
     <MainWrapper>
       <CarouselSection>
-        <Carousel
-          swipeable={true}
-          draggable={true}
-          showDots={true}
-          responsive={responsive}
-          ssr={true} // means to render carousel on server-side.
-          infinite={true}
-          // autoPlay={true}
-          autoPlaySpeed={1000}
-          keyBoardControl={true}
-          customTransition="all .5"
-          transitionDuration={500}
-          containerClass="carousel-container"
-          removeArrowOnDeviceType={['tablet', 'mobile']}
-          dotListClass="custom-dot-list-style"
-          itemClass="carousel-item-padding-40-px"
-        >
-          <Image src={gameImage} />
-          <Image src={gameImage2} />
-          <Image src={gameImage} />
-        </Carousel>
+        <CarouselComponent />
       </CarouselSection>
-      {/* <NoSSRComponent /> */}
     </MainWrapper>
   );
 };
 
-export default Home;
+export default Main;
