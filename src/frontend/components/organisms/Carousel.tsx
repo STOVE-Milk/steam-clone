@@ -4,9 +4,8 @@ import 'react-multi-carousel/lib/styles.css';
 import gameImage from 'public/game.png';
 import gameImage2 from 'public/game2.jpeg';
 import Image from 'next/image';
-// import { theme } from 'styles/theme'; 이거 어떡하지...
 
-export default function CarouselComponent() {
+export default function CarouselComponent(children: React.ReactNode) {
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
@@ -45,9 +44,7 @@ export default function CarouselComponent() {
       dotListClass="custom-dot-list-style"
       itemClass="carousel-item-padding-40-px"
     >
-      <Image src={gameImage} />
-      <Image src={gameImage2} />
-      <Image src={gameImage} />
+      {children}
     </Carousel>
   );
 }
