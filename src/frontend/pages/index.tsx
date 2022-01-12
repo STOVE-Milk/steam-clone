@@ -1,19 +1,95 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
-import DefaultButton from 'components/atoms/DefaultButton';
+import CarouselComponent from 'components/organisms/Carousel';
+import GameSlide from 'components/molecules/GameSlide';
+import gameImage2 from 'public/game2.jpg';
+import Image from 'next/image';
+
+const mockData: Array<any> = [
+  {
+    name: 'Vampire Survivors',
+    price: {
+      kr: 10000,
+    },
+    image: {
+      main: 'www',
+      sub: ['www1', 'www2'],
+    },
+  },
+  {
+    name: 'Vampire Survivors2',
+    price: {
+      kr: 10000,
+    },
+    image: {
+      main: 'www',
+      sub: ['www1', 'www2'],
+    },
+  },
+  {
+    name: 'Vampire Survivors3',
+    price: {
+      kr: 10000,
+    },
+    image: {
+      main: 'www',
+      sub: ['www1', 'www2'],
+    },
+  },
+  {
+    name: 'Vampire Survivors4',
+    price: {
+      kr: 10000,
+    },
+    image: {
+      main: 'www',
+      sub: ['www1', 'www2'],
+    },
+  },
+  {
+    name: 'Vampire Survivors5',
+    price: {
+      kr: 10000,
+    },
+    image: {
+      main: 'www',
+      sub: ['www1', 'www2'],
+    },
+  },
+];
 
 const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  height: 100%;
 `;
 
-const Home: NextPage = () => {
+const CarouselSection = styled.div`
+  width: 1000px;
+`;
+
+const Main: NextPage = () => {
   return (
     <MainWrapper>
-      <DefaultButton types="primary">검색</DefaultButton>
+      <CarouselSection>
+        <CarouselComponent
+          slides={mockData.map((data) => {
+            return (
+              <GameSlide
+                image={<Image src={gameImage2} />}
+                info={{
+                  name: data.name,
+                  price: data.price.kr,
+                }}
+              ></GameSlide>
+            );
+          })}
+        ></CarouselComponent>
+      </CarouselSection>
     </MainWrapper>
   );
 };
 
-export default Home;
+export default Main;

@@ -15,8 +15,8 @@ const dark = {
 
 const light = {
   colors: {
-    primaryBg: '#2F3137',
-    secondaryBg: '#3E4149',
+    primaryBg: '#313640',
+    secondaryBg: '#3a3e48',
     activeBg: '#7372FE',
 
     primaryText: '#ffffff',
@@ -33,10 +33,10 @@ export const theme: DefaultTheme = {
     large: '@media (min-width: 1048px)',
   },
   colors: {
-    primaryBg: '#2F3137',
-    secondaryBg: '#3E4149',
+    primaryBg: '#212327',
+    secondaryBg: '#313640',
 
-    activeBg: '#7372FE',
+    activeBg: '#776BD6',
 
     plain: '#ffffff',
 
