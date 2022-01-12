@@ -17,6 +17,8 @@ const ContentSectionWrapper = styled.div`
 `;
 const ContentSection = styled.div`
   margin-top: 80px;
+  height: calc(100vh - 80px);
+  background: ${(props) => props.theme.colors.primaryBg};
 `;
 
 export default function Layout({ children }: LayoutProps) {

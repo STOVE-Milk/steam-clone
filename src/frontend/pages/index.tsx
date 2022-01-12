@@ -3,7 +3,6 @@ import type { NextPage } from 'next';
 import styled from 'styled-components';
 import CarouselComponent from 'components/organisms/Carousel';
 import GameSlide from 'components/molecules/GameSlide';
-import gameImage from 'public/game.png';
 import gameImage2 from 'public/game2.jpg';
 import Image from 'next/image';
 
@@ -63,11 +62,12 @@ const mockData: Array<any> = [
 const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  height: 100%;
 `;
 
 const CarouselSection = styled.div`
   width: 1000px;
-  border: 1px solid black;
 `;
 
 const Main: NextPage = () => {
