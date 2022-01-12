@@ -8,9 +8,14 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 service Store {
-    rpc GetCategories(google.protobuf.Empty) returns (CategoryListRequest) {
+    rpc GetCategoryList(google.protobuf.Empty) returns (CategoryListResponse) {
         option (google.api.http) = {
             get: "/store/categories"
+        };
+    }
+    rpc GetGameListByCategory(CategoryQueryParamRequest) returns(GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/games"
         };
     }
 }
@@ -20,21 +25,39 @@ message GameRequest{
     int32 game_id = 1;
 }
 
-message GameResponse {
+
+message GameSimpleListResponse{
+    repeated GameSimple games = 1;
+}
+
+message GameDetail{
+    GameSimple gameSimple = 1;
+}
+
+message GameSimple {
     string name = 1;
-    string description_snippet = 2;
+    string descriptionSnippet = 2;
     map<string, int32> price = 3;
     int32 sale = 4;
-    ContentPathRequest image = 5;
-    ContentPathRequest video = 6;
+    ContentsPath image = 5;
+    ContentsPath video = 6;
     repeated string categoryList = 7;
 }
 
-message ContentPathRequest{
+
+// 미디어 컨텐츠를 Response 해야할 때.
+message ContentsPath{
     string main = 1;
     repeated string sub = 2;
 }
 
-message CategoryListRequest{
+// 카테고리 목록을 Response 해야할 때.
+message CategoryListResponse{
     repeated string categoryList = 1;
 }
+
+// Client 측에서 하나의 카테고리를 Request 받을 때. 
+message CategoryQueryParamRequest{
+    string category = 1;
+}
+
