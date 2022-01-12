@@ -1,11 +1,12 @@
 import React from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import gameImage from 'public/game.png';
-import gameImage2 from 'public/game2.jpeg';
-import Image from 'next/image';
 
-export default function CarouselComponent(children: React.ReactNode) {
+interface CarouselProps {
+  slides: Object;
+}
+
+export default function CarouselComponent(props: CarouselProps) {
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
@@ -44,7 +45,7 @@ export default function CarouselComponent(children: React.ReactNode) {
       dotListClass="custom-dot-list-style"
       itemClass="carousel-item-padding-40-px"
     >
-      {children}
+      {props.slides}
     </Carousel>
   );
 }

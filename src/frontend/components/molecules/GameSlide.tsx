@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Text from 'components/atoms/Text';
 
 interface SlideProps {
-  image: typeof Image;
+  image: JSX.Element | typeof Image;
   info: {
     name: string;
     price: string;
