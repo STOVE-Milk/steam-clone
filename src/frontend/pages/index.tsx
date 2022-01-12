@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 import Carousel from 'react-multi-carousel';
-import { ButtonGroupProps, ArrowProps, DotProps } from 'react-multi-carousel/lib/types';
 import 'react-multi-carousel/lib/styles.css';
 import gameImage from 'public/game.png';
 import gameImage2 from 'public/game2.jpeg';
 import Image from 'next/image';
-import DefaultButton from 'components/atoms/DefaultButton';
 import dynamic from 'next/dynamic';
 
 const NoSSRComponent = dynamic(() => import('components/organisms/map'), {

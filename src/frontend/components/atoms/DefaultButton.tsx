@@ -11,19 +11,20 @@ export interface ButtonProps {
 const ButtonStyle = styled.button<ButtonProps>`
   background: ${(props) => props.theme.colors['plain']};
   color: ${(props) => props.theme.colors[props.types + 'Bg']};
-  font-size: 1em;
+  font-size: 1rem;
   cursor: pointer;
-  margin: 1em;
+  margin: 0 1em;
   padding: 0.25em 1em;
   border: 1px solid ${(props) => props.theme.colors[props.types + 'Bg']};
-  border-radius: 3px;
+  border-radius: 10px;
+  height: 50px;
 
   &:hover {
     box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
   }
 `;
 
-function DefaultButton(props: ButtonProps) {
+export default function DefaultButton(props: ButtonProps) {
   return (
     <ButtonStyle {...props} onClick={props.onClick}>
       {props.children}
@@ -34,5 +35,3 @@ function DefaultButton(props: ButtonProps) {
 DefaultButton.defaultProps = {
   onClick: () => console.log('clicked'),
 };
-
-export default DefaultButton;

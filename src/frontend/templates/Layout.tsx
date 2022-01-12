@@ -1,6 +1,7 @@
 import React from 'react';
-import NavBar from 'components/organisms/NavBar';
 import styled from 'styled-components';
+import NavBar from 'components/organisms/Navbar';
+import Header from 'components/organisms/Header';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,16 +12,21 @@ const MainWrapper = styled.div`
   height: 100%;
   display: flex;
 `;
-
-const ContentSection = styled.div`
+const ContentSectionWrapper = styled.div`
   flex: 1;
+`;
+const ContentSection = styled.div`
+  margin-top: 80px;
 `;
 
 export default function Layout({ children }: LayoutProps) {
   return (
     <MainWrapper>
       <NavBar />
-      <ContentSection>{children}</ContentSection>
+      <ContentSectionWrapper>
+        <Header />
+        <ContentSection>{children}</ContentSection>
+      </ContentSectionWrapper>
     </MainWrapper>
   );
 }
