@@ -5,8 +5,12 @@ import com.steam.payment.dto.ChargeReadyRequest;
 import com.steam.payment.global.common.Body;
 import com.steam.payment.service.ChargeService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @RequiredArgsConstructor
 @RestController
@@ -14,28 +18,25 @@ import org.springframework.web.bind.annotation.*;
 public class ChargeController {
     private final ChargeService chargeService;
 
-    @GetMapping("/giftcards/{nation}")
+    @GetMapping("/giftcards/{country}")
     @ResponseBody
-    public ResponseEntity<Body<Object>> getGiftcardList(@PathVariable("nation") String nation) {
+    public ResponseEntity<Body<Object>> getGiftcardList(@Valid @NotBlank @PathVariable("country") String country) {
         return ResponseEntity.ok(
-                Body.success(chargeService.getGiftcardList(nation))
+                Body.success(chargeService.getGiftcardList(country))
         );
     }
 
     @PostMapping("/charge/ready")
     @ResponseBody
-    public ResponseEntity<Object> chargeReady(@RequestBody ChargeReadyRequest request) {
-
+    public ResponseEntity<Object> chargeReady(@Valid @RequestBody ChargeReadyRequest request) {
         return ResponseEntity.ok(
                 chargeService.chargeReady(request)
-                //Body.getSuccessBody("test")
         );
     }
 
     @PostMapping("/charge/approve")
     @ResponseBody
-    public ResponseEntity<Object> chargeApprove(@RequestBody ChargeApproveRequest request) {
-
+    public ResponseEntity<Object> chargeApprove(@Valid @RequestBody ChargeApproveRequest request) {
         return ResponseEntity.ok(
                 chargeService.chargeApprove(request)
         );

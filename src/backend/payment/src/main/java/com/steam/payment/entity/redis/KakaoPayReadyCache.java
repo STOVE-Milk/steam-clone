@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-@RedisHash(value = "kakaopay", timeToLive = 60)
+@RedisHash(value = "kakaopay", timeToLive = 600)
 public class KakaoPayReadyCache {
     @Id
     private String tid;

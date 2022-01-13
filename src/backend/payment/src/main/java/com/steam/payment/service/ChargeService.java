@@ -25,7 +25,7 @@ public class ChargeService {
     private final KakaoPay kakaoPay;
 
     public List<GiftcardDto> getGiftcardList(String nation) {
-        return giftcardRepository.findAllByNationCode(nation)
+        return giftcardRepository.findAllByCountry(nation)
                 .stream()
                 .map(GiftcardDto::of)
                 .collect(Collectors.toList());
@@ -38,10 +38,15 @@ public class ChargeService {
 
     public Object chargeApprove(ChargeApproveRequest request) {
         KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
-        User user = userRepository.findUserByIdx(1)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        user.chargeMoney(response.getAmount().getTotal());
+        saveUserMoney(1, response.getAmount().getTotal());
 
         return new EmptyData();
+    }
+
+    private void saveUserMoney(Integer userId, Integer money) {
+        User user = userRepository.findUserByIdx(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        user.chargeMoney(money);
+        userRepository.save(user);
     }
 }
