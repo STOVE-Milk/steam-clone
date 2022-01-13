@@ -5,7 +5,6 @@ import CarouselComponent from 'components/organisms/Carousel';
 import GameSlide from 'components/molecules/GameSlide';
 import gameImage2 from 'public/game2.jpg';
 import Image from 'next/image';
-import Text from 'components/atoms/Text';
 
 const mockData: Array<any> = [
   {

@@ -45,7 +45,7 @@ export default function CarouselComponent(props: CarouselProps) {
     <CustomCarousel
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
-      // autoPlay={true}
+      autoPlay={true}
       autoPlaySpeed={2000}
       infinite
       removeArrowOnDeviceType={['small']}
