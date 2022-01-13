@@ -1,11 +1,20 @@
 import { createGlobalStyle } from 'styled-components';
-// import { normalize } from 'styled-normalize';
+import { theme } from 'styles/theme';
 
 export const GlobalStyle = createGlobalStyle`
-  /* ${normalize} */
   html {
     box-sizing: border-box;
     min-width: 320px;
+
+    ${theme.breakpoints.large}{
+      font-size: 16px;
+    }
+    ${theme.breakpoints.medium}{
+      font-size: 15px;
+    }
+    ${theme.breakpoints.small}{
+      font-size: 14px;
+    }
   }
   *,
   *::before,
