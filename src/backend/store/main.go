@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
+	"github.com/STOVE-Milk/steam-clone/store/dummy"
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
@@ -17,10 +19,23 @@ type storeServer struct {
 }
 
 // GetUser returns user message by user_id
-func (s *storeServer) GetCategories(ctx context.Context, _ *empty.Empty) (*pb.CategoryListRequest, error) {
+func (s *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (*pb.CategoryListResponse, error) {
 	categories := []string{"액션", "RPG"}
-	return &pb.CategoryListRequest{
+	return &pb.CategoryListResponse{
 		CategoryList: categories,
+	}, nil
+}
+
+func (s *storeServer) GetGameListByCategory(ctx context.Context, req *pb.CategoryQueryParamRequest) (*pb.GameSimpleListResponse, error) {
+	category := req.Category
+	fmt.Println(category)
+
+	var gameSimpleList = make([]*pb.GameSimple, len(dummy.GameSimpleList))
+	for i, game := range dummy.GameSimpleList {
+		gameSimpleList[i] = game
+	}
+	return &pb.GameSimpleListResponse{
+		Games: gameSimpleList,
 	}, nil
 }
 
