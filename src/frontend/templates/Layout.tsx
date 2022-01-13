@@ -12,11 +12,15 @@ const MainWrapper = styled.div`
   height: 100%;
   display: flex;
 `;
+const NavBarSection = styled.div`
+  width: 250px;
+`;
 const ContentSectionWrapper = styled.div`
   flex: 1;
 `;
 const ContentSection = styled.div`
   margin-top: 80px;
+  width: 100%;
   height: calc(100vh - 80px);
   background: ${(props) => props.theme.colors.primaryBg};
 `;
@@ -24,7 +28,9 @@ const ContentSection = styled.div`
 export default function Layout({ children }: LayoutProps) {
   return (
     <MainWrapper>
-      <NavBar />
+      <NavBarSection>
+        <NavBar />
+      </NavBarSection>
       <ContentSectionWrapper>
         <Header />
         <ContentSection>{children}</ContentSection>

@@ -12,31 +12,31 @@ interface SlideProps {
 }
 
 const SlideWrapper = styled.div`
-  width: 200px;
-  height: 250px;
-  border-radius: 10px;
+  width: 100%;
+  height: 80%;
+  padding: 1rem 0 1rem 1rem;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 `;
 
 const ImageSection = styled.div`
-  height: 200px;
+  width: 100%;
+  flex: 1;
   overflow: hidden;
+  border-radius: 10px 10px 0 0;
 `;
 
 const InfoSection = styled.div`
-  flex: 1;
+  height: 30%;
   background: ${(props) => props.theme.colors.secondaryBg};
-  padding: 10px;
+  padding: 1%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   color: black;
-`;
-
-const Info = styled(Text)`
-  padding: 5px;
+  padding-left: 5%;
+  border-radius: 0 0 10px 10px;
 `;
 
 export default function GameSlide(props: SlideProps) {
@@ -44,8 +44,8 @@ export default function GameSlide(props: SlideProps) {
     <SlideWrapper>
       <ImageSection>{props.image}</ImageSection>
       <InfoSection>
-        <Info types="small">{props.info.name}</Info>
-        <Info types="tiny">{`$ ${props.info.price}`}</Info>
+        <Text types="small">{props.info.name}</Text>
+        <Text types="tiny">{`$ ${props.info.price}`}</Text>
       </InfoSection>
     </SlideWrapper>
   );

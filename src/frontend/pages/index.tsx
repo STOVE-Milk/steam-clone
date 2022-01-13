@@ -5,6 +5,7 @@ import CarouselComponent from 'components/organisms/Carousel';
 import GameSlide from 'components/molecules/GameSlide';
 import gameImage2 from 'public/game2.jpg';
 import Image from 'next/image';
+import Text from 'components/atoms/Text';
 
 const mockData: Array<any> = [
   {
@@ -67,7 +68,7 @@ const MainWrapper = styled.div`
 `;
 
 const CarouselSection = styled.div`
-  width: 1000px;
+  width: calc(100vw - 250px);
 `;
 
 const Main: NextPage = () => {
@@ -78,7 +79,7 @@ const Main: NextPage = () => {
           slides={mockData.map((data) => {
             return (
               <GameSlide
-                image={<Image src={gameImage2} />}
+                image={<Image src={gameImage2} layout="responsive" />}
                 info={{
                   name: data.name,
                   price: data.price.kr,
