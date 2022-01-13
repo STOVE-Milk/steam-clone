@@ -6,6 +6,7 @@ import GameSlide from 'components/molecules/GameSlide';
 import gameImage2 from 'public/game2.jpg';
 import Image from 'next/image';
 import Text from 'components/atoms/Text';
+import DefaultButton from 'components/atoms/DefaultButton';
 
 const mockData: Array<any> = [
   {
@@ -89,6 +90,7 @@ const Main: NextPage = () => {
           })}
         ></CarouselComponent>
       </CarouselSection>
+      <DefaultButton types="primary">{'hello'}</DefaultButton>
     </MainWrapper>
   );
 };

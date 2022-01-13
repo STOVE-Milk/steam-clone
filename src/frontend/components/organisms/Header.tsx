@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Search from 'components/molecules/SearchBox';
+import SearchBox from 'components/molecules/SearchBox';
 import Profile from 'components/atoms/Profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
-import SelectBox from 'components/atoms/SelectBox';
 
 // to do: 영역 잡고, css 로 width 100%, height: 80px 등으로 고정
 // 내용물: inputBox, 알림 아이콘, 유저인포
@@ -51,7 +50,7 @@ export default function Header() {
   return (
     <HeaderStyle>
       <SearchBarWrapper>
-        <Search option={option} inputText={inputText} setOption={setOption} setInputText={setInputText} />
+        <SearchBox option={option} inputText={inputText} setOption={setOption} setInputText={setInputText} />
       </SearchBarWrapper>
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />

@@ -29,7 +29,7 @@ const FontAwesomeIconStyle = styled(FontAwesomeIcon)`
   cursor: pointer;
 `;
 
-export default function Search({ option, inputText, setOption, setInputText }: ISearchbox) {
+export default function SearchBox({ option, inputText, setOption, setInputText }: ISearchbox) {
   const optionName = [
     { en: 'name', kr: '게임이름' },
     { en: 'tag', kr: '태그' },
@@ -39,8 +39,8 @@ export default function Search({ option, inputText, setOption, setInputText }: I
     setOption(e.target.value);
   }, []);
 
-  const handleInputText = useCallback(() => {
-    const searchText = document.querySelector('#searchText')?.value;
+  const handleInputText = useCallback((e) => {
+    const searchText = e.target.value;
     setInputText(searchText);
   }, []);
 
@@ -59,7 +59,7 @@ export default function Search({ option, inputText, setOption, setInputText }: I
         placeholder={'Search Everything!'}
         id="searchText"
         defaultValue=""
-        onChange={handleInputText}
+        onChange={(e) => handleInputText(e)}
       />
       <FontAwesomeIconStyle icon={faSearch} inverse onClick={() => submitSearchInfo()} />
     </SearchBoxWrapper>

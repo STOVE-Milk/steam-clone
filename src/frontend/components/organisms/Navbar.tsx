@@ -16,7 +16,6 @@ const NavBarWrapper = styled.div`
   flex-direction: column;
   padding: 10px;
   overflow-y: hidden;
-  border-right: 1px solid ${(props) => props.theme.colors.divider};
 `;
 
 const LogoSection = styled.section`

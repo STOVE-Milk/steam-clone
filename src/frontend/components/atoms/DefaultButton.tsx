@@ -13,8 +13,8 @@ const ButtonStyle = styled.button<ButtonProps>`
   color: ${(props) => props.theme.colors[props.types + 'Bg']};
   font-size: 1rem;
   cursor: pointer;
-  margin: 0 1em;
-  padding: 0.25em 1em;
+  margin: 0 1rem;
+  padding: 0.25rem 1rem;
   border: 1px solid ${(props) => props.theme.colors[props.types + 'Bg']};
   border-radius: 10px;
   height: 50px;
