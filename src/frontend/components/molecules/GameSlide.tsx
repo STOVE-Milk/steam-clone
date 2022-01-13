@@ -2,12 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import Text from 'components/atoms/Text';
+import { localePrice } from 'util/localeString';
 
 interface SlideProps {
   image: JSX.Element | typeof Image;
   info: {
     name: string;
-    price: string;
+    price: number;
   };
 }
 
@@ -45,7 +46,7 @@ export default function GameSlide(props: SlideProps) {
       <ImageSection>{props.image}</ImageSection>
       <InfoSection>
         <Text types="small">{props.info.name}</Text>
-        <Text types="tiny">{`$ ${props.info.price}`}</Text>
+        <Text types="tiny">{`${localePrice(props.info.price, 'KR')}`}</Text>
       </InfoSection>
     </SlideWrapper>
   );
