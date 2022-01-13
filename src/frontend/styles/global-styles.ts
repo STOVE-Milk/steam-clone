@@ -1,12 +1,20 @@
-import {createGlobalStyle} from 'styled-components';
-import {normalize} from 'styled-normalize';
+import { createGlobalStyle } from 'styled-components';
+import { theme } from 'styles/theme';
 
 export const GlobalStyle = createGlobalStyle`
-  ${normalize}
   html {
     box-sizing: border-box;
-    font-size: 62.5%;
     min-width: 320px;
+
+    ${theme.breakpoints.large}{
+      font-size: 16px;
+    }
+    ${theme.breakpoints.medium}{
+      font-size: 15px;
+    }
+    ${theme.breakpoints.small}{
+      font-size: 14px;
+    }
   }
   *,
   *::before,
@@ -15,4 +23,7 @@ export const GlobalStyle = createGlobalStyle`
   }
   * { font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';}
   a { cursor: pointer; text-decoration: none; }
+  *:focus {
+    outline: none;
+}
 `;

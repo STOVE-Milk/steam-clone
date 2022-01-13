@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+
+
+
+    
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,18 +21,7 @@
     "incremental": true,
     "baseUrl": "."
   },
-  "includes": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ]
+  "includes": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src"],
+  "exclude": ["node_modules"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/atoms/DefaultButton.tsx"]
 }
