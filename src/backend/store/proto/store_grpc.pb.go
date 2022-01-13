@@ -23,7 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StoreClient interface {
-	GetCategories(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*CategoryListRequest, error)
+	GetCategoryList(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*CategoryListResponse, error)
+	GetGameListByCategory(ctx context.Context, in *CategoryQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
 }
 
 type storeClient struct {
@@ -34,9 +35,18 @@ func NewStoreClient(cc grpc.ClientConnInterface) StoreClient {
 	return &storeClient{cc}
 }
 
-func (c *storeClient) GetCategories(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*CategoryListRequest, error) {
-	out := new(CategoryListRequest)
-	err := c.cc.Invoke(ctx, "/storepb.Store/GetCategories", in, out, opts...)
+func (c *storeClient) GetCategoryList(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*CategoryListResponse, error) {
+	out := new(CategoryListResponse)
+	err := c.cc.Invoke(ctx, "/storepb.Store/GetCategoryList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storeClient) GetGameListByCategory(ctx context.Context, in *CategoryQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error) {
+	out := new(GameSimpleListResponse)
+	err := c.cc.Invoke(ctx, "/storepb.Store/GetGameListByCategory", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +57,8 @@ func (c *storeClient) GetCategories(ctx context.Context, in *empty.Empty, opts .
 // All implementations must embed UnimplementedStoreServer
 // for forward compatibility
 type StoreServer interface {
-	GetCategories(context.Context, *empty.Empty) (*CategoryListRequest, error)
+	GetCategoryList(context.Context, *empty.Empty) (*CategoryListResponse, error)
+	GetGameListByCategory(context.Context, *CategoryQueryParamRequest) (*GameSimpleListResponse, error)
 	mustEmbedUnimplementedStoreServer()
 }
 
@@ -55,8 +66,11 @@ type StoreServer interface {
 type UnimplementedStoreServer struct {
 }
 
-func (UnimplementedStoreServer) GetCategories(context.Context, *empty.Empty) (*CategoryListRequest, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCategories not implemented")
+func (UnimplementedStoreServer) GetCategoryList(context.Context, *empty.Empty) (*CategoryListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCategoryList not implemented")
+}
+func (UnimplementedStoreServer) GetGameListByCategory(context.Context, *CategoryQueryParamRequest) (*GameSimpleListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGameListByCategory not implemented")
 }
 func (UnimplementedStoreServer) mustEmbedUnimplementedStoreServer() {}
 
@@ -71,20 +85,38 @@ func RegisterStoreServer(s grpc.ServiceRegistrar, srv StoreServer) {
 	s.RegisterService(&Store_ServiceDesc, srv)
 }
 
-func _Store_GetCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Store_GetCategoryList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StoreServer).GetCategories(ctx, in)
+		return srv.(StoreServer).GetCategoryList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/storepb.Store/GetCategories",
+		FullMethod: "/storepb.Store/GetCategoryList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServer).GetCategories(ctx, req.(*empty.Empty))
+		return srv.(StoreServer).GetCategoryList(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Store_GetGameListByCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CategoryQueryParamRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoreServer).GetGameListByCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/storepb.Store/GetGameListByCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoreServer).GetGameListByCategory(ctx, req.(*CategoryQueryParamRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -97,8 +129,12 @@ var Store_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*StoreServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetCategories",
-			Handler:    _Store_GetCategories_Handler,
+			MethodName: "GetCategoryList",
+			Handler:    _Store_GetCategoryList_Handler,
+		},
+		{
+			MethodName: "GetGameListByCategory",
+			Handler:    _Store_GetGameListByCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

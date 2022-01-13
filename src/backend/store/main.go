@@ -29,7 +29,6 @@ func (s *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (*pb.
 func (s *storeServer) GetGameListByCategory(ctx context.Context, req *pb.CategoryQueryParamRequest) (*pb.GameSimpleListResponse, error) {
 	category := req.Category
 	fmt.Println(category)
-
 	var gameSimpleList = make([]*pb.GameSimple, len(dummy.GameSimpleList))
 	for i, game := range dummy.GameSimpleList {
 		gameSimpleList[i] = game
