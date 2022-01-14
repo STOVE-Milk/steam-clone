@@ -5,6 +5,7 @@ export const GlobalStyle = createGlobalStyle`
   html {
     box-sizing: border-box;
     min-width: 320px;
+    overflow-x: hidden;
 
     ${theme.breakpoints.large}{
       font-size: 16px;
