@@ -98,17 +98,15 @@ const Category = () => {
   ];
 
   return (
-    <div>
-      <GameInfoWrapper>
-        <Text types="large">카테고리 리스트</Text>
-        <CategoryList list={CategoryListArr}></CategoryList>
-        <Text types="large">게임 리스트</Text>
+    <GameInfoWrapper>
+      <Text types="large">카테고리 리스트</Text>
+      <CategoryList list={CategoryListArr}></CategoryList>
+      <Text types="large">게임 리스트</Text>
 
-        {mockData.map((eachGame, i) => {
-          return <GameInfo key={i} {...eachGame} />;
-        })}
-      </GameInfoWrapper>
-    </div>
+      {mockData.map((eachGame, i) => {
+        return <GameInfo key={i} {...eachGame} />;
+      })}
+    </GameInfoWrapper>
   );
 };
 
