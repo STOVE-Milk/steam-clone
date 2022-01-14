@@ -47,6 +47,8 @@ export const theme: DefaultTheme = {
 
     online: '#ADD1D4',
     offline: '',
+
+    wish: '#ff0080',
   },
 };
 
