@@ -1,13 +1,9 @@
 package com.steam.payment.entity;
 
-import com.steam.payment.entity.vo.ProfileJson;
-import com.steam.payment.global.util.JpaConverterJson;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.Map;
 
 @Builder
 @Data
@@ -40,9 +36,8 @@ public class User {
     private Double money;
 
     //description, image
-//    @Column(name = "profile")
-//    @Convert(converter = JpaConverterJson.class)
-//    private ProfileJson profile;
+    @Column(name = "profile")
+    private String profile;
 
     @Column(name = "language")
     private String language;

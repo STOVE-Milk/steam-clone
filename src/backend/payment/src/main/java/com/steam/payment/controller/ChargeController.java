@@ -30,7 +30,7 @@ public class ChargeController {
     @ResponseBody
     public ResponseEntity<Object> chargeReady(@Valid @RequestBody ChargeReadyRequest request) {
         return ResponseEntity.ok(
-                chargeService.chargeReady(request)
+                Body.success(chargeService.chargeReady(request))
         );
     }
 
@@ -38,7 +38,7 @@ public class ChargeController {
     @ResponseBody
     public ResponseEntity<Object> chargeApprove(@Valid @RequestBody ChargeApproveRequest request) {
         return ResponseEntity.ok(
-                chargeService.chargeApprove(request)
+                Body.success(chargeService.chargeApprove(request))
         );
     }
 }

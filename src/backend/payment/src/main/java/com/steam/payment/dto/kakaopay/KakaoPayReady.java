@@ -3,9 +3,12 @@ package com.steam.payment.dto.kakaopay;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.steam.payment.dto.GiftcardDto;
+import com.steam.payment.entity.redis.KakaoPayReadyCache;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -35,6 +38,16 @@ public class KakaoPayReady{
                 .totalAmount(giftcard.getPrice())
                 .tax_free_amount(0)
                 .vat(0)
+                .build();
+    }
+
+    public KakaoPayReadyCache toHashWithTid(String tid) {
+        return KakaoPayReadyCache.builder()
+                .cid(this.cid)
+                .tid(tid)
+                .partnerOrderId(this.partnerOrderId)
+                .partnerUserId(this.partnerUserId)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

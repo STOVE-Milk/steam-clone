@@ -14,6 +14,7 @@ import com.steam.payment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,19 @@ public class ChargeService {
 
     public Object chargeApprove(ChargeApproveRequest request) {
         KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
-        saveUserMoney(1, response.getAmount().getTotal());
+        try {
+            addUserMoney(1, response.getAmount().getTotal());
+            throw new RuntimeException();
+        } catch (RuntimeException e) {
+            return kakaoPay.cancel(response.getAid());
+            //throw new CustomException(ErrorCode.USER_CHARGE_CANCELD);
+        }
 
-        return new EmptyData();
+        //return new EmptyData();
     }
 
-    private void saveUserMoney(Integer userId, Integer money) {
+    @Transactional
+    protected void addUserMoney(Integer userId, Integer money) {
         User user = userRepository.findUserByIdx(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         user.chargeMoney(money);
