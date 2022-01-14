@@ -2,15 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faHeart,
-  faHeartBroken,
-  faImages,
-  faWindowMaximize,
-  faAppleAlt,
-  faShoppingCart,
-  faCartPlus,
-} from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import sImage from 'public/game.png';
 import { IGameInfo } from 'pages/category';
 import Text from 'components/atoms/Text';
@@ -210,11 +202,11 @@ export default function GameInfo(props: IGameInfo) {
             {Boolean(gameData.sale) ? (
               <>
                 {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
-                <DefaultPrice>{`${localePrice(gameData.price.kr, 'KR')}`}</DefaultPrice>
-                <Text types="medium">{`${localePrice((gameData.price.kr / 100) * (100 - gameData.sale), 'KR')}`}</Text>
+                <DefaultPrice>{`${localePrice(gameData.price.KR, 'KR')}`}</DefaultPrice>
+                <Text types="medium">{`${localePrice((gameData.price.KR / 100) * (100 - gameData.sale), 'KR')}`}</Text>
               </>
             ) : (
-              <Text types="medium">{`${localePrice(gameData.price.kr, 'KR')}`}</Text>
+              <Text types="medium">{`${localePrice(gameData.price.KR, 'KR')}`}</Text>
             )}
           </div>
         </section>
