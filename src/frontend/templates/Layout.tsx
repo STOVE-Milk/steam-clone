@@ -19,9 +19,10 @@ const ContentSectionWrapper = styled.div`
   flex: 1;
 `;
 const ContentSection = styled.div`
-  margin-top: 80px;
   width: 100%;
+  margin-top: 80px;
   height: calc(100vh - 80px);
+  overflow-y: scroll;
   background: ${(props) => props.theme.colors.primaryBg};
 `;
 
