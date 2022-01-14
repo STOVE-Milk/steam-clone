@@ -1,0 +1,58 @@
+@font-face {
+  font-family: Archivo;
+  src: url('/font/Archivo/Archivo_Expanded-Thin.ttf') format('truetype');
+  font-weight: 400;
+}
+@font-face {
+  font-family: Archivo;
+  src: url('/font/Archivo/Archivo_Expanded-Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+@font-face {
+  font-family: Archivo;
+  src: url('/font/Archivo/Archivo_Expanded-Bold.ttf') format('truetype');
+  font-weight: 600;
+}
+@font-face {
+  font-family: Archivo;
+  src: url('/font/Archivo/Archivo_Expanded-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+}
+@font-face {
+  font-family: AppleSDGothic;
+  src: url('/font/AppleSd/AppleSDGothicNeoL.ttf') format('truetype');
+  font-weight: 300;
+}
+@font-face {
+  font-family: AppleSDGothic;
+  src: url('/font/AppleSd/AppleSDGothicNeoR.ttf') format('truetype');
+  font-weight: 400;
+}
+@font-face {
+  font-family: AppleSDGothic;
+  src: url('/font/AppleSd/AppleSDGothicNeoM.ttf') format('truetype');
+  font-weight: 500;
+}
+@font-face {
+  font-family: AppleSDGothic;
+  src: url('/font/AppleSd/AppleSDGothicNeoB.ttf') format('truetype');
+  font-weight: 600;
+}
+@font-face {
+  font-family: AppleSDGothic;
+  src: url('/font/AppleSd/AppleSDGothicNeoEB.ttf') format('truetype');
+  font-weight: 700;
+}
+@font-face {
+  font-family: AppleSDGothic;
+  src: url('/font/AppleSd/AppleSDGothicNeoH.ttf') format('truetype');
+  font-weight: 800;
+}
+@font-face {
+  font-family: DungGeunMo;
+  src: url('/font/Neodgm/neodgm.woff2') format('truetype');
+}
+@font-face {
+  font-family: DungGeunMo-Code;
+  src: url('/font/Neodgm/neodgm_code.ttf') format('truetype');
+}

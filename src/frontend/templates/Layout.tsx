@@ -11,6 +11,7 @@ const MainWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  font-family: AppleSDGothic;
 `;
 const NavBarSection = styled.div`
   width: 250px;
