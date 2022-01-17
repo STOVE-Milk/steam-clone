@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const AxiosSet = (baseUrl) => {
+export default AxiosSet = (baseUrl) => {
   axios.create({
     baseURL: baseUrl,
     headers: {
@@ -8,4 +8,3 @@ const AxiosSet = (baseUrl) => {
     },
   });
 };
-export default AxiosSet;

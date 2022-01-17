@@ -180,11 +180,7 @@ export default function GameInfo(props: IGameInfo) {
           </span>
           <OsBox>
             {gameData.os.map((eachOs: string) => {
-              return eachOs == 'windows' ? (
-                <FontAwesomeIcon icon={faWindowMaximize} inverse />
-              ) : (
-                <FontAwesomeIcon icon={faAppleAlt} inverse />
-              );
+              return <FontAwesomeIcon icon={eachOs === 'windows' ? faWindowMaximize : faAppleAlt} inverse />;
             })}
           </OsBox>
           <DescriptionBox>{gameData.description_snippet}</DescriptionBox>

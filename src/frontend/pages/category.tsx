@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import GameInfo from 'components/organisms/GameInfo';
 // import IGameInfo from 'components/organisms/GameInfo';
 import Text from 'components/atoms/Text';
 import IGameInfo from 'pages/category';
 import styled from 'styled-components';
 import CategoryList from 'components/molecules/CategoryList';
+import axios from 'axios';
 
 export type GameMedia = {
   main: string;
@@ -83,22 +84,35 @@ const ContentWrapper = styled.div`
   margin-bottom: 2rem;
 `;
 const Category = () => {
-  const CategoryListArr = [
-    'Sandbox',
-    'Real-time strategy (RTS)',
-    'Shooters (FPS and TPS)',
-    'Multiplayer online battle arena (MOBA)',
-    'Role-playing (RPG, ARPG, and More)',
-    'Simulation and sports.',
-    'Puzzlers and party games.',
-    'Action-adventure.',
-  ];
+  const client = axios.create();
+  const [categories, setCategories] = useState([]);
+
+  const getCategories = () => {
+    client.get('localhost:8080/store/categories').then((res: any) => {
+      setCategories(res.data);
+      console.log(res);
+    });
+  };
+
+  useEffect(() => {
+    getCategories();
+  });
+  // const CategoryListArr = [
+  //   'Sandbox',
+  //   'Real-time strategy (RTS)',
+  //   'Shooters (FPS and TPS)',
+  //   'Multiplayer online battle arena (MOBA)',
+  //   'Role-playing (RPG, ARPG, and More)',
+  //   'Simulation and sports.',
+  //   'Puzzlers and party games.',
+  //   'Action-adventure.',
+  // ];
 
   return (
     <GameInfoWrapper>
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
-        <CategoryList list={CategoryListArr}></CategoryList>
+        <CategoryList list={categories}></CategoryList>
       </ContentWrapper>
       <ContentWrapper>
         <TitleStyle types="large">게임 리스트</TitleStyle>
