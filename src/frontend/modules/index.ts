@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux';
-
-import game, { gameSaga } from './game/actions';
-
 import { all } from 'redux-saga/effects';
 
+import game, { gameSaga } from './game';
+
 const rootReducer = combineReducers({
-  post,
+  game,
 });
 
 export default rootReducer;
@@ -13,5 +12,5 @@ export default rootReducer;
 export type RootState = ReturnType<typeof rootReducer>;
 
 export function* rootSaga() {
-  yield all([postSaga(), writeSaga(), postsSaga(), commentsSaga()]);
+  yield all([gameSaga()]);
 }
