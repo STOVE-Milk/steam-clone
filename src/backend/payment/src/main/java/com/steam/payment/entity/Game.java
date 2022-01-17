@@ -1,10 +1,14 @@
 package com.steam.payment.entity;
 
-import lombok.Getter;
+import com.steam.payment.global.util.JsonUtil;
+import lombok.*;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "game")
 public class Game {
@@ -12,30 +16,39 @@ public class Game {
     @Column(name = "idx")
     private Integer idx;
 
+    @Column(name = "user_id")
+    private Integer userId;
+
     @Column(name = "name")
     private String name;
 
     @Column(name = "price")
-    private Double price;
+    private String price;
 
     @Column(name = "sale")
     private Integer sale;
 
-    @Column(name = "image")
-    private String image;
+    public Integer getIdx() {
+        return idx;
+    }
 
-    @Column(name = "video")
-    private String video;
+    public Integer getUserId() {
+        return userId;
+    }
 
-    @Column(name = "review_count")
-    private Integer reviewCount;
+    public String getName() {
+        return name;
+    }
 
-    @Column(name = "recommend_count")
-    private Integer recommendCount;
+    public String getPrice() {
+        return price;
+    }
 
-    @Column(name = "created_at")
-    private java.sql.Timestamp createdAt;
+    public Integer getSale() {
+        return sale;
+    }
 
-    @Column(name = "updated_at")
-    private java.sql.Timestamp updatedAt;
+    public Double priceOf(String country) {
+        return Double.parseDouble(JsonUtil.parse(this.price, country).toString());
+    }
 }

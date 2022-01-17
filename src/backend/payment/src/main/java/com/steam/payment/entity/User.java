@@ -4,9 +4,11 @@ import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
-@Data
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -55,7 +57,11 @@ public class User {
     @UpdateTimestamp
     private java.sql.Timestamp updatedAt;
 
-    public void chargeMoney(Integer value) {
+    public void addMoney(Double value) {
         this.money += value;
+    }
+
+    public void substractMoney(Integer value) {
+        this.money -= value;
     }
 }
