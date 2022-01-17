@@ -8,14 +8,14 @@ const initialState: gameState = {
   categoryError: '',
 };
 
-const reducer = createReducer<gameState, gameAction>(initialState, {
+const reducer = createReducer<gameState>(initialState, {
   [GET_CATEGORIES_SUCCESS]: (state, action) => ({
     ...state,
     categories: action.payload,
   }),
   [GET_CATEGORIES_FAIL]: (state, action) => ({
     ...state,
-    categoryError: action.payload,
+    categoryError: 'a',
   }),
 });
 

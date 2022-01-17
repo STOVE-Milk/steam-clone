@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 import GameSlide from 'components/molecules/GameSlide';
 import gameImage2 from 'public/game2.jpg';
 import Image from 'next/image';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from 'modules';
+import { getCategories } from 'modules/game';
 
 const mockData: Array<any> = [
   {
@@ -75,6 +79,13 @@ const CarouselSection = styled.div`
 `;
 
 const Main: NextPage = () => {
+  const { categories } = useSelector((state: RootState) => state.game);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getCategories.request({}));
+  }, [categories]);
+
   return (
     <MainWrapper>
       <CarouselSection></CarouselSection>
