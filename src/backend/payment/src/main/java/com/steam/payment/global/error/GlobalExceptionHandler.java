@@ -1,6 +1,7 @@
 package com.steam.payment.global.error;
 
 import com.steam.payment.global.common.Body;
+import com.steam.payment.global.common.EmptyData;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
@@ -25,15 +26,16 @@ import java.util.List;
 @Order(10)
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    protected ResponseEntity<Body> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         StringBuilder message = new StringBuilder();
-        List<String> messages = new ArrayList<>();
-        e.getAllErrors().forEach(s -> messages.add(s.getDefaultMessage() + '\n'));
-        for (String m : messages) {
-            message.append(m);
-        }
+        e.getAllErrors().forEach(s -> message.append(s.getDefaultMessage()).append('\n'));
 
-        return ResponseEntity.ok("요청 변수들이 유효하지 않습니다.\n" + message
+        return ResponseEntity.ok(
+                Body.builder()
+                        .code(77100)
+                        .message("요청 데이터들이 유효하지 않습니다.\n" + message)
+                        .data(new EmptyData())
+                        .build()
         );
     }
 

@@ -61,7 +61,7 @@ public class User {
         this.money += value;
     }
 
-    public void substractMoney(Integer value) {
+    public void substractMoney(Double value) {
         this.money -= value;
     }
 }

@@ -59,7 +59,7 @@ public class PurchaseService {
         List<Library> libraries = gameData.stream()
                 .map(g -> g.toLibraryEntity(user))
                 .collect(Collectors.toList());
-        user.addMoney(totalPrice);
+        user.substractMoney(totalPrice);
         try {
             libraryRepository.saveAll(libraries);
         } catch (DataIntegrityViolationException e) {
