@@ -16,6 +16,12 @@ public class GameDto {
     private Double price;
     private Integer sale;
 
+    public static boolean equals(GameDto game1, GameDto game2) {
+        return (game1.getIdx().equals(game2.getIdx())) &&
+                (game1.getPrice().equals(game2.getPrice())) &&
+                (game1.getSale().equals(game2.getSale()));
+    }
+
     public Double getSalePrice() {
         return price - (price * sale / 100);
     }
@@ -24,11 +30,11 @@ public class GameDto {
         return GameDto.builder()
                 .idx(game.getIdx())
                 .price(game.priceOf(country))
-                .sale(game.getIdx())
+                .sale(game.getSale())
                 .build();
     }
 
-    public Library toLibrary(final User user) {
+    public Library toLibraryEntity(final User user) {
         return Library.builder()
                 .user(user)
                 .gameId(this.idx)

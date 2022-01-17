@@ -1,0 +1,35 @@
+```
+Class: entity.redis.KakaoPayApproveResponseCache
+이유: payment.service.kakaopay.cancel() 의 로직 변경으로 인해 필요가 없어서 삭제
+
+@Builder
+@Data
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@RedisHash(value = "kakaopay", timeToLive = 600)
+public class KakaoPayApproveResponseCache {
+    @Id
+    private String aid;
+    private String tid;
+    private String cid;
+    private Integer total;
+    private Integer taxFree;
+    private String createdAt;
+    private String approvedAt;
+}
+```
+Class: entity.KakaoPayApproveResponse
+이유: payment.service.kakaopay.cancel() 의 로직 변경으로 인해 필요가 없어서 삭제
+
+public KakaoPayApproveResponseCache toHash() {
+    return KakaoPayApproveResponseCache.builder()
+            .aid(this.aid)
+            .tid(this.tid)
+            .cid(this.cid)
+            .total(this.amount.getTotal())
+            .taxFree(this.amount.getTaxFree())
+            .createdAt(this.createdAt)
+            .approvedAt(this.approvedAt)
+            .build();
+}
+```

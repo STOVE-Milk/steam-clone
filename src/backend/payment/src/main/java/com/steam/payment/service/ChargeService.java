@@ -7,6 +7,7 @@ import com.steam.payment.dto.kakaopay.KakaoPayApproveResponse;
 import com.steam.payment.entity.User;
 import com.steam.payment.entity.redis.KakaoPayReadyCache;
 import com.steam.payment.global.common.EmptyData;
+import com.steam.payment.global.common.UserContext;
 import com.steam.payment.global.error.CustomException;
 import com.steam.payment.global.error.ErrorCode;
 import com.steam.payment.repository.GiftcardRepository;
@@ -33,28 +34,28 @@ public class ChargeService {
     }
 
     public Object chargeReady(ChargeReadyRequest request) {
-        GiftcardDto giftcard = request.getGiftcard();
         return kakaoPay.ready(request.getGiftcard());
     }
 
     public Object chargeApprove(ChargeApproveRequest request) {
-        KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
         try {
-            addUserMoney(1, response.getAmount().getTotal());
-            throw new RuntimeException();
+            KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
+            //TODO: LOGGING APPROVE RESULT
+            addUserMoney(UserContext.getUserId(), response.getAmount().getTotal());
+            //TODO: LOGGING TRANSACTION RESULT
         } catch (RuntimeException e) {
-            return kakaoPay.cancel(response.getAid());
-            //throw new CustomException(ErrorCode.USER_CHARGE_CANCELD);
+            //TODO: LOGGING EXCEPTION, CANCLE
+            kakaoPay.cancel(request.getTid());
+            throw new CustomException(ErrorCode.USER_CHARGE_CANCLED);
         }
-
-        //return new EmptyData();
+        return new EmptyData();
     }
 
     @Transactional
     protected void addUserMoney(Integer userId, Integer money) {
-        User user = userRepository.findUserByIdx(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        user.chargeMoney(money);
+        user.addMoney(Double.valueOf(money));
         userRepository.save(user);
     }
 }

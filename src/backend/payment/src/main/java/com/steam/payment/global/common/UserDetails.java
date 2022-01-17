@@ -1,8 +1,13 @@
 package com.steam.payment.global.common;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class UserDetails {
     Integer idx;
-    String nickname;
     Integer role;
+    String nickname;
     String country;
 }

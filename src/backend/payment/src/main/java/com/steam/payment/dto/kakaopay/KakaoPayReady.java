@@ -22,13 +22,13 @@ public class KakaoPayReady{
     private String itemCode;
     private Integer quantity;
     private Integer totalAmount;
-    private Integer tax_free_amount;
+    private Integer taxFreeAmount;
     private Integer vat;
     private String approvalUrl;
     private String cancelUrl;
     private String failUrl;
 
-    public static KakaoPayReady of(GiftcardDto giftcard) {
+    public static KakaoPayReady of(Integer userId, GiftcardDto giftcard) {
         return KakaoPayReady.builder()
                 .itemCode(giftcard.getId().toString())
                 .itemName(giftcard.getName())
@@ -36,7 +36,7 @@ public class KakaoPayReady{
                 .partnerUserId("1")
                 .quantity(1)
                 .totalAmount(giftcard.getPrice())
-                .tax_free_amount(0)
+                .taxFreeAmount(0)
                 .vat(0)
                 .build();
     }
@@ -47,6 +47,8 @@ public class KakaoPayReady{
                 .tid(tid)
                 .partnerOrderId(this.partnerOrderId)
                 .partnerUserId(this.partnerUserId)
+                .totalAmount(this.totalAmount)
+                .taxFreeAmount(this.taxFreeAmount)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

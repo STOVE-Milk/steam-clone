@@ -21,9 +21,8 @@ public class Validator {
 
         for(int i = 0; i < gameEntityData.size(); i++) {
             GameDto game1 = gameEntityData.get(i);
-            GameDto game2 = gameRequestData.get(i);
-
-            if(!Objects.equals(game1, game2))
+            GameDto game2 = sortedGames.get(i);
+            if(!GameDto.equals(game1, game2))
                 throw new CustomException(ErrorCode.GAME_PRICE_VALIDATION_FAILED);
         }
 
@@ -34,7 +33,7 @@ public class Validator {
         System.out.println("게임 총 가격 : " + totalPrice);
         System.out.println("유저 잔액 : " + user.getMoney());
         if(user.getMoney() < totalPrice)
-            throw new CustomException(ErrorCode.GAME_PRICE_VALIDATION_FAILED);
+            throw new CustomException(ErrorCode.GAME_PRICE_ACCUMULATE_FAILED);
         return totalPrice;
     }
 }

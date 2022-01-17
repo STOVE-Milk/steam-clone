@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "library")
 public class Library {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idx")
     private Integer idx;
 

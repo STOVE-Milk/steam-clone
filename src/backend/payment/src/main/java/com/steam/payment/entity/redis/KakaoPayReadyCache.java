@@ -20,6 +20,8 @@ public class KakaoPayReadyCache {
     private String pgToken;
     private String partnerOrderId;
     private String partnerUserId;
+    private Integer totalAmount;
+    private Integer taxFreeAmount;
     private LocalDateTime createdAt;
 
     public static KakaoPayReadyCache of(KakaoPayReady kakaoPayReady, KakaoPayReadyResponse kakaoPayReadyResponse) {

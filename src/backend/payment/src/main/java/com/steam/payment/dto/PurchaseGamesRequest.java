@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class PurchaseGamesRequest {
     List<GameDto> games = new ArrayList<>();
 
-    public List<Integer> getGameIds() {
+    public List<Integer> getGamesId() {
         return games.stream()
                 .map(GameDto::getIdx)
                 .collect(Collectors.toList());
