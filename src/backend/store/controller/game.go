@@ -1,0 +1,8 @@
+package controller
+
+
+
+
+func GetGameListByCategory() {
+
+}
