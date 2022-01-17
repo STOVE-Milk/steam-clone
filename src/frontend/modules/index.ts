@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import game, { gameSaga } from './game';
+import game, { gameSaga } from './game/actions';
 
 import { all } from 'redux-saga/effects';
 
