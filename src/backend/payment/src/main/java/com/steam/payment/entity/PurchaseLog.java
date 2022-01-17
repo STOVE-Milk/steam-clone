@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "purchase_log")
 public class PurchaseLog {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idx")
     private Integer idx;
 
