@@ -82,9 +82,9 @@ const Main: NextPage = () => {
   const { categories } = useSelector((state: RootState) => state.game);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getCategories.request({}));
-  }, [categories]);
+  // useEffect(() => {
+  //   dispatch(getCategories.request({}));
+  // }, [categories]);
 
   return (
     <MainWrapper>

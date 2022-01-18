@@ -1,19 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import MenuBox from 'components/molecules/MenuBox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGamepad, faUser } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGamepad, faUser, faBars } from '@fortawesome/free-solid-svg-icons';
 import Logo from 'public/steam_logo.png';
+
+import MenuBox from 'components/molecules/MenuBox';
 import Profile from 'components/atoms/Profile';
 import FriendBox from 'components/molecules/FriendBox';
 
+interface INavBarStyledProps {
+  open: boolean;
+}
+
 const NavBarWrapper = styled.div`
-  width: 250px;
+  width: fit-content;
   height: 100vh;
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   flex-direction: column;
+  position: fixed;
   padding: 10px;
   overflow-y: hidden;
 `;
@@ -25,18 +32,23 @@ const LogoSection = styled.section`
   cursor: pointer;
 `;
 
-const LogoBox = styled.div`
+const LogoBox = styled.div<INavBarStyledProps>`
   display: flex;
   flex-direction: row;
   padding: 10px 10px 10px 20px;
+  display: ${(props) => (props.open ? '' : 'none')};
 `;
 
 const LogoTitle = styled.div`
   color: ${(props) => props.theme.colors.primaryText};
   font-weight: 700;
   font-size: 1.75rem;
-  margin-left: 10px;
-  margin-top: 2px;
+  margin: 0.3rem 0 0 10px;
+`;
+
+const HamBar = styled(FontAwesomeIcon)`
+  margin: auto 0;
+  margin-left: 3rem;
 `;
 
 const ToggleBtn = styled.div``;
@@ -52,7 +64,7 @@ const MenuSection = styled.div`
 
 const SectionDivider = styled.div`
   height: 1px;
-  width: 200px;
+  width: 90%;
   margin: 0 auto;
   background: ${(props) => props.theme.colors.divider};
 `;
@@ -61,40 +73,45 @@ const FriendSection = styled.div`
   padding: 20px 10px 20px 10px;
   flex: 1;
   overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export default function NavBar() {
+  const [open, setOpen] = useState(true);
+
   return (
     <NavBarWrapper>
       <LogoSection>
-        <LogoBox>
+        <LogoBox open={open}>
           <Image src={Logo} layout={'fixed'} width={30} height={30}></Image>
           <LogoTitle>STEAM</LogoTitle>
         </LogoBox>
+        <HamBar icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
         <ToggleBtn></ToggleBtn>
       </LogoSection>
       <SectionTitle>Menus</SectionTitle>
       <MenuSection>
-        <MenuBox page="game" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Game'} />
-        <MenuBox page="category" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Category'} />
-        <MenuBox page="favorite" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Favorite'} />
-        <MenuBox page="wish" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Wish'} />
+        <MenuBox open={open} page="game" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Game'} />
+        <MenuBox
+          open={open}
+          page="category"
+          icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />}
+          name={'Category'}
+        />
+        <MenuBox
+          open={open}
+          page="favorite"
+          icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />}
+          name={'Favorite'}
+        />
+        <MenuBox open={open} page="wish" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Wish'} />
       </MenuSection>
       <SectionDivider />
       <SectionTitle>Friends</SectionTitle>
       <FriendSection>
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
-        <FriendBox icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox open={open} icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
       </FriendSection>
     </NavBarWrapper>
   );

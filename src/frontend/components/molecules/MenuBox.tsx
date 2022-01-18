@@ -8,6 +8,7 @@ export interface MenuBoxProps {
   icon: JSX.Element;
   name: string;
   page: string;
+  open: boolean;
 }
 
 const MenuBoxWrapper = styled.div`
@@ -37,7 +38,7 @@ export default function MenuBox(props: MenuBoxProps) {
     <Link href={`/${props.page}`}>
       <MenuBoxWrapper>
         {props.icon}
-        <MenuTitle types={'small'}>{props.name}</MenuTitle>
+        {props.open ? <MenuTitle types={'small'}>{props.name}</MenuTitle> : null}
       </MenuBoxWrapper>
     </Link>
   );
