@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 type OptionType = {
-  en: string;
-  kr: string;
+  EN: string;
+  KR: string;
 };
 interface IhandleEvent {
   optionArr: Array<OptionType>;
@@ -22,7 +22,7 @@ export default function SelectBox({ optionArr, handleSelect }: IhandleEvent) {
   return (
     <SelectTagBox onChange={(e) => handleSelect(e)}>
       {optionArr.map((option, i) => {
-        return <option value={`${option.en}`} key={i}>{`${option.kr}`}</option>;
+        return <option value={`${option.EN}`} key={i}>{`${option.KR}`}</option>;
       })}
     </SelectTagBox>
   );

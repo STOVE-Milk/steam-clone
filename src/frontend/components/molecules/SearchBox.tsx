@@ -31,8 +31,8 @@ const FontAwesomeIconStyle = styled(FontAwesomeIcon)`
 
 export default function SearchBox({ option, inputText, setOption, setInputText }: ISearchbox) {
   const optionName = [
-    { en: 'name', kr: '게임이름' },
-    { en: 'tag', kr: '태그' },
+    { EN: 'name', KR: '게임이름' },
+    { EN: 'tag', KR: '태그' },
   ];
 
   const handleSelect = useCallback((e: any) => {
