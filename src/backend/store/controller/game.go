@@ -70,3 +70,6 @@ func (gc *GameController) GetGameListByCategory(ctx context.Context, category st
 
 	return pbGameSimpleList, nil
 }
+
+
+func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb., error) {

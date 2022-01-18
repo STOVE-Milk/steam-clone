@@ -77,3 +77,15 @@ func (store *storeServer) GetGameListByCategory(ctx context.Context, req *pb.Cat
 		Data:    res,
 	}, nil
 }
+
+func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.GameDetail, error) {
+	gameId := req.GameId
+	res, err := store.gameCtr.GetGameDetail(ctx, gameId)
+	if err != nil {
+		return &pb.GameDetail{
+			Code:    21000,
+			Message: "can not get game list Error : " + err.Error(),
+		}, nil
+	}
+	return &pb.GameDetailResponse
+}
