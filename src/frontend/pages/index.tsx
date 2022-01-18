@@ -14,7 +14,7 @@ const mockData: Array<any> = [
     id: 1,
     name: 'Vampire Survivors',
     price: {
-      kr: 10000,
+      KR: 10000,
     },
     image: {
       main: 'www',
@@ -25,7 +25,7 @@ const mockData: Array<any> = [
     id: 2,
     name: 'Vampire Survivors2',
     price: {
-      kr: 10000,
+      KR: 10000,
     },
     image: {
       main: 'www',
@@ -36,7 +36,7 @@ const mockData: Array<any> = [
     id: 3,
     name: 'Vampire Survivors3',
     price: {
-      kr: 10000,
+      KR: 10000,
     },
     image: {
       main: 'www',
@@ -47,7 +47,7 @@ const mockData: Array<any> = [
     id: 4,
     name: 'Vampire Survivors4',
     price: {
-      kr: 10000,
+      KR: 10000,
     },
     image: {
       main: 'www',
@@ -58,7 +58,7 @@ const mockData: Array<any> = [
     id: 5,
     name: 'Vampire Survivors5',
     price: {
-      kr: 10000,
+      KR: 10000,
     },
     image: {
       main: 'www',
@@ -111,7 +111,7 @@ const Main: NextPage = () => {
                   image={<Image src={gameImage2} layout="responsive" />}
                   info={{
                     name: data.name,
-                    price: data.price.kr,
+                    price: data.price['KR'],
                   }}
                 ></GameSlide>
               );
