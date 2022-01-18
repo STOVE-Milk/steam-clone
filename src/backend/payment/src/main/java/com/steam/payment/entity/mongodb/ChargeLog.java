@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Builder
 @Getter
-public class ChargeDoc {
+public class ChargeLog {
     private String method;
     private Double beforeMoney;
     private Double afterMoney;

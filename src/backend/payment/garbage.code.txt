@@ -33,3 +33,18 @@ public KakaoPayApproveResponseCache toHash() {
             .build();
 }
 ```
+Class: service.PurchaseService
+이유: 로깅 기능을 MongoDB를 사용하여 삭제
+private void logPurchase(User user, List<GameDto> games) {
+    List<PurchaseLog> logs = games.stream()
+                    .map(game -> PurchaseLog.builder()
+                            .userId(user.getIdx())
+                            .gameId(game.getIdx())
+                            .price(game.getPrice())
+                            .sale(game.getSale())
+                            .country(user.getCountry())
+                            .build()
+                    ).collect(Collectors.toList());
+    purchaseLogRepository.saveAll(logs);
+}
+```

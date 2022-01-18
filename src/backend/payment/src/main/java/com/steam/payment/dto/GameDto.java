@@ -13,6 +13,7 @@ import org.json.simple.parser.JSONParser;
 @Getter
 public class GameDto {
     private Integer idx;
+    private String name;
     private Double price;
     private Integer sale;
 
@@ -29,6 +30,7 @@ public class GameDto {
     public static GameDto of(final Game game, String country) {
         return GameDto.builder()
                 .idx(game.getIdx())
+                .name(game.getName())
                 .price(game.priceOf(country))
                 .sale(game.getSale())
                 .build();
