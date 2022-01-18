@@ -3,7 +3,7 @@ import { all } from 'redux-saga/effects';
 
 import game, { gameSaga } from './game';
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   game,
 });
 
