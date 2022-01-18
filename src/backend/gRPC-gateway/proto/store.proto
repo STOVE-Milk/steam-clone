@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package storepb;
+
+option go_package = "github.com/STOVE-Milk/steam-clone/store/proto;storepb";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+service Store {
+    rpc GetCategoryList(google.protobuf.Empty) returns (CategoryListResponse) {
+        option (google.api.http) = {
+            get: "/store/categories"
+        };
+    }
+    rpc GetGameListByCategory(CategoryQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/games"
+        };
+    }
+    rpc GetGame(GameIdQueryParamRequest) returns (GameDetail){
+        option (google.api.http) = {
+            get: "/store/games/{game_id}"
+        };
+    }
+    rpc GetDiscountingGameList(google.protobuf.Empty) returns(GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/discounting"
+        };
+    }
+    // rpc GetReviewList(google.protobuf.Empty) returns (ReviewListResponse){
+    //     option (goolge.api.http) = {
+    //         get: "/store/reviews"
+    //     };
+    // }
+
+}
+
+
+message ReviewListResponse{
+    repeated Review review_list = 1 [json_name = "review_list"];
+}
+
+message Review{
+     int32 idx = 1;
+     int32 user_idx = 2;
+     int32 gmae_idx = 3;
+     string displayed_name = 4 [json_name = "displayed_name"];
+     string content = 5;
+     bool recommendation = 6;
+}
+
+
+message CategoryListResponse{
+    int32 code = 1;
+    string message = 2;
+    CategoryList data = 3;
+    message CategoryList{
+        repeated string category_list = 1 [json_name = "category_list"];
+    }
+}
+message GameSimpleListResponse{
+    int32 code = 1;
+    string message = 2;
+    GameSimpleList data = 3;
+    message GameSimpleList{
+        repeated GameSimple game_simple_list = 1 [json_name = "game_simple_list"];
+    }
+}
+
+
+
+// 세부 게임 정보를 나타내는 message
+message GameDetail{
+    GameSimple game_simple = 1 [json_name = "game_simple"];
+    GameDescription description = 2;
+    Publisher publisher = 3;
+    int32 review_count = 4 [json_name = "review_count"];
+    int32 recommen_count = 5 [json_name = "recommen_count"];
+    repeated string language = 6;
+}
+
+message Publisher{
+    int32 idx = 1;
+    string name = 2;
+    string title = 3;
+    string introduce = 4;
+}
+
+// Game Detail에 사용되는 Description을 구역마다 저장.
+message GameDescription{
+    map<string, string> description = 1;
+}
+
+
+// 상점 Home의 캐로셀에 뜨는 게임 정보
+message GameSimple {
+    int32 game_idx = 1 [json_name = "game_idx"];
+    string name = 2;
+    string description_snippet = 3 [json_name = "description_snippet"];
+    int32 price = 4;
+    int32 sale = 5;
+    ContentsPath image = 6;
+    ContentsPath video = 7;
+    repeated string category_list = 8 [json_name = "category_list"];
+    repeated string os_list = 9 [json_name = "os_list"];
+}
+
+
+// 미디어 컨텐츠를 Response 해야할 때.
+message ContentsPath{
+    string main = 1;
+    repeated string sub = 2;
+}
+
+
+//Request Parameter에 사용되는 message
+
+// Client 측에서 하나의 카테고리를 Request 받을 때. 
+message CategoryQueryParamRequest{
+    string category = 1;
+}
+
+message GameIdQueryParamRequest{
+    int32 game_id = 1;
+}
