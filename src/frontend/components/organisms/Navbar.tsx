@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 
@@ -9,6 +9,8 @@ import Logo from 'public/steam_logo.png';
 import MenuBox from 'components/molecules/MenuBox';
 import Profile from 'components/atoms/Profile';
 import FriendBox from 'components/molecules/FriendBox';
+
+import { theme } from 'styles/theme';
 
 interface INavBarStyledProps {
   open: boolean;
@@ -37,6 +39,7 @@ const LogoBox = styled.div<INavBarStyledProps>`
   flex-direction: row;
   padding: 10px 10px 10px 20px;
   display: ${(props) => (props.open ? '' : 'none')};
+  
 `;
 
 const LogoTitle = styled.div`
@@ -78,6 +81,19 @@ const FriendSection = styled.div`
 
 export default function NavBar() {
   const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    const media = window.matchMedia('screen and (max-width: 1047px)');
+    const listener = () => {
+      if (media.matches) {
+        setOpen(false);
+      } else {
+        setOpen(true);
+      }
+    };
+    window.addEventListener('resize', listener);
+    return () => window.removeEventListener('resize', listener);
+  }, []);
 
   return (
     <NavBarWrapper>
