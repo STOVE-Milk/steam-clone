@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	storePb "github.com/STOVE-Milk/steam-clone/gRPC-gateway/proto"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 )
 
