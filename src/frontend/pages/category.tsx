@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import GameInfo from 'components/organisms/GameInfo';
-// import IGameInfo from 'components/organisms/GameInfo';
 import Text from 'components/atoms/Text';
 import IGameInfo from 'pages/category';
 import styled from 'styled-components';
@@ -89,24 +88,13 @@ const Category = () => {
 
   const getCategories = () => {
     client.get('localhost:8080/store/categories').then((res: any) => {
-      setCategories(res.data);
-      console.log(res);
+      setCategories(res.data.data.category_list);
     });
   };
 
   useEffect(() => {
     getCategories();
-  });
-  // const CategoryListArr = [
-  //   'Sandbox',
-  //   'Real-time strategy (RTS)',
-  //   'Shooters (FPS and TPS)',
-  //   'Multiplayer online battle arena (MOBA)',
-  //   'Role-playing (RPG, ARPG, and More)',
-  //   'Simulation and sports.',
-  //   'Puzzlers and party games.',
-  //   'Action-adventure.',
-  // ];
+  }, [categories]);
 
   return (
     <GameInfoWrapper>
