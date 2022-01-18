@@ -25,6 +25,7 @@ const ContentSection = styled.div`
   height: calc(100vh - 80px);
   background: ${(props) => props.theme.colors.primaryBg};
   overflow-y: scroll;
+  padding-top: 1.5rem;
 `;
 
 export default function Layout({ children }: LayoutProps) {
