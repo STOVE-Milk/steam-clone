@@ -34,13 +34,14 @@ public class ChargeService {
     }
 
     public Object chargeReady(ChargeReadyRequest request) {
+        //TODO: LOGGING READY
         return kakaoPay.ready(request.getGiftcard());
     }
 
     public Object chargeApprove(ChargeApproveRequest request) {
+        KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
+        //TODO: LOGGING APPROVE RESULT
         try {
-            KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
-            //TODO: LOGGING APPROVE RESULT
             addUserMoney(UserContext.getUserId(), response.getAmount().getTotal());
             //TODO: LOGGING TRANSACTION RESULT
         } catch (RuntimeException e) {

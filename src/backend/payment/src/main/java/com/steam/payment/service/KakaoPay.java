@@ -61,7 +61,9 @@ public class KakaoPay {
     }
 
     public KakaoPayApproveResponse approve(String tid, String pgToken) {
-        KakaoPayApprove kakaoPayApprove = KakaoPayApprove.of(getReadyCacheByTid(tid), pgToken);
+        KakaoPayReadyCache cache = kakaoPayReadyCacheRepository.findById(tid)
+                .orElseThrow(() -> new CustomException(ErrorCode.KAKAOPAY_CACHE_DATA_NOT_FOUND));
+        KakaoPayApprove kakaoPayApprove = KakaoPayApprove.of(cache, pgToken);
 
         return callKakaopayAPI(
                 "approve",
@@ -72,7 +74,9 @@ public class KakaoPay {
     }
 
     public void cancel(String tid) {
-        KakaoPayCancel kakaoPayCancel = KakaoPayCancel.of(getReadyCacheByTid(tid));
+        KakaoPayReadyCache cache = kakaoPayReadyCacheRepository.findById(tid)
+                .orElseThrow(() -> new CustomException(ErrorCode.KAKAOPAY_CACHE_DATA_NOT_FOUND));
+        KakaoPayCancel kakaoPayCancel = KakaoPayCancel.of(cache);
 
         callKakaopayAPI(
                 "cancel",
@@ -82,24 +86,16 @@ public class KakaoPay {
         );
     }
 
-    private KakaoPayReadyCache getReadyCacheByTid(String tid) {
-        return kakaoPayReadyCacheRepository.findById(tid)
-                .orElseThrow(() -> new CustomException(ErrorCode.KAKAOPAY_CACHE_DATA_NOT_FOUND));
-    }
-
-    private MultiValueMap<String, String> makeBody(Object data) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.setAll(jsonUtil.of(data));
-        return body;
-    }
-
     private <T> T callKakaopayAPI(String apiType, Object data, Class<T> returnClass, ErrorCode error) {
         HttpHeaders headers = new KakaoPayHeader(accessToken);
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.setAll(jsonUtil.of(data));
+
         try {
             return restTemplate.exchange(
                     kakaopayUrl + apiType,
                     HttpMethod.POST,
-                    new HttpEntity<>(makeBody(data), headers),
+                    new HttpEntity<>(body, headers),
                     returnClass
             ).getBody();
         } catch (RestClientException e) {

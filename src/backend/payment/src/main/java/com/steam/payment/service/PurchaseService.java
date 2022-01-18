@@ -32,31 +32,23 @@ public class PurchaseService {
     private final PurchaseLogRepository purchaseLogRepository;
 
     public Object purchaseGames(PurchaseGamesRequest request) {
-        List<GameDto> gameDatas = getGameDatasById(request.getGamesId());
+        List<GameDto> gameDatas = gameRepository.findAllById(request.getGamesId()).stream()
+                .map(game -> GameDto.of(game, "KR"))
+                .collect(Collectors.toList());
         Double totalPrice = gameDatas.stream()
                 .mapToDouble(GameDto::getSalePrice)
                 .sum();
-        User user = getUserDataById(UserContext.getUserId());
+        User user = userRepository.findById(UserContext.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Validator.validGamePrice(gameDatas, request.getGames());
         Validator.validUserMoney(user, totalPrice);
 
         purchase(user, gameDatas, totalPrice);
         //TODO: LOGGING PURCHASE LOG
-        logPurchase()
+        //logPurchase()
 
         return gameDatas;
-    }
-
-    private List<GameDto> getGameDatasById(List<Integer> ids) {
-        return gameRepository.findAllById(ids).stream()
-                .map(game -> GameDto.of(game, "KR"))
-                .collect(Collectors.toList());
-    }
-
-    private User getUserDataById(Integer userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
