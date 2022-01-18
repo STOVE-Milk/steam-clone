@@ -26,7 +26,7 @@ const InputAlign = styled.div`
   display: flex;
   width: 30rem;
 `;
-const RegisterButton = styled(FilledButton)`
+const SignUpButton = styled(FilledButton)`
   width: 85%;
   margin-top: 1rem;
 `;
@@ -45,15 +45,22 @@ const signup = () => {
   return (
     <SignUpFormWrapper>
       <Text types="large">회원가입</Text>
-      <AuthInput title="EMAIL" type="email" placeholder="EMAIL" hasError={true} warningMsg={'warning'} />
+      <AuthInput
+        title="EMAIL"
+        type="email"
+        placeholder="EMAIL"
+        hasError={true}
+        checkValidation={true}
+        warningMsg={'warning'}
+      />
       <AuthInput title="PASSWORD" type="password" placeholder="PASSWORD" />
       <AuthInput title="USER NAME" type="text" placeholder="USER NAME" />
-      <AuthInput title="NICK NAME" type="text" placeholder="NICK NAME" hasError={true} />
+      <AuthInput title="NICK NAME" type="text" placeholder="NICK NAME" checkValidation={true} />
       <InputAlign>
         <AuthSelectBox title="Country" option={countryOption} />
         <AuthSelectBox title="Language" option={languageOption} />
       </InputAlign>
-      <RegisterButton types="active">가입하기</RegisterButton>
+      <SignUpButton types="active">가입하기</SignUpButton>
     </SignUpFormWrapper>
   );
 };

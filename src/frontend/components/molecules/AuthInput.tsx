@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Text from 'components/atoms/Text';
+import FilledButton from 'components/atoms/FilledButton';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -33,6 +34,10 @@ const InputBox = styled.input`
   padding: 0.5rem 1rem;
   width: 30rem;
 `;
+const ValidateBtnStyle = styled(FilledButton)`
+  height: 100%;
+  font-size: 0.8rem;
+`;
 const WarningIcon = styled(FontAwesomeIcon)`
   margin-left: 0.5rem;
 `;
@@ -41,12 +46,20 @@ const WarningMsg = styled(Text)`
   color: ${(props) => props.theme.colors.wish};
 `;
 
-export default function AuthInput({ title, type, placeholder, hasError, warningMsg }: IAuthInputProps) {
+export default function AuthInput({
+  title,
+  type,
+  placeholder,
+  hasError,
+  checkValidation,
+  warningMsg,
+}: IAuthInputProps) {
   return (
     <InputWrapper>
       <InputTitleText>{title}</InputTitleText>
       <InputBoxWrapper>
         <InputBox type={type} placeholder={placeholder} />
+        {checkValidation && <ValidateBtnStyle types="primary">중복확인</ValidateBtnStyle>}
         {hasError && <WarningIcon icon={faExclamationTriangle} inverse />}
       </InputBoxWrapper>
       {hasError && <WarningMsg>{warningMsg}</WarningMsg>}
