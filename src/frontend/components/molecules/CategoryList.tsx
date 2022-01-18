@@ -31,6 +31,7 @@ const CategoryBox = styled(Text)`
 
   &:hover {
     background: ${(props) => props.theme.colors['activeBg']};
+    border: 1px solid ${(props) => props.theme.colors.activeBg};
   }
 `;
 

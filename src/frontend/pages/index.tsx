@@ -1,10 +1,6 @@
 import React from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
-import CarouselComponent from 'components/organisms/Carousel';
-import GameSlide from 'components/molecules/GameSlide';
-import gameImage2 from 'public/game2.jpg';
-import Image from 'next/image';
 
 const mockData: Array<any> = [
   {
@@ -78,22 +74,7 @@ const CarouselSection = styled.div`
 const Main: NextPage = () => {
   return (
     <MainWrapper>
-      <CarouselSection>
-        <CarouselComponent
-          slides={mockData.map((data) => {
-            return (
-              <GameSlide
-                key={data.id}
-                image={<Image src={gameImage2} layout="responsive" />}
-                info={{
-                  name: data.name,
-                  price: data.price.KR,
-                }}
-              ></GameSlide>
-            );
-          })}
-        ></CarouselComponent>
-      </CarouselSection>
+      <CarouselSection></CarouselSection>
     </MainWrapper>
   );
 };

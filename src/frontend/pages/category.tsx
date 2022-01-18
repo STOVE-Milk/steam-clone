@@ -4,7 +4,10 @@ import Text from 'components/atoms/Text';
 import IGameInfo from 'pages/category';
 import styled from 'styled-components';
 import CategoryList from 'components/molecules/CategoryList';
-import axios from 'axios';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from 'modules';
+import { getCategories } from 'modules/game';
 
 export type GameMedia = {
   main: string;
@@ -83,17 +86,11 @@ const ContentWrapper = styled.div`
   margin-bottom: 2rem;
 `;
 const Category = () => {
-  const client = axios.create();
-  const [categories, setCategories] = useState([]);
-
-  const getCategories = () => {
-    client.get('localhost:8080/store/categories').then((res: any) => {
-      setCategories(res.data.data.category_list);
-    });
-  };
+  const { categories } = useSelector((state: RootState) => state.game);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    getCategories();
+    dispatch(getCategories.request({}));
   }, [categories]);
 
   return (
