@@ -13,5 +13,21 @@ type GameRepository interface {
 	// GetDiscountingGameList()
 }
 
-type GameDetail pb.GameDetail
-type GameSimple pb.GameSimple
+type StringJsonMap map[string]interface{}
+
+type GameSimple struct {
+	Id                 int           `json:"game_id"`
+	Name               string        `json:"name"`
+	DescriptionSnippet string        `json:"description_snippet"`
+	Price              int           `json:"price"`
+	Sale               int           `json:"sale"`
+	Image              StringJsonMap `json:"image"`
+	Video              StringJsonMap `json:"video"`
+	// Os                 []interface{}          `json:"os"`
+}
+
+type Category struct {
+	Idx       int    `json:"idx"`
+	ParentIdx int    `json:"parent_id"`
+	Name      string `json:"name"`
+}

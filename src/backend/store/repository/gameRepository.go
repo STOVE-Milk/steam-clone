@@ -9,36 +9,14 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/STOVE-Milk/steam-clone/store/model"
 )
 
 type StringJsonMap map[string]interface{}
 
 type GameRepository struct {
-	Db *sql.DB
-}
-
-type Category struct {
-	Idx       int    `json:"idx"`
-	ParentIdx int    `json:"parent_id"`
-	Name      string `json:"name"`
-}
-
-type GameSimple struct {
-	Id                 int           `json:"game_id"`
-	Name               string        `json:"name"`
-	DescriptionSnippet string        `json:"description_snippet"`
-	Price              int           `json:"price"`
-	Sale               int           `json:"sale"`
-	Image              StringJsonMap `json:"image"`
-	Video              StringJsonMap `json:"video"`
-	// Os                 []interface{}          `json:"os"`
-}
-
-type gameSimple struct {
-	*GameSimple
-	Image json.RawMessage
-	Video json.RawMessage
-	Os    json.RawMessage
+	db *sql.DB
 }
 
 func (m StringJsonMap) Value() (driver.Value, error) {
@@ -72,11 +50,11 @@ func (m *StringJsonMap) Scan(src interface{}) error {
 	return nil
 }
 
-func (repo *GameRepository) GetGameListByCategory(ctx context.Context, category string) ([]*GameSimple, error) {
+func (gr *GameRepository) GetGameListByCategory(ctx context.Context, category string) ([]*model.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	var gameSimpleList []*GameSimple
-	rows, err := repo.Db.QueryContext(ctx, `	
+	var gameSimpleList []*model.GameSimple
+	rows, err := gr.db.QueryContext(ctx, `	
 	SELECT game_id, name, description_snippet, price, sale, image, video
 	FROM steam.game_category AS gc 
 	join steam.game AS g 
@@ -88,7 +66,7 @@ func (repo *GameRepository) GetGameListByCategory(ctx context.Context, category 
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var game GameSimple
+		var game model.GameSimple
 		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video)
 		if err != nil {
 			log.Fatal(err)
@@ -99,19 +77,26 @@ func (repo *GameRepository) GetGameListByCategory(ctx context.Context, category 
 	return gameSimpleList, nil
 }
 
-func (repo *GameRepository) GetCategoryList(ctx context.Context) ([]*Category, error) {
+// category table의 모든 값들을 가져옴.
+func (gr *GameRepository) GetCategoryList(ctx context.Context) ([]*model.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	var categoryList []*Category
-	rows, err := repo.Db.QueryContext(ctx, "SELECT idx, parent_id, name FROM category WHERE idx=parent_id")
+	var categoryList []*model.Category
+	rows, err := gr.db.QueryContext(ctx, "SELECT idx, parent_id, name FROM category")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var category Category
+		var category model.Category
 		rows.Scan(&category.Idx, &category.ParentIdx, &category.Name)
 		categoryList = append(categoryList, &category)
 	}
 	return categoryList, nil
+}
+
+func NewGameGr(db *sql.DB) *GameRepository {
+	return &GameRepository{
+		db: db,
+	}
 }
