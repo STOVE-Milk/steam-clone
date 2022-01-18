@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Image from 'next/image';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGamepad, faUser, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faGamepad, faUser, faBars, faComments, faHeart, faBook } from '@fortawesome/free-solid-svg-icons';
 import Logo from 'public/steam_logo.png';
 
 import MenuBox from 'components/molecules/MenuBox';
@@ -46,12 +46,11 @@ const LogoTitle = styled.div`
   margin: 0.3rem 0 0 10px;
 `;
 
-const HamBar = styled(FontAwesomeIcon)`
+const HamBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
   margin: auto 0;
-  margin-left: 3rem;
+  margin-left: ${(props) => (props.open ? '1.5rem' : '1.7rem')};
+  margin-right: ${(props) => (props.open ? '1.5rem' : '1.5rem')};
 `;
-
-const ToggleBtn = styled.div``;
 
 const SectionTitle = styled.div`
   color: ${(props) => props.theme.colors.secondaryText};
@@ -64,8 +63,7 @@ const MenuSection = styled.div`
 
 const SectionDivider = styled.div`
   height: 1px;
-  width: 90%;
-  margin: 0 auto;
+  width: 100%;
   background: ${(props) => props.theme.colors.divider};
 `;
 
@@ -88,8 +86,7 @@ export default function NavBar() {
           <Image src={Logo} layout={'fixed'} width={30} height={30}></Image>
           <LogoTitle>STEAM</LogoTitle>
         </LogoBox>
-        <HamBar icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
-        <ToggleBtn></ToggleBtn>
+        <HamBar open={open} icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
       </LogoSection>
       <SectionTitle>Menus</SectionTitle>
       <MenuSection>
@@ -97,16 +94,11 @@ export default function NavBar() {
         <MenuBox
           open={open}
           page="category"
-          icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />}
+          icon={<FontAwesomeIcon icon={faBook} size="2x" inverse />}
           name={'Category'}
         />
-        <MenuBox
-          open={open}
-          page="favorite"
-          icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />}
-          name={'Favorite'}
-        />
-        <MenuBox open={open} page="wish" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Wish'} />
+        <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} size="2x" inverse />} name={'Chat'} />
+        <MenuBox open={open} page="wish" icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />} name={'Wish'} />
       </MenuSection>
       <SectionDivider />
       <SectionTitle>Friends</SectionTitle>
