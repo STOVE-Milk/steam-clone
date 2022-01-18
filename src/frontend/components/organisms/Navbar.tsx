@@ -75,10 +75,10 @@ export default function NavBar() {
       </LogoSection>
       <SectionTitle>Menus</SectionTitle>
       <MenuSection>
-        <MenuBox icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Games'} />
-        <MenuBox icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Category'} />
-        <MenuBox icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Favorites'} />
-        <MenuBox icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Wish'} />
+        <MenuBox page="game" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Game'} />
+        <MenuBox page="category" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Category'} />
+        <MenuBox page="favorite" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Favorite'} />
+        <MenuBox page="wish" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Wish'} />
       </MenuSection>
       <SectionDivider />
       <SectionTitle>Friends</SectionTitle>

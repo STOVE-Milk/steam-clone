@@ -1,10 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import Text, { TextStyle } from 'components/atoms/Text';
+import Link from 'next/link';
+import { StringLiteralLike } from 'typescript';
 
 export interface MenuBoxProps {
   icon: JSX.Element;
   name: string;
+  page: string;
 }
 
 const MenuBoxWrapper = styled.div`
@@ -31,9 +34,11 @@ const MenuTitle = styled(Text)`
 
 export default function MenuBox(props: MenuBoxProps) {
   return (
-    <MenuBoxWrapper>
-      {props.icon}
-      <MenuTitle types={'small'}>{props.name}</MenuTitle>
-    </MenuBoxWrapper>
+    <Link href={`/${props.page}`}>
+      <MenuBoxWrapper>
+        {props.icon}
+        <MenuTitle types={'small'}>{props.name}</MenuTitle>
+      </MenuBoxWrapper>
+    </Link>
   );
 }
