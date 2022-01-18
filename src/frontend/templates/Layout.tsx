@@ -11,6 +11,7 @@ const MainWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  font-family: AppleSDGothic;
 `;
 const NavBarSection = styled.div`
   width: 250px;
@@ -23,6 +24,7 @@ const ContentSection = styled.div`
   width: 100%;
   height: calc(100vh - 80px);
   background: ${(props) => props.theme.colors.primaryBg};
+  overflow-y: scroll;
 `;
 
 export default function Layout({ children }: LayoutProps) {

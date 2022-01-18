@@ -9,6 +9,7 @@ import configureStore from 'modules/configureStore';
 import Layout from 'templates/Layout';
 
 import 'styles/globals.css';
+import 'styles/font.css';
 
 const store = configureStore();
 
