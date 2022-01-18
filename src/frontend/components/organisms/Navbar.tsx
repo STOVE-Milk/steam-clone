@@ -23,6 +23,7 @@ const NavBarWrapper = styled.div`
   display: flex;
   flex-direction: column;
   position: fixed;
+  z-index: 999;
   padding: 10px;
   overflow-y: hidden;
 `;
@@ -39,7 +40,6 @@ const LogoBox = styled.div<INavBarStyledProps>`
   flex-direction: row;
   padding: 10px 10px 10px 20px;
   display: ${(props) => (props.open ? '' : 'none')};
-  
 `;
 
 const LogoTitle = styled.div`
