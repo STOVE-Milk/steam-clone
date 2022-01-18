@@ -4,8 +4,8 @@ package storepb;
 
 option go_package = "github.com/STOVE-Milk/steam-clone/store/proto;storepb";
 
-import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "google/api/annotations.proto"; 
 
 service Store {
     rpc GetCategoryList(google.protobuf.Empty) returns (CategoryListResponse) {
