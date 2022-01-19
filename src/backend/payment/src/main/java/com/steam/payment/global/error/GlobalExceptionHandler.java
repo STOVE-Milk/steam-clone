@@ -90,9 +90,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<String> handleException(Exception e) {
+    protected ResponseEntity<Body> handleException(Exception e) {
         e.printStackTrace();
-        return ResponseEntity.ok("서버에서 예상하지 못한 오류가 발생했습니다. 관리자에게 문의바랍니다.");
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.SERVER_ERROR)
+        );
     }
 
 }

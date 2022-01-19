@@ -52,7 +52,7 @@ public class ChargeService {
         ChargeLogDocument chargeLogDoc = chargeLogDocumentRepository.findById(user.getIdx().toString())
                 .orElseThrow(() -> new CustomException(ErrorCode.LOGGING_FAILED));
         ChargeLog chargeDoc = chargeLogDoc.getLastChargeLog();
-        
+
         KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
 
         chargeDoc.successApproval(user.getMoney());

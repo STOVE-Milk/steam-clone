@@ -26,7 +26,8 @@ public enum ErrorCode {
     JWT_CLAIM_EXCEPTION(77803, "JWT 해석 중 오류가 발생했습니다. 관리자에게 문의해주세요"),
 
     REDIS_CONNECTION_FAILED(77901, "캐시 서버 연결에 실패했습니다. 관리자에게 문의해주세요"),
-    LOGGING_FAILED(77902, "시스템에 장애가 발생했습니다. 관리자에게 문의하세요");
+    LOGGING_FAILED(77902, "결제 시스템에 장애가 발생했습니다. 관리자에게 문의해주세요"),
+    SERVER_ERROR(77999, "예상하지 못한 문제가 발생했습니다. 관리자에게 문의해주세요");
 
     private final Integer code;
     private final String message;
