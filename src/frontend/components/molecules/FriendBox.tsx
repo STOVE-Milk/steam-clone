@@ -7,6 +7,7 @@ import { theme } from 'styles/theme';
 export interface FriendBoxProps {
   icon: JSX.Element;
   name: string;
+  open: boolean;
 }
 
 const FriendBoxWrapper = styled.div`
@@ -41,7 +42,7 @@ export default function FriendBox(props: FriendBoxProps) {
   return (
     <FriendBoxWrapper>
       {props.icon}
-      <FriendName types={'small'}>{props.name}</FriendName>
+      {props.open ? <FriendName types={'small'}>{props.name}</FriendName> : null}
       <FriendStatus color={theme.colors.online} />
     </FriendBoxWrapper>
   );
