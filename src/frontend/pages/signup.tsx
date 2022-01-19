@@ -25,6 +25,7 @@ const SignUpFormWrapper = styled.div`
 const InputAlign = styled.div`
   display: flex;
   width: 30rem;
+  justify-content: space-between;
 `;
 const SignUpButton = styled(FilledButton)`
   width: 85%;

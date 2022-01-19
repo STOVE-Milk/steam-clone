@@ -11,10 +11,12 @@ export interface IAuthInputProps {
   type: 'email' | 'password' | 'text';
   placeholder?: string;
   hasError?: boolean;
-  checkValidation?: boolean;
+  checkValidation?: boolean | undefined;
   warningMsg?: string;
 }
-
+interface IBtnProp {
+  validateCheck: boolean;
+}
 const InputTitleText = styled(Text)`
   margin-bottom: 0.5rem;
 `;
@@ -34,12 +36,11 @@ const InputBox = styled.input`
   padding: 0.5rem 1rem;
   width: 30rem;
 `;
+
 const ValidateBtnStyle = styled(FilledButton)`
+  display: ${(props: IBtnProp) => (props.validateCheck ? '' : 'none')};
   height: 100%;
   font-size: 0.8rem;
-`;
-const WarningIcon = styled(FontAwesomeIcon)`
-  margin-left: 0.5rem;
 `;
 const WarningMsg = styled(Text)`
   margin-top: 0.5rem;
@@ -59,8 +60,9 @@ export default function AuthInput({
       <InputTitleText>{title}</InputTitleText>
       <InputBoxWrapper>
         <InputBox type={type} placeholder={placeholder} />
-        {checkValidation && <ValidateBtnStyle types="primary">중복확인</ValidateBtnStyle>}
-        {hasError && <WarningIcon icon={faExclamationTriangle} inverse />}
+        <ValidateBtnStyle types="primary" validateCheck={checkValidation ? checkValidation : false}>
+          중복확인
+        </ValidateBtnStyle>
       </InputBoxWrapper>
       {hasError && <WarningMsg>{warningMsg}</WarningMsg>}
     </InputWrapper>

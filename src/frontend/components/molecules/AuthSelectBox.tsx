@@ -7,6 +7,11 @@ interface IOptionProp {
   option: Array<IOption>;
 }
 
+interface IOptionProp {
+  title: string;
+  option: Array<IOption>;
+}
+
 const SelectWrapper = styled.div`
   margin-top: 2rem;
 `;
@@ -24,11 +29,6 @@ const SelectStyle = styled.select`
     width: 10rem;
   }
 `;
-
-interface IOptionProp {
-  title: string;
-  option: Array<IOption>;
-}
 
 export default function AuthSelectBox({ title, option }: IOptionProp) {
   const optionArr = option.map((each, i) => {
