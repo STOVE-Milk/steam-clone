@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Text, { TextStyle } from 'components/atoms/Text';
 import Link from 'next/link';
 
-export interface MenuBoxProps {
+export interface IMenuBoxProps {
   icon: JSX.Element;
   name: string;
   page: string;
@@ -45,7 +45,7 @@ const MenuTitle = styled(Text)`
   margin-top: 5px;
 `;
 
-export default function MenuBox(props: MenuBoxProps) {
+export default function MenuBox(props: IMenuBoxProps) {
   return (
     <Link href={`/${props.page}`}>
       <MenuBoxWrapper>

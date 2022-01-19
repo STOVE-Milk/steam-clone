@@ -49,7 +49,7 @@ const LogoTitle = styled.div`
   margin: 0.3rem 0 0 10px;
 `;
 
-const HamBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
+const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
   margin: auto 0;
   margin-left: ${(props) => (props.open ? '1.5rem' : '1.7rem')};
   margin-right: ${(props) => (props.open ? '1.5rem' : '1.5rem')};
@@ -83,7 +83,7 @@ export default function NavBar() {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
-    const media = window.matchMedia('screen and (max-width: 1047px)');
+    const media = window.matchMedia(theme.breakpoints.medium.slice(7));
     const listener = () => {
       if (media.matches) {
         setOpen(false);
@@ -102,7 +102,7 @@ export default function NavBar() {
           <Image src={Logo} layout={'fixed'} width={30} height={30}></Image>
           <LogoTitle>STEAM</LogoTitle>
         </LogoBox>
-        <HamBar open={open} icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
+        <OpenBar open={open} icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
       </LogoSection>
       <SectionTitle>Menus</SectionTitle>
       <MenuSection>
