@@ -25,12 +25,12 @@ service Store {
     }
     rpc GetDiscountingGameList(google.protobuf.Empty) returns(GameSimpleListResponse){
         option (google.api.http) = {
-            get: "/store/discounting"
+            get: "/store/games/discounting"
         };
     }
     rpc GetReviewList(GameIdQueryParamRequest) returns (ReviewListResponse){
         option (google.api.http) = {
-            get: "/store/{game_id}/reviews"
+            get: "/store/games/{game_id}/reviews"
         };
     }
 }
@@ -50,7 +50,7 @@ message Review{
     int32 user_id = 2 [json_name = "user_id"];
     string displayed_name = 3 [json_name = "displayed_name"];
     string content = 4;
-    bool recommendation = 5;
+    int32 recommendation = 5;
 }
 
 message CategoryListResponse{
@@ -92,9 +92,9 @@ message GameDetail{
     Publisher publisher = 11;
     int32 review_count = 12 [json_name = "review_count"];
     int32 recommend_count = 13 [json_name = "recommend_count"];
-    repeated string language = 14;
-    //SystemRequirements system_least = 15 [json_name = "system_least"];
-    //SystemRequirements system_recommend = 16 [json_name = "system_recommend"];
+    repeated string language = 16;
+    //SystemRequirements system_least = 14 [json_name = "system_least"];
+    //SystemRequirements system_recommend = 15 [json_name = "system_recommend"];
 }
 
 message Publisher{ 
