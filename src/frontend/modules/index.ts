@@ -1,11 +1,28 @@
-import { combineReducers } from 'redux';
+import { AnyAction, CombinedState, combineReducers } from 'redux';
 import { all } from 'redux-saga/effects';
+import { HYDRATE } from 'next-redux-wrapper';
 
-import game, { gameSaga } from './game';
+import game, { gameSaga, gameState } from './game';
 
-export const rootReducer = combineReducers({
-  game,
-});
+export interface IState {
+  game: gameState;
+}
+
+export const rootReducer = (state: IState, action: AnyAction): CombinedState<IState> => {
+  switch (action.type) {
+    case HYDRATE:
+      return action.payload;
+    default: {
+      const combinedReducers = combineReducers({
+        game: game,
+      });
+      return combinedReducers(state, action);
+    }
+  }
+};
+// export const rootReducer = combineReducers({
+//   game,
+// });
 
 export default rootReducer;
 

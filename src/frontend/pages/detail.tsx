@@ -40,9 +40,9 @@ const DevInfoBox = styled.div``;
 
 const Detail: NextPage = () => {
   // TODO: detail/${id}로 라우팅되게
-  
-  // const { game } = useSelector((state: RootState) => state.game);
-  // const dispatch = useDispatch();
+
+  const { game } = useSelector((state: RootState) => state.game);
+  const dispatch = useDispatch();
 
   // useEffect(() => {
   //   dispatch(getGame.request({ id: 1 }));
@@ -56,8 +56,7 @@ const Detail: NextPage = () => {
           <GameInfoBox>
             <GameInfoCol>
               <GameInfoKey>이름</GameInfoKey>
-              {/* <GameInfoValue>{game.name}</GameInfoValue> */}
-              <GameInfoValue>GameName</GameInfoValue>
+              <GameInfoValue>{game.name}</GameInfoValue>
             </GameInfoCol>
           </GameInfoBox>
           <DevInfoBox></DevInfoBox>
