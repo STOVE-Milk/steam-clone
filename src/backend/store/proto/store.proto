@@ -18,7 +18,7 @@ service Store {
             get: "/store/games"
         };
     }
-    rpc GetGame(GameIdQueryParamRequest) returns (GameDetail){
+    rpc GetGame(GameIdQueryParamRequest) returns (GameDetailResponse){
         option (google.api.http) = {
             get: "/store/games/{game_id}"
         };
@@ -29,7 +29,7 @@ service Store {
         };
     }
     rpc GetReviewList(google.protobuf.Empty) returns (ReviewListResponse){
-        option (goolge.api.http) = {
+        option (google.api.http) = {
             get: "/store/reviews"
         };
     }
@@ -98,14 +98,14 @@ message Publisher{
     string name = 2;
 }
 
-// message SystemRequirements{
-//     string os = 1;
-//     string processor= 2;
-//     string memory= 3;
-//     string graphics = 4;
-//     string storage = 7;
-//     string additional_notes= 9 [json_name = "additional_notes"];
-// }
+message SystemRequirements{
+    string os = 1;
+    string processor= 2;
+    string memory= 3;
+    string graphics = 4;
+    string storage = 7;
+    string additional_notes= 9 [json_name = "additional_notes"];
+}
 
 // 간단한 게임 정보를 나타내는 message
 message GameSimple {

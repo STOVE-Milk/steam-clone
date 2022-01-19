@@ -7,13 +7,22 @@ import (
 type GameRepository interface {
 	GetCategoryList() []string
 	GetGameListByCategory(category string) []*pb.GameSimple
-	GetGame(gameId int) *pb.GameDetail
+	GetGameDetail(gameId int) *pb.GameDetail
 	// GetReviewList()
 	// GetGameListInWishlist()
 	// GetDiscountingGameList()
 }
 
 type StringJsonMap map[string]interface{}
+
+type GameDetail struct {
+	GameSimple
+	Description    string
+	Publisher      StringJsonMap
+	ReviewCount    int32
+	RecommendCount int32
+	Language       []string
+}
 
 type GameSimple struct {
 	Id                 int           `json:"game_id"`

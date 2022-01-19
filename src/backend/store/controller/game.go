@@ -52,7 +52,7 @@ func (gc *GameController) GetGameListByCategory(ctx context.Context, category st
 			videoSub = append(videoSub, video.(string))
 		}
 		pbGameSimpleList.GameSimpleList[i] = &pb.GameSimple{
-			GameIdx:            int32(game.Id),
+			GameId:             int32(game.Id),
 			Name:               game.Name,
 			DescriptionSnippet: game.DescriptionSnippet,
 			Price:              int32(game.Price),
@@ -71,5 +71,47 @@ func (gc *GameController) GetGameListByCategory(ctx context.Context, category st
 	return pbGameSimpleList, nil
 }
 
+func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb.GameDetail, error) {
+	gameDetail, _ := gc.gr.GetGameDetail(ctx, gameId)
+	var imageSub []string
+	var videoSub []string
+	for _, image := range gameDetail.Image["sub"].([]interface{}) {
+		imageSub = append(imageSub, image.(string))
+	}
+	for _, video := range gameDetail.Video["sub"].([]interface{}) {
+		videoSub = append(videoSub, video.(string))
+	}
+	return &pb.GameDetail{
 
-func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb., error) {
+		GameId:             int32(gameDetail.Id),
+		Name:               gameDetail.Name,
+		DescriptionSnippet: gameDetail.Description,
+		Price:              int32(gameDetail.Price),
+		Sale:               int32(gameDetail.Sale),
+		Image: &pb.ContentsPath{
+			Main: gameDetail.Image["main"].(string),
+			Sub:  imageSub,
+		},
+		Video: &pb.ContentsPath{
+			Main: gameDetail.Video["main"].(string),
+			Sub:  videoSub,
+		},
+		//+카테고리 + os
+		Description: gameDetail.Description,
+		Publisher: &pb.Publisher{
+			Id:   gameDetail.Publisher["id"].(int32),
+			Name: gameDetail.Publisher["name"].(string),
+		},
+		ReviewCount:    gameDetail.ReviewCount,
+		RecommendCount: gameDetail.RecommendCount,
+		//+언어
+	}, nil
+}
+
+// func (gc *GameController) GetDiscountingGameList(ctx context.Context) ([]*pb.GameSimple, error) {
+
+// }
+
+// func (gc *GameController) GetReviewList(ctx context.Context, gameId int32) ([]*pb.Review, error) {
+
+// }

@@ -50,6 +50,21 @@ func (m *StringJsonMap) Scan(src interface{}) error {
 	return nil
 }
 
+func (gr *GameRepository) GetGameDetail(ctx context.Context, gameId int32) (*model.GameDetail, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	var gd *model.GameDetail
+	gr.db.QueryRowContext(ctx, `
+	SELECT game_id, name, description_snippet, price, sale, image, video, description, publisher, review_count, recommend_count, language
+	FROM steam.game_category AS gc 
+	join steam.game AS g 
+	on gc.game_id=g.idx where g.idx = ?
+	LIMIT 1
+	`, gameId).Scan(&gd.Id, &gd.Name, &gd.DescriptionSnippet, &gd.Price, &gd.Sale, &gd.Image, &gd.Video, &gd.Description, &gd.Publisher, &gd.ReviewCount, &gd.RecommendCount, &gd.Language)
+	return gd, nil
+}
+
 func (gr *GameRepository) GetGameListByCategory(ctx context.Context, category string) ([]*model.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
