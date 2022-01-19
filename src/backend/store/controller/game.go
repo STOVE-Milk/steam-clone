@@ -28,7 +28,7 @@ func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.Catego
 	var pbCategoryList pb.CategoryListResponse_CategoryList
 
 	for _, category := range parentCategoryList {
-		if category.Idx == category.ParentIdx {
+		if category.Id == category.ParentIdx {
 			pbCategoryList.CategoryList = append(pbCategoryList.CategoryList, category.Name)
 		}
 	}
@@ -40,7 +40,7 @@ func (gc *GameController) GetGameListByCategory(ctx context.Context, category st
 	if err != nil {
 		return nil, err
 	}
-	var pbGameSimpleList *pb.GameSimpleListResponse_GameSimpleList
+	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
 	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
 	for i, game := range gameSimpleList {
 		var imageSub []string
@@ -68,11 +68,14 @@ func (gc *GameController) GetGameListByCategory(ctx context.Context, category st
 		}
 	}
 
-	return pbGameSimpleList, nil
+	return &pbGameSimpleList, nil
 }
 
 func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb.GameDetail, error) {
-	gameDetail, _ := gc.gr.GetGameDetail(ctx, gameId)
+	gameDetail, err := gc.gr.GetGameDetail(ctx, gameId)
+	if err != nil {
+		return nil, err
+	}
 	var imageSub []string
 	var videoSub []string
 	for _, image := range gameDetail.Image["sub"].([]interface{}) {
@@ -113,7 +116,7 @@ func (gc *GameController) GetDiscountingGameList(ctx context.Context) (*pb.GameS
 	if err != nil {
 		return nil, err
 	}
-	var pbGameSimpleList *pb.GameSimpleListResponse_GameSimpleList
+	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
 	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
 	for i, game := range gameSimpleList {
 		var imageSub []string
@@ -141,7 +144,7 @@ func (gc *GameController) GetDiscountingGameList(ctx context.Context) (*pb.GameS
 		}
 	}
 
-	return pbGameSimpleList, nil
+	return &pbGameSimpleList, nil
 }
 
 func (gc *GameController) GetReviewList(ctx context.Context, gameId int32) (*pb.ReviewListResponse_ReviewList, error) {
@@ -149,15 +152,16 @@ func (gc *GameController) GetReviewList(ctx context.Context, gameId int32) (*pb.
 	if err != nil {
 		return nil, err
 	}
-	var pbReviewList *pb.ReviewListResponse_ReviewList
+	var pbReviewList pb.ReviewListResponse_ReviewList
+	pbReviewList.ReviewList = make([]*pb.Review, len(reviewList))
 	for _, review := range reviewList {
 		pbReviewList.ReviewList = append(pbReviewList.ReviewList, &pb.Review{
 			Id:             int32(review.Id),
 			UserId:         int32(review.UserId),
 			DisplayedName:  review.DisplayedName,
 			Content:        review.Content,
-			Recommendation: review.Recommendation,
+			Recommendation: int32(review.Recommendation),
 		})
 	}
-	return pbReviewList, nil
+	return &pbReviewList, nil
 }

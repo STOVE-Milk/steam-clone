@@ -115,12 +115,12 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 	if err != nil {
 		return &pb.ReviewListResponse{
 			Code:    21000,
-			Message: "can not get the game Error : " + err.Error(),
+			Message: "can not get the game review list : " + err.Error(),
 		}, nil
 	}
 	return &pb.ReviewListResponse{
 		Code:    21000,
-		Message: "can not get the game Error : " + err.Error(),
+		Message: "review list",
 		Data:    res,
 	}, nil
 }

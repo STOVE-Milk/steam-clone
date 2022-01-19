@@ -1,6 +1,9 @@
 package model
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 	"time"
 
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
@@ -17,22 +20,59 @@ type GameRepository interface {
 
 type StringJsonMap map[string]interface{}
 
+func (m StringJsonMap) Value() (driver.Value, error) {
+	if len(m) == 0 {
+		return nil, nil
+	}
+	j, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return driver.Value([]byte(j)), nil
+}
+
+func (m *StringJsonMap) Scan(src interface{}) error {
+	var source []byte
+	_m := make(map[string]interface{})
+
+	switch src.(type) {
+	case []uint8:
+		source = []byte(src.([]uint8))
+	case nil:
+		return nil
+	default:
+		return errors.New("incompatible type for StringInterfaceMap")
+	}
+	err := json.Unmarshal(source, &_m)
+	if err != nil {
+		return err
+	}
+	*m = StringJsonMap(_m)
+	return nil
+}
+
+type rawTime []byte
+
+func (t rawTime) Time() (time.Time, error) {
+	return time.Parse("15:04:05", string(t))
+}
+
 type Review struct {
-	Id             int
+	Id             int    `json:"idx"`
 	UserId         int    `json:"user_id"`
 	DisplayedName  string `json:"displayed_name"`
-	Content        string
-	Recommendation bool
-	CreatedAt      time.Time
+	Content        string `json:"content"`
+	Recommendation int    `json:"recommendation"`
+	//CreatedAt      rawTime `json:"created_at"`
 }
 
 type GameDetail struct {
 	GameSimple
-	Description    string
-	Publisher      StringJsonMap
-	ReviewCount    int32
-	RecommendCount int32
-	Language       []string
+	Description    string        `json:"description"`
+	Publisher      StringJsonMap `json:"publisher"`
+	ReviewCount    int32         `json:"review_count"`
+	RecommendCount int32         `json:"recommend_count"`
+	Language       []string      `json:"language"`
 }
 
 type GameSimple struct {
@@ -47,7 +87,11 @@ type GameSimple struct {
 }
 
 type Category struct {
-	Idx       int    `json:"idx"`
+	Id        int    `json:"idx"`
 	ParentIdx int    `json:"parent_id"`
 	Name      string `json:"name"`
+}
+
+type Publisher struct {
+	Id
 }

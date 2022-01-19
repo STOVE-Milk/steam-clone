@@ -50,7 +50,7 @@ message Review{
     int32 user_id = 2 [json_name = "user_id"];
     string displayed_name = 3 [json_name = "displayed_name"];
     string content = 4;
-    bool recommendation = 5;
+    int32 recommendation = 5;
 }
 
 message CategoryListResponse{
