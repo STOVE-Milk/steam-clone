@@ -105,8 +105,8 @@ func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb.
 			Id:   gameDetail.Publisher["id"].(int32),
 			Name: gameDetail.Publisher["name"].(string),
 		},
-		ReviewCount:    gameDetail.ReviewCount,
-		RecommendCount: gameDetail.RecommendCount,
+		ReviewCount:    int32(gameDetail.ReviewCount),
+		RecommendCount: int32(gameDetail.RecommendCount),
 		//+언어
 	}, nil
 }

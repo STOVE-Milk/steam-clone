@@ -70,8 +70,8 @@ type GameDetail struct {
 	GameSimple
 	Description    string        `json:"description"`
 	Publisher      StringJsonMap `json:"publisher"`
-	ReviewCount    int32         `json:"review_count"`
-	RecommendCount int32         `json:"recommend_count"`
+	ReviewCount    int           `json:"review_count"`
+	RecommendCount int           `json:"recommend_count"`
 	Language       []string      `json:"language"`
 }
 
@@ -93,5 +93,5 @@ type Category struct {
 }
 
 type Publisher struct {
-	Id
+	Id int
 }
