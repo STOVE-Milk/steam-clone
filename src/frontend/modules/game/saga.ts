@@ -1,6 +1,6 @@
 import { takeLatest } from 'redux-saga/effects';
 
-import createAsyncSaga from '../utils/sagaUtils';
+import createAsyncSaga from 'modules/utils/sagaUtils';
 
 import { getCategoriesAPI, getGameAPI } from '../../pages/api/game/api';
 import { getCategories, GET_CATEGORIES, getGame, GET_GAME } from 'modules/game/actions';

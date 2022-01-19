@@ -1,7 +1,7 @@
 import { createAsyncAction, createAction } from 'typesafe-actions';
 import { AxiosError } from 'axios';
 
-import { createRequestActionTypes } from '../utils/actionUtils';
+import { createRequestActionTypes } from 'modules/utils/actionUtils';
 
 import { IGetCategoriesReqType, IGetGameReqType, IResType } from 'pages/api/game/type';
 
