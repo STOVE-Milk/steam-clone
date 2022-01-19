@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 )
 
@@ -14,6 +16,15 @@ type GameRepository interface {
 }
 
 type StringJsonMap map[string]interface{}
+
+type Review struct {
+	Id             int
+	UserId         int    `json:"user_id"`
+	DisplayedName  string `json:"displayed_name"`
+	Content        string
+	Recommendation bool
+	CreatedAt      time.Time
+}
 
 type GameDetail struct {
 	GameSimple

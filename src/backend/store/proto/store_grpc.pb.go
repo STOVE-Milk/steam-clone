@@ -27,7 +27,7 @@ type StoreClient interface {
 	GetGameListByCategory(ctx context.Context, in *CategoryQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
 	GetGame(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*GameDetailResponse, error)
 	GetDiscountingGameList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
-	GetReviewList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ReviewListResponse, error)
+	GetReviewList(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*ReviewListResponse, error)
 }
 
 type storeClient struct {
@@ -74,7 +74,7 @@ func (c *storeClient) GetDiscountingGameList(ctx context.Context, in *emptypb.Em
 	return out, nil
 }
 
-func (c *storeClient) GetReviewList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ReviewListResponse, error) {
+func (c *storeClient) GetReviewList(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*ReviewListResponse, error) {
 	out := new(ReviewListResponse)
 	err := c.cc.Invoke(ctx, "/storepb.Store/GetReviewList", in, out, opts...)
 	if err != nil {
@@ -91,7 +91,7 @@ type StoreServer interface {
 	GetGameListByCategory(context.Context, *CategoryQueryParamRequest) (*GameSimpleListResponse, error)
 	GetGame(context.Context, *GameIdQueryParamRequest) (*GameDetailResponse, error)
 	GetDiscountingGameList(context.Context, *emptypb.Empty) (*GameSimpleListResponse, error)
-	GetReviewList(context.Context, *emptypb.Empty) (*ReviewListResponse, error)
+	GetReviewList(context.Context, *GameIdQueryParamRequest) (*ReviewListResponse, error)
 	mustEmbedUnimplementedStoreServer()
 }
 
@@ -111,7 +111,7 @@ func (UnimplementedStoreServer) GetGame(context.Context, *GameIdQueryParamReques
 func (UnimplementedStoreServer) GetDiscountingGameList(context.Context, *emptypb.Empty) (*GameSimpleListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDiscountingGameList not implemented")
 }
-func (UnimplementedStoreServer) GetReviewList(context.Context, *emptypb.Empty) (*ReviewListResponse, error) {
+func (UnimplementedStoreServer) GetReviewList(context.Context, *GameIdQueryParamRequest) (*ReviewListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReviewList not implemented")
 }
 func (UnimplementedStoreServer) mustEmbedUnimplementedStoreServer() {}
@@ -200,7 +200,7 @@ func _Store_GetDiscountingGameList_Handler(srv interface{}, ctx context.Context,
 }
 
 func _Store_GetReviewList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GameIdQueryParamRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -212,7 +212,7 @@ func _Store_GetReviewList_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/storepb.Store/GetReviewList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServer).GetReviewList(ctx, req.(*emptypb.Empty))
+		return srv.(StoreServer).GetReviewList(ctx, req.(*GameIdQueryParamRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -78,6 +78,21 @@ func (store *storeServer) GetGameListByCategory(ctx context.Context, req *pb.Cat
 	}, nil
 }
 
+func (store *storeServer) GetDiscountingGameList(ctx context.Context, _ *empty.Empty) (*pb.GameSimpleListResponse, error) {
+	res, err := store.gameCtr.GetDiscountingGameList(ctx)
+	if err != nil {
+		return &pb.GameSimpleListResponse{
+			Code:    21000,
+			Message: "can not get game list Error : " + err.Error(),
+		}, nil
+	}
+	return &pb.GameSimpleListResponse{
+		Code:    21000,
+		Message: "game list by category",
+		Data:    res,
+	}, nil
+}
+
 func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.GameDetailResponse, error) {
 	gameId := req.GameId
 	res, err := store.gameCtr.GetGameDetail(ctx, gameId)
@@ -90,6 +105,22 @@ func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamR
 	return &pb.GameDetailResponse{
 		Code:    21000,
 		Message: "game",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.ReviewListResponse, error) {
+	gameId := req.GameId
+	res, err := store.gameCtr.GetReviewList(ctx, gameId)
+	if err != nil {
+		return &pb.ReviewListResponse{
+			Code:    21000,
+			Message: "can not get the game Error : " + err.Error(),
+		}, nil
+	}
+	return &pb.ReviewListResponse{
+		Code:    21000,
+		Message: "can not get the game Error : " + err.Error(),
 		Data:    res,
 	}, nil
 }
