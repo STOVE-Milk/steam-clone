@@ -20,9 +20,6 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
     }
   }
 };
-// export const rootReducer = combineReducers({
-//   game,
-// });
 
 export default rootReducer;
 

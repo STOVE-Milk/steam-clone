@@ -21,6 +21,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-// const wrapper = createWrapper(store);
-// export default wrapper.withRedux(MyApp);
 export default wrapper.withRedux(MyApp);

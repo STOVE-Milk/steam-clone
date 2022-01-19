@@ -56,7 +56,7 @@ const Detail: NextPage = () => {
           <GameInfoBox>
             <GameInfoCol>
               <GameInfoKey>이름</GameInfoKey>
-              <GameInfoValue>{game.name}</GameInfoValue>
+              <GameInfoValue>{game.data.name}</GameInfoValue>
             </GameInfoCol>
           </GameInfoBox>
           <DevInfoBox></DevInfoBox>

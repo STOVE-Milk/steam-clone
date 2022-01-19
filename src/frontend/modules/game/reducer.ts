@@ -1,10 +1,11 @@
 import { createReducer } from 'typesafe-actions';
 
-import { gameAction, gameState } from './types';
+import { asyncState } from 'modules/utils/reducerUtils';
+import { gameState } from './types';
 import { GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL, GET_GAME_SUCCESS, GET_GAME_FAIL } from './actions';
 
 const initialState: gameState = {
-  categories: [
+  categories: asyncState.initial([
     'Sandbox',
     'Real-time strategy (RTS)',
     'Shooters (FPS and TPS)',
@@ -13,9 +14,8 @@ const initialState: gameState = {
     'Simulation and sports.',
     'Puzzlers and party games.',
     'Action-adventure.',
-  ],
-  categoryError: '',
-  games: [
+  ]),
+  games: asyncState.initial([
     {
       id: 1,
       name: 'Vampire Survivors',
@@ -56,8 +56,8 @@ const initialState: gameState = {
       },
       category_list: ['Sandbox', 'RTS', 'FPS'],
     },
-  ],
-  game: {
+  ]),
+  game: asyncState.initial({
     id: 1,
     name: 'Vampire Survivors',
     os: ['windows', 'apple'],
@@ -76,7 +76,7 @@ const initialState: gameState = {
       sub: ['www1', 'www2'],
     },
     category_list: ['Sandbox', 'RTS', 'FPS', 'MOBA'],
-  },
+  }),
 };
 
 const reducer = createReducer<gameState>(initialState, {
