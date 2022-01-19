@@ -18,7 +18,7 @@ service Store {
             get: "/store/games"
         };
     }
-    rpc GetGame(GameIdQueryParamRequest) returns (GameDetail){
+    rpc GetGame(GameIdQueryParamRequest) returns (GameDetailResponse){
         option (google.api.http) = {
             get: "/store/games/{game_id}"
         };
@@ -28,25 +28,29 @@ service Store {
             get: "/store/discounting"
         };
     }
-    rpc GetReviewList(google.protobuf.Empty) returns (ReviewListResponse){
+    rpc GetReviewList(GameIdQueryParamRequest) returns (ReviewListResponse){
         option (google.api.http) = {
-            get: "/store/reviews"
+            get: "/store/{game_id}/reviews"
         };
     }
 }
 
 
 message ReviewListResponse{
-    repeated Review review_list = 1 [json_name = "review_list"];
+    int32 code = 1;
+    string message = 2;
+    ReviewList data = 3;
+    message ReviewList{
+        repeated Review review_list = 1 [json_name = "review_list"];
+    }
 }
 
 message Review{
     int32 id = 1;
     int32 user_id = 2 [json_name = "user_id"];
-    int32 game_id = 3 [json_name = "game_id"];
-    string displayed_name = 4 [json_name = "displayed_name"];
-    string content = 5;
-    bool recommendation = 6;
+    string displayed_name = 3 [json_name = "displayed_name"];
+    string content = 4;
+    bool recommendation = 5;
 }
 
 message CategoryListResponse{
@@ -88,9 +92,9 @@ message GameDetail{
     Publisher publisher = 11;
     int32 review_count = 12 [json_name = "review_count"];
     int32 recommend_count = 13 [json_name = "recommend_count"];
-    repeated string language = 16;
-    //SystemRequirements system_least = 14 [json_name = "system_least"];
-    //SystemRequirements system_recommend = 15 [json_name = "system_recommend"];
+    repeated string language = 14;
+    //SystemRequirements system_least = 15 [json_name = "system_least"];
+    //SystemRequirements system_recommend = 16 [json_name = "system_recommend"];
 }
 
 message Publisher{ 
@@ -98,14 +102,14 @@ message Publisher{
     string name = 2;
 }
 
-// message SystemRequirements{
-//     string os = 1;
-//     string processor= 2;
-//     string memory= 3;
-//     string graphics = 4;
-//     string storage = 7;
-//     string additional_notes= 9 [json_name = "additional_notes"];
-// }
+message SystemRequirements{
+    string os = 1;
+    string processor= 2;
+    string memory= 3;
+    string graphics = 4;
+    string storage = 7;
+    string additional_notes= 9 [json_name = "additional_notes"];
+}
 
 // 간단한 게임 정보를 나타내는 message
 message GameSimple {
