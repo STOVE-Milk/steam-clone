@@ -1,0 +1,33 @@
+milk:
+  jwt:
+    secret: erqwufouo970728sdufoiuqow130429vnfisajdofjoqiwerjforitcefsnmdfvxliaefhalfsdjkvxiovjaoisjdfjasodfjoivjxojvoidjfoajwefjqpwfhsopvhoxzhcoivowehfafksdvnxe4r1312r
+
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - name: GlobalFilter
+          args:
+            baseMessage: Spring Cloud Gateway GlobalFilter
+            preLogger: true
+            postLogger: true
+      routes:
+        - id: auth-svc
+          uri: http://localhost:8081/
+          predicates:
+            - Path=/auth/**
+        - id: store-svc
+          uri: http://localhost:8100/
+          predicates:
+            - Path=/store/**
+        - id: payment-svc
+          uri: http://localhost:8200/
+          predicates:
+            - Path=/payment/**
+          filters:
+            - name: AuthorizationCheckFilter
+              args:
+                baseMessage: Spring Cloud Gateway AuthorizationCheckFilter
