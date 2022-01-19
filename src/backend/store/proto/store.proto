@@ -30,7 +30,7 @@ service Store {
     }
     rpc GetReviewList(GameIdQueryParamRequest) returns (ReviewListResponse){
         option (google.api.http) = {
-            get: "/store/reviews"
+            get: "/store/games/{game_id}/reviews"
         };
     }
 }

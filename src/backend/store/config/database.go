@@ -39,7 +39,6 @@ func InitDB() *sql.DB {
 		log.Fatal("Error loading .env file")
 	}
 
-	fmt.Println("DBNAME :", os.Getenv("DBNAME"))
 	db, err := sql.Open("mysql", makeDbConfig())
 	if err != nil {
 		log.Fatal(err)

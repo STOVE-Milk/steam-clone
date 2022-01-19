@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
@@ -16,6 +17,16 @@ type GameRepository interface {
 	// GetReviewList()
 	// GetGameListInWishlist()
 	// GetDiscountingGameList()
+}
+
+type StringSlice []byte
+
+func (ss StringSlice) ToSlice() []string {
+	data := string(ss)
+	data = data[1 : len(data)-1]
+	splitedData := strings.Split(data, ",")
+
+	return splitedData
 }
 
 type StringJsonMap map[string]interface{}
@@ -58,21 +69,21 @@ func (t rawTime) Time() (time.Time, error) {
 }
 
 type Review struct {
-	Id             int    `json:"idx"`
-	UserId         int    `json:"user_id"`
-	DisplayedName  string `json:"displayed_name"`
-	Content        string `json:"content"`
-	Recommendation int    `json:"recommendation"`
-	//CreatedAt      rawTime `json:"created_at"`
+	Id             int     `json:"idx"`
+	UserId         int     `json:"user_id"`
+	DisplayedName  string  `json:"displayed_name"`
+	Content        string  `json:"content"`
+	Recommendation int     `json:"recommendation"`
+	CreatedAt      rawTime `json:"created_at"`
 }
 
 type GameDetail struct {
 	GameSimple
-	Description    string   `json:"description"`
-	PublisherId    int      `json:"publisher"`
-	ReviewCount    int      `json:"review_count"`
-	RecommendCount int      `json:"recommend_count"`
-	Language       []string `json:"language"`
+	Description    string      `json:"description"`
+	PublisherId    int         `json:"publisher"`
+	ReviewCount    int         `json:"review_count"`
+	RecommendCount int         `json:"recommend_count"`
+	Language       StringSlice `json:"language"`
 }
 
 type GameSimple struct {
@@ -83,7 +94,7 @@ type GameSimple struct {
 	Sale               int           `json:"sale"`
 	Image              StringJsonMap `json:"image"`
 	Video              StringJsonMap `json:"video"`
-	// Os                 []interface{}          `json:"os"`
+	Os                 StringSlice   `json:"os"`
 }
 
 type Category struct {

@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 
@@ -73,6 +74,7 @@ func (gc *GameController) GetGameListByCategory(ctx context.Context, category st
 				Main: game.Video["main"].(string),
 				Sub:  videoSub,
 			},
+			OsList:       game.Os.ToSlice(),
 			CategoryList: categoryTmp,
 		}
 	}
@@ -105,6 +107,7 @@ func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb.
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(gamePublisher.Name)
 	return &pb.GameDetail{
 		GameId:             int32(gameDetail.Id),
 		Name:               gameDetail.Name,
@@ -120,15 +123,15 @@ func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb.
 			Sub:  videoSub,
 		},
 		CategoryList: categoryTmp,
-		//+os
-		Description: gameDetail.Description,
+		OsList:       gameDetail.Os.ToSlice(),
+		Language:     gameDetail.Language.ToSlice(),
+		Description:  gameDetail.Description,
 		Publisher: &pb.Publisher{
 			Id:   int32(gamePublisher.Id),
 			Name: gamePublisher.Name,
 		},
 		ReviewCount:    int32(gameDetail.ReviewCount),
 		RecommendCount: int32(gameDetail.RecommendCount),
-		//+언어
 	}, nil
 }
 
@@ -154,6 +157,7 @@ func (gc *GameController) GetDiscountingGameList(ctx context.Context) (*pb.GameS
 			DescriptionSnippet: game.DescriptionSnippet,
 			Price:              int32(game.Price),
 			Sale:               int32(game.Sale),
+			OsList:             game.Os.ToSlice(),
 			Image: &pb.ContentsPath{
 				Main: game.Image["main"].(string),
 				Sub:  imageSub,
@@ -175,14 +179,14 @@ func (gc *GameController) GetReviewList(ctx context.Context, gameId int32) (*pb.
 	}
 	var pbReviewList pb.ReviewListResponse_ReviewList
 	pbReviewList.ReviewList = make([]*pb.Review, len(reviewList))
-	for _, review := range reviewList {
-		pbReviewList.ReviewList = append(pbReviewList.ReviewList, &pb.Review{
+	for i, review := range reviewList {
+		pbReviewList.ReviewList[i] = &pb.Review{
 			Id:             int32(review.Id),
 			UserId:         int32(review.UserId),
 			DisplayedName:  review.DisplayedName,
 			Content:        review.Content,
 			Recommendation: int32(review.Recommendation),
-		})
+		}
 	}
 	return &pbReviewList, nil
 }

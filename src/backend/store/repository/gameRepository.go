@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"time"
 
@@ -18,7 +17,7 @@ func (gr *GameRepository) GetReviewList(ctx context.Context, gameId int32) ([]*m
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	rows, err := gr.db.QueryContext(ctx, `
-	SELECT idx, user_id, displayed_name, content, recommendation
+	SELECT idx, user_id, displayed_name, content, recommendation, created_at
 	FROM review
 	WHERE game_id=?
 	`, gameId)
@@ -31,9 +30,9 @@ func (gr *GameRepository) GetReviewList(ctx context.Context, gameId int32) ([]*m
 
 	for rows.Next() {
 		var review model.Review
-		err := rows.Scan(&review.Id, &review.UserId, &review.DisplayedName, &review.Content, &review.Recommendation)
+		err := rows.Scan(&review.Id, &review.UserId, &review.DisplayedName, &review.Content, &review.Recommendation, &review.CreatedAt)
 		if err != nil {
-			fmt.Println(err.Error())
+			return nil, err
 		}
 		reviewList = append(reviewList, &review)
 	}
@@ -55,7 +54,7 @@ func (gr *GameRepository) GetPublisher(ctx context.Context, publisherId int) (*m
 		return nil, err
 	}
 	for rows.Next() {
-		rows.Scan(&publisher.Id, &publisher.UserId, &publisher.Name, &publisher.Title)
+		rows.Scan(&publisher.Id, &publisher.Name)
 	}
 	return &publisher, nil
 }
@@ -66,7 +65,7 @@ func (gr *GameRepository) GetGameDetail(ctx context.Context, gameId int32) (*mod
 
 	var gd model.GameDetail
 	rows, err := gr.db.QueryContext(ctx, `
-	SELECT game_id, name, description_snippet, price, sale, image, video, description, publisher_id, review_count, recommend_count
+	SELECT game_id, name, description_snippet, price, sale, image, video, description, publisher_id, review_count, recommend_count, os, language
 	FROM steam.game_category AS gc 
 	join steam.game AS g 
 	on gc.game_id=g.idx where g.idx = ?
@@ -75,7 +74,7 @@ func (gr *GameRepository) GetGameDetail(ctx context.Context, gameId int32) (*mod
 		return nil, err
 	}
 	for rows.Next() {
-		rows.Scan(&gd.Id, &gd.Name, &gd.DescriptionSnippet, &gd.Price, &gd.Sale, &gd.Image, &gd.Video, &gd.Description, &gd.PublisherId, &gd.ReviewCount, &gd.RecommendCount)
+		rows.Scan(&gd.Id, &gd.Name, &gd.DescriptionSnippet, &gd.Price, &gd.Sale, &gd.Image, &gd.Video, &gd.Description, &gd.PublisherId, &gd.ReviewCount, &gd.RecommendCount, &gd.Os, &gd.Language)
 	}
 	return &gd, nil
 }
@@ -85,7 +84,7 @@ func (gr *GameRepository) GetGameListByCategory(ctx context.Context, category st
 	defer cancel()
 	var gameSimpleList []*model.GameSimple
 	rows, err := gr.db.QueryContext(ctx, `	
-	SELECT game_id, name, description_snippet, price, sale, image, video
+	SELECT game_id, name, description_snippet, price, sale, image, video, os
 	FROM steam.game_category AS gc 
 	join steam.game AS g 
 	on gc.game_id=g.idx where gc.category_name=?
@@ -97,7 +96,7 @@ func (gr *GameRepository) GetGameListByCategory(ctx context.Context, category st
 	defer rows.Close()
 	for rows.Next() {
 		var game model.GameSimple
-		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video)
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -111,7 +110,7 @@ func (gr *GameRepository) GetDiscountingGameList(ctx context.Context) ([]*model.
 	defer cancel()
 	var gameSimpleList []*model.GameSimple
 	rows, err := gr.db.QueryContext(ctx, `	
-	SELECT game_id, name, description_snippet, price, sale, image, video
+	SELECT game_id, name, description_snippet, price, sale, image, video, os
 	FROM steam.game_category AS gc 
 	join steam.game AS g 
 	on gc.game_id=g.idx 
@@ -124,9 +123,9 @@ func (gr *GameRepository) GetDiscountingGameList(ctx context.Context) ([]*model.
 	defer rows.Close()
 	for rows.Next() {
 		var game model.GameSimple
-		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video)
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os)
 		if err != nil {
-			fmt.Println(err)
+			return nil, err
 		}
 		gameSimpleList = append(gameSimpleList, &game)
 	}
