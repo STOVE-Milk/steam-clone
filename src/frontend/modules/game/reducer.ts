@@ -4,7 +4,16 @@ import { gameAction, gameState } from './types';
 import { GET_CATEGORIES, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL } from './actions';
 
 const initialState: gameState = {
-  categories: [],
+  categories: [
+    'Sandbox',
+    'Real-time strategy (RTS)',
+    'Shooters (FPS and TPS)',
+    'Multiplayer online battle arena (MOBA)',
+    'Role-playing (RPG, ARPG, and More)',
+    'Simulation and sports.',
+    'Puzzlers and party games.',
+    'Action-adventure.',
+  ],
   categoryError: '',
 };
 
