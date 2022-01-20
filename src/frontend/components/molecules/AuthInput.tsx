@@ -2,20 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-
 export interface IAuthInputProps {
   title: string;
   type: 'email' | 'password' | 'text';
   placeholder?: string;
-  onChange?: React.MouseEventHandler;
-  checkValidation?: boolean | undefined;
+  onChange?: React.ChangeEventHandler;
+  checkValidation?: boolean;
   warningMsg?: string;
-}
-interface IBtnProp {
-  validateCheck: boolean;
 }
 const InputTitleText = styled(Text)`
   margin-bottom: 0.5rem;
@@ -24,7 +17,6 @@ const InputWrapper = styled.form`
   margin-top: 2rem;
   width: 85%;
 `;
-
 const InputBoxWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -36,9 +28,7 @@ const InputBox = styled.input`
   padding: 0.5rem 1rem;
   width: 30rem;
 `;
-
 const ValidateBtnStyle = styled(FilledButton)`
-  display: ${(props: IBtnProp) => (props.validateCheck ? '' : 'none')};
   height: 100%;
   font-size: 0.8rem;
 `;
@@ -57,13 +47,10 @@ export default function AuthInput({
 }: IAuthInputProps) {
   return (
     <InputWrapper>
-      {console.log(warningMsg)}
       <InputTitleText>{title}</InputTitleText>
       <InputBoxWrapper>
         <InputBox type={type} placeholder={placeholder} onChange={onChange} />
-        <ValidateBtnStyle types="primary" validateCheck={checkValidation ? checkValidation : false}>
-          중복확인
-        </ValidateBtnStyle>
+        {checkValidation && <ValidateBtnStyle types="primary">중복확인</ValidateBtnStyle>}
       </InputBoxWrapper>
       <WarningMsg>{warningMsg}</WarningMsg>
     </InputWrapper>
