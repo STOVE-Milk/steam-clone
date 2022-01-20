@@ -28,7 +28,7 @@ service Store {
             get: "/store/games/{game_id}/reviews"
         };
     }
-    rpc GetWishList(google.protobuf.Empty) returns (WishlistResponse){
+    rpc GetWishlist(google.protobuf.Empty) returns (WishlistResponse){
         option (google.api.http) = {
             get: "/store/wishlist"
         };

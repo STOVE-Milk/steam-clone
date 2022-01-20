@@ -113,7 +113,7 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 	}, nil
 }
 
-func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Empty) (*pb.WishlistResponse, error) {
+func (store *storeServer) GetWishlist(ctx context.Context, _ *empty.Empty) (*pb.WishlistResponse, error) {
 	userId := 1
 	res, err := store.gameCtr.GetWishlist(ctx, int32(userId))
 	if err != nil {
