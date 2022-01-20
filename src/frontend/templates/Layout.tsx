@@ -13,11 +13,8 @@ const MainWrapper = styled.div`
   display: flex;
   font-family: AppleSDGothic;
 `;
-const NavBarSection = styled.div`
-  width: 250px;
-`;
 const ContentSectionWrapper = styled.div`
-  flex: 1;
+  width: 100%;
 `;
 const ContentSection = styled.div`
   margin-top: 80px;
@@ -31,9 +28,7 @@ const ContentSection = styled.div`
 export default function Layout({ children }: LayoutProps) {
   return (
     <MainWrapper>
-      <NavBarSection>
-        <NavBar />
-      </NavBarSection>
+      <NavBar />
       <ContentSectionWrapper>
         <Header />
         <ContentSection>{children}</ContentSection>
