@@ -10,7 +10,7 @@ export interface IAuthInputProps {
   title: string;
   type: 'email' | 'password' | 'text';
   placeholder?: string;
-  hasError?: boolean;
+  onChange?: React.MouseEventHandler;
   checkValidation?: boolean | undefined;
   warningMsg?: string;
 }
@@ -51,20 +51,21 @@ export default function AuthInput({
   title,
   type,
   placeholder,
-  hasError,
+  onChange,
   checkValidation,
   warningMsg,
 }: IAuthInputProps) {
   return (
     <InputWrapper>
+      {console.log(warningMsg)}
       <InputTitleText>{title}</InputTitleText>
       <InputBoxWrapper>
-        <InputBox type={type} placeholder={placeholder} />
+        <InputBox type={type} placeholder={placeholder} onChange={onChange} />
         <ValidateBtnStyle types="primary" validateCheck={checkValidation ? checkValidation : false}>
           중복확인
         </ValidateBtnStyle>
       </InputBoxWrapper>
-      {hasError && <WarningMsg>{warningMsg}</WarningMsg>}
+      <WarningMsg>{warningMsg}</WarningMsg>
     </InputWrapper>
   );
 }
