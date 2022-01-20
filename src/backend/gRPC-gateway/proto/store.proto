@@ -28,8 +28,21 @@ service Store {
             get: "/store/games/{game_id}/reviews"
         };
     }
+    rpc GetWishlist(google.protobuf.Empty) returns (WishlistResponse){
+        option (google.api.http) = {
+            get: "/store/wishlist"
+        };
+    }
 }
 
+message WishlistResponse{
+    int32 code = 1;
+    string message = 2;
+    Wishlist data = 3;
+    message Wishlist{
+        repeated int32 wishlist = 1;
+    }
+}
 
 message ReviewListResponse{
     int32 code = 1;
@@ -38,14 +51,6 @@ message ReviewListResponse{
     message ReviewList{
         repeated Review review_list = 1 [json_name = "review_list"];
     }
-}
-
-message Review{
-    int32 id = 1;
-    int32 user_id = 2 [json_name = "user_id"];
-    string displayed_name = 3 [json_name = "displayed_name"];
-    string content = 4;
-    int32 recommendation = 5;
 }
 
 message CategoryListResponse{
@@ -72,6 +77,13 @@ message GameDetailResponse{
     GameDetail data = 3;
 }
 
+message Review{
+    int32 id = 1;
+    int32 user_id = 2 [json_name = "user_id"];
+    string displayed_name = 3 [json_name = "displayed_name"];
+    string content = 4;
+    int32 recommendation = 5;
+}
 
 message GameDetail{
     int32 game_id = 1 [json_name = "game_id"];

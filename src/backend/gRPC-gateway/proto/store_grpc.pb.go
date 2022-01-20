@@ -27,6 +27,7 @@ type StoreClient interface {
 	GetSortingGameList(ctx context.Context, in *SortingParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
 	GetGame(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*GameDetailResponse, error)
 	GetReviewList(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*ReviewListResponse, error)
+	GetWishlist(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*WishlistResponse, error)
 }
 
 type storeClient struct {
@@ -73,6 +74,15 @@ func (c *storeClient) GetReviewList(ctx context.Context, in *GameIdQueryParamReq
 	return out, nil
 }
 
+func (c *storeClient) GetWishlist(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*WishlistResponse, error) {
+	out := new(WishlistResponse)
+	err := c.cc.Invoke(ctx, "/storepb.Store/GetWishlist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StoreServer is the server API for Store service.
 // All implementations must embed UnimplementedStoreServer
 // for forward compatibility
@@ -81,6 +91,7 @@ type StoreServer interface {
 	GetSortingGameList(context.Context, *SortingParamRequest) (*GameSimpleListResponse, error)
 	GetGame(context.Context, *GameIdQueryParamRequest) (*GameDetailResponse, error)
 	GetReviewList(context.Context, *GameIdQueryParamRequest) (*ReviewListResponse, error)
+	GetWishlist(context.Context, *emptypb.Empty) (*WishlistResponse, error)
 	mustEmbedUnimplementedStoreServer()
 }
 
@@ -99,6 +110,9 @@ func (UnimplementedStoreServer) GetGame(context.Context, *GameIdQueryParamReques
 }
 func (UnimplementedStoreServer) GetReviewList(context.Context, *GameIdQueryParamRequest) (*ReviewListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReviewList not implemented")
+}
+func (UnimplementedStoreServer) GetWishlist(context.Context, *emptypb.Empty) (*WishlistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWishlist not implemented")
 }
 func (UnimplementedStoreServer) mustEmbedUnimplementedStoreServer() {}
 
@@ -185,6 +199,24 @@ func _Store_GetReviewList_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Store_GetWishlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoreServer).GetWishlist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/storepb.Store/GetWishlist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoreServer).GetWishlist(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Store_ServiceDesc is the grpc.ServiceDesc for Store service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,6 +239,10 @@ var Store_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetReviewList",
 			Handler:    _Store_GetReviewList_Handler,
+		},
+		{
+			MethodName: "GetWishlist",
+			Handler:    _Store_GetWishlist_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
