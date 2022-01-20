@@ -95,6 +95,7 @@ type GameSimple struct {
 	Image              StringJsonMap `json:"image"`
 	Video              StringJsonMap `json:"video"`
 	Os                 StringSlice   `json:"os"`
+	DownloadCount      int           `json:"download_cnt"`
 }
 
 type Category struct {

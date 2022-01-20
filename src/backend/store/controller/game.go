@@ -135,8 +135,9 @@ func (gc *GameController) GetSortingGameList(ctx context.Context, category_name 
 				Main: game.Video["main"].(string),
 				Sub:  videoSub,
 			},
-			OsList:       game.Os.ToSlice(),
-			CategoryList: categoryTmp,
+			OsList:        game.Os.ToSlice(),
+			CategoryList:  categoryTmp,
+			DownloadCount: int32(game.DownloadCount),
 		}
 	}
 
@@ -160,4 +161,51 @@ func (gc *GameController) GetReviewList(ctx context.Context, gameId int32) (*pb.
 		}
 	}
 	return &pbReviewList, nil
+}
+
+func (gc *GameController) GetGameListInWishlist(ctx context.Context, userId int32) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+	gameSimpleList, err := gc.r.GetGameListInWishlist(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
+	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
+	for i, game := range gameSimpleList {
+		categoryList, err := gc.r.GetCategoryListByGameId(ctx, game.Id)
+		if err != nil {
+			return nil, err
+		}
+		categoryTmp := make([]string, len(categoryList))
+		for i, category := range categoryList {
+			categoryTmp[i] = category.Name
+		}
+		var imageSub []string
+		var videoSub []string
+		for _, image := range game.Image["sub"].([]interface{}) {
+			imageSub = append(imageSub, image.(string))
+		}
+		for _, video := range game.Video["sub"].([]interface{}) {
+			videoSub = append(videoSub, video.(string))
+		}
+		pbGameSimpleList.GameSimpleList[i] = &pb.GameSimple{
+			GameId:             int32(game.Id),
+			Name:               game.Name,
+			DescriptionSnippet: game.DescriptionSnippet,
+			Price:              int32(game.Price),
+			Sale:               int32(game.Sale),
+			Image: &pb.ContentsPath{
+				Main: game.Image["main"].(string),
+				Sub:  imageSub,
+			},
+			Video: &pb.ContentsPath{
+				Main: game.Video["main"].(string),
+				Sub:  videoSub,
+			},
+			OsList:        game.Os.ToSlice(),
+			CategoryList:  categoryTmp,
+			DownloadCount: int32(game.DownloadCount),
+		}
+	}
+
+	return &pbGameSimpleList, nil
 }

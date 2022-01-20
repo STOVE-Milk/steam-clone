@@ -128,3 +128,19 @@ func (store *storeServer) GetWishlist(ctx context.Context, _ *empty.Empty) (*pb.
 		Data:    res,
 	}, nil
 }
+
+func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Empty) (*pb.GameSimpleListResponse, error) {
+	userId := 1
+	res, err := store.gameCtr.GetGameListInWishlist(ctx, int32(userId))
+	if err != nil {
+		return &pb.GameSimpleListResponse{
+			Code:    21000,
+			Message: "can not get game list Error : " + err.Error(),
+		}, nil
+	}
+	return &pb.GameSimpleListResponse{
+		Code:    21000,
+		Message: "game list by category",
+		Data:    res,
+	}, nil
+}

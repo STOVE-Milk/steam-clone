@@ -88,9 +88,9 @@ func (r *Repo) GetSortingGameList(ctx context.Context, category_name string, pag
 
 	var queryBytes bytes.Buffer
 	if category_name == "모두" {
-		queryBytes.WriteString("SELECT idx, name, description_snippet, price, sale, image, video, os FROM game ")
+		queryBytes.WriteString("SELECT idx, name, description_snippet, price, sale, image, video, os, download_count FROM game ")
 	} else {
-		queryBytes.WriteString("SELECT g.idx, g.name, description_snippet, price, sale, image, video, os ")
+		queryBytes.WriteString("SELECT g.idx, g.name, description_snippet, price, sale, image, video, os, download_count ")
 		queryBytes.WriteString("FROM steam.game_category AS gc ")
 		queryBytes.WriteString("JOIN steam.game AS g ")
 		queryBytes.WriteString("ON gc.game_id=g.idx ")
@@ -117,7 +117,7 @@ func (r *Repo) GetSortingGameList(ctx context.Context, category_name string, pag
 	defer rows.Close()
 	for rows.Next() {
 		var game model.GameSimple
-		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os)
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -167,6 +167,31 @@ func (r *Repo) GetCategoryListByGameId(ctx context.Context, gameId int) ([]*mode
 	return categoryList, nil
 }
 
+func (r *Repo) GetGameListInWishlist(ctx context.Context, userId int32) ([]*model.GameSimple, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	var gameSimpleList []*model.GameSimple
+	rows, err := r.db.QueryContext(ctx, `	
+	SELECT g.idx, g.name, g.description_snippet, g.price, g.sale, g.image, g.video, g.os, g.download_count
+	FROM wishlist AS w
+	JOIN game AS g
+	ON w.game_id=g.idx
+	WHERE w.user_id=?
+	`, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var game model.GameSimple
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+		gameSimpleList = append(gameSimpleList, &game)
+	}
+	return gameSimpleList, nil
+}
 func (r *Repo) GetWishlist(ctx context.Context, userId int32) ([]int32, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
