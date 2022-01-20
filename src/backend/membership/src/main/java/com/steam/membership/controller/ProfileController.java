@@ -29,7 +29,7 @@ public class ProfileController {
 
     @GetMapping("/{userId}/guest-book")
     @ResponseBody
-    public ResponseEntity<Object> getGuestBook(@PathVariable("userId") Integer userId) {
+    public ResponseEntity<Object> getGuestBooks(@PathVariable("userId") Integer userId, @RequestParam("page") Integer page) {
 
         return ResponseEntity.ok("");
     }
