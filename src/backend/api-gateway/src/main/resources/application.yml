@@ -2,6 +2,11 @@ milk:
   jwt:
     secret: erqwufouo970728sdufoiuqow130429vnfisajdofjoqiwerjforitcefsnmdfvxliaefhalfsdjkvxiovjaoisjdfjasodfjoivjxojvoidjfoajwefjqpwfhsopvhoxzhcoivowehfafksdvnxe4r1312r
 
+logging:
+  level:
+    root: debug
+    com.steam.gateway: trace
+
 server:
   port: 8080
 
@@ -12,8 +17,8 @@ spring:
         - name: GlobalFilter
           args:
             baseMessage: Spring Cloud Gateway GlobalFilter
-            preLogger: true
-            postLogger: true
+            preLogger: false
+            postLogger: false
       routes:
         - id: auth-svc
           uri: http://localhost:8081/
@@ -31,3 +36,22 @@ spring:
             - name: AuthorizationCheckFilter
               args:
                 baseMessage: Spring Cloud Gateway AuthorizationCheckFilter
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allow-credentials: true
+            allowedHeaders:
+              - x-requested-with
+              - authorization
+              - content-type
+              - credential
+              - X-AUTH-TOKEN
+              - X-CSRF-TOKEN
+            allowedMethods:
+              - POST
+              - GET
+              - PUT
+              - OPTIONS
+              - DELETE
+              - PATCH

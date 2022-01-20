@@ -7,6 +7,8 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class AuthorizationCheckFilter extends AbstractGatewayFilterFactory<AuthorizationCheckFilter.Config>{
     private final JwtValidator jwtValidator;
@@ -19,14 +21,17 @@ public class AuthorizationCheckFilter extends AbstractGatewayFilterFactory<Autho
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
-            String accessToken = exchange.getRequest().getHeaders().get("Authorization").toString();
-            if(accessToken.isBlank() && accessToken.length() > jwtValidator.getAuthorizationTypeLength()) {
+            List<String> authorization = exchange.getRequest().getHeaders().get("Authorization");
+
+            if(authorization == null || authorization.get(0).isBlank()) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                exchange.getResponse().setComplete();
+                return exchange.getResponse().setComplete();
             }
+
+            String accessToken = authorization.get(0);
             if(!jwtValidator.validate(accessToken)) {
                 exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-                exchange.getResponse().setComplete();
+                return exchange.getResponse().setComplete();
             }
 
             return chain.filter(exchange);
