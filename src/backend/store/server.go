@@ -67,7 +67,7 @@ func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.Sortin
 	page := req.Page
 	size := req.Size
 	sort := req.Sort
-	res, err := store.gameCtr.GetGameListByCategory(ctx, category, page, size, sort)
+	res, err := store.gameCtr.GetSortingGameList(ctx, category, page, size, sort)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
 			Code:    21000,
@@ -109,6 +109,22 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 	return &pb.ReviewListResponse{
 		Code:    21000,
 		Message: "review list",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Empty) (*pb.WishlistResponse, error) {
+	userId := 1
+	res, err := store.gameCtr.GetWishlist(ctx, int32(userId))
+	if err != nil {
+		return &pb.WishlistResponse{
+			Code:    21000,
+			Message: "can not get wishlist : " + err.Error(),
+		}, nil
+	}
+	return &pb.WishlistResponse{
+		Code:    21000,
+		Message: "wishlist",
 		Data:    res,
 	}, nil
 }
