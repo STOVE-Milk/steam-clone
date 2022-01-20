@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import NavBar from 'components/organisms/Navbar';
+import NavBar from 'components/organisms/NavBar';
 import Header from 'components/organisms/Header';
 
 interface LayoutProps {
@@ -22,7 +22,6 @@ const ContentSection = styled.div`
   height: calc(100vh - 80px);
   background: ${(props) => props.theme.colors.primaryBg};
   overflow-y: scroll;
-  padding-top: 1.5rem;
 `;
 
 export default function Layout({ children }: LayoutProps) {
