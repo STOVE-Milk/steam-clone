@@ -1,0 +1,32 @@
+{
+    "format" : {
+        "서버 종류" : {
+            "developer" : "개발자명",
+            "developer_id": "Integer형 개발자 번호",
+            "server_id": "Integer형 서버 번호",
+            "success_code": "Integer형 성공 코드",
+            "error_name" : {
+                "code": 10101,
+                "message": "error message",
+                "description" : "에러에 대한 설명"
+            }
+        }
+    },
+
+    "payment" : {
+        "developer" : "한태현",
+        "developer_id": 7,
+        "server_id": 7,
+        "success_code": 77000,
+        "GAME_PRICE_VALIDATION_FAILED" : {
+            "code": 77201,
+            "message": "게임 정보가 일치하지 않습니다.",
+            "description" : "게임 구매 중 장바구니의 게임 정보와 DB의 게임 정보가 다를 경우 검증 실패 에러"
+        },
+        "USER_MONEY_NOT_ENOUGH" : {
+            "code": 77203,
+            "message": "돈이 충분하지 않습니다.",
+            "description": "게임 구매 중 유저의 보유금이 게임의 합산 금액보다 적을 경우 실패 에러"
+        }
+    }
+}
