@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,12 +17,12 @@ const DetailWrapper = styled.div`
 
 const GameIntroSection = styled.div`
   border: 1px solid white;
-  width: 100%;
+  width: 80%;
   height: 500px;
 `;
 
 const GameDetailSection = styled.div`
-  width: 100%;
+  width: 80%;
   border: 1px solid white;
   margin-top: 3rem;
 `;
@@ -39,13 +40,14 @@ const GameInfoValue = styled.div``;
 const DevInfoBox = styled.div``;
 
 const Detail: NextPage = () => {
-  // TODO: detail/${id}로 라우팅되게
+  const router = useRouter();
+  const { id } = router.query;
 
-  const { game } = useSelector((state: RootState) => state.game);
+  const game = useSelector((state: RootState) => state.game.game);
   const dispatch = useDispatch();
 
   // useEffect(() => {
-  //   dispatch(getGame.request({ id: 1 }));
+  //   dispatch(getGame.request({ id: id }));
   // }, [game]);
 
   return (
@@ -56,7 +58,7 @@ const Detail: NextPage = () => {
           <GameInfoBox>
             <GameInfoCol>
               <GameInfoKey>이름</GameInfoKey>
-              <GameInfoValue>{game.data.name}</GameInfoValue>
+              <GameInfoValue>{game.data && game.data.name}</GameInfoValue>
             </GameInfoCol>
           </GameInfoBox>
           <DevInfoBox></DevInfoBox>

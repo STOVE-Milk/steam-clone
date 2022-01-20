@@ -86,7 +86,7 @@ const ContentWrapper = styled.div`
   margin-bottom: 2rem;
 `;
 const Category = () => {
-  const { categories } = useSelector((state: RootState) => state.game);
+  const categories = useSelector((state: RootState) => state.game.categories);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -97,7 +97,7 @@ const Category = () => {
     <GameInfoWrapper>
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
-        <CategoryList list={categories.data}></CategoryList>
+        {/* <CategoryList list={categories.data}></CategoryList> */}
       </ContentWrapper>
       <ContentWrapper>
         <TitleStyle types="large">게임 리스트</TitleStyle>
