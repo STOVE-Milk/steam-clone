@@ -62,24 +62,12 @@ func (store *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (
 
 }
 
-func (store *storeServer) GetGameListByCategory(ctx context.Context, req *pb.CategoryQueryParamRequest) (*pb.GameSimpleListResponse, error) {
+func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.SortingParamRequest) (*pb.GameSimpleListResponse, error) {
 	category := req.Category
-	res, err := store.gameCtr.GetGameListByCategory(ctx, category)
-	if err != nil {
-		return &pb.GameSimpleListResponse{
-			Code:    21000,
-			Message: "can not get game list Error : " + err.Error(),
-		}, nil
-	}
-	return &pb.GameSimpleListResponse{
-		Code:    21000,
-		Message: "game list by category",
-		Data:    res,
-	}, nil
-}
-
-func (store *storeServer) GetDiscountingGameList(ctx context.Context, _ *empty.Empty) (*pb.GameSimpleListResponse, error) {
-	res, err := store.gameCtr.GetDiscountingGameList(ctx)
+	page := req.Page
+	size := req.Size
+	sort := req.Sort
+	res, err := store.gameCtr.GetGameListByCategory(ctx, category, page, size, sort)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
 			Code:    21000,

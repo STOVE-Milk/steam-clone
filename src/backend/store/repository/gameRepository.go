@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/store/model"
@@ -79,17 +81,35 @@ func (gr *GameRepository) GetGameDetail(ctx context.Context, gameId int32) (*mod
 	return &gd, nil
 }
 
-func (gr *GameRepository) GetGameListByCategory(ctx context.Context, category string) ([]*model.GameSimple, error) {
+func (gr *GameRepository) GetSortingGameList(ctx context.Context, category_name string, page, size int32, sort string) ([]*model.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	var gameSimpleList []*model.GameSimple
-	rows, err := gr.db.QueryContext(ctx, `	
-	SELECT game_id, name, description_snippet, price, sale, image, video, os
-	FROM steam.game_category AS gc 
-	join steam.game AS g 
-	on gc.game_id=g.idx where gc.category_name=?
-	LIMIT 5
-	`, category)
+
+	var queryBytes bytes.Buffer
+	queryBytes.WriteString("SELECT idx, name, description_snippet, price, sale, image, video, os")
+	if category_name == "모두" {
+		queryBytes.WriteString("FROM game")
+	} else {
+		queryBytes.WriteString(`
+		FROM steam.game_category AS gc 
+		JOIN steam.game AS g 
+		ON gc.game_id=g.idx
+		JOIN steam.category AS c
+		ON gc.category_id=c.idx
+		WHERE c.name=?
+		`)
+	}
+	queryBytes.WriteString("ORDERS LIMIT ?, ?")
+	queryBytes.WriteString("ORDER BY ? ?")
+	sortVal := strings.Split(sort, ",")
+	var rows *sql.Rows
+	var err error
+	if category_name == "모두" {
+		rows, err = gr.db.QueryContext(ctx, queryBytes.String(), page*size, size, sortVal[0], sortVal[1])
+	} else {
+		rows, err = gr.db.QueryContext(ctx, queryBytes.String(), category_name, page*size, size, sortVal[0], sortVal[1])
+	}
 	if err != nil {
 		return nil, err
 	}

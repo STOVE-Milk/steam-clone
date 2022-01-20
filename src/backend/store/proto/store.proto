@@ -13,7 +13,7 @@ service Store {
             get: "/store/categories"
         };
     }
-    rpc GetGameListByCategory(CategoryQueryParamRequest) returns (GameSimpleListResponse){
+    rpc GetSortingGameList(SortingParamRequest) returns (GameSimpleListResponse){
         option (google.api.http) = {
             get: "/store/games"
         };
@@ -21,11 +21,6 @@ service Store {
     rpc GetGame(GameIdQueryParamRequest) returns (GameDetailResponse){
         option (google.api.http) = {
             get: "/store/games/{game_id}"
-        };
-    }
-    rpc GetDiscountingGameList(google.protobuf.Empty) returns(GameSimpleListResponse){
-        option (google.api.http) = {
-            get: "/store/games/discounting"
         };
     }
     rpc GetReviewList(GameIdQueryParamRequest) returns (ReviewListResponse){
@@ -92,7 +87,7 @@ message GameDetail{
     Publisher publisher = 11;
     int32 review_count = 12 [json_name = "review_count"];
     int32 recommend_count = 13 [json_name = "recommend_count"];
-    repeated string language = 16;
+    repeated string language = 14;
     //SystemRequirements system_least = 14 [json_name = "system_least"];
     //SystemRequirements system_recommend = 15 [json_name = "system_recommend"];
 }
@@ -135,10 +130,13 @@ message ContentsPath{
 //Request Parameter에 사용되는 message
 
 // Client 측에서 하나의 카테고리를 Request 받을 때. 
-message CategoryQueryParamRequest{
-    string category = 1;
-}
-
 message GameIdQueryParamRequest{
     int32 game_id = 1;
+}
+
+message SortingParamRequest{
+    string category=1;
+    int32 page = 2;
+    int32 size = 3;
+    string sort = 4;
 }

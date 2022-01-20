@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 
@@ -36,8 +35,8 @@ func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.Catego
 	return &pbCategoryList, nil
 }
 
-func (gc *GameController) GetGameListByCategory(ctx context.Context, category string) (*pb.GameSimpleListResponse_GameSimpleList, error) {
-	gameSimpleList, err := gc.gr.GetGameListByCategory(ctx, category)
+func (gc *GameController) GetGameListByCategory(ctx context.Context, categoryName string, page, size int32, sort string) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+	gameSimpleList, err := gc.gr.GetSortingGameList(ctx, categoryName, page, size, sort)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +106,6 @@ func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb.
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(gamePublisher.Name)
 	return &pb.GameDetail{
 		GameId:             int32(gameDetail.Id),
 		Name:               gameDetail.Name,
