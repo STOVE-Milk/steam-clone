@@ -11,6 +11,10 @@ public class UserContext {
         return userContextHolder.get().getIdx();
     }
 
+    public static String getUserCountry() {
+        return userContextHolder.get().getCountry();
+    }
+
     public static void setUserDetails(UserDetails userDetails) {
         userContextHolder.set(userDetails);;
     }

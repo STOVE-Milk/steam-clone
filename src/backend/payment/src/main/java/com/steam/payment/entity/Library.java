@@ -1,6 +1,8 @@
 package com.steam.payment.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 
@@ -33,8 +35,10 @@ public class Library {
     private Integer playTime;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private java.sql.Timestamp createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private java.sql.Timestamp updatedAt;
 }

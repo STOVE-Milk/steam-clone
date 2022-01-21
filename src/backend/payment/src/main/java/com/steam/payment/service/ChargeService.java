@@ -37,13 +37,14 @@ public class ChargeService {
     }
 
     public Object chargeReady(ChargeReadyRequest request) {
+        //TODO 고민: 이미 결제 준비가 진행됐을 때, 새로 만들 것인가?, 캐시된 데이터를 쓴다면 결제 완료 시 캐시도 삭제
         ChargeLogDocument chargeLogDocument = chargeLogDocumentRepository.findById(UserContext.getUserId().toString())
-                .orElse(ChargeLogDocument.newUser(UserContext.getUserId()));
+                .orElseGet(() -> ChargeLogDocument.newUser(UserContext.getUserId()));
         chargeLogDocument.getChargeLogs().add(request.toLog());
         chargeLogDocument.plusCount();
         chargeLogDocumentRepository.save(chargeLogDocument);
 
-        return kakaoPay.ready(request.getGiftcard());
+        return kakaoPay.ready(request.getGiftcard(), chargeLogDocument.getCount());
     }
 
     public Object chargeApprove(ChargeApproveRequest request) {

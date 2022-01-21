@@ -14,8 +14,6 @@ public enum ErrorCode {
     USER_MONEY_NOT_ENOUGH(77203, "돈이 충분하지 않습니다."),
     GAME_ALEADY_PURCHASED(77204, "이미 구매한 게임이 목록에 있습니다."),
 
-    JPA_JSON_CONVERTER_EXCEPTION(77301, "JPA JSON Converter Exception 발생"),
-
     KAKAOPAY_CACHE_DATA_NOT_FOUND(77401, "해당 결제 승인에 대한 데이터가 존재하지 않습니다."),
     KAKAOPAY_READY_FAILED(77402, "결제 준비 요청이 실패했습니다."),
     KAKAOPAY_APPROVAL_FAILED(77403, "결제 승인 요청이 실패했습니다."),
@@ -26,7 +24,8 @@ public enum ErrorCode {
     JWT_CLAIM_EXCEPTION(77803, "JWT 해석 중 오류가 발생했습니다. 관리자에게 문의해주세요"),
 
     REDIS_CONNECTION_FAILED(77901, "캐시 서버 연결에 실패했습니다. 관리자에게 문의해주세요"),
-    LOGGING_FAILED(77902, "결제 시스템에 장애가 발생했습니다. 관리자에게 문의해주세요"),
+    MONGODB_CONNECTION_FAILED(77902, "로그 서버 연결에 실패했습니다. 관리자에게 문의해주세요"),
+    LOGGING_FAILED(77911, "결제 시스템에 장애가 발생했습니다. 관리자에게 문의해주세요"),
     SERVER_ERROR(77999, "예상하지 못한 문제가 발생했습니다. 관리자에게 문의해주세요");
 
     private final Integer code;

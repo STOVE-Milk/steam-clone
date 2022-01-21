@@ -28,12 +28,12 @@ public class KakaoPayReady{
     private String cancelUrl;
     private String failUrl;
 
-    public static KakaoPayReady of(Integer userId, GiftcardDto giftcard) {
+    public static KakaoPayReady of(Integer userId, GiftcardDto giftcard, Integer orderCount) {
         return KakaoPayReady.builder()
                 .itemCode(giftcard.getId().toString())
                 .itemName(giftcard.getName())
-                .partnerOrderId("1")
-                .partnerUserId("1")
+                .partnerOrderId(userId.toString() + "-" + orderCount.toString())
+                .partnerUserId(userId.toString())
                 .quantity(1)
                 .totalAmount(giftcard.getPrice())
                 .taxFreeAmount(0)

@@ -3,6 +3,7 @@ package com.steam.payment.global.error;
 import com.steam.payment.global.common.Body;
 import com.steam.payment.global.common.EmptyData;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +80,14 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<String> handleNoHandlerFoundException(NoHandlerFoundException e) {
         e.printStackTrace();
         return ResponseEntity.ok("서버에서 지원하지 않는 요청입니다. 관리자에게 문의바랍니다.");
+    }
+
+    @ExceptionHandler(DataAccessResourceFailureException.class)
+    protected ResponseEntity<Body<Object>> handleDataAccessResourceFailureException(DataAccessResourceFailureException e) {
+        e.printStackTrace();
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.REDIS_CONNECTION_FAILED)
+        );
     }
 
     @ExceptionHandler(RedisConnectionFailureException.class)

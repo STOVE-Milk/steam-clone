@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -14,6 +15,9 @@ public class Game {
     @Id
     @Column(name = "idx")
     private Integer idx;
+
+    @Column(name = "publisher_id")
+    private Integer publisherId;
 
     @Column(name = "user_id")
     private Integer userId;
@@ -26,26 +30,6 @@ public class Game {
 
     @Column(name = "sale")
     private Integer sale;
-
-    public Integer getIdx() {
-        return idx;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public Integer getSale() {
-        return sale;
-    }
 
     public Double priceOf(String country) {
         return Double.parseDouble(JsonUtil.parse(this.price, country).toString());

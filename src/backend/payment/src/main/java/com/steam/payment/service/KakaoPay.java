@@ -38,9 +38,9 @@ public class KakaoPay {
     private final RestTemplate restTemplate;
     private final KakaoPayReadyCacheRepository kakaoPayReadyCacheRepository;
 
-    public KakaoPayReadyResponse ready(GiftcardDto giftcard) {
+    public KakaoPayReadyResponse ready(GiftcardDto giftcard, Integer orderCount) {
         //TODO: LOGGING ORDER AND PUSH DATA INTO KakaoPayReady
-        KakaoPayReady kakaoPayReady = KakaoPayReady.of(UserContext.getUserId(), giftcard);
+        KakaoPayReady kakaoPayReady = KakaoPayReady.of(UserContext.getUserId(), giftcard, orderCount);
         kakaoPayReady.setCid(this.cid);
         kakaoPayReady.setApprovalUrl(this.approvalUrl);
         kakaoPayReady.setCancelUrl(this.cancelUrl);
