@@ -82,11 +82,11 @@ const initialState: gameState = {
 const reducer = createReducer<gameState>(initialState, {
   [GET_CATEGORIES_SUCCESS]: (state, action) => ({
     ...state,
-    categories: action.payload,
+    categories: asyncState.success(action.payload),
   }),
   [GET_CATEGORIES_FAIL]: (state, action) => ({
     ...state,
-    categoryError: action.payload,
+    categories: asyncState.error(action.payload, action.payload),
   }),
 
   [GET_GAME_SUCCESS]: (state, action) => ({
