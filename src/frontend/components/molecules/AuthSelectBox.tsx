@@ -1,15 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { IOption } from 'pages/signup';
+import { IOption } from 'util/validateSignupForm';
 import Text from 'components/atoms/Text';
-
-interface IOptionProp {
-  option: Array<IOption>;
-}
 
 interface IOptionProp {
   title: string;
   option: Array<IOption>;
+  onChange?: React.ChangeEventHandler;
 }
 
 const SelectWrapper = styled.div`
@@ -30,15 +27,17 @@ const SelectStyle = styled.select`
   }
 `;
 
-export default function AuthSelectBox({ title, option }: IOptionProp) {
+export default function AuthSelectBox({ title, option, onChange }: IOptionProp) {
   const optionArr = option.map((each, i) => {
     return <option key={i} value={`${each.name}`}>{`${each.name}`}</option>;
   });
-  // console.log(optionArr);
+
   return (
     <SelectWrapper>
       <InputTitleText>{title}</InputTitleText>
-      <SelectStyle>{optionArr}</SelectStyle>
+      <SelectStyle onChange={onChange} name={`${title.toLocaleLowerCase()}`}>
+        {optionArr}
+      </SelectStyle>
     </SelectWrapper>
   );
 }

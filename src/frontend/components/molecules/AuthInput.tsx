@@ -4,6 +4,7 @@ import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 export interface IAuthInputProps {
   title: string;
+  name: string;
   type: 'email' | 'password' | 'text';
   placeholder?: string;
   onChange?: React.ChangeEventHandler;
@@ -13,7 +14,7 @@ export interface IAuthInputProps {
 const InputTitleText = styled(Text)`
   margin-bottom: 0.5rem;
 `;
-const InputWrapper = styled.form`
+const InputWrapper = styled.div`
   margin-top: 2rem;
   width: 85%;
 `;
@@ -41,6 +42,7 @@ export default function AuthInput({
   title,
   type,
   placeholder,
+  name,
   onChange,
   checkValidation,
   warningMsg,
@@ -49,7 +51,7 @@ export default function AuthInput({
     <InputWrapper>
       <InputTitleText>{title}</InputTitleText>
       <InputBoxWrapper>
-        <InputBox type={type} placeholder={placeholder} onChange={onChange} />
+        <InputBox name={name} type={type} placeholder={placeholder} onChange={onChange} />
         {checkValidation && <ValidateBtnStyle types="primary">중복확인</ValidateBtnStyle>}
       </InputBoxWrapper>
       <WarningMsg>{warningMsg}</WarningMsg>

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Text from 'components/atoms/Text';
 
 interface IGameCategory {
-  list: Array<string>;
+  list: Array<string> | null;
 }
 const CategoryWrapper = styled.section`
   display: flex;
@@ -38,9 +38,10 @@ const CategoryBox = styled(Text)`
 export default function CategoryList({ list }: IGameCategory) {
   return (
     <CategoryWrapper>
-      {list.map((eachCategory) => {
-        return <CategoryBox>{eachCategory}</CategoryBox>;
-      })}
+      {list &&
+        list.map((eachCategory, i) => {
+          return <CategoryBox key={i}>{eachCategory}</CategoryBox>;
+        })}
     </CategoryWrapper>
   );
 }

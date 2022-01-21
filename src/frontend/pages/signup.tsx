@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { NextPage } from 'next';
 import styled from 'styled-components';
 import AuthInput from 'components/molecules/AuthInput';
 import Text from 'components/atoms/Text';
 import AuthSelectBox from 'components/molecules/AuthSelectBox';
 import FilledButton from 'components/atoms/FilledButton';
+import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
 
-export interface IOption {
-  name: string;
-  code?: string;
-}
+import { IState } from 'modules';
+import { doSignup } from 'modules/user';
 
 const SignUpFormWrapper = styled.div`
   width: 40rem;
@@ -18,7 +18,6 @@ const SignUpFormWrapper = styled.div`
   padding: 2rem;
   background: ${(props) => props.theme.colors.secondaryBg};
   display: flex;
-  align-items: center;
   border-radius: 10px;
   padding-top: 2rem;
 `;
@@ -36,29 +35,34 @@ const WarningMsg = styled(Text)`
   margin-top: 0.5rem;
   color: ${(props) => props.theme.colors.wish};
 `;
-const countryOption: IOption[] = [
-  { name: 'KOREA', code: 'kr' },
-  { name: 'CHINA', code: 'cn' },
-  { name: 'USA', code: 'us' },
-];
-const languageOption: IOption[] = [
-  { name: 'Korean', code: 'kr' },
-  { name: 'Chinese', code: 'cn' },
-  { name: 'English', code: 'us' },
-];
 
-const validateEmail = (email: string): boolean => {
-  return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
-};
-const validatePassWord = (password: string): boolean => {
-  // 비밀번호 규칙 정규식
-  // : 숫자, 특문 각 1회 이상, 영문은 2개 이상 사용하여 8자리 이상 입력
-  return /(?=.*\d{1,50})(?=.*[~`!@#$%\^&*()-+=]{1,50})(?=.*[a-zA-Z]{2,50}).{8,50}$/.test(password);
-};
+const signup: NextPage<IState> = () => {
+  const [inputs, setInputs] = useState({
+    email: '',
+    password: '',
+    username: '',
+    nickname: '',
+    language: 'korean',
+    country: 'korea',
+  });
 
-const signup = () => {
   const [errors, setErrors] = useState({} as Record<any, string>);
   const [overallWarning, setOverallWarning] = useState(['']);
+
+  // const { signupResult } = useSelector((state: IState) => state.user);
+  // const dispatch = useDispatch();
+
+  // // useEffect(() => {
+  // const doSignUp = (inputs: any) => {
+  //   dispatch(
+  //     doSignup.request({
+  //       ...inputs,
+  //     }),
+  //   );
+  //   console.log(signupResult);
+  // };
+
+  // }, [signupResult.data]);
 
   const checkEmail = (email: string) => {
     if (email.length === 0) {
@@ -87,8 +91,17 @@ const signup = () => {
         return { ...state };
       });
   };
+  const onChangeSetInfo = (e: any) => {
+    const { value, name } = e.target;
+    setInputs({ ...inputs, [name]: value }); //name 의 key를 가진 값을 value 로 설정
+    if (name === 'email') checkEmail(inputs.email);
+    if (name === 'password') checkPassword(inputs.password);
+  };
+
   //TO DO(양하): 비어있는 영역이 있는지 체크하기, 중복체크했는지 체크하기, validation 결과는 어떻게 주지=> store에 주자?
   const checkAll = () => {
+    console.log(inputs);
+    // doSignUp(inputs);
     //arguments: 비밀번호. 유저 이름, 닉네임, 국가. 언어
   };
 
@@ -99,26 +112,31 @@ const signup = () => {
         title="EMAIL"
         type="email"
         placeholder="EMAIL"
-        onChange={(e: any) => {
-          checkEmail(e.target.value);
-        }}
+        name="email"
         checkValidation={true}
         warningMsg={errors.email}
+        onChange={(e: any) => onChangeSetInfo(e)}
       />
       <AuthInput
         title="PASSWORD"
         type="password"
         placeholder="PASSWORD"
-        onChange={(e: any) => {
-          checkPassword(e.target.value);
-        }}
+        name="password"
+        onChange={onChangeSetInfo}
         warningMsg={errors.password}
       />
-      <AuthInput title="USER NAME" type="text" placeholder="USER NAME" />
-      <AuthInput title="NICK NAME" type="text" placeholder="NICK NAME" checkValidation={true} />
+      <AuthInput title="USER NAME" type="text" placeholder="USER NAME" name="username" onChange={onChangeSetInfo} />
+      <AuthInput
+        title="NICK NAME"
+        type="text"
+        placeholder="NICK NAME"
+        checkValidation={true}
+        name="nickname"
+        onChange={onChangeSetInfo}
+      />
       <InputAlign>
-        <AuthSelectBox title="Country" option={countryOption} />
-        <AuthSelectBox title="Language" option={languageOption} />
+        <AuthSelectBox title="Country" option={countryOption} onChange={onChangeSetInfo} />
+        <AuthSelectBox title="Language" option={languageOption} onChange={onChangeSetInfo} />
       </InputAlign>
       {/* {overallWarning.length > 1 && (
         <WarningMsg>
