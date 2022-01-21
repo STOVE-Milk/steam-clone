@@ -1,10 +1,13 @@
 package com.steam.membership.entity;
 
+import com.steam.membership.global.error.CustomException;
+import com.steam.membership.global.error.ErrorCode;
 import lombok.Getter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Entity
@@ -49,16 +52,4 @@ public class User {
 
     @Column(name = "deleted_at")
     private java.sql.Timestamp deletedAt;
-
-    @OneToMany(mappedBy = "user")
-    @JoinColumn
-    List<Friend> friends = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    @JoinColumn
-    List<FriendRequest> friendRequests = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    @JoinColumn
-    List<GuestBook> guestBooks = new ArrayList<>();
 }

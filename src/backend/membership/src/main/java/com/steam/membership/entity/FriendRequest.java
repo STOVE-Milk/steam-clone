@@ -13,13 +13,16 @@ public class FriendRequest {
     @Column(name = "idx")
     private Integer idx;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    //TODO 컬럼 이름 변경
+    //sender
+    @Column(name = "user_id")
+    private Integer senderId;
 
-    @ManyToOne
-    @JoinColumn(name = "requester_id")
-    private User requester;
+    //receiver
+    @Column(name = "requester_id")
+    private Integer receiverId;
+
+
 
     @Column(name = "created_at")
     private java.sql.Timestamp createdAt;

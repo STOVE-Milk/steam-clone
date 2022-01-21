@@ -13,7 +13,7 @@ public class Body<T> {
 
     public static <T> Body<Object> success(T data) {
         return Body.builder()
-                .code(7000)
+                .code(75000)
                 .message("성공")
                 .data(data)
                 .build();

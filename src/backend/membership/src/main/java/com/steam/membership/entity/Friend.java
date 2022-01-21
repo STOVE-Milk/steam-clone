@@ -1,10 +1,16 @@
 package com.steam.membership.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "friend",
     uniqueConstraints={
@@ -15,13 +21,12 @@ import javax.persistence.*;
 )
 public class Friend {
     @Id
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Integer userId;
 
-    @ManyToOne
-    @JoinColumn(name = "friend_id")
-    private User friend;
+    @Column(name = "friend_id")
+    private Integer friendId;
 
     @Column(name = "created_at")
     private java.sql.Timestamp createdAt;

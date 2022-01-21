@@ -1,1 +1,5 @@
-**.idea
+.idea
+.gradle/
+bin/
+build/
+**.class 

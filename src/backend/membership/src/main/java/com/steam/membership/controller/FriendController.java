@@ -13,39 +13,44 @@ public class FriendController {
 
     @GetMapping("/friends")
     @ResponseBody
-    public ResponseEntity<Object> getFriendsList() {
+    public ResponseEntity<Object> getFriendList() {
 
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(
+                friendService.getFriendList()
+        );
     }
 
     @PostMapping("/friends")
     @ResponseBody
     public ResponseEntity<Object> acceptFriendRequest(@RequestParam("request_id") Integer requestId) {
 
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(
+                friendService.acceptFriendRequest(requestId)
+        );
     }
 
     @DeleteMapping("/friends/{firendId}")
     @ResponseBody
     public ResponseEntity<Object> deleteFriend(@PathVariable("friendId") Integer friendId) {
-        return ResponseEntity.ok(friendId);
+        return ResponseEntity.ok(
+                friendService.deleteFriend(friendId)
+        );
     }
 
     @GetMapping("/friend-requests")
     @ResponseBody
-    public ResponseEntity<Object> getFriendsList(@RequestParam("type") String type) {
-        if(type.equals("sended"))
-            return ResponseEntity.ok("");
-        else if(type.equals("received"))
-            return ResponseEntity.ok("");
-        else
-            return ResponseEntity.ok("");
+    public ResponseEntity<Object> getFriendRequestList(@RequestParam("type") String type) {
+        return ResponseEntity.ok(
+                friendService.getFriendRequestList(type)
+        );
     }
 
     @DeleteMapping("/friend-requests/{requestId}")
     @ResponseBody
     public ResponseEntity<Object> rejectFriendRequest(@PathVariable("requestId") Integer requestId) {
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(
+                friendService.rejectFriendRequest(requestId)
+        );
     }
 
 
