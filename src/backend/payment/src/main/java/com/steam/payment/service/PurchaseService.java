@@ -34,7 +34,9 @@ public class PurchaseService {
     private final AccountRepository accountRepository;
     private final PurchaseLogDocumentRepository purchaseLogDocumentRepository;
 
+    @Transactional
     public Object purchaseGames(PurchaseGamesRequest request) {
+        //TODO: 로깅 AOP로 분리
         String userCountry = UserContext.getUserCountry();
         List<GameDto> gameDatas = gameRepository.findAllById(request.getGamesId()).stream()
                 .map(game -> GameDto.of(game, userCountry))
@@ -75,7 +77,6 @@ public class PurchaseService {
         return gameDatas;
     }
 
-    @Transactional
     protected void purchase(User user, List<Account> publisherAccounts, List<GameDto> games, Double totalPrice) {
         List<Library> libraries = games.stream()
                 .map(game -> game.toLibraryEntity(user))
