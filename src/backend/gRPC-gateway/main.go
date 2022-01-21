@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	portNumber            = "8100"
+	gRPCGatewayPortNumber = "8100"
 	storeServerPortNumber = "8101"
-	host                  = "localhost:"
+	storeServerHost       = "store_server:"
+	gRPCGatewayHost       = "grpc_gateway:"
 )
 
 func main() {
@@ -26,14 +27,14 @@ func main() {
 	if err := storePb.RegisterStoreHandlerFromEndpoint(
 		ctx,
 		mux,
-		host+storeServerPortNumber,
+		storeServerHost+storeServerPortNumber,
 		options,
 	); err != nil {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
 	}
 
-	log.Printf("start HTTP server on %s port", portNumber)
-	if err := http.ListenAndServe(":"+portNumber, mux); err != nil {
+	log.Printf("start HTTP server on %s port", gRPCGatewayPortNumber)
+	if err := http.ListenAndServe(":"+gRPCGatewayPortNumber, mux); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 }
