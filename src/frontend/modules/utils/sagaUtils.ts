@@ -29,7 +29,7 @@ export default function createAsyncSaga<P1, P2, P3>(
         : yield call(promiseCreator);
       yield put(asyncActionCreator.success(result));
     } catch (e: any) {
-      yield put(asyncActionCreator.failure(e));
+      yield put(asyncActionCreator.failure(e.response));
     }
   };
 }

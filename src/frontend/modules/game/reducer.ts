@@ -1,8 +1,10 @@
 import { createReducer } from 'typesafe-actions';
 
-import { asyncState } from 'modules/utils/reducerUtils';
-import { gameState } from './types';
-import { GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL, GET_GAME_SUCCESS, GET_GAME_FAIL } from './actions';
+import { asyncState, transformToArray, createAsyncReducer } from 'modules/utils/reducerUtils';
+import { gameState, gameAction } from './types';
+import { GET_GAME, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL, GET_GAME_SUCCESS, GET_GAME_FAIL } from './actions';
+import { getGame } from './actions';
+import { getCategories } from '.';
 
 const initialState: gameState = {
   categories: asyncState.initial([
@@ -86,16 +88,19 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_CATEGORIES_FAIL]: (state, action) => ({
     ...state,
-    categories: asyncState.error(action.payload, action.payload),
+    categories: asyncState.error(action.payload),
   }),
-
+  [GET_GAME]: (state, action) => ({
+    ...state,
+    game: asyncState.load(action.payload),
+  }),
   [GET_GAME_SUCCESS]: (state, action) => ({
     ...state,
-    game: action.payload,
+    game: asyncState.success(action.payload),
   }),
   [GET_GAME_FAIL]: (state, action) => ({
     ...state,
-    game: action.payload,
+    game: asyncState.error(action.payload),
   }),
 });
 
