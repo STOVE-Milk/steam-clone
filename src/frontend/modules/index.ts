@@ -23,8 +23,6 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
 
 export default rootReducer;
 
-export type RootState = ReturnType<typeof rootReducer>;
-
 export function* rootSaga() {
   yield all([gameSaga()]);
 }

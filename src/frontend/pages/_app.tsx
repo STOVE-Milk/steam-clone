@@ -1,4 +1,5 @@
 import type { AppProps } from 'next/app';
+import withReduxSaga from 'next-redux-saga';
 import { ThemeProvider } from 'styled-components';
 
 import { GlobalStyle } from 'styles/global-styles';
@@ -21,4 +22,5 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
+// export default wrapper.withRedux(withReduxSaga(MyApp));
 export default wrapper.withRedux(MyApp);
