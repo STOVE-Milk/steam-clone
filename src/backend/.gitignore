@@ -1,2 +1,5 @@
 .idea
-payment/
+.gradle/
+bin/
+build/
+**.class
