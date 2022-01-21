@@ -6,8 +6,11 @@ import styled from 'styled-components';
 import CategoryList from 'components/molecules/CategoryList';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'modules';
+import { IState } from 'modules';
 import { getCategories } from 'modules/game';
+
+import type { NextPage } from 'next';
+import wrapper from 'modules/configureStore';
 
 export type GameMedia = {
   main: string;
@@ -85,16 +88,21 @@ const TitleStyle = styled(Text)`
 const ContentWrapper = styled.div`
   margin-bottom: 2rem;
 `;
-const Category = () => {
-  const { categories } = useSelector((state: RootState) => state.game);
+const Category: NextPage<IState> = () => {
+  const { categories } = useSelector((state: IState) => state.game);
+  const game = useSelector((state: IState) => state.game);
+
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getCategories.request({}));
-  }, [categories]);
+  // useEffect(() => {
+  //   dispatch(getCategories.request({}));
+  // }, []);
 
   return (
     <GameInfoWrapper>
+      {console.log(game)}
+
+      {console.log(categories)}
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
         <CategoryList list={categories.data}></CategoryList>
@@ -108,5 +116,10 @@ const Category = () => {
     </GameInfoWrapper>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps((store) => async ({ params }) => {
+  store.dispatch(getCategories.request({}));
+  return { props: {} };
+});
 
 export default Category;
