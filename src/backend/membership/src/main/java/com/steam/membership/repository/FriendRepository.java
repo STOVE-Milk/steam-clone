@@ -18,4 +18,7 @@ public interface FriendRepository extends JpaRepository<Friend, Map<Integer, Int
 
     public Optional<Friend> findByUserAndFriend(User user, User friend);
     public List<Friend> findTop20ByUser(User user);
+
+    @Query("SELECT * FROM Friend me LEFT JOIN Frined other ON (me.user = :me AND other.)")
+    public List<Friend> findRelateFrinedsByUserAndOtherUser()
 }

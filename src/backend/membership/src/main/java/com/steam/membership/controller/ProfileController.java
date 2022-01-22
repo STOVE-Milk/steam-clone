@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/membership/profile")
 public class ProfileController {
     private final ProfileService profileService;
+    private final FriendService friendService;
 
     @GetMapping("/{userId}}")
     @ResponseBody
@@ -27,7 +28,7 @@ public class ProfileController {
     public ResponseEntity<Object> getFriendListRelatedMe(@PathVariable("userId") Integer userId) {
 
         return ResponseEntity.ok(
-                profileService.getFriendListRelatedMe(userId)
+                friendService.getFriendListRelatedMe(userId)
         );
     }
 

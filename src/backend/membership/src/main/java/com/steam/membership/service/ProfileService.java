@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,13 +27,8 @@ public class ProfileService {
         return UserDto.of(user.get());
     }
 
-    public Object getFriendListRelatedMe(Integer userId) {
-
-        return "";
-    }
-
     public Object getGuestBooks(Integer userId) {
-        List<GuestBook> 
+        List<GuestBook>
         return "";
     }
 

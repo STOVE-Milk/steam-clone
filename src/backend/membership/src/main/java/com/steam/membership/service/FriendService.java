@@ -41,6 +41,14 @@ public class FriendService {
         return Body.success(FriendsResponse.of(friends));
     }
 
+    public Body<Object> getFriendListRelatedMe(Integer userId) {
+        List<Friend> friends = friendRepository.findTop20ByUser(UserContext.getUser());
+        if(friends.isEmpty())
+            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+
+        return Body.success(FriendsResponse.of(friends));
+    }
+
     @Transactional
     public Body<Object> acceptFriendRequest(Integer requestId) {
         User me = UserContext.getUser();
