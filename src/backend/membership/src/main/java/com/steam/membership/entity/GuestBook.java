@@ -16,12 +16,13 @@ public class GuestBook {
     @Column(name = "idx")
     private Integer idx;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "guest_id")
-    private Integer guestId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guest_id")
+    private User guest;
 
     @Column(name = "displayed_name")
     private String displayedName;

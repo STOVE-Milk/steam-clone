@@ -56,4 +56,7 @@ public class User {
 
     @Column(name = "deleted_at")
     private Timestamp deletedAt;
+
+    @OneToMany(mappedBy = "user")
+    List<GuestBook> guestBooks = new ArrayList<>();
 }

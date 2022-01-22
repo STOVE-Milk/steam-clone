@@ -1,6 +1,7 @@
 package com.steam.membership.service;
 
 import com.steam.membership.dto.UserDto;
+import com.steam.membership.entity.GuestBook;
 import com.steam.membership.entity.User;
 import com.steam.membership.global.common.Body;
 import com.steam.membership.global.error.ErrorCode;
@@ -31,7 +32,7 @@ public class ProfileService {
     }
 
     public Object getGuestBooks(Integer userId) {
-
+        List<GuestBook> 
         return "";
     }
 
