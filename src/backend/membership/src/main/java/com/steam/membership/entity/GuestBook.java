@@ -1,10 +1,13 @@
 package com.steam.membership.entity;
 
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "guest_book")
 public class GuestBook {

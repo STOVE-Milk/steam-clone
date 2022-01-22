@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    List<User> findTop10ByIdxOrderByAccessedAtDesc(Integer idx);
 }

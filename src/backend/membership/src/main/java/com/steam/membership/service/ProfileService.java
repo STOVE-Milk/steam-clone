@@ -22,7 +22,7 @@ public class ProfileService {
         if(user.isEmpty())
             return Body.error(ErrorCode.USER_NOT_FOUND);
 
-        return UserDto.of(user.get());;
+        return UserDto.of(user.get());
     }
 
     public Object getFriendListRelatedMe(Integer userId) {

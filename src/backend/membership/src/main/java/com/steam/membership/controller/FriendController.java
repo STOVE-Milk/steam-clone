@@ -45,6 +45,14 @@ public class FriendController {
         );
     }
 
+    @PostMapping("/friend-requests")
+    @ResponseBody
+    public ResponseEntity<Object> sendFriendRequest(@RequestParam("userId") Integer userId) {
+        return ResponseEntity.ok(
+                friendService.sendFriendRequest(userId)
+        );
+    }
+
     @DeleteMapping("/friend-requests/{requestId}")
     @ResponseBody
     public ResponseEntity<Object> rejectFriendRequest(@PathVariable("requestId") Integer requestId) {

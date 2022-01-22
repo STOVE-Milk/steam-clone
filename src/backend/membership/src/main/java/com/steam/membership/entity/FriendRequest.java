@@ -1,10 +1,13 @@
 package com.steam.membership.entity;
 
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "friend_request")
 public class FriendRequest {
@@ -15,12 +18,14 @@ public class FriendRequest {
 
     //TODO 컬럼 이름 변경
     //sender
-    @Column(name = "user_id")
-    private Integer senderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User sender;
 
     //receiver
-    @Column(name = "requester_id")
-    private Integer receiverId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requester_id")
+    private User receiver;
 
 
 

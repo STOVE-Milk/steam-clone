@@ -2,14 +2,18 @@ package com.steam.membership.entity;
 
 import com.steam.membership.global.error.CustomException;
 import com.steam.membership.global.error.ErrorCode;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "user")
 public class User {
@@ -42,14 +46,14 @@ public class User {
     private String country;
 
     @Column(name = "created_at")
-    private java.sql.Timestamp createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "accessed_at")
-    private java.sql.Timestamp accessedAt;
+    private Timestamp accessedAt;
 
     @Column(name = "updated_at")
-    private java.sql.Timestamp updatedAt;
+    private Timestamp updatedAt;
 
     @Column(name = "deleted_at")
-    private java.sql.Timestamp deletedAt;
+    private Timestamp deletedAt;
 }

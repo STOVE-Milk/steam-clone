@@ -1,6 +1,6 @@
 package com.steam.membership.dto;
 
-import com.steam.membership.entity.User;
+import com.steam.membership.entity.Friend;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 public class FriendsResponse {
     List<UserDto> friends;
 
-    public static FriendsResponse of(final List<User> users) {
+    public static FriendsResponse of(final List<Friend> users) {
         return FriendsResponse.builder()
                 .friends(
                         users.stream()
-                                .map(UserDto::of)
+                                .map(friend -> UserDto.of(friend.getFriend()))
                                 .collect(Collectors.toList())
                 )
                 .build();

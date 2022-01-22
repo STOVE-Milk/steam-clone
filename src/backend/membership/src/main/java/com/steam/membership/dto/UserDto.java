@@ -26,4 +26,13 @@ public class UserDto {
                 .createdAt(user.getCreatedAt())
                 .build();
     }
+
+    public static UserDto of(final User user, Date createdAt) {
+        return UserDto.builder()
+                .idx(user.getIdx())
+                .nickname(user.getNickname())
+                .profile(JsonUtil.toObject(user.getProfile(), ProfileDto.class))
+                .createdAt(createdAt)
+                .build();
+    }
 }
