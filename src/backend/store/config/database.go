@@ -7,7 +7,6 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 type dbConfig struct {
@@ -34,11 +33,6 @@ func makeDbConfig() string {
 }
 
 func InitDB() *sql.DB {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	db, err := sql.Open("mysql", makeDbConfig())
 	if err != nil {
 		log.Fatal(err)
