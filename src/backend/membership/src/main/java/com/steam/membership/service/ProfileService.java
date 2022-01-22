@@ -33,11 +33,11 @@ public class ProfileService {
     }
 
     public Body<Object> getGuestBooks(Integer userId) {
-        final Optional<User> user = userRepository.findById(userId);
-        if(user.isEmpty() || user.get().getGuestBooks().isEmpty())
+        final List<GuestBook> guestBooks = guestBookRepository.findTop10ByUserIdx(userId);
+        if(guestBooks.isEmpty())
             return Body.error(ErrorCode.USER_NOT_FOUND);
 
-        return Body.success(GuestBookResponse.of(user.get().getGuestBooks()));
+        return Body.success(GuestBookResponse.of(guestBooks));
     }
 
     public Object writeGuestBook(Integer userId, String content) {

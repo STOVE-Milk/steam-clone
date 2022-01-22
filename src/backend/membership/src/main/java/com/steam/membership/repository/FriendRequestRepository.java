@@ -12,10 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Integer> {
-    public Optional<FriendRequest> findBySenderAndReceiver(User sender, User receiver);
+    Optional<FriendRequest> findBySenderAndReceiver(User sender, User receiver);
 
     @Query("SELECT fr from FriendRequest fr WHERE fr.idx = :idx AND (fr.sender = :user OR fr.receiver = :user)")
-    public Optional<FriendRequest> findByIdAndUser(@Param("idx") Integer idx, @Param("user") User user);
-    public List<FriendRequest> findAllBySender(User sender);
-    public List<FriendRequest> findAllByReceiver(User receiver);
+    Optional<FriendRequest> findByIdAndUser(@Param("idx") Integer idx, @Param("user") User user);
+    List<FriendRequest> findAllBySender(User sender);
+    List<FriendRequest> findAllByReceiver(User receiver);
 }
