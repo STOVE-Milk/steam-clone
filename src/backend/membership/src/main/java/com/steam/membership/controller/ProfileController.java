@@ -14,7 +14,7 @@ public class ProfileController {
     private final ProfileService profileService;
     private final FriendService friendService;
 
-    @GetMapping("/{userId}}")
+    @GetMapping("/{userId}")
     @ResponseBody
     public ResponseEntity<Object> getUserProfile(@PathVariable("userId") Integer userId) {
 
@@ -43,10 +43,10 @@ public class ProfileController {
 
     @PostMapping("/{userId}/guest-book")
     @ResponseBody
-    public ResponseEntity<Object> writeGuestBook(@PathVariable("userId") Integer userId) {
+    public ResponseEntity<Object> writeGuestBook(@PathVariable("userId") Integer userId, @RequestParam("content") String content) {
 
         return ResponseEntity.ok(
-                profileService.writeGuestBook(userId)
+                profileService.writeGuestBook(userId, content)
         );
     }
 

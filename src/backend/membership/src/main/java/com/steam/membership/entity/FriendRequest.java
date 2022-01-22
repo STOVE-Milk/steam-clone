@@ -1,6 +1,7 @@
 package com.steam.membership.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 
@@ -30,5 +31,6 @@ public class FriendRequest {
 
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private java.sql.Timestamp createdAt;
 }

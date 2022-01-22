@@ -2,6 +2,7 @@ package com.steam.membership.service;
 
 import com.steam.membership.dto.FriendRequestResponse;
 import com.steam.membership.dto.FriendsResponse;
+import com.steam.membership.dto.UserDto;
 import com.steam.membership.entity.Friend;
 import com.steam.membership.entity.FriendRequest;
 import com.steam.membership.entity.User;
@@ -22,6 +23,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -34,7 +36,8 @@ public class FriendService {
     private static final String FRIEND_REQUEST_TYPE_RECEIVED = "received";
 
     public Body<Object> getFriendList() {
-        List<Friend> friends = friendRepository.findTop20ByUser(UserContext.getUser());
+        final List<Friend> friends = friendRepository.findTop20ByUser(UserContext.getUser());
+
         if(friends.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
@@ -42,20 +45,33 @@ public class FriendService {
     }
 
     public Body<Object> getFriendListRelatedMe(Integer userId) {
-        List<Friend> friends = friendRepository.findTop20ByUser(UserContext.getUser());
-        if(friends.isEmpty())
+        final List<Friend> myFriends = friendRepository.findAllByUser(UserContext.getUser());
+        final List<User> usersFriends = friendRepository.findAllByUser(UserContext.getUser()).stream()
+                .map(Friend::getFriend)
+                .collect(Collectors.toList());
+
+        if(myFriends.isEmpty() || usersFriends.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
-        return Body.success(FriendsResponse.of(friends));
+        List<UserDto> sameFriends = myFriends.stream()
+                .map(Friend::getFriend)
+                .filter(usersFriends::contains)
+                .map(UserDto::of)
+                .collect(Collectors.toList());
+
+        return Body.success(FriendsResponse.builder().friends(sameFriends).build());
     }
 
     @Transactional
     public Body<Object> acceptFriendRequest(Integer requestId) {
-        User me = UserContext.getUser();
-        User sender = User.builder().idx(requestId).build();
+        final User me = UserContext.getUser();
+        final User sender = User.builder().idx(requestId).build();
+
         Optional<FriendRequest> friendRequest = friendRequestRepository.findBySenderAndReceiver(sender, me);
+
         if(friendRequest.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+
         List<Friend> friends = List.of(
                 Friend.builder()
                 .user(me)
@@ -66,35 +82,43 @@ public class FriendService {
                 .friend(me)
                 .build()
         );
+
         friendRequestRepository.delete(friendRequest.get());
         friendRepository.saveAll(friends);
+
         return Body.success(new EmptyData());
     }
 
     public Body<Object> deleteFriend(Integer friendId) {
         // TODO 한쪽만 친구를 끊을 것인가?
-        Integer userId = UserContext.getUserId();
-        List<Friend> friend = friendRepository.findFriendsByUserIdAndFriendId(userId, friendId);
+        final Integer userId = UserContext.getUserId();
+        final List<Friend> friend = friendRepository.findFriendsByUserIdAndFriendId(userId, friendId);
+
         if(friend == null)
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+
         friendRepository.deleteAll(friend);
 
         return Body.success(new EmptyData());
     }
 
     public Body<Object> getFriendRequestList(String type) {
-        User me = UserContext.getUser();
+        final User me = UserContext.getUser();
         List<FriendRequest> friendRequests;
 
         if(type.equals(FRIEND_REQUEST_TYPE_SENDED)) {
             friendRequests = friendRequestRepository.findAllBySender(me);
+
             if(friendRequests.isEmpty())
                 return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+
             return Body.success(FriendRequestResponse.receiverOf(friendRequests));
         } else if(type.equals(FRIEND_REQUEST_TYPE_RECEIVED)) {
             friendRequests = friendRequestRepository.findAllByReceiver(me);
+
             if(friendRequests.isEmpty())
                 return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+
             return Body.success(FriendRequestResponse.senderOf(friendRequests));
         } else {
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
@@ -102,17 +126,17 @@ public class FriendService {
     }
 
     public Body<Object> sendFriendRequest(Integer userId) {
-        User me = UserContext.getUser();
-        Optional<User> receiver = userRepository.findById(userId);
+        final User me = UserContext.getUser();
+        final Optional<User> receiver = userRepository.findById(userId);
 
         if(receiver.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
-        Optional<FriendRequest> friendRequest = friendRequestRepository.findBySenderAndReceiver(me, receiver.get());
+        final Optional<FriendRequest> friendRequest = friendRequestRepository.findBySenderAndReceiver(me, receiver.get());
         if(friendRequest.isPresent())
             return Body.error(ErrorCode.ALREADY_REQUESTED);
 
-        Optional<Friend> friend = friendRepository.findByUserAndFriend(me, receiver.get());
+        final Optional<Friend> friend = friendRepository.findByUserAndFriend(me, receiver.get());
         if(friend.isPresent())
             return Body.error(ErrorCode.ALREADY_FRIEND);
 
@@ -122,8 +146,8 @@ public class FriendService {
     }
 
     public Body<Object> rejectFriendRequest(Integer requestId) {
-        User me = UserContext.getUser();
-        Optional<FriendRequest> friendRequest = friendRequestRepository.findByIdAndUser(requestId, me);
+        final User me = UserContext.getUser();
+        final Optional<FriendRequest> friendRequest = friendRequestRepository.findByIdAndUser(requestId, me);
 
         if(friendRequest.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);

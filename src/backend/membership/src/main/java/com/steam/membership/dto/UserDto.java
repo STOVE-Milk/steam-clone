@@ -16,6 +16,7 @@ public class UserDto {
     private Integer idx;
     private String nickname;
     private ProfileDto profile;
+    private Date accessedAt;
     private Date createdAt;
 
     public static UserDto of(final User user) {
@@ -23,6 +24,7 @@ public class UserDto {
                 .idx(user.getIdx())
                 .nickname(user.getNickname())
                 .profile(JsonUtil.toObject(user.getProfile(), ProfileDto.class))
+                .accessedAt(user.getAccessedAt())
                 .createdAt(user.getCreatedAt())
                 .build();
     }
@@ -32,6 +34,7 @@ public class UserDto {
                 .idx(user.getIdx())
                 .nickname(user.getNickname())
                 .profile(JsonUtil.toObject(user.getProfile(), ProfileDto.class))
+                .accessedAt(user.getAccessedAt())
                 .createdAt(createdAt)
                 .build();
     }

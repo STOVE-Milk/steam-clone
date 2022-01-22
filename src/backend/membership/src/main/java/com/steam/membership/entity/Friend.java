@@ -1,6 +1,7 @@
 package com.steam.membership.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 
@@ -18,6 +19,8 @@ import javax.persistence.*;
 )
 public class Friend {
     @Id
+    private Integer id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -27,5 +30,6 @@ public class Friend {
     private User friend;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private java.sql.Timestamp createdAt;
 }

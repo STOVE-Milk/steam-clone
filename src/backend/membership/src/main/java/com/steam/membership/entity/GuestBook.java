@@ -1,6 +1,8 @@
 package com.steam.membership.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 
@@ -31,8 +33,14 @@ public class GuestBook {
     private String content;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private java.sql.Timestamp createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private java.sql.Timestamp updatedAt;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
