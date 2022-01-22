@@ -1,56 +1,7 @@
 milk:
   jwt:
-    secret: 5dc5085d01e85fd229e32fedbd0f1a4b10cd57e61a7f423bca91263d7ce22ac5cf298a1f8ecc5f5f8125b07627329d06cbde50d25b5d00a17286cf577fd86e8b
-
-logging:
-  level:
-    com.steam.gateway: trace
-
-server:
-  port: 8080
+    secret: 5dc5085d01e85fd229e32fedbd0f1a4b10cd57e61a7f423bca91263d7ce22ac5cf298a1f8ecc5f5f8125b07627329d06cbde50d25b5d00a17286cf577fd86e8b111fasdfhaskjdfhakjsldhfkahsdjkfhlaskdfhklasjdhfizxvhlaksdfhuvhlzsdvuishdflaiuvhasidufhsilvxzcvasvasdafasdqwfqdqdqqwdqwdqeqfqwfqwdqwfeqfq
 
 spring:
-  cloud:
-    gateway:
-      default-filters:
-        - name: GlobalFilter
-          args:
-            baseMessage: Spring Cloud Gateway GlobalFilter
-            preLogger: false
-            postLogger: false
-      routes:
-        - id: auth-svc
-          uri: http://localhost:8081/
-          predicates:
-            - Path=/auth/**
-        - id: store-svc
-          uri: http://localhost:8100/
-          predicates:
-            - Path=/store/**
-        - id: payment-svc
-          uri: http://localhost:8200/
-          predicates:
-            - Path=/payment/**
-          filters:
-            - name: AuthorizationCheckFilter
-              args:
-                baseMessage: Spring Cloud Gateway AuthorizationCheckFilter
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:3000"
-            allow-credentials: true
-            allowedHeaders:
-              - x-requested-with
-              - authorization
-              - content-type
-              - credential
-              - X-AUTH-TOKEN
-              - X-CSRF-TOKEN
-            allowedMethods:
-              - POST
-              - GET
-              - PUT
-              - OPTIONS
-              - DELETE
-              - PATCH
+  profiles:
+    active: dev

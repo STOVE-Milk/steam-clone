@@ -1,0 +1,52 @@
+logging:
+  level:
+    com.steam.gateway: debug
+
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - name: GlobalFilter
+          args:
+            baseMessage: Spring Cloud Gateway GlobalFilter
+            preLogger: false
+            postLogger: false
+      routes:
+        - id: auth-svc
+          uri: http://localhost:8081/
+          predicates:
+            - Path=/auth/**
+        - id: grpc-svc
+          uri: http://localhost:8100/
+          predicates:
+            - Path=/store/**
+        - id: payment-svc
+          uri: http://localhost:8200/
+          predicates:
+            - Path=/payment/**
+          filters:
+            - name: AuthorizationCheckFilter
+              args:
+                baseMessage: Spring Cloud Gateway AuthorizationCheckFilter
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allow-credentials: true
+            allowedHeaders:
+              - x-requested-with
+              - authorization
+              - content-type
+              - credential
+              - X-AUTH-TOKEN
+              - X-CSRF-TOKEN
+            allowedMethods:
+              - POST
+              - GET
+              - PUT
+              - OPTIONS
+              - DELETE
+              - PATCH
