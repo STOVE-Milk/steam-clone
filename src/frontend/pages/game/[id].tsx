@@ -1,11 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
+import Image from 'next/image';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'modules';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+
 import { getGame } from 'modules/game';
+import wrapper from 'modules/configureStore';
+import { IState } from 'modules';
+
+import Text from 'components/atoms/Text';
+import FilledButton from 'components/atoms/FilledButton';
+import { localePrice } from 'util/localeString';
 
 const DetailWrapper = styled.div`
   display: flex;
@@ -13,6 +22,7 @@ const DetailWrapper = styled.div`
   align-items: center;
   height: 100%;
   overflow-y: scroll;
+  margin-top: 6rem;
 `;
 
 const GameIntroSection = styled.div`
@@ -23,8 +33,8 @@ const GameIntroSection = styled.div`
 
 const GameDetailSection = styled.div`
   width: 80%;
-  border: 1px solid white;
   margin-top: 3rem;
+  border-radius: 10px;
 `;
 
 const GameDetailBox = styled.div`
@@ -32,40 +42,127 @@ const GameDetailBox = styled.div`
   flex-direction: column;
 `;
 
-const GameInfoCol = styled.div``;
-const GameInfoBox = styled.div``;
-const GameInfoKey = styled.div``;
-const GameInfoValue = styled.div``;
+const GameInfoBox = styled.div`
+  background: ${(props) => props.theme.colors.secondaryBg};
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+`;
+
+const TitleBox = styled(GameInfoBox)`
+  .desc {
+    padding-top: 1rem;
+    line-height: 1.5rem;
+  }
+`;
+
+const OSBox = styled(GameInfoBox)`
+  .OSCol {
+    padding-top: 0.5rem;
+    align-items: center;
+    display: flex;
+
+    > svg {
+      margin-right: 1rem;
+    }
+  }
+`;
+
+const CategoryBox = styled(GameInfoBox)`
+  .categories {
+    padding-top: 0.8rem;
+    display: flex;
+  }
+
+  span {
+    margin-right: 1rem;
+  }
+`;
+
+const GameBuyBox = styled(GameInfoBox)`
+  display: flex;
+  flex-direction: column;
+
+  .actionBox {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 0.5rem;
+  }
+`;
 
 const DevInfoBox = styled.div``;
 
-const Detail: NextPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
-
-  const game = useSelector((state: RootState) => state.game.game);
-  const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   dispatch(getGame.request({ id: id }));
-  // }, [game]);
+const Detail: NextPage<IState> = () => {
+  const { game } = useSelector((state: IState) => state.game);
+  const array = [1, 2, 3, 4, 5, 6];
 
   return (
     <DetailWrapper>
-      <GameIntroSection></GameIntroSection>
+      <GameIntroSection>
+        {/* <CarouselComponent
+          slides={array.map((data) => {
+            return (
+              <BigGameSlide
+                key={game.data?.id}
+                image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover" />}
+              ></BigGameSlide>
+            );
+          })}
+        ></CarouselComponent> */}
+      </GameIntroSection>
       <GameDetailSection>
         <GameDetailBox>
-          <GameInfoBox>
-            <GameInfoCol>
-              <GameInfoKey>이름</GameInfoKey>
-              <GameInfoValue>{game.data && game.data.name}</GameInfoValue>
-            </GameInfoCol>
-          </GameInfoBox>
+          <TitleBox>
+            <Text types="large"> {game.data && game.data.name}</Text>
+            <div className="desc">
+              <Text types="small"> {game.data && game.data.description}</Text>
+            </div>
+          </TitleBox>
+          <OSBox>
+            <Text types="medium">지원 가능 OS</Text>
+            {game.data &&
+              game.data.os.map((eachOs: string) => {
+                return (
+                  <div className="OSCol">
+                    <FontAwesomeIcon icon={eachOs === 'windows' ? faWindowMaximize : faAppleAlt} inverse />
+                    <Text types="small">{eachOs}</Text>
+                  </div>
+                );
+              })}
+          </OSBox>
+          <CategoryBox>
+            <Text types="medium">게임 카테고리</Text>
+            <div className="categories">
+              {game.data &&
+                game.data.category_list.map((category: string) => {
+                  return (
+                    <span>
+                      <Text types="small">{`#${category}`}</Text>
+                    </span>
+                  );
+                })}
+            </div>
+          </CategoryBox>
+          <GameBuyBox>
+            <Text types="large"> {game.data && game.data.name}</Text>
+            <div className="actionBox">
+              <Text types="medium"> {`${game.data && localePrice(game.data.price['KR'], game.data.country)}`}</Text>
+              <FilledButton types={'primary'}>구매</FilledButton>
+              <FilledButton types={'primary'}>장바구니</FilledButton>
+            </div>
+          </GameBuyBox>
           <DevInfoBox></DevInfoBox>
         </GameDetailBox>
       </GameDetailSection>
     </DetailWrapper>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps((store) => async ({ params }) => {
+  // store.dispatch(getGame.request({ id: params && Number(params.id) }));
+
+  return { props: {} };
+});
 
 export default Detail;

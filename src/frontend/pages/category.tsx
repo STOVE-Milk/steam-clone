@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import CategoryList from 'components/molecules/CategoryList';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'modules';
 import { getCategories } from 'modules/game';
 
 export type GameMedia = {
@@ -86,12 +85,12 @@ const ContentWrapper = styled.div`
   margin-bottom: 2rem;
 `;
 const Category = () => {
-  const categories = useSelector((state: RootState) => state.game.categories);
-  const dispatch = useDispatch();
+  // const categories = useSelector((state: RootState) => state.game.categories);
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getCategories.request({}));
-  }, [categories]);
+  // useEffect(() => {
+  // dispatch(getCategories.request({}));
+  // }, [categories]);
 
   return (
     <GameInfoWrapper>

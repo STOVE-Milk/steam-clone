@@ -37,6 +37,7 @@ const initialState: gameState = {
         sub: ['www1', 'www2'],
       },
       category_list: ['Sandbox', 'RTS', 'FPS', 'MOBA'],
+      country: 'KR',
     },
     {
       id: 2,
@@ -57,6 +58,7 @@ const initialState: gameState = {
         sub: ['www1', 'www2'],
       },
       category_list: ['Sandbox', 'RTS', 'FPS'],
+      country: 'KR',
     },
   ]),
   game: asyncState.initial({
@@ -78,6 +80,7 @@ const initialState: gameState = {
       sub: ['www1', 'www2'],
     },
     category_list: ['Sandbox', 'RTS', 'FPS', 'MOBA'],
+    country: 'KR',
   }),
 };
 
