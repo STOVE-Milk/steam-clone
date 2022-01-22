@@ -28,5 +28,13 @@
             "message": "돈이 충분하지 않습니다.",
             "description": "게임 구매 중 유저의 보유금이 게임의 합산 금액보다 적을 경우 실패 에러"
         }
+    },
+
+    "store" : {
+        "developer" : "장성현",
+        "developer_id": 3,
+        "server_id": 1,
+        "success_code": 31000
+        
     }
 }
