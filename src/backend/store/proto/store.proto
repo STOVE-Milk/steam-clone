@@ -41,21 +41,24 @@ service Store {
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
             post: "/store/wishlist"
+            body: "*"
         };
     }
     rpc DeleteWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            delete: "/store/wishlist"
+            delete: "/store/wishlist/{game_id}"
         };
     }
     rpc PostReview(ReviewQueryRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
             post: "/store/games/{game_id}/reviews"
+            body: "*"
         };
     }
     rpc PatchReview(ReviewQueryRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
             patch: "/store/games/reviews/{review_id}"
+            body: "*"
         };
     }
     rpc DeleteReview(ReviewQueryRequest) returns (IsSuccessResponse){
