@@ -19,7 +19,7 @@ type Repo struct {
 func (r *Repo) GetReviewList(ctx context.Context) ([]*model.Review, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	gameId := ctx.Value("gameId").(int)
+	gameId := ctx.Value("gameId").(int32)
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT idx, user_id, displayed_name, content, recommendation, created_at
 	FROM review
@@ -66,7 +66,7 @@ func (r *Repo) GetPublisher(ctx context.Context, publisherId int) (*model.Publis
 func (r *Repo) GetGameDetail(ctx context.Context) (*model.GameDetail, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	gameId := ctx.Value("gameId").(int)
+	gameId := ctx.Value("gameId").(int32)
 	var gd model.GameDetail
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT game_id, name, description_snippet, price, sale, image, video, description, publisher_id, review_count, recommend_count, os, language
@@ -86,8 +86,8 @@ func (r *Repo) GetGameDetail(ctx context.Context) (*model.GameDetail, error) {
 func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	category_name := ctx.Value("category").(string)
-	page := ctx.Value("page").(int)
-	size := ctx.Value("size").(int)
+	page := ctx.Value("page").(int32)
+	size := ctx.Value("size").(int32)
 	sort := ctx.Value("sort").(string)
 	defer cancel()
 	var gameSimpleList []*model.GameSimple
@@ -153,7 +153,7 @@ func (r *Repo) GetAllCategoryList(ctx context.Context) ([]*model.Category, error
 func (r *Repo) GetCategoryListByGameId(ctx context.Context) ([]*model.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	gameId := ctx.Value("gameId").(int)
+	gameId := ctx.Value("gameId").(int32)
 	var categoryList []*model.Category
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT name 
@@ -231,7 +231,7 @@ func (r *Repo) DeleteWishlist(ctx context.Context) (bool, error) {
 func (r *Repo) GetWishlist(ctx context.Context) ([]int32, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	userId := ctx.Value("userId").(int)
+	userId := ctx.Value("userId").(int32)
 	var wishlist []int32
 	rows, err := r.db.QueryContext(ctx, `	
 	SELECT game_id
@@ -256,11 +256,11 @@ func (r *Repo) GetWishlist(ctx context.Context) ([]int32, error) {
 func (r *Repo) PostReview(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	userId := ctx.Value("userId").(int)
-	gameId := ctx.Value("gameId").(int)
+	userId := ctx.Value("userId").(int32)
+	gameId := ctx.Value("gameId").(int32)
 	displayedName := ctx.Value("nickname").(string)
 	reviewContent := ctx.Value("reviewContent").(string)
-	reviewRecommendation := ctx.Value("reviewRecommendation").(int)
+	reviewRecommendation := ctx.Value("reviewRecommendation").(int32)
 
 	_, err := r.db.Exec("INSERT INTO review(user_id, game_id, displayed_name, content, recommendation) VALUES(?,?,?,?,?)", userId, gameId, displayedName, reviewContent, reviewRecommendation)
 	if err != nil {
@@ -272,10 +272,10 @@ func (r *Repo) PostReview(ctx context.Context) (bool, error) {
 func (r *Repo) PatchReview(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	userId := ctx.Value("userId").(int)
-	reviewId := ctx.Value("reviewId").(int)
+	userId := ctx.Value("userId").(int32)
+	reviewId := ctx.Value("reviewId").(int32)
 	reviewContent := ctx.Value("reviewContent").(string)
-	reviewRecommendation := ctx.Value("reviewRecommendation").(int)
+	reviewRecommendation := ctx.Value("reviewRecommendation").(int32)
 	_, err := r.db.Exec("UPDATE SET review(content, recommendation) VALUES(?,?) WHERE idx=? AND user_id=?", reviewContent, reviewRecommendation, reviewId, userId)
 	if err != nil {
 		return false, err
@@ -286,8 +286,8 @@ func (r *Repo) PatchReview(ctx context.Context) (bool, error) {
 func (r *Repo) DeleteReview(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	userId := ctx.Value("userId").(int)
-	reviewId := ctx.Value("reviewId").(int)
+	userId := ctx.Value("userId").(int32)
+	reviewId := ctx.Value("reviewId").(int32)
 	_, err := r.db.Exec("DELETE FROM review WHERE idx=? AND user_id=?", reviewId, userId)
 	if err != nil {
 		return false, err

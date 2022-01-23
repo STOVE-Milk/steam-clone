@@ -171,6 +171,7 @@ func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSi
 	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
 	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
 	for i, game := range gameSimpleList {
+		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
 		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
 		if err != nil {
 			return nil, err
@@ -206,7 +207,6 @@ func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSi
 			DownloadCount: int32(game.DownloadCount),
 		}
 	}
-
 	return &pbGameSimpleList, nil
 }
 
