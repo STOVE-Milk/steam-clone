@@ -19,6 +19,8 @@ const (
 
 func main() {
 	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userId", "1")
+	ctx = context.WithValue(ctx, "nickname", "roy")
 	mux := runtime.NewServeMux()
 	options := []grpc.DialOption{
 		grpc.WithInsecure(),
