@@ -63,11 +63,11 @@ func (store *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (
 }
 
 func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.SortingParamRequest) (*pb.GameSimpleListResponse, error) {
-	category := req.Category
-	page := req.Page
-	size := req.Size
-	sort := req.Sort
-	res, err := store.gameCtr.GetSortingGameList(ctx, category, page, size, sort)
+	ctx = context.WithValue(ctx, "category", req.Category)
+	ctx = context.WithValue(ctx, "page", req.Page)
+	ctx = context.WithValue(ctx, "size", req.Size)
+	ctx = context.WithValue(ctx, "sort", req.Sort)
+	res, err := store.gameCtr.GetSortingGameList(ctx)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
 			Code:    31000,
@@ -82,8 +82,8 @@ func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.Sortin
 }
 
 func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.GameDetailResponse, error) {
-	gameId := req.GameId
-	res, err := store.gameCtr.GetGameDetail(ctx, gameId)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.gameCtr.GetGameDetail(ctx)
 	if err != nil {
 		return &pb.GameDetailResponse{
 			Code:    31000,
@@ -98,8 +98,8 @@ func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamR
 }
 
 func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.ReviewListResponse, error) {
-	gameId := req.GameId
-	res, err := store.gameCtr.GetReviewList(ctx, gameId)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.gameCtr.GetReviewList(ctx)
 	if err != nil {
 		return &pb.ReviewListResponse{
 			Code:    31000,
@@ -114,8 +114,7 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 }
 
 func (store *storeServer) GetWishlist(ctx context.Context, _ *empty.Empty) (*pb.WishlistResponse, error) {
-	userId := 1
-	res, err := store.gameCtr.GetWishlist(ctx, int32(userId))
+	res, err := store.gameCtr.GetWishlist(ctx)
 	if err != nil {
 		return &pb.WishlistResponse{
 			Code:    31000,
@@ -130,8 +129,7 @@ func (store *storeServer) GetWishlist(ctx context.Context, _ *empty.Empty) (*pb.
 }
 
 func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Empty) (*pb.GameSimpleListResponse, error) {
-	userId := 1
-	res, err := store.gameCtr.GetGameListInWishlist(ctx, int32(userId))
+	res, err := store.gameCtr.GetGameListInWishlist(ctx)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
 			Code:    31000,
@@ -146,9 +144,8 @@ func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Em
 }
 
 func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
-	userId := 1
-	gameId := req.GameId
-	res, err := store.gameCtr.PostWishlist(ctx, int32(userId), int32(gameId))
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.gameCtr.PostWishlist(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
 			Code:    31001,
@@ -163,9 +160,8 @@ func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryP
 }
 
 func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
-	userId := 1
-	gameId := req.GameId
-	res, err := store.gameCtr.DeleteWishlist(ctx, int32(userId), int32(gameId))
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.gameCtr.DeleteWishlist(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
 			Code:    31001,
@@ -180,11 +176,10 @@ func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQuer
 }
 
 func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userId := 1
-	gameId := req.GameId
-	reviewContent := req.Content
-	reviewRecommendation := req.Recommendation
-	res, err := store.gameCtr.PostReview(ctx, int32(userId), int32(gameId), reviewContent, reviewRecommendation)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	ctx = context.WithValue(ctx, "reviewContent", req.Content)
+	ctx = context.WithValue(ctx, "reviewRecommendation", req.Recommendation)
+	res, err := store.gameCtr.PostReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
 			Code:    31001,
@@ -199,11 +194,11 @@ func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryReq
 }
 
 func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userId := 1
-	reviewId := req.ReviewId
-	reviewContent := req.Content
-	reviewRecommendation := req.Recommendation
-	res, err := store.gameCtr.PatchReview(ctx, int32(userId), int32(reviewId), reviewContent, reviewRecommendation)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	ctx = context.WithValue(ctx, "reviewId", req.ReviewId)
+	ctx = context.WithValue(ctx, "reviewContent", req.Content)
+	ctx = context.WithValue(ctx, "reviewRecommendation", req.Recommendation)
+	res, err := store.gameCtr.PatchReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
 			Code:    31001,
@@ -217,9 +212,8 @@ func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRe
 	}, nil
 }
 func (store *storeServer) DeleteReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userId := 1
-	reviewId := req.ReviewId
-	res, err := store.gameCtr.DeleteReview(ctx, int32(userId), int32(reviewId))
+	ctx = context.WithValue(ctx, "reviewId", req.ReviewId)
+	res, err := store.gameCtr.DeleteReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
 			Code:    31001,

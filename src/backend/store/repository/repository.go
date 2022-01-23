@@ -16,9 +16,10 @@ type Repo struct {
 	db *sql.DB
 }
 
-func (r *Repo) GetReviewList(ctx context.Context, gameId int32) ([]*model.Review, error) {
+func (r *Repo) GetReviewList(ctx context.Context) ([]*model.Review, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	gameId := ctx.Value("gameId").(int)
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT idx, user_id, displayed_name, content, recommendation, created_at
 	FROM review
@@ -62,10 +63,10 @@ func (r *Repo) GetPublisher(ctx context.Context, publisherId int) (*model.Publis
 	return &publisher, nil
 }
 
-func (r *Repo) GetGameDetail(ctx context.Context, gameId int32) (*model.GameDetail, error) {
+func (r *Repo) GetGameDetail(ctx context.Context) (*model.GameDetail, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-
+	gameId := ctx.Value("gameId").(int)
 	var gd model.GameDetail
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT game_id, name, description_snippet, price, sale, image, video, description, publisher_id, review_count, recommend_count, os, language
@@ -82,8 +83,12 @@ func (r *Repo) GetGameDetail(ctx context.Context, gameId int32) (*model.GameDeta
 	return &gd, nil
 }
 
-func (r *Repo) GetSortingGameList(ctx context.Context, category_name string, page, size int32, sort string) ([]*model.GameSimple, error) {
+func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	category_name := ctx.Value("category").(string)
+	page := ctx.Value("page").(int)
+	size := ctx.Value("size").(int)
+	sort := ctx.Value("sort").(string)
 	defer cancel()
 	var gameSimpleList []*model.GameSimple
 
@@ -145,9 +150,10 @@ func (r *Repo) GetAllCategoryList(ctx context.Context) ([]*model.Category, error
 	return categoryList, nil
 }
 
-func (r *Repo) GetCategoryListByGameId(ctx context.Context, gameId int) ([]*model.Category, error) {
+func (r *Repo) GetCategoryListByGameId(ctx context.Context) ([]*model.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	gameId := ctx.Value("gameId").(int)
 	var categoryList []*model.Category
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT name 
@@ -168,9 +174,10 @@ func (r *Repo) GetCategoryListByGameId(ctx context.Context, gameId int) ([]*mode
 	return categoryList, nil
 }
 
-func (r *Repo) GetGameListInWishlist(ctx context.Context, userId int32) ([]*model.GameSimple, error) {
+func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*model.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	userId := ctx.Value("userId")
 	var gameSimpleList []*model.GameSimple
 	rows, err := r.db.QueryContext(ctx, `	
 	SELECT g.idx, g.name, g.description_snippet, g.price, g.sale, g.image, g.video, g.os, g.download_count
@@ -194,9 +201,11 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context, userId int32) ([]*mode
 	return gameSimpleList, nil
 }
 
-func (r *Repo) PostWishlist(ctx context.Context, userId, gameId int32) (bool, error) {
+func (r *Repo) PostWishlist(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	userId := ctx.Value("userId").(string)
+	gameId := ctx.Value("gameId").(string)
 	res, err := r.db.Exec("INSERT INTO wishlist(idx, user_id, game_id) VALUES(?,?)", userId, gameId)
 	if err != nil {
 		return false, err
@@ -207,9 +216,11 @@ func (r *Repo) PostWishlist(ctx context.Context, userId, gameId int32) (bool, er
 	return true, nil
 }
 
-func (r *Repo) DeleteWishlist(ctx context.Context, userId, gameId int32) (bool, error) {
+func (r *Repo) DeleteWishlist(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	userId := ctx.Value("userId").(string)
+	gameId := ctx.Value("gameId").(string)
 	_, err := r.db.Exec("DELETE FROM wishlist WHERE user_id=? AND game_id=?", userId, gameId)
 	if err != nil {
 		return false, err
@@ -217,9 +228,10 @@ func (r *Repo) DeleteWishlist(ctx context.Context, userId, gameId int32) (bool, 
 	return true, nil
 }
 
-func (r *Repo) GetWishlist(ctx context.Context, userId int32) ([]int32, error) {
+func (r *Repo) GetWishlist(ctx context.Context) ([]int32, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	userId := ctx.Value("userId").(int)
 	var wishlist []int32
 	rows, err := r.db.QueryContext(ctx, `	
 	SELECT game_id
@@ -241,30 +253,42 @@ func (r *Repo) GetWishlist(ctx context.Context, userId int32) ([]int32, error) {
 	return wishlist, nil
 }
 
-func (r *Repo) PostReview(ctx context.Context, userId, gameId int32, reviewContent string, reviewRecommendation int32) (bool, error) {
+func (r *Repo) PostReview(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	_, err := r.db.Exec("INSERT INTO review(idx, user_id, game_id) VALUES(?,?)", userId, gameId)
+	userId := ctx.Value("userId").(int)
+	gameId := ctx.Value("gameId").(int)
+	displayedName := ctx.Value("nickname").(string)
+	reviewContent := ctx.Value("reviewContent").(string)
+	reviewRecommendation := ctx.Value("reviewRecommendation").(int)
+
+	_, err := r.db.Exec("INSERT INTO review(user_id, game_id, displayed_name, content, recommendation) VALUES(?,?,?,?,?)", userId, gameId, displayedName, reviewContent, reviewRecommendation)
 	if err != nil {
 		return false, err
 	}
 	return true, nil
 }
 
-func (r *Repo) PatchReview(ctx context.Context, userId, reviewId int32, reviewContent string, reviewRecommendation int32) (bool, error) {
+func (r *Repo) PatchReview(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	_, err := r.db.Exec("UPDATE SET wishlist(idx, user_id, game_id) VALUES(?,?)", userId, gameId)
+	userId := ctx.Value("userId").(int)
+	reviewId := ctx.Value("reviewId").(int)
+	reviewContent := ctx.Value("reviewContent").(string)
+	reviewRecommendation := ctx.Value("reviewRecommendation").(int)
+	_, err := r.db.Exec("UPDATE SET review(content, recommendation) VALUES(?,?) WHERE idx=? AND user_id=?", reviewContent, reviewRecommendation, reviewId, userId)
 	if err != nil {
 		return false, err
 	}
 	return true, nil
 }
 
-func (r *Repo) DeleteReview(ctx context.Context, userId, reviewId int32) (bool, error) {
+func (r *Repo) DeleteReview(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	_, err := r.db.Exec("DELETE FROM wishlist WHERE idx=? AND user_id=?", reviewId, userId)
+	userId := ctx.Value("userId").(int)
+	reviewId := ctx.Value("reviewId").(int)
+	_, err := r.db.Exec("DELETE FROM review WHERE idx=? AND user_id=?", reviewId, userId)
 	if err != nil {
 		return false, err
 	}

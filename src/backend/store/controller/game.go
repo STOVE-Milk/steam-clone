@@ -35,8 +35,8 @@ func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.Catego
 	return &pbCategoryList, nil
 }
 
-func (gc *GameController) GetWishlist(ctx context.Context, userId int32) (*pb.WishlistResponse_Wishlist, error) {
-	wishlist, err := gc.r.GetWishlist(ctx, userId)
+func (gc *GameController) GetWishlist(ctx context.Context) (*pb.WishlistResponse_Wishlist, error) {
+	wishlist, err := gc.r.GetWishlist(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -45,12 +45,12 @@ func (gc *GameController) GetWishlist(ctx context.Context, userId int32) (*pb.Wi
 	return &pbWishlist, nil
 }
 
-func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb.GameDetail, error) {
-	gameDetail, err := gc.r.GetGameDetail(ctx, gameId)
+func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetail, error) {
+	gameDetail, err := gc.r.GetGameDetail(ctx)
 	if err != nil {
 		return nil, err
 	}
-	categoryList, err := gc.r.GetCategoryListByGameId(ctx, int(gameId))
+	categoryList, err := gc.r.GetCategoryListByGameId(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -97,15 +97,15 @@ func (gc *GameController) GetGameDetail(ctx context.Context, gameId int32) (*pb.
 	}, nil
 }
 
-func (gc *GameController) GetSortingGameList(ctx context.Context, category_name string, page, size int32, sort string) (*pb.GameSimpleListResponse_GameSimpleList, error) {
-	gameSimpleList, err := gc.r.GetSortingGameList(ctx, category_name, page, size, sort)
+func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+	gameSimpleList, err := gc.r.GetSortingGameList(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
 	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
 	for i, game := range gameSimpleList {
-		categoryList, err := gc.r.GetCategoryListByGameId(ctx, game.Id)
+		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -144,8 +144,8 @@ func (gc *GameController) GetSortingGameList(ctx context.Context, category_name 
 	return &pbGameSimpleList, nil
 }
 
-func (gc *GameController) GetReviewList(ctx context.Context, gameId int32) (*pb.ReviewListResponse_ReviewList, error) {
-	reviewList, err := gc.r.GetReviewList(ctx, gameId)
+func (gc *GameController) GetReviewList(ctx context.Context) (*pb.ReviewListResponse_ReviewList, error) {
+	reviewList, err := gc.r.GetReviewList(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -163,15 +163,15 @@ func (gc *GameController) GetReviewList(ctx context.Context, gameId int32) (*pb.
 	return &pbReviewList, nil
 }
 
-func (gc *GameController) GetGameListInWishlist(ctx context.Context, userId int32) (*pb.GameSimpleListResponse_GameSimpleList, error) {
-	gameSimpleList, err := gc.r.GetGameListInWishlist(ctx, userId)
+func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+	gameSimpleList, err := gc.r.GetGameListInWishlist(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
 	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
 	for i, game := range gameSimpleList {
-		categoryList, err := gc.r.GetCategoryListByGameId(ctx, game.Id)
+		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -210,8 +210,8 @@ func (gc *GameController) GetGameListInWishlist(ctx context.Context, userId int3
 	return &pbGameSimpleList, nil
 }
 
-func (gc *GameController) PostWishlist(ctx context.Context, userId, gameId int32) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.PostWishlist(ctx, userId, gameId)
+func (gc *GameController) PostWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.PostWishlist(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -220,8 +220,8 @@ func (gc *GameController) PostWishlist(ctx context.Context, userId, gameId int32
 	}, nil
 }
 
-func (gc *GameController) DeleteWishlist(ctx context.Context, userId, gameId int32) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.DeleteWishlist(ctx, userId, gameId)
+func (gc *GameController) DeleteWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.DeleteWishlist(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -230,8 +230,8 @@ func (gc *GameController) DeleteWishlist(ctx context.Context, userId, gameId int
 	}, nil
 }
 
-func (gc *GameController) PostReview(ctx context.Context, userId, gameId int32, reviewContent string, reviewRecommendation int32) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.PostReview(ctx, userId, gameId, reviewContent, reviewRecommendation)
+func (gc *GameController) PostReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.PostReview(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -240,8 +240,8 @@ func (gc *GameController) PostReview(ctx context.Context, userId, gameId int32, 
 	}, nil
 }
 
-func (gc *GameController) PatchReview(ctx context.Context, userId, reviewId int32, reviewContent string, reviewRecommendation int32) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.PatchReview(ctx, userId, reviewId, reviewContent, reviewRecommendation)
+func (gc *GameController) PatchReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.PatchReview(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -250,8 +250,8 @@ func (gc *GameController) PatchReview(ctx context.Context, userId, reviewId int3
 	}, nil
 }
 
-func (gc *GameController) DeleteReview(ctx context.Context, userId, reviewId int32) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.DeleteReview(ctx, userId, reviewId)
+func (gc *GameController) DeleteReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.DeleteReview(ctx)
 	if err != nil {
 		return nil, err
 	}
