@@ -40,12 +40,12 @@ service Store {
     }
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            get: "/store/wishlist"
+            post: "/store/wishlist"
         };
     }
     rpc DeleteWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            get: "/store/wishlist"
+            delete: "/store/wishlist"
         };
     }
     rpc PostReview(ReviewQueryRequest) returns (IsSuccessResponse){
@@ -55,12 +55,12 @@ service Store {
     }
     rpc PatchReview(ReviewQueryRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            post: "/store/games/reviews/{review_id}"
+            patch: "/store/games/reviews/{review_id}"
         };
     }
     rpc DeleteReview(ReviewQueryRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            post: "/store/games/reviews/{review_id}"
+            delete: "/store/games/reviews/{review_id}"
         };
     }
 }

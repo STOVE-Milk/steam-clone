@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"strings"
 	"time"
@@ -192,6 +193,30 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context, userId int32) ([]*mode
 	}
 	return gameSimpleList, nil
 }
+
+func (r *Repo) PostWishlist(ctx context.Context, userId, gameId int32) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	res, err := r.db.Exec("INSERT INTO wishlist(idx, user_id, game_id) VALUES(?,?)", userId, gameId)
+	if err != nil {
+		return false, err
+	}
+	if n, _ := res.RowsAffected(); n != 1 {
+		return false, errors.New("값 변경 없음")
+	}
+	return true, nil
+}
+
+func (r *Repo) DeleteWishlist(ctx context.Context, userId, gameId int32) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	_, err := r.db.Exec("DELETE FROM wishlist WHERE user_id=? AND game_id=?", userId, gameId)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func (r *Repo) GetWishlist(ctx context.Context, userId int32) ([]int32, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -214,6 +239,36 @@ func (r *Repo) GetWishlist(ctx context.Context, userId int32) ([]int32, error) {
 		wishlist = append(wishlist, gameId)
 	}
 	return wishlist, nil
+}
+
+func (r *Repo) PostReview(ctx context.Context, userId, gameId int32, reviewContent string, reviewRecommendation int32) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	_, err := r.db.Exec("INSERT INTO review(idx, user_id, game_id) VALUES(?,?)", userId, gameId)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (r *Repo) PatchReview(ctx context.Context, userId, reviewId int32, reviewContent string, reviewRecommendation int32) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	_, err := r.db.Exec("UPDATE SET wishlist(idx, user_id, game_id) VALUES(?,?)", userId, gameId)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (r *Repo) DeleteReview(ctx context.Context, userId, reviewId int32) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	_, err := r.db.Exec("DELETE FROM wishlist WHERE idx=? AND user_id=?", reviewId, userId)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func NewGameRepo(db *sql.DB) *Repo {

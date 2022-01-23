@@ -209,3 +209,53 @@ func (gc *GameController) GetGameListInWishlist(ctx context.Context, userId int3
 
 	return &pbGameSimpleList, nil
 }
+
+func (gc *GameController) PostWishlist(ctx context.Context, userId, gameId int32) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.PostWishlist(ctx, userId, gameId)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IsSuccessResponse_Success{
+		Success: isSuccess,
+	}, nil
+}
+
+func (gc *GameController) DeleteWishlist(ctx context.Context, userId, gameId int32) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.DeleteWishlist(ctx, userId, gameId)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IsSuccessResponse_Success{
+		Success: isSuccess,
+	}, nil
+}
+
+func (gc *GameController) PostReview(ctx context.Context, userId, gameId int32, reviewContent string, reviewRecommendation int32) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.PostReview(ctx, userId, gameId, reviewContent, reviewRecommendation)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IsSuccessResponse_Success{
+		Success: isSuccess,
+	}, nil
+}
+
+func (gc *GameController) PatchReview(ctx context.Context, userId, reviewId int32, reviewContent string, reviewRecommendation int32) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.PatchReview(ctx, userId, reviewId, reviewContent, reviewRecommendation)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IsSuccessResponse_Success{
+		Success: isSuccess,
+	}, nil
+}
+
+func (gc *GameController) DeleteReview(ctx context.Context, userId, reviewId int32) (*pb.IsSuccessResponse_Success, error) {
+	isSuccess, err := gc.r.DeleteReview(ctx, userId, reviewId)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IsSuccessResponse_Success{
+		Success: isSuccess,
+	}, nil
+}
