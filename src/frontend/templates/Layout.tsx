@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import NavBar from 'components/organisms/Navbar';
+import NavBar from 'components/organisms/NavBar';
 import Header from 'components/organisms/Header';
 
 interface LayoutProps {
