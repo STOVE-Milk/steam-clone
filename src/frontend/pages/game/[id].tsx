@@ -16,6 +16,11 @@ import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import { localePrice } from 'util/localeString';
 
+import CarouselComponent from 'components/organisms/SelectCarousel';
+import BigGameSlide from 'components/molecules/BigGameSlide';
+import gameImage1 from 'public/game.png';
+import gameImage2 from 'public/game2.jpg';
+
 const DetailWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -91,7 +96,7 @@ const GameBuyBox = styled(GameInfoBox)`
   }
 `;
 
-const DevInfoBox = styled.div``;
+const DevInfoBox = styled(GameInfoBox)``;
 
 const Detail: NextPage<IState> = () => {
   const { game } = useSelector((state: IState) => state.game);
@@ -99,18 +104,7 @@ const Detail: NextPage<IState> = () => {
 
   return (
     <DetailWrapper>
-      <GameIntroSection>
-        {/* <CarouselComponent
-          slides={array.map((data) => {
-            return (
-              <BigGameSlide
-                key={game.data?.id}
-                image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover" />}
-              ></BigGameSlide>
-            );
-          })}
-        ></CarouselComponent> */}
-      </GameIntroSection>
+      <GameIntroSection></GameIntroSection>
       <GameDetailSection>
         <GameDetailBox>
           <TitleBox>
@@ -152,7 +146,10 @@ const Detail: NextPage<IState> = () => {
               <FilledButton types={'primary'}>장바구니</FilledButton>
             </div>
           </GameBuyBox>
-          <DevInfoBox></DevInfoBox>
+          <DevInfoBox>
+            <Text types="medium">개발자 정보</Text>
+            {/* <Text types="small"> {game.data && game.data.name}</Text> */}
+          </DevInfoBox>
         </GameDetailBox>
       </GameDetailSection>
     </DetailWrapper>

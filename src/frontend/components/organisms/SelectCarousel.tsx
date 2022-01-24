@@ -2,12 +2,14 @@ import React from 'react';
 import Carousel from 'react-multi-carousel';
 import styled from 'styled-components';
 import 'react-multi-carousel/lib/styles.css';
+import { ButtonGroupProps } from 'react-multi-carousel/lib/types';
 import gameImage1 from 'public/game.png';
 import gameImage2 from 'public/game2.jpg';
 import Image from 'next/image';
 
 interface CarouselProps {
   slides: Object;
+  buttons: JSX.Element[];
 }
 
 const CustomCarousel = styled(Carousel)`
@@ -16,15 +18,15 @@ const CustomCarousel = styled(Carousel)`
   margin: 0 auto;
 `;
 
-export default function CarouselComponent(props: CarouselProps) {
+export default function CarouselComponent(this: any, props: CarouselProps) {
   const responsive = {
     large: {
       breakpoint: { max: 3000, min: 1048 },
-      items: 4,
+      items: 1,
     },
     medium: {
       breakpoint: { max: 1047, min: 640 },
-      items: 3,
+      items: 1,
     },
     small: {
       breakpoint: { max: 639, min: 0 },
@@ -32,16 +34,22 @@ export default function CarouselComponent(props: CarouselProps) {
     },
   };
 
-  const array = [1, 2, 3, 4, 5];
-  const images = array.map((a) => <Image src={a % 2 ? gameImage1 : gameImage2} width={30} height={30} />);
-
-  const CustomDot = (props: { index: number }) => {
-    return <button>{React.Children.toArray(images)[props.index]}</button>;
+  const CustomButtonGroup = ({ goToSlide }: ButtonGroupProps) => {
+    const array = [0, 1, 2, 3, 4, 5];
+    return (
+      <div className="custom-button-group" style={{ position: 'absolute' }}>
+        {props.buttons.map((img, i) => {
+          return <div onClick={() => goToSlide && goToSlide(i)}>{img}</div>;
+        })}
+      </div>
+    );
   };
 
   return (
     <CustomCarousel
-      showDots
+      // focusOnSelect={true}
+      arrows={false}
+      // showDots
       slidesToSlide={1}
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
@@ -50,10 +58,9 @@ export default function CarouselComponent(props: CarouselProps) {
       partialVisbile
       infinite
       removeArrowOnDeviceType={['small']}
-      customDot={<CustomDot index={1} />}
+      customButtonGroup={<CustomButtonGroup />}
     >
       {props.slides}
-      {console.log(React.Children.toArray)}
     </CustomCarousel>
   );
 }
