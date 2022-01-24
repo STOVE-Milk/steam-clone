@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 
@@ -11,7 +10,6 @@ import (
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 const portNumber = "8101"
@@ -49,8 +47,6 @@ func (store *storeServer) Run() error {
 
 // GetUser returns user message by user_id
 func (store *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (*pb.CategoryListResponse, error) {
-	headers, _ := metadata.FromIncomingContext(ctx)
-	fmt.Println(headers["authorization"])
 	res, err := store.gameCtr.GetParentCategoryList(ctx)
 	if err != nil {
 		return &pb.CategoryListResponse{
