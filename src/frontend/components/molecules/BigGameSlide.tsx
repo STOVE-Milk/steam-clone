@@ -10,24 +10,13 @@ interface SlideProps {
 
 const SlideWrapper = styled.div`
   width: 100%;
-  /* height: 30%; */
-  height: 500px;
-  padding: 1rem 0 1rem 1rem;
   overflow: hidden;
-`;
-
-const ImageSection = styled.div`
-  width: 100%;
-  height: 100%;
+  display: block;
   border-radius: 10px;
-  position: relative;
+  height: 500px;
   overflow: hidden;
 `;
 
 export default function BigGameSlide(props: SlideProps) {
-  return (
-    <SlideWrapper>
-      <ImageSection>{props.image}</ImageSection>
-    </SlideWrapper>
-  );
+  return <SlideWrapper>{props.image}</SlideWrapper>;
 }

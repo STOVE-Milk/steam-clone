@@ -12,10 +12,22 @@ interface CarouselProps {
   buttons: JSX.Element[];
 }
 
-const CustomCarousel = styled(Carousel)`
-  width: 80%;
+const CustomCarousel = styled(Carousel)``;
 
-  margin: 0 auto;
+const ButtonGroup = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  overflow: hidden;
+`;
+
+const Button = styled.div`
+  width: 23%;
+  height: 6rem;
+  overflow: hidden;
+  border-radius: 10px;
+  position: relative;
 `;
 
 export default function CarouselComponent(this: any, props: CarouselProps) {
@@ -35,21 +47,18 @@ export default function CarouselComponent(this: any, props: CarouselProps) {
   };
 
   const CustomButtonGroup = ({ goToSlide }: ButtonGroupProps) => {
-    const array = [0, 1, 2, 3, 4, 5];
     return (
-      <div className="custom-button-group" style={{ position: 'absolute' }}>
+      <ButtonGroup>
         {props.buttons.map((img, i) => {
-          return <div onClick={() => goToSlide && goToSlide(i)}>{img}</div>;
+          return <Button onClick={() => goToSlide && goToSlide(i)}>{img}</Button>;
         })}
-      </div>
+      </ButtonGroup>
     );
   };
 
   return (
     <CustomCarousel
-      // focusOnSelect={true}
       arrows={false}
-      // showDots
       slidesToSlide={1}
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
@@ -59,6 +68,7 @@ export default function CarouselComponent(this: any, props: CarouselProps) {
       infinite
       removeArrowOnDeviceType={['small']}
       customButtonGroup={<CustomButtonGroup />}
+      renderButtonGroupOutside={true}
     >
       {props.slides}
     </CustomCarousel>

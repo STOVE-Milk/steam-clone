@@ -26,14 +26,13 @@ const DetailWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   height: 100%;
-  overflow-y: scroll;
+  width: calc(100vw - 250px);
+  margin: 0 auto;
   margin-top: 6rem;
 `;
 
 const GameIntroSection = styled.div`
-  border: 1px solid white;
   width: 80%;
-  height: 500px;
 `;
 
 const GameDetailSection = styled.div`
@@ -100,20 +99,20 @@ const DevInfoBox = styled(GameInfoBox)``;
 
 const Detail: NextPage<IState> = () => {
   const { game } = useSelector((state: IState) => state.game);
-  const array = [1, 2, 3, 4, 5, 6];
+  const array = [1, 2, 3, 4];
 
   return (
     <DetailWrapper>
       <GameIntroSection>
         <CarouselComponent
           buttons={array.map((data) => {
-            return <Image src={data % 2 ? gameImage1 : gameImage2} width={30} height={30}></Image>;
+            return <Image src={data % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover"></Image>;
           })}
           slides={array.map((data) => {
             return (
               <BigGameSlide
                 key={game.data?.id}
-                image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover" />}
+                image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="responsive" />}
               ></BigGameSlide>
             );
           })}
