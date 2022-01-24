@@ -17,15 +17,19 @@ const (
 	gRPCGatewayHost       = "grpc_gateway:"
 )
 
-func main() {
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "userId", "1")
-	ctx = context.WithValue(ctx, "nickname", "roy")
-	mux := runtime.NewServeMux()
+func CustomMatcher(key string) (string, bool) {
+	switch key {
+	case "authorization":
+		return "authorization", true
+	default:
+		return key, false
+	}
+}
+
+func registerServiceHandlers(ctx context.Context, mux *runtime.ServeMux) error {
 	options := []grpc.DialOption{
 		grpc.WithInsecure(),
 	}
-
 	if err := storePb.RegisterStoreHandlerFromEndpoint(
 		ctx,
 		mux,
@@ -33,7 +37,21 @@ func main() {
 		options,
 	); err != nil {
 		log.Fatalf("failed to register gRPC gateway: %v", err)
+		return err
 	}
+
+	return nil
+}
+
+func main() {
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	mux := runtime.NewServeMux(
+		runtime.WithIncomingHeaderMatcher(CustomMatcher),
+	)
+
+	registerServiceHandlers(ctx, mux)
 
 	log.Printf("start HTTP server on %s port", gRPCGatewayPortNumber)
 	if err := http.ListenAndServe(":"+gRPCGatewayPortNumber, mux); err != nil {

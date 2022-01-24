@@ -12,6 +12,7 @@ require (
 
 require (
 	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/rs/xid v1.3.0
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d // indirect
 	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	golang.org/x/text v0.3.7 // indirect
