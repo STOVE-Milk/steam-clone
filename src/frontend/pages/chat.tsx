@@ -15,6 +15,8 @@ import wrapper from 'modules/configureStore';
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
+import MsgBox from 'components/atoms/MsgBox';
+import { TextStyle } from 'components/atoms/Text';
 
 const ChatWrapper = styled.div`
   width: 100%;
@@ -54,12 +56,17 @@ const ChatRoomSection = styled.div`
 `;
 
 const ChatViewBox = styled.div`
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  padding: 1rem;
   overflow-y: scroll;
   ::-webkit-scrollbar {
     display: none;
   }
 `;
+
+const Message = styled.div``;
 
 const ChatInputBox = styled.div`
   background: ${(props) => props.theme.colors.secondaryBg};
@@ -76,11 +83,12 @@ const ChatInput = styled.input`
   border-bottom: 1px solid ${(props) => props.theme.colors.primaryText};
   background: transparent;
   padding: 1rem;
+  color: ${(props) => props.theme.colors.primaryText};
+  font-size: 1.3rem;
 `;
 
 const ChatButton = styled(FilledButton)``;
 
-const Message = styled.div``;
 // const Chat: NextPage<IState> = () => {
 //   const { game } = useSelector((state: IState) => state.game);
 
@@ -102,7 +110,10 @@ const Chat: NextPage = () => {
         })}
       </ChatListSection>
       <ChatRoomSection>
-        <ChatViewBox></ChatViewBox>
+        <ChatViewBox>
+          <MsgBox isMine={true} text={'안녕하세요'}></MsgBox>
+          <MsgBox isMine={false} text={'안녕하세요'}></MsgBox>
+        </ChatViewBox>
         <ChatInputBox>
           <ChatInput></ChatInput>
           <ChatButton types="primary">전송</ChatButton>
