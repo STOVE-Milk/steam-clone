@@ -1,0 +1,50 @@
+version: '3'
+services:
+    api_gateway:
+        build:
+            context: ./ApiGateway
+            dockerfile: ./Dockerfile
+        container_name: api_gateway
+        ports:
+            - "8080:8080"
+        stdin_open: true
+        tty: true
+
+    grpc_gateway:
+        build:
+            context: ./gRPCGateway
+            dockerfile: ./Dockerfile
+        container_name: grpc_gateway
+        ports:
+            - "8100:8100"
+    store:
+        build:
+            context: ./Store
+            dockerfile: ./Dockerfile
+        container_name: store
+        ports:
+            - "8101:8101"
+    payment:
+        build:
+            context: ./Payment
+            dockerfile: ./Dockerfile
+        container_name: payment
+        ports:
+            - "8200:8200"
+    redis:
+        image: redis:alpine
+        command: redis-server --port 6379
+        container_name: redis
+        hostname: redis
+        ports:
+            - "6379:6379"
+    mysql:
+        build:
+            context: ./mysql
+            dockerfile: ./Dockerfile
+        container_name: mysql
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_DATABASE: steam
+            MYSQL_USER: milk
+                                      
