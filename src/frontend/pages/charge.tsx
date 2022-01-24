@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import type { NextPage } from 'next';
 
 import styled from 'styled-components';
@@ -7,6 +7,8 @@ import Text from 'components/atoms/Text';
 import CommonSelectBox from 'components/atoms/CommonSelectBox';
 import { IGiftCardInfoProps } from 'components/molecules/GiftCard';
 import DefaultButton from 'components/atoms/DefaultButton';
+
+import { localePrice } from 'util/localeString';
 
 const TitleStyle = styled(Text)`
   margin-bottom: 2rem;
@@ -56,6 +58,7 @@ const giftcardsmockData: Array<IGiftCardInfoProps> = [
     price: 50000,
   },
 ];
+
 //TO DO(양하): 결제수단 확장성때문에 만들어놓음
 const ChargeTypes = [
   { name: 'Kakao Pay', value: 'Kakaopay', disabled: false },
@@ -63,20 +66,51 @@ const ChargeTypes = [
 ];
 
 const charge: NextPage = () => {
+  const [curCheckedPriceIdx, setCurCheckedPriceIdx] = useState(1);
+  const [chargeMethod, setChargeMethod] = useState('kakaopay');
+  //요청상태에따라 return 을 달리하고, store에 pg_token 보관해야겠다. 충전상태 == 'finished' ? 지금 만든 chargeWraaper로 감싸진 페이지 : 완료되었습니다 페이지
   return (
     <ChargeWrapper>
       <TitleStyle types="large">구매 가능한 GIFTCARDS</TitleStyle>
       <GiftCardWrapper>
         {giftcardsmockData.map((eachGiftCard) => {
-          return <GiftCard key={eachGiftCard.idx} {...eachGiftCard}></GiftCard>;
+          const gcDataObj = {
+            ...eachGiftCard,
+            checked: eachGiftCard.idx === curCheckedPriceIdx ? true : false,
+            onClick: setCurCheckedPriceIdx,
+          };
+          return <GiftCard {...gcDataObj}></GiftCard>;
         })}
       </GiftCardWrapper>
       <ChargeTypeSelectWrapper>
         <TitleStyle types="large">구매 방법</TitleStyle>
-        <CommonSelectBox optionArr={ChargeTypes} handleSelect={(e) => console.log(e.target.value)}></CommonSelectBox>
+        <CommonSelectBox
+          optionArr={ChargeTypes}
+          handleSelect={(e) => setChargeMethod(e.target.value)}
+        ></CommonSelectBox>
       </ChargeTypeSelectWrapper>
       <ConfirmBtnBox>
-        <DefaultButton types={'secondary'}>충전하기</DefaultButton>
+        <DefaultButton
+          types={'secondary'}
+          onClick={(e) =>
+            // POST: /payment/charge/ready
+            {
+              alert(
+                `충전하고자하는 금액은 총 ${localePrice(
+                  giftcardsmockData.find((ele) => ele.idx === curCheckedPriceIdx)!.price,
+                  'KR',
+                )} 입니다.\n충전 방식은 ${chargeMethod}입니다.
+                `,
+              );
+              {
+                /* next_pc_url */
+              }
+              window.open('/category', 'Popup', 'location,status,scrollbars,resizable,width=600, height=600');
+            }
+          }
+        >
+          충전하기
+        </DefaultButton>
       </ConfirmBtnBox>
     </ChargeWrapper>
   );
