@@ -105,6 +105,7 @@ func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpl
 	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
 	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
 	for i, game := range gameSimpleList {
+		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
 		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
 		if err != nil {
 			return nil, err

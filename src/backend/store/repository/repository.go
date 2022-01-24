@@ -204,9 +204,9 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*model.GameSimple, 
 func (r *Repo) PostWishlist(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	userId := ctx.Value("userId").(string)
-	gameId := ctx.Value("gameId").(string)
-	res, err := r.db.Exec("INSERT INTO wishlist(idx, user_id, game_id) VALUES(?,?)", userId, gameId)
+	userId := ctx.Value("userId").(int32)
+	gameId := ctx.Value("gameId").(int32)
+	res, err := r.db.Exec("INSERT INTO wishlist(user_id, game_id) VALUES(?,?)", userId, gameId)
 	if err != nil {
 		return false, err
 	}
@@ -219,8 +219,8 @@ func (r *Repo) PostWishlist(ctx context.Context) (bool, error) {
 func (r *Repo) DeleteWishlist(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	userId := ctx.Value("userId").(string)
-	gameId := ctx.Value("gameId").(string)
+	userId := ctx.Value("userId").(int32)
+	gameId := ctx.Value("gameId").(int32)
 	_, err := r.db.Exec("DELETE FROM wishlist WHERE user_id=? AND game_id=?", userId, gameId)
 	if err != nil {
 		return false, err
@@ -276,7 +276,7 @@ func (r *Repo) PatchReview(ctx context.Context) (bool, error) {
 	reviewId := ctx.Value("reviewId").(int32)
 	reviewContent := ctx.Value("reviewContent").(string)
 	reviewRecommendation := ctx.Value("reviewRecommendation").(int32)
-	_, err := r.db.Exec("UPDATE SET review(content, recommendation) VALUES(?,?) WHERE idx=? AND user_id=?", reviewContent, reviewRecommendation, reviewId, userId)
+	_, err := r.db.Exec("UPDATE review SET content=?, recommendation=? WHERE idx=? AND user_id=?", reviewContent, reviewRecommendation, reviewId, userId)
 	if err != nil {
 		return false, err
 	}
