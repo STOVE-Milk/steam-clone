@@ -1,12 +1,8 @@
 package main
 
-import (
-	"context"
-)
-
 func main() {
-	ctx := context.Background()
-	err := Server().Run(ctx)
+
+	err := Server().Run()
 	if err != nil {
 		panic(err)
 	}
