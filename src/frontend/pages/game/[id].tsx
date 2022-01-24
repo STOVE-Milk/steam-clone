@@ -34,7 +34,11 @@ const DetailWrapper = styled.div`
     width: calc(100vw - 150px);
   }
   margin: 0 auto;
-  margin-top: 6rem;
+  /* margin-top: 3rem; */
+`;
+
+const GameTitle = styled(Text)`
+  margin: 3rem 0;
 `;
 
 const GameIntroSection = styled.div`
@@ -115,6 +119,7 @@ const Detail: NextPage<IState> = () => {
   return (
     <DetailWrapper>
       <GameIntroSection>
+        <GameTitle types={'title'}>{game.data && game.data.name}</GameTitle>
         <CarouselComponent
           buttons={array.map((data) => {
             return <Image src={data % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover"></Image>;
