@@ -104,7 +104,21 @@ const Detail: NextPage<IState> = () => {
 
   return (
     <DetailWrapper>
-      <GameIntroSection></GameIntroSection>
+      <GameIntroSection>
+        <CarouselComponent
+          buttons={array.map((data) => {
+            return <Image src={data % 2 ? gameImage1 : gameImage2} width={30} height={30}></Image>;
+          })}
+          slides={array.map((data) => {
+            return (
+              <BigGameSlide
+                key={game.data?.id}
+                image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover" />}
+              ></BigGameSlide>
+            );
+          })}
+        ></CarouselComponent>
+      </GameIntroSection>
       <GameDetailSection>
         <GameDetailBox>
           <TitleBox>
