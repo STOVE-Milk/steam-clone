@@ -31,6 +31,14 @@ spring:
             - name: AuthorizationCheckFilter
               args:
                 baseMessage: Spring Cloud Gateway AuthorizationCheckFilter
+        - id: membership-svc
+            uri: http://localhost:8201/
+            predicates:
+              - Path=/membership/**
+            filters:
+              - name: AuthorizationCheckFilter
+                args:
+                  baseMessage: Membership AuthorizationCheckFilter
       globalcors:
         corsConfigurations:
           '[/**]':
