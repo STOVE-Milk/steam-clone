@@ -1,7 +1,13 @@
 import { createReducer } from 'typesafe-actions';
 
 import { gameAction, gameState } from './types';
-import { GET_CATEGORIES, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL } from './actions';
+import {
+  GET_CATEGORIES,
+  GET_CATEGORIES_SUCCESS,
+  GET_CATEGORIES_FAIL,
+  GET_GAMESBYCATEGORY_SUCCESS,
+  GET_GAMESBYCATEGORY_FAIL,
+} from './actions';
 
 const initialState: gameState = {
   categories: [
@@ -15,6 +21,8 @@ const initialState: gameState = {
     'Action-adventure.',
   ],
   categoryError: '',
+  gameSimpleList: [],
+  gameSimpleListError: '',
 };
 
 const reducer = createReducer<gameState>(initialState, {
@@ -24,7 +32,15 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_CATEGORIES_FAIL]: (state, action) => ({
     ...state,
-    categoryError: 'a',
+    categoryError: '',
+  }),
+  [GET_GAMESBYCATEGORY_SUCCESS]: (state, action) => ({
+    ...state,
+    gameSimpleList: action.payload.data.get_simple_list,
+  }),
+  [GET_GAMESBYCATEGORY_FAIL]: (state, action) => ({
+    ...state,
+    gameSimpleListError: '',
   }),
 });
 

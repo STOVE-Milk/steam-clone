@@ -1,8 +1,8 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 
-import { getCategoriesAPI } from '../../pages/api/game/api';
-import { IGetCategoriesResType } from '../../pages/api/game/type';
-import { getCategories, GET_CATEGORIES } from 'modules/game/actions';
+import { getCategoriesAPI, getGamesByCategoryAPI } from '../../pages/api/game/api';
+import { IGetCategoriesResType, IGetGamesByCategoryResType } from '../../pages/api/game/type';
+import { getCategories, GET_CATEGORIES, getGamesByCategory, GET_GAMESBYCATEGORY } from 'modules/game/actions';
 import axios from 'axios';
 
 function* getCategoriesSaga(action: ReturnType<typeof getCategories.request>) {
@@ -15,8 +15,18 @@ function* getCategoriesSaga(action: ReturnType<typeof getCategories.request>) {
   }
 }
 
+function* getGamesByCategorySaga(action: ReturnType<typeof getGamesByCategory.request>) {
+  try {
+    const response: IGetGamesByCategoryResType = yield call(getGamesByCategoryAPI, action.payload);
+    yield put(getGamesByCategory.success(response));
+  } catch (e: any) {
+    yield put(getGamesByCategory.failure(e));
+  }
+}
+
 export function* gameSaga() {
   yield takeLatest(GET_CATEGORIES, getCategoriesSaga);
+  yield takeLatest(GET_GAMESBYCATEGORY, getGamesByCategorySaga);
 }
 
 export { gameSaga as default };

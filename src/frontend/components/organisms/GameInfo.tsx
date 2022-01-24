@@ -198,11 +198,11 @@ export default function GameInfo(props: IGameInfo) {
             {Boolean(gameData.sale) ? (
               <>
                 {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
-                <DefaultPrice>{`${localePrice(gameData.price.KR, 'KR')}`}</DefaultPrice>
-                <Text types="medium">{`${localePrice((gameData.price.KR / 100) * (100 - gameData.sale), 'KR')}`}</Text>
+                <DefaultPrice>{`${localePrice(gameData.price, 'KR')}`}</DefaultPrice>
+                <Text types="medium">{`${localePrice((gameData.price / 100) * (100 - gameData.sale), 'KR')}`}</Text>
               </>
             ) : (
-              <Text types="medium">{`${localePrice(gameData.price.KR, 'KR')}`}</Text>
+              <Text types="medium">{`${localePrice(gameData.price, 'KR')}`}</Text>
             )}
           </div>
         </section>
