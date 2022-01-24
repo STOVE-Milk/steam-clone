@@ -102,10 +102,7 @@ const charge: NextPage = () => {
                 )} 입니다.\n충전 방식은 ${chargeMethod}입니다.
                 `,
               );
-              {
-                /* next_pc_url */
-              }
-              window.open('/category', 'Popup', 'location,status,scrollbars,resizable,width=600, height=600');
+              window.open('/category', 'next_pc_url', 'location,status,scrollbars,resizable,width=600, height=600');
             }
           }
         >
