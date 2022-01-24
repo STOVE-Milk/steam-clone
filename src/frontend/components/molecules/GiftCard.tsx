@@ -27,14 +27,14 @@ const GiftCardBox = styled.div<IGiftCardStyledType>`
   border-radius: 10px;
   cursor: pointer;
   background: ${(props) => props.theme.colors.secondaryBg};
+  ${(props) => props.theme.breakpoints.medium} {
+    margin: 0 1rem 1rem 0;
+  }
 `;
 const GiftCardUnchecked = styled(GiftCardBox)`
   border: 1px solid ${(props) => props.theme.colors.secondaryBg};
   &:hover {
     border: 1px solid ${(props) => props.theme.colors.divider};
-  }
-  ${(props) => props.theme.breakpoints.medium} {
-    margin: 0 1rem 1rem 0;
   }
 `;
 const GiftCardChecked = styled(GiftCardBox)`
