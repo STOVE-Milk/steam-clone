@@ -20,7 +20,7 @@ const initialState: gameState = {
 const reducer = createReducer<gameState>(initialState, {
   [GET_CATEGORIES_SUCCESS]: (state, action) => ({
     ...state,
-    categories: action.payload,
+    categories: action.payload.data.category_list,
   }),
   [GET_CATEGORIES_FAIL]: (state, action) => ({
     ...state,
