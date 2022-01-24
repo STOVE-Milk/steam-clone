@@ -1,20 +1,40 @@
 {
-    "format" : {
-        "서버 종류" : {
-            "developer" : "개발자명",
+    "format": {
+        "서버 종류": {
+            "developer": "개발자명",
             "developer_id": "Integer형 개발자 번호",
             "server_id": "Integer형 서버 번호",
             "success_code": "Integer형 성공 코드",
-            "error_name" : {
-                "code": 10101,
+            "error_name": {
+                "code": "Integer형 에러 코드",
                 "message": "error message",
                 "description" : "에러에 대한 설명"
             }
         }
     },
+    "api-gateway": {
+        "developer": "한태현",
+        "developer_id": 7,
+        "description": "API Gateway 단에서 막혀서 엔드 포인트랑 통신이 안되는 경우의 HTTP STATUS CODE를 정의",
+        "UNAUTHORIZED": {
+            "status_code": 401,
+            "message": "error message",
+            "description": "인증 토큰이 없는 경우, 인증 토큰이 있지만 변조되거나 만료되었을 경우"
+        },
+        "FORBIDDEN": {
+            "status_code": 403,
+            "message": "error message",
+            "description": "인증 토큰이 제대로 되었으나, 해당 서비스에 접근 권한이 없는 경우"
+        },
+        "SERVER_ERROR": {
+            "status_code": 500,
+            "message": "error message",
+            "description": "서버가 다운되거나, API Gateway 설정 오류로 인해 연결이 불가능할 경우"
+        }
+    },
 
     "payment" : {
-        "developer" : "한태현",
+        "developer": "한태현",
         "developer_id": 7,
         "server_id": 7,
         "success_code": 77000,
