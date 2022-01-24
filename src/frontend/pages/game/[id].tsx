@@ -27,6 +27,12 @@ const DetailWrapper = styled.div`
   align-items: center;
   height: 100%;
   width: calc(100vw - 250px);
+  ${(props) => props.theme.breakpoints.medium} {
+    width: calc(100vw - 190px);
+  }
+  ${(props) => props.theme.breakpoints.small} {
+    width: calc(100vw - 150px);
+  }
   margin: 0 auto;
   margin-top: 6rem;
 `;
@@ -76,6 +82,7 @@ const CategoryBox = styled(GameInfoBox)`
   .categories {
     padding-top: 0.8rem;
     display: flex;
+    flex-wrap: wrap;
   }
 
   span {
@@ -90,8 +97,12 @@ const GameBuyBox = styled(GameInfoBox)`
   .actionBox {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     align-items: center;
     padding-top: 0.5rem;
+    ${(props) => props.theme.breakpoints.small} {
+      justify-content: flex-start;
+    }
   }
 `;
 

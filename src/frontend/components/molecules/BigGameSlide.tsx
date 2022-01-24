@@ -9,12 +9,10 @@ interface SlideProps {
 }
 
 const SlideWrapper = styled.div`
-  width: 100%;
-  overflow: hidden;
   display: block;
-  border-radius: 10px;
-  height: 500px;
   overflow: hidden;
+  height: calc(100vw / 3);
+  border-radius: 10px;
 `;
 
 export default function BigGameSlide(props: SlideProps) {

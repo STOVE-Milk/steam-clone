@@ -20,13 +20,14 @@ const ButtonGroup = styled.div`
   justify-content: space-between;
   flex-wrap: nowrap;
   overflow: hidden;
+  padding-top: 1rem;
 `;
 
 const Button = styled.div`
   width: 23%;
-  height: 6rem;
   overflow: hidden;
   border-radius: 10px;
+  height: calc(100vw / 12);
   position: relative;
 `;
 
@@ -64,7 +65,6 @@ export default function CarouselComponent(this: any, props: CarouselProps) {
       ssr={true} // means to render carousel on server-side.
       // autoPlay={true}
       // autoPlaySpeed={2000}
-      partialVisbile
       infinite
       removeArrowOnDeviceType={['small']}
       customButtonGroup={<CustomButtonGroup />}
