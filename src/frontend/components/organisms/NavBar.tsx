@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGamepad, faUser, faBars, faComments, faHeart, faBook } from '@fortawesome/free-solid-svg-icons';
-import Logo from 'public/steam_logo.png';
+import LogoImage from 'public/steam_logo.png';
 
 import MenuBox from 'components/molecules/MenuBox';
 import Profile from 'components/atoms/Profile';
@@ -22,10 +22,14 @@ const NavBarWrapper = styled.div`
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   flex-direction: column;
-  position: fixed;
+  overflow-x: scroll;
   z-index: 999;
   padding: 10px;
   overflow-y: hidden;
+  border-right: 1px solid white;
+  ${(props) => props.theme.breakpoints.small} {
+    position: fixed;
+  }
 `;
 
 const LogoSection = styled.section`
@@ -33,12 +37,12 @@ const LogoSection = styled.section`
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   cursor: pointer;
+  padding: 1rem 1rem 1rem 1rem;
 `;
 
 const LogoBox = styled.div<INavBarStyledProps>`
   display: flex;
   flex-direction: row;
-  padding: 10px 10px 10px 20px;
   display: ${(props) => (props.open ? '' : 'none')};
 `;
 
@@ -46,13 +50,12 @@ const LogoTitle = styled.div`
   color: ${(props) => props.theme.colors.primaryText};
   font-weight: 700;
   font-size: 1.75rem;
-  margin: 0.3rem 0 0 10px;
+  margin-left: 1rem;
 `;
 
 const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
-  margin: auto 0;
-  margin-left: ${(props) => (props.open ? '1.5rem' : '1.7rem')};
-  margin-right: ${(props) => (props.open ? '1.5rem' : '1.5rem')};
+  margin-left: ${(props) => (props.open ? '1.5rem' : '1rem')};
+  margin-right: ${(props) => (props.open ? '2.5rem' : '1.7rem')};
 `;
 
 const SectionTitle = styled.div`
@@ -99,7 +102,7 @@ export default function NavBar() {
     <NavBarWrapper>
       <LogoSection>
         <LogoBox open={open}>
-          <Image src={Logo} layout={'fixed'} width={30} height={30}></Image>
+          <Image src={LogoImage} layout={'fixed'} width={30} height={30}></Image>
           <LogoTitle>STEAM</LogoTitle>
         </LogoBox>
         <OpenBar open={open} icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
@@ -119,7 +122,11 @@ export default function NavBar() {
       <SectionDivider />
       <SectionTitle>Friends</SectionTitle>
       <FriendSection>
-        <FriendBox open={open} icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        <FriendBox
+          open={open}
+          icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />}
+          name={'user'}
+        />
       </FriendSection>
     </NavBarWrapper>
   );
