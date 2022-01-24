@@ -22,7 +22,6 @@ const ChatWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-  /* border: 1px solid white; */
 `;
 
 const ChatListSection = styled.div`
@@ -76,7 +75,7 @@ const ChatInputBox = styled.div`
   padding-left: 1rem;
 `;
 
-const ChatInput = styled.input`
+const ChatInput = styled.textarea`
   flex: 1;
   border: none;
   height: 3rem;
@@ -85,6 +84,9 @@ const ChatInput = styled.input`
   padding: 1rem;
   color: ${(props) => props.theme.colors.primaryText};
   font-size: 1.3rem;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const ChatButton = styled(FilledButton)``;
@@ -94,6 +96,17 @@ const ChatButton = styled(FilledButton)``;
 
 //   return <div></div>;
 // };
+
+const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.shiftKey) {
+    return;
+  }
+  if (e.key === 'Enter') {
+    // 통신
+    // 어떻게 뷰를 계속 추가하지...
+    console.log('enter');
+  }
+};
 
 const Chat: NextPage = () => {
   const chats = [1, 2, 3, 4, 5, 5, 5, 6, 7, 8, 8, 9, 1, 1, 1, 1];
@@ -115,7 +128,7 @@ const Chat: NextPage = () => {
           <MsgBox isMine={false} text={'안녕하세요'}></MsgBox>
         </ChatViewBox>
         <ChatInputBox>
-          <ChatInput></ChatInput>
+          <ChatInput onKeyPress={(e) => onKeyPress(e)}></ChatInput>
           <ChatButton types="primary">전송</ChatButton>
         </ChatInputBox>
       </ChatRoomSection>
