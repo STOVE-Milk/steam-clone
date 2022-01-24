@@ -7,6 +7,8 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
+
 @Component
 public class GlobalFilter extends AbstractGatewayFilterFactory<GlobalFilter.Config> {
     private static final Logger logger = LogManager.getLogger(GlobalFilter.class);
@@ -18,6 +20,7 @@ public class GlobalFilter extends AbstractGatewayFilterFactory<GlobalFilter.Conf
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
+            long now = System.currentTimeMillis();
             System.out.println("Global start");
             logger.info("GlobalFilter baseMessage>>>>>>" + config.getBaseMessage());
             if (config.isPreLogger()) {
@@ -25,7 +28,7 @@ public class GlobalFilter extends AbstractGatewayFilterFactory<GlobalFilter.Conf
             }
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 if (config.isPostLogger()) {
-                    logger.info("GlobalFilter End>>>>>>" + exchange.getResponse());
+                    logger.info("GlobalFilter End>>>>>>" + exchange.getRequest().getPath() + (System.currentTimeMillis() - now));
                 }
             }));
         });

@@ -30,7 +30,7 @@ public class AuthorizationCheckFilter extends AbstractGatewayFilterFactory<Autho
 
             String accessToken = authorization.get(0);
             if(!jwtValidator.validate(accessToken)) {
-                exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
 
