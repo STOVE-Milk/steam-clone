@@ -83,6 +83,7 @@ const ChatInput = styled.textarea`
   background: transparent;
   padding: 1rem;
   color: ${(props) => props.theme.colors.primaryText};
+  word-break: break-word;
   font-size: 1.3rem;
   ::-webkit-scrollbar {
     display: none;
@@ -97,7 +98,7 @@ const ChatButton = styled(FilledButton)``;
 //   return <div></div>;
 // };
 
-const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
   if (e.shiftKey) {
     return;
   }
@@ -110,6 +111,8 @@ const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
 
 const Chat: NextPage = () => {
   const chats = [1, 2, 3, 4, 5, 5, 5, 6, 7, 8, 8, 9, 1, 1, 1, 1];
+  const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n');
+
   return (
     <ChatWrapper>
       <ChatListSection>
@@ -124,8 +127,16 @@ const Chat: NextPage = () => {
       </ChatListSection>
       <ChatRoomSection>
         <ChatViewBox>
-          <MsgBox isMine={true} text={'안녕하세요'}></MsgBox>
-          <MsgBox isMine={false} text={'안녕하세요'}></MsgBox>
+          <MsgBox isMine={true}>
+            {msg.map((text, key) => (
+              <p key={key}> {text} </p>
+            ))}
+          </MsgBox>
+          <MsgBox isMine={false}>
+            {msg.map((text, key) => (
+              <p key={key}> {text} </p>
+            ))}
+          </MsgBox>
         </ChatViewBox>
         <ChatInputBox>
           <ChatInput onKeyPress={(e) => onKeyPress(e)}></ChatInput>

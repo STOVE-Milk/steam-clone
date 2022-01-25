@@ -5,7 +5,7 @@ import { css } from 'styled-components';
 
 export interface MsgBoxProps {
   isMine: boolean;
-  text: string;
+  children: React.ReactNode;
 }
 
 const MsgBoxStyle = styled.span<MsgBoxProps>`
@@ -40,5 +40,5 @@ const MsgBoxStyle = styled.span<MsgBoxProps>`
 `;
 
 export default function MsgBox(props: MsgBoxProps) {
-  return <MsgBoxStyle {...props}>{props.text}</MsgBoxStyle>;
+  return <MsgBoxStyle {...props}>{props.children}</MsgBoxStyle>;
 }
