@@ -28,9 +28,9 @@ const light = {
 
 export const theme: DefaultTheme = {
   breakpoints: {
-    small: '@media (max-width: 639px)',
-    medium: '@media (max-width: 1047px)',
-    large: '@media (min-width: 1048px)',
+    small: '@media screen and (max-width: 639px)',
+    medium: '@media screen and (max-width: 1047px)',
+    large: '@media screen and (min-width: 1048px)',
   },
   colors: {
     primaryBg: '#212327',
@@ -43,7 +43,7 @@ export const theme: DefaultTheme = {
     primaryText: '#ffffff',
     secondaryText: '#C7CED4',
 
-    divider: '#C7CED4',
+    divider: '#858c91',
 
     online: '#ADD1D4',
     offline: '',

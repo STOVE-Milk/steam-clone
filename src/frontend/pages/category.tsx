@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import CategoryList from 'components/molecules/CategoryList';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'modules';
+import { IState } from 'modules';
 import { getCategories, getGamesByCategory } from 'modules/game';
 
 export type GameMedia = {
@@ -79,7 +79,7 @@ const ContentWrapper = styled.div`
 `;
 const Category = () => {
   const [curSelectedCategory, setCurSelectedCategory] = useState('');
-  const { categories, gameSimpleList } = useSelector((state: RootState) => state.game);
+  const { categories, gamesByCategory } = useSelector((state: IState) => state.game);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -89,10 +89,10 @@ const Category = () => {
 
   return (
     <GameInfoWrapper>
-      {console.log(gameSimpleList)}
+      {console.log(gamesByCategory)}
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
-        <CategoryList list={categories} gameLoadFunc={setCurSelectedCategory}></CategoryList>
+        {/* <CategoryList list={categories} gameLoadFunc={setCurSelectedCategory}></CategoryList> */}
       </ContentWrapper>
       <ContentWrapper>
         <TitleStyle types="large">게임 리스트</TitleStyle>

@@ -9,7 +9,7 @@ import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 // 내용물: inputBox, 알림 아이콘, 유저인포
 
 const HeaderStyle = styled.header`
-  width: calc(100% - 250px);
+  width: 100%;
   height: 80px;
   position: fixed;
   display: flex;
@@ -20,8 +20,8 @@ const HeaderStyle = styled.header`
 `;
 const SearchBarWrapper = styled.div`
   display: flex;
-  width: 80%;
-  justify-content: center;
+  flex: 1;
+  justify-content: flex-end;
   ${(props) => props.theme.breakpoints.medium} {
     visibility: hidden;
   }
