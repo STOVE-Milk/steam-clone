@@ -97,7 +97,7 @@ const Category = () => {
     <GameInfoWrapper>
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
-        <CategoryList list={categories}></CategoryList>
+        <CategoryList list={categories.data}></CategoryList>
       </ContentWrapper>
       <ContentWrapper>
         <TitleStyle types="large">게임 리스트</TitleStyle>
