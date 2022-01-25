@@ -85,13 +85,6 @@ const ContentWrapper = styled.div`
   margin-bottom: 2rem;
 `;
 const Category = () => {
-  // const categories = useSelector((state: RootState) => state.game.categories);
-  // const dispatch = useDispatch();
-
-  // useEffect(() => {
-  // dispatch(getCategories.request({}));
-  // }, [categories]);
-
   return (
     <GameInfoWrapper>
       <ContentWrapper>

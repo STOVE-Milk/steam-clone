@@ -3,9 +3,6 @@ import Carousel from 'react-multi-carousel';
 import styled from 'styled-components';
 import 'react-multi-carousel/lib/styles.css';
 import { ButtonGroupProps } from 'react-multi-carousel/lib/types';
-import gameImage1 from 'public/game.png';
-import gameImage2 from 'public/game2.jpg';
-import Image from 'next/image';
 
 interface CarouselProps {
   slides: Object;
@@ -31,7 +28,7 @@ const Button = styled.div`
   position: relative;
 `;
 
-export default function CarouselComponent(this: any, props: CarouselProps) {
+export default function CarouselComponent(props: CarouselProps) {
   const responsive = {
     large: {
       breakpoint: { max: 3000, min: 1048 },

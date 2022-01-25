@@ -36,7 +36,7 @@ const LogoSection = styled.section`
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   cursor: pointer;
-  padding: 1rem 1rem 1rem 1rem;
+  padding: 1rem;
 `;
 
 const LogoBox = styled.div<INavBarStyledProps>`

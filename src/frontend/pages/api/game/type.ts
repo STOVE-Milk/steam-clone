@@ -1,7 +1,7 @@
 export interface IGetCategoriesReqType {}
 
 export interface IGetGameReqType {
-  id?: number;
+  id: number;
 }
 
 export interface IResType {
