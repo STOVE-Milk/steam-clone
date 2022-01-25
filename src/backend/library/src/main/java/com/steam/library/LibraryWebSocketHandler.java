@@ -9,11 +9,14 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
 public class LibraryWebSocketHandler extends TextWebSocketHandler {
+    private static Map<String, Room> robby = new HashMap<>();
     private static List<WebSocketSession> list = new ArrayList<>();
 
     @Override
