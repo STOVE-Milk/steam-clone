@@ -43,14 +43,19 @@ func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.Catego
 	return &pbCategoryList, nil
 }
 
-func (gc *GameController) GetWishlist(ctx context.Context) (*pb.UserDataResponse_UserData, error) {
+func (gc *GameController) GetUserData(ctx context.Context) (*pb.UserDataResponse_UserData, error) {
 	wishlist, err := gc.r.GetWishlist(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var pbWishlist pb.UserDataResponse_UserData
-	pbWishlist.WishList = wishlist
-	return &pbWishlist, nil
+	library, err := gc.r.GetPurchaseList(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var pbUserData pb.UserDataResponse_UserData
+	pbUserData.WishList = wishlist
+	pbUserData.PurchaseList = library
+	return &pbUserData, nil
 }
 
 func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetail, error) {

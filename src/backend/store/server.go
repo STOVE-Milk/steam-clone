@@ -51,8 +51,8 @@ func (store *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (
 	res, err := store.gameCtr.GetParentCategoryList(ctx)
 	if err != nil {
 		return &pb.CategoryListResponse{
-			Code:    31000,
-			Message: "can not get category list Err : " + err.Error(),
+			Code:    31010,
+			Message: "부모 카테고리 불러오기 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.CategoryListResponse{
@@ -71,8 +71,8 @@ func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.Sortin
 	res, err := store.gameCtr.GetSortingGameList(ctx)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
-			Code:    31000,
-			Message: "can not get game list Error : " + err.Error(),
+			Code:    31002,
+			Message: "정렬된 게임 리스트 불러오기 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.GameSimpleListResponse{
@@ -87,8 +87,8 @@ func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamR
 	res, err := store.gameCtr.GetGameDetail(ctx)
 	if err != nil {
 		return &pb.GameDetailResponse{
-			Code:    31000,
-			Message: "can not get the game Error : " + err.Error(),
+			Code:    31001,
+			Message: "게임 디테일 불러오기 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.GameDetailResponse{
@@ -103,8 +103,8 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 	res, err := store.gameCtr.GetReviewList(ctx)
 	if err != nil {
 		return &pb.ReviewListResponse{
-			Code:    31000,
-			Message: "can not get the game review list : " + err.Error(),
+			Code:    31020,
+			Message: "리뷰 리스트 불러오기 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.ReviewListResponse{
@@ -114,18 +114,18 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 	}, nil
 }
 
-func (store *storeServer) GetWishlist(ctx context.Context, _ *empty.Empty) (*pb.UserDataResponse, error) {
+func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.UserDataResponse, error) {
 	userMetaData, err := model.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
 	ctx = context.WithValue(ctx, "nickname", "roy")
-	res, err := store.gameCtr.GetWishlist(ctx)
+	res, err := store.gameCtr.GetUserData(ctx)
 	if err != nil {
 		return &pb.UserDataResponse{
-			Code:    31000,
-			Message: "can not get wishlist : " + err.Error(),
+			Code:    31030,
+			Message: "유저 데이터 불러오기 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.UserDataResponse{
@@ -145,8 +145,8 @@ func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Em
 	res, err := store.gameCtr.GetGameListInWishlist(ctx)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
-			Code:    31000,
-			Message: "can not get game list Error : " + err.Error(),
+			Code:    31003,
+			Message: "찜된 게임 목록 불러오기 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.GameSimpleListResponse{
@@ -167,8 +167,8 @@ func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryP
 	res, err := store.gameCtr.PostWishlist(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31001,
-			Message: "해당 게임에 대한 찜 요청을 실패하였습니다." + err.Error(),
+			Code:    31031,
+			Message: "찜 요청에 대한 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.IsSuccessResponse{
@@ -190,7 +190,7 @@ func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQuer
 	if err != nil {
 		return &pb.IsSuccessResponse{
 			Code:    31001,
-			Message: "해당 게임에 대한 찜 취소 요청을 실패하였습니다." + err.Error(),
+			Message: "찜 취소에 대한 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.IsSuccessResponse{
@@ -213,8 +213,8 @@ func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryReq
 	res, err := store.gameCtr.PostReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31001,
-			Message: "해당 리뷰에 대한 포스팅 요청을 실패하였습니다." + err.Error(),
+			Code:    31021,
+			Message: "리뷰 포스팅에 대한 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.IsSuccessResponse{
@@ -238,8 +238,8 @@ func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRe
 	res, err := store.gameCtr.PatchReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31001,
-			Message: "해당 리뷰에 대한 수정 요청을 실패하였습니다." + err.Error(),
+			Code:    31022,
+			Message: "리뷰 수정에 대한 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.IsSuccessResponse{
@@ -259,8 +259,8 @@ func (store *storeServer) DeleteReview(ctx context.Context, req *pb.ReviewQueryR
 	res, err := store.gameCtr.DeleteReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31001,
-			Message: "해당 리뷰에 대한 삭제 요청을 실패하였습니다." + err.Error(),
+			Code:    31023,
+			Message: "리뷰 삭제에 대한 에러 " + err.Error(),
 		}, nil
 	}
 	return &pb.IsSuccessResponse{

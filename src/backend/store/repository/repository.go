@@ -85,15 +85,27 @@ func (r *Repo) GetGameDetail(ctx context.Context) (*model.GameDetail, error) {
 
 func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-	category_name := ctx.Value("category").(string)
-	page := ctx.Value("page").(int32)
-	size := ctx.Value("size").(int32)
-	sort := ctx.Value("sort").(string)
 	defer cancel()
+	category_name := ctx.Value("category").(string)
+	if category_name == "" {
+		category_name = "ALL"
+	}
+	page := ctx.Value("page").(int32)
+	if page == 0 {
+		page = 1
+	}
+	size := ctx.Value("size").(int32)
+	if size == 0 {
+		size = 1
+	}
+	sort := ctx.Value("sort").(string)
+	if sort == "" {
+		sort = "idx,desc"
+	}
 	var gameSimpleList []*model.GameSimple
 
 	var queryBytes bytes.Buffer
-	if category_name == "모두" {
+	if category_name == "ALL" {
 		queryBytes.WriteString("SELECT idx, name, description_snippet, price, sale, image, video, os, download_count FROM game ")
 	} else {
 		queryBytes.WriteString("SELECT g.idx, g.name, description_snippet, price, sale, image, video, os, download_count ")
@@ -105,6 +117,9 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, err
 		queryBytes.WriteString("WHERE c.name=? ")
 	}
 	sortVal := strings.Split(sort, ",")
+	if len(sortVal) != 2 {
+		return nil, errors.New("sort 쿼리가 잘못 입력 됐습니다.")
+	}
 	queryBytes.WriteString("ORDER BY ")
 	queryBytes.WriteString(sortVal[0])
 	queryBytes.WriteString(" ")
@@ -112,7 +127,7 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, err
 	queryBytes.WriteString(" LIMIT ?,?")
 	var rows *sql.Rows
 	var err error
-	if category_name == "모두" {
+	if category_name == "ALL" {
 		rows, err = r.db.QueryContext(ctx, queryBytes.String(), page*size, size)
 	} else {
 		rows, err = r.db.QueryContext(ctx, queryBytes.String(), category_name, page*size, size)
@@ -125,7 +140,7 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, err
 		var game model.GameSimple
 		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		gameSimpleList = append(gameSimpleList, &game)
 	}
@@ -251,6 +266,31 @@ func (r *Repo) GetWishlist(ctx context.Context) ([]int32, error) {
 		wishlist = append(wishlist, gameId)
 	}
 	return wishlist, nil
+}
+
+func (r *Repo) GetPurchaseList(ctx context.Context) ([]int32, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	userId := ctx.Value("userId").(int32)
+	var purchaseList []int32
+	rows, err := r.db.QueryContext(ctx, `	
+	SELECT game_id
+	FROM library
+	WHERE user_id=?
+	`, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var gameId int32
+		err := rows.Scan(&gameId)
+		if err != nil {
+			return nil, err
+		}
+		purchaseList = append(purchaseList, gameId)
+	}
+	return purchaseList, nil
 }
 
 func (r *Repo) PostReview(ctx context.Context) (bool, error) {
