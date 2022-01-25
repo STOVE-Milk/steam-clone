@@ -41,45 +41,59 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    protected ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    protected ResponseEntity<Body<Object>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         e.printStackTrace();
-        return ResponseEntity.ok("요청의 파라미터 타입이 일치하지 않습니다. 관리자에게 문의바랍니다.");
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.SERVER_ERROR,"요청의 파라미터 타입이 일치하지 않습니다. 관리자에게 문의바랍니다.")
+        );
     }
 
     @ExceptionHandler(MissingPathVariableException.class)
-    protected ResponseEntity<String> handleMissingPathVariableException(MissingPathVariableException e) {
+    protected ResponseEntity<Body<Object>> handleMissingPathVariableException(MissingPathVariableException e) {
         e.printStackTrace();
-        return ResponseEntity.ok("공백이 포함된 url로 인해 오류가 발생했습니다.");
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.SERVER_ERROR,"공백이 포함된 url로 인해 오류가 발생했습니다.")
+        );
     }
 
     @ExceptionHandler(NullPointerException.class)
-    protected ResponseEntity<String> handleNullPointerException(NullPointerException e) {
+    protected ResponseEntity<Body<Object>> handleNullPointerException(NullPointerException e) {
         e.printStackTrace();
-        return ResponseEntity.ok("서버에서 비어있는 객체를 호출했습니다. 관리자에게 문의바랍니다.");
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.SERVER_ERROR,"서버에서 비어있는 객체를 호출했습니다. 관리자에게 문의바랍니다.")
+        );
     }
 
     @ExceptionHandler(BindException.class)
-    protected ResponseEntity<String> handleBindException(BindException e) {
+    protected ResponseEntity<Body<Object>> handleBindException(BindException e) {
         e.printStackTrace();
-        return ResponseEntity.ok("특정 포트가 이미 사용중입니다. 관리자에게 문의바랍니다.");
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.SERVER_ERROR,"특정 포트가 이미 사용중입니다. 관리자에게 문의바랍니다.")
+        );
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    protected ResponseEntity<String> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+    protected ResponseEntity<Body<Object>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         e.printStackTrace();
-        return ResponseEntity.ok("특정 요청 메소드를 지원하지 않습니다. 관리자에게 문의바랍니다.");
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.SERVER_ERROR,"특정 요청 메소드를 지원하지 않습니다. 관리자에게 문의바랍니다.")
+        );
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    protected ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
+    protected ResponseEntity<Body<Object>> handleAccessDeniedException(AccessDeniedException e) {
         e.printStackTrace();
-        return ResponseEntity.ok("서버에서 허용되지 않는 데이터에 접근을 시도했습니다. 관리자에게 문의바랍니다.");
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.SERVER_ERROR,"서버에서 허용되지 않는 데이터에 접근을 시도했습니다. 관리자에게 문의바랍니다.")
+        );
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    protected ResponseEntity<String> handleNoHandlerFoundException(NoHandlerFoundException e) {
+    protected ResponseEntity<Body<Object>> handleNoHandlerFoundException(NoHandlerFoundException e) {
         e.printStackTrace();
-        return ResponseEntity.ok("서버에서 지원하지 않는 요청입니다. 관리자에게 문의바랍니다.");
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.SERVER_ERROR,"서버에서 지원하지 않는 요청입니다. 관리자에게 문의바랍니다.")
+        );
     }
 
     @ExceptionHandler(DataAccessResourceFailureException.class)
