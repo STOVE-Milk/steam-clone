@@ -22,13 +22,14 @@ const NavBarWrapper = styled.div`
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   flex-direction: column;
-
-  /* position: fixed; */
   overflow-x: scroll;
   z-index: 999;
   padding: 10px;
   overflow-y: hidden;
   border-right: 1px solid white;
+  ${(props) => props.theme.breakpoints.small} {
+    position: fixed;
+  }
 `;
 
 const LogoSection = styled.section`
@@ -36,7 +37,7 @@ const LogoSection = styled.section`
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   cursor: pointer;
-  padding: 1rem;
+  padding: 1rem 1rem 1rem 1rem;
 `;
 
 const LogoBox = styled.div<INavBarStyledProps>`
