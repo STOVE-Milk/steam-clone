@@ -4,6 +4,7 @@ import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
+import { io, Socket } from 'socket.io-client';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faUser, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
@@ -17,6 +18,19 @@ import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import MsgBox from 'components/atoms/MsgBox';
 import { TextStyle } from 'components/atoms/Text';
+
+interface ServerToClientEvents {
+  noArg: () => void;
+  basicEmit: (a: number, b: string, c: Buffer) => void;
+  withAck: (d: string, callback: (e: number) => void) => void;
+}
+
+interface ClientToServerEvents {
+  send: (info: {
+    name: string,
+    msg: string
+  }) => void;
+}
 
 const ChatWrapper = styled.div`
   width: 100%;
@@ -112,6 +126,24 @@ const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 const Chat: NextPage = () => {
   const chats = [1, 2, 3, 4, 5, 5, 5, 6, 7, 8, 8, 9, 1, 1, 1, 1];
   const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n');
+
+  const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
+  socket.emit('send', {
+    name: 'user1',
+    msg: 'msg1',
+  });
+
+  socket.on('noArg', () => {
+    // ...
+  });
+
+  socket.on('basicEmit', (a, b, c) => {
+    // a is inferred as number, b as string and c as buffer
+  });
+
+  socket.on('withAck', (d, callback) => {
+    // d is inferred as string and callback as a function that takes a number as argument
+  });
 
   return (
     <ChatWrapper>

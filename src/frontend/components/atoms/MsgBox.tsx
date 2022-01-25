@@ -1,7 +1,5 @@
-import React, { Children } from 'react';
-import styled from 'styled-components';
-import { promisify } from 'util';
-import { css } from 'styled-components';
+import React from 'react';
+import styled, { css } from 'styled-components';
 
 export interface MsgBoxProps {
   isMine: boolean;
@@ -17,6 +15,7 @@ const MsgBoxStyle = styled.span<MsgBoxProps>`
   border-radius: 10px;
   padding: 1rem;
   margin: 1rem 0;
+  line-height: 1.3rem;
   align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
 
   :after {
