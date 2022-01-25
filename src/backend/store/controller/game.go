@@ -43,13 +43,13 @@ func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.Catego
 	return &pbCategoryList, nil
 }
 
-func (gc *GameController) GetWishlist(ctx context.Context) (*pb.WishlistResponse_Wishlist, error) {
+func (gc *GameController) GetWishlist(ctx context.Context) (*pb.UserDataResponse_UserData, error) {
 	wishlist, err := gc.r.GetWishlist(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var pbWishlist pb.WishlistResponse_Wishlist
-	pbWishlist.Wishlist = wishlist
+	var pbWishlist pb.UserDataResponse_UserData
+	pbWishlist.WishList = wishlist
 	return &pbWishlist, nil
 }
 
@@ -79,7 +79,7 @@ func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetail, er
 		return nil, err
 	}
 	return &pb.GameDetail{
-		GameId:             int32(gameDetail.Id),
+		Id:                 int32(gameDetail.Id),
 		Name:               gameDetail.Name,
 		DescriptionSnippet: gameDetail.DescriptionSnippet,
 		Price:              int32(gameDetail.Price),
@@ -111,7 +111,7 @@ func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpl
 		return nil, err
 	}
 	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
-	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
+	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
 	for i, game := range gameSimpleList {
 		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
 		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
@@ -130,8 +130,8 @@ func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpl
 		for _, video := range game.Video["sub"].([]interface{}) {
 			videoSub = append(videoSub, video.(string))
 		}
-		pbGameSimpleList.GameSimpleList[i] = &pb.GameSimple{
-			GameId:             int32(game.Id),
+		pbGameSimpleList.GameList[i] = &pb.GameSimple{
+			Id:                 int32(game.Id),
 			Name:               game.Name,
 			DescriptionSnippet: game.DescriptionSnippet,
 			Price:              int32(game.Price),
@@ -178,7 +178,7 @@ func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSi
 		return nil, err
 	}
 	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
-	pbGameSimpleList.GameSimpleList = make([]*pb.GameSimple, len(gameSimpleList))
+	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
 	for i, game := range gameSimpleList {
 		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
 		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
@@ -197,8 +197,8 @@ func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSi
 		for _, video := range game.Video["sub"].([]interface{}) {
 			videoSub = append(videoSub, video.(string))
 		}
-		pbGameSimpleList.GameSimpleList[i] = &pb.GameSimple{
-			GameId:             int32(game.Id),
+		pbGameSimpleList.GameList[i] = &pb.GameSimple{
+			Id:                 int32(game.Id),
 			Name:               game.Name,
 			DescriptionSnippet: game.DescriptionSnippet,
 			Price:              int32(game.Price),

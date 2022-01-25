@@ -28,25 +28,25 @@ service Store {
             get: "/store/games/{game_id}/reviews"
         };
     }
-    rpc GetWishlist(google.protobuf.Empty) returns (WishlistResponse){
+    rpc GetUserData(google.protobuf.Empty) returns (UserDataResponse){
         option (google.api.http) = {
-            get: "/store/wishlist"
+            get: "/store/userdata"
         };
     }
     rpc GetGameListInWishlist(google.protobuf.Empty) returns (GameSimpleListResponse){
         option (google.api.http) = {
-            get: "/store/users/wishlist"
+            get: "/store/wishes"
         };
     }
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            post: "/store/wishlist"
+            post: "/store/wishes"
             body: "*"
         };
     }
     rpc DeleteWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            delete: "/store/wishlist/{game_id}"
+            delete: "/store/wishes/{game_id}"
         };
     }
     rpc PostReview(ReviewQueryRequest) returns (IsSuccessResponse){
@@ -68,12 +68,13 @@ service Store {
     }
 }
 
-message WishlistResponse{
+message UserDataResponse{
     int32 code = 1;
     string message = 2;
-    Wishlist data = 3;
-    message Wishlist{
-        repeated int32 wishlist = 1;
+    UserData data = 3;
+    message UserData{
+        repeated int32 wish_list = 1 [json_name = "wish_list"];
+        repeated int32 purchase_list = 2 [json_name = "purchase_list"];
     }
 }
 
@@ -100,7 +101,7 @@ message GameSimpleListResponse{
     string message = 2;
     GameSimpleList data = 3;
     message GameSimpleList{
-        repeated GameSimple game_simple_list = 1 [json_name = "game_simple_list"];
+        repeated GameSimple game_list = 1 [json_name = "game_list"];
     }
 }
 
@@ -129,7 +130,7 @@ message Review{
 }
 
 message GameDetail{
-    int32 game_id = 1 [json_name = "game_id"];
+    int32 id = 1;
     string name = 2;
     string description_snippet = 3 [json_name = "description_snippet"];
     int32 price = 4;
@@ -138,11 +139,12 @@ message GameDetail{
     ContentsPath video = 7;
     repeated string category_list = 8 [json_name = "category_list"];
     repeated string os_list = 9 [json_name = "os_list"];
-    string description = 10;
-    Publisher publisher = 11;
-    int32 review_count = 12 [json_name = "review_count"];
-    int32 recommend_count = 13 [json_name = "recommend_count"];
-    repeated string language = 14;
+    int32 download_count = 10 [json_name = "download_count"];
+    string description = 11;
+    Publisher publisher = 12;
+    int32 review_count = 13 [json_name = "review_count"];
+    int32 recommend_count = 14 [json_name = "recommend_count"];
+    repeated string language = 15;
     //SystemRequirements system_least = 14 [json_name = "system_least"];
     //SystemRequirements system_recommend = 15 [json_name = "system_recommend"];
 }
@@ -163,7 +165,7 @@ message SystemRequirements{
 
 // 간단한 게임 정보를 나타내는 message
 message GameSimple {
-    int32 game_id = 1 [json_name = "game_id"];
+    int32 id = 1;
     string name = 2;
     string description_snippet = 3 [json_name = "description_snippet"];
     int32 price = 4;

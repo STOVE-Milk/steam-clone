@@ -6,7 +6,7 @@ import (
 
 var GameSimpleList = []*storePb.GameSimple{
 	{
-		GameId:             1,
+		Id:                 1,
 		Name:               "로스트 아크",
 		Price:              20000,
 		DescriptionSnippet: "아자아자",
@@ -16,7 +16,7 @@ var GameSimpleList = []*storePb.GameSimple{
 		CategoryList:       []string{"핵&스래쉬", "MMORPG"},
 	},
 	{
-		GameId:             2,
+		Id:                 2,
 		Name:               "리그오브레전드",
 		Price:              25000,
 		DescriptionSnippet: "스트레스",

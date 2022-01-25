@@ -114,7 +114,7 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 	}, nil
 }
 
-func (store *storeServer) GetWishlist(ctx context.Context, _ *empty.Empty) (*pb.WishlistResponse, error) {
+func (store *storeServer) GetWishlist(ctx context.Context, _ *empty.Empty) (*pb.UserDataResponse, error) {
 	userMetaData, err := model.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
@@ -123,12 +123,12 @@ func (store *storeServer) GetWishlist(ctx context.Context, _ *empty.Empty) (*pb.
 	ctx = context.WithValue(ctx, "nickname", "roy")
 	res, err := store.gameCtr.GetWishlist(ctx)
 	if err != nil {
-		return &pb.WishlistResponse{
+		return &pb.UserDataResponse{
 			Code:    31000,
 			Message: "can not get wishlist : " + err.Error(),
 		}, nil
 	}
-	return &pb.WishlistResponse{
+	return &pb.UserDataResponse{
 		Code:    31000,
 		Message: "wishlist",
 		Data:    res,
@@ -141,7 +141,7 @@ func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Em
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
-	ctx = context.WithValue(ctx, "nickname", "roy")
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	res, err := store.gameCtr.GetGameListInWishlist(ctx)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
