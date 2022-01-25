@@ -22,6 +22,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.6.2'
     implementation 'org.springframework.boot:spring-boot-starter-websocket:2.6.2'
+
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
     compileOnly 'org.projectlombok:lombok:1.18.22'
     runtimeOnly 'mysql:mysql-connector-java:8.0.25'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'

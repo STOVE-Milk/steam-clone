@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-    username: steam_developer
-    password: roqkfwk123@
+    url: jdbc:mysql://13.209.97.146:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: milk
+    password: milk
   jpa:
     show-sql: true
     database: mysql
@@ -18,12 +18,7 @@ spring:
         use_sql_comments: true
         globally_quoted_identifiers: true
   redis:
-    username: fortice
-    password: redis6379
     port: 6379
-    host: localhost
+    host: 13.209.97.146
     lettuce:
       shutdown-timeout: 100ms
-  data:
-    mongodb:
-      uri: mongodb+srv://milk:milk@sgs-steam.wklpp.mongodb.net/steam?retryWrites=true&w=majority
