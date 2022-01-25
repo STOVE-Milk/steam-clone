@@ -30,7 +30,7 @@ public class KakaoPayReady{
 
     public static KakaoPayReady of(Integer userId, GiftcardDto giftcard, Integer orderCount) {
         return KakaoPayReady.builder()
-                .itemCode(giftcard.getId().toString())
+                .itemCode(giftcard.getIdx().toString())
                 .itemName(giftcard.getName())
                 .partnerOrderId(userId.toString() + "-" + orderCount.toString())
                 .partnerUserId(userId.toString())

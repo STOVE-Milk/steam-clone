@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class GiftcardDto {
     @NotNull
-    private Integer id;
+    private Integer idx;
     @NotBlank
     private String name;
     @NotNull
@@ -20,7 +20,7 @@ public class GiftcardDto {
 
     public static GiftcardDto of(Giftcard giftcard) {
         return GiftcardDto.builder()
-                .id(giftcard.getIdx())
+                .idx(giftcard.getIdx())
                 .name(giftcard.getName())
                 .price(giftcard.getPrice())
                 .build();

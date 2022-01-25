@@ -24,4 +24,4 @@ spring:
       shutdown-timeout: 100ms
   data:
     mongodb:
-      uri: mongodb+srv://milk:milk@sgs-steam.wklpp.mongodb.net/steam?retryWrites=true&w=majority
+      uri: mongodb://milk:milk@mongodb/steam?retryWrites=true&w=majority
