@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	storePb "github.com/STOVE-Milk/steam-clone/gRPC-gateway/proto"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"google.golang.org/grpc"
 	"log"
 	"net/http"
 	"strings"
+
+	storePb "github.com/STOVE-Milk/steam-clone/gRPC-gateway/proto"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"google.golang.org/grpc"
 )
 
 const (
