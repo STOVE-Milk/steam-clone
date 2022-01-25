@@ -69,7 +69,7 @@ func (r *Repo) GetGameDetail(ctx context.Context) (*model.GameDetail, error) {
 	gameId := ctx.Value("gameId").(int32)
 	var gd model.GameDetail
 	rows, err := r.db.QueryContext(ctx, `
-	SELECT game_id, name, description_snippet, price, sale, image, video, description, publisher_id, review_count, recommend_count, os, language
+	SELECT game_id, name, description_snippet, price, sale, image, video, description, publisher_id, review_count, recommend_count, os, language, download_count
 	FROM steam.game_category AS gc 
 	join steam.game AS g 
 	on gc.game_id=g.idx where g.idx = ?
@@ -78,7 +78,7 @@ func (r *Repo) GetGameDetail(ctx context.Context) (*model.GameDetail, error) {
 		return nil, err
 	}
 	for rows.Next() {
-		rows.Scan(&gd.Id, &gd.Name, &gd.DescriptionSnippet, &gd.Price, &gd.Sale, &gd.Image, &gd.Video, &gd.Description, &gd.PublisherId, &gd.ReviewCount, &gd.RecommendCount, &gd.Os, &gd.Language)
+		rows.Scan(&gd.Id, &gd.Name, &gd.DescriptionSnippet, &gd.Price, &gd.Sale, &gd.Image, &gd.Video, &gd.Description, &gd.PublisherId, &gd.ReviewCount, &gd.RecommendCount, &gd.Os, &gd.Language, &gd.DownloadCount)
 	}
 	return &gd, nil
 }
