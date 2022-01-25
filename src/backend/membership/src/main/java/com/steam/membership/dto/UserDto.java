@@ -13,7 +13,7 @@ import java.util.Date;
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserDto {
-    private Integer idx;
+    private Integer id;
     private String nickname;
     private ProfileDto profile;
     private Date accessedAt;
@@ -21,7 +21,7 @@ public class UserDto {
 
     public static UserDto of(final User user) {
         return UserDto.builder()
-                .idx(user.getIdx())
+                .id(user.getIdx())
                 .nickname(user.getNickname())
                 .profile(JsonUtil.toObject(user.getProfile(), ProfileDto.class))
                 .accessedAt(user.getAccessedAt())
@@ -31,7 +31,7 @@ public class UserDto {
 
     public static UserDto of(final User user, Date createdAt) {
         return UserDto.builder()
-                .idx(user.getIdx())
+                .id(user.getIdx())
                 .nickname(user.getNickname())
                 .profile(JsonUtil.toObject(user.getProfile(), ProfileDto.class))
                 .accessedAt(user.getAccessedAt())

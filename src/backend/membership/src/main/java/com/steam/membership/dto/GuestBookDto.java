@@ -12,7 +12,7 @@ import java.util.Date;
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GuestBookDto {
-    private Integer idx;
+    private Integer id;
     private Integer guestId;
     private String displayedName;
     private String proflie;
@@ -21,7 +21,7 @@ public class GuestBookDto {
 
     public static GuestBookDto of(GuestBook guestBook) {
         return GuestBookDto.builder()
-                .idx(guestBook.getIdx())
+                .id(guestBook.getIdx())
                 .guestId(guestBook.getGuest().getIdx())
                 .displayedName(guestBook.getDisplayedName())
                 .proflie(guestBook.getGuest().getProfile())

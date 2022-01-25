@@ -35,7 +35,7 @@ public class ProfileService {
     public Body<Object> getGuestBooks(Integer userId) {
         final List<GuestBook> guestBooks = guestBookRepository.findTop10ByUserIdx(userId);
         if(guestBooks.isEmpty())
-            return Body.error(ErrorCode.USER_NOT_FOUND);
+            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
         return Body.success(GuestBookResponse.of(guestBooks));
     }

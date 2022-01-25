@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(annotations = {RestController.class, Service.class})
-@Order(10)
+@Order(100)
 public class CustomExceptionHandler {
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<Body<Object>> handleCustomException(CustomException e) {

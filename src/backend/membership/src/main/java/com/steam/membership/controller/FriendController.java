@@ -1,12 +1,13 @@
 package com.steam.membership.controller;
 
 import com.steam.membership.service.FriendService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,7 +26,11 @@ public class FriendController {
 
     @PostMapping("/friends")
     @ResponseBody
-    public ResponseEntity<Object> acceptFriendRequest(@NotNull @RequestParam("request_id") Integer requestId) {
+    public ResponseEntity<Object> acceptFriendRequest(
+            @Valid
+            @Min(value = 1, message = "요청 url의 최소값은 1입니다.")
+            @Pattern(regexp = "^[0-9]+", message = "숫자만 입력 가능합니다")
+            @RequestParam("request_id") Integer requestId) {
 
         return ResponseEntity.ok(
                 friendService.acceptFriendRequest(requestId)
@@ -34,7 +39,11 @@ public class FriendController {
 
     @DeleteMapping("/friends/{firendId}")
     @ResponseBody
-    public ResponseEntity<Object> deleteFriend(@NotBlank @PathVariable("friendId") Integer friendId) {
+    public ResponseEntity<Object> deleteFriend(
+            @Valid
+            @Min(value = 1, message = "요청 url의 최소값은 1입니다.")
+            @Pattern(regexp = "^[0-9]+", message = "숫자만 입력 가능합니다")
+            @PathVariable("friendId") Integer friendId) {
         return ResponseEntity.ok(
                 friendService.deleteFriend(friendId)
         );
@@ -42,7 +51,11 @@ public class FriendController {
 
     @GetMapping("/friend-requests")
     @ResponseBody
-    public ResponseEntity<Object> getFriendRequestList(@NotBlank @RequestParam("type") String type) {
+    public ResponseEntity<Object> getFriendRequestList(
+            @Valid
+            @NotBlank
+            @Pattern(regexp = "^[sended|received]", message = "파라미터 type은 'sended' 혹은 'received'만 가능합니다.")
+            @RequestParam("type") String type) {
         return ResponseEntity.ok(
                 friendService.getFriendRequestList(type)
         );
@@ -50,7 +63,11 @@ public class FriendController {
 
     @PostMapping("/friend-requests")
     @ResponseBody
-    public ResponseEntity<Object> sendFriendRequest(@NotBlank @RequestParam("userId") Integer userId) {
+    public ResponseEntity<Object> sendFriendRequest(
+            @Valid
+            @Min(value = 1, message = "요청 url의 최소값은 1입니다.")
+            @Pattern(regexp = "^[0-9]+", message = "숫자만 입력 가능합니다")
+            @RequestParam("user_id") Integer userId) {
         return ResponseEntity.ok(
                 friendService.sendFriendRequest(userId)
         );
@@ -58,7 +75,11 @@ public class FriendController {
 
     @DeleteMapping("/friend-requests/{requestId}")
     @ResponseBody
-    public ResponseEntity<Object> rejectFriendRequest(@NotBlank @PathVariable("requestId") Integer requestId) {
+    public ResponseEntity<Object> rejectFriendRequest(
+            @Valid
+            @Min(value = 1, message = "요청 url의 최소값은 1입니다.")
+            @Pattern(regexp = "^[0-9]+", message = "숫자만 입력 가능합니다")
+            @PathVariable("requestId") Integer requestId) {
         return ResponseEntity.ok(
                 friendService.rejectFriendRequest(requestId)
         );

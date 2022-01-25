@@ -41,7 +41,7 @@ public class ProfileController {
     @ResponseBody
     public ResponseEntity<Object> getGuestBooks(
             @NotBlank @PathVariable("userId") Integer userId,
-            @RequestParam("page") Integer page) {
+            @RequestParam(value = "page", required = false) Integer page) {
 
         return ResponseEntity.ok(
                 profileService.getGuestBooks(userId)

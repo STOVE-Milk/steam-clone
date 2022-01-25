@@ -19,6 +19,7 @@ import javax.persistence.*;
 )
 public class Friend {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)

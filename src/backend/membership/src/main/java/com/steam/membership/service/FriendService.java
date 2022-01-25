@@ -89,6 +89,7 @@ public class FriendService {
         return Body.success(new EmptyData());
     }
 
+    @Transactional
     public Body<Object> deleteFriend(Integer friendId) {
         // TODO 한쪽만 친구를 끊을 것인가?
         final Integer userId = UserContext.getUserId();
@@ -125,6 +126,7 @@ public class FriendService {
         }
     }
 
+    @Transactional
     public Body<Object> sendFriendRequest(Integer userId) {
         final User me = UserContext.getUser();
         final Optional<User> receiver = userRepository.findById(userId);
@@ -145,6 +147,7 @@ public class FriendService {
         return Body.success(new EmptyData());
     }
 
+    @Transactional
     public Body<Object> rejectFriendRequest(Integer requestId) {
         final User me = UserContext.getUser();
         final Optional<FriendRequest> friendRequest = friendRequestRepository.findByIdAndUser(requestId, me);
