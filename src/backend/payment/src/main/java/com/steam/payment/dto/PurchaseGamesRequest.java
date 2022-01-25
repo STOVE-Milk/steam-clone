@@ -17,7 +17,7 @@ public class PurchaseGamesRequest {
 
     public List<Integer> getGamesId() {
         return games.stream()
-                .map(GameDto::getIdx)
+                .map(GameDto::getId)
                 .collect(Collectors.toList());
     }
 }

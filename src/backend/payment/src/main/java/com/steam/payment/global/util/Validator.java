@@ -16,7 +16,7 @@ public class Validator {
     //List<GameDto>
     public static boolean validGamePrice(final List<GameDto> gameEntityData, final List<GameDto> gameRequestData) {
         List<GameDto> sortedGames = gameRequestData.stream()
-                .sorted(Comparator.comparingInt(GameDto::getIdx))
+                .sorted(Comparator.comparingInt(GameDto::getId))
                 .collect(Collectors.toList());
 
         for(int i = 0; i < gameEntityData.size(); i++) {
