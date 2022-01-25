@@ -12,9 +12,13 @@ export type gameInfo = {
   description: string;
   os: string[];
   category_list: string[];
-  image?: {};
+  image?: {
+    main: string;
+    sub: string[];
+  };
   video?: {};
   sale: number;
+  country: string;
 };
 
 export interface gameState {

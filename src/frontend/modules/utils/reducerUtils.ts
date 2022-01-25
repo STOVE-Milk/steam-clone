@@ -2,7 +2,7 @@ import { AnyAction } from 'redux';
 import { AsyncActionCreatorBuilder, getType } from 'typesafe-actions';
 
 export type AsyncState<T, E = any> = {
-  data: T;
+  data: T | null;
   loading: boolean;
   error: E | null;
 };
@@ -14,9 +14,9 @@ export const asyncState = {
     data: initialData,
     error: null,
   }),
-  load: <T, E = any>(data: T): AsyncState<T, E> => ({
+  load: <T, E = any>(data?: T): AsyncState<T, E> => ({
     loading: true,
-    data: data,
+    data: data || null,
     error: null,
   }),
   success: <T, E = any>(data: T): AsyncState<T, E> => ({
@@ -24,18 +24,22 @@ export const asyncState = {
     data,
     error: null,
   }),
-  error: <T, E>(data: T, error: E): AsyncState<T, E> => ({
+  error: <T, E>(error: E): AsyncState<T, E> => ({
     loading: false,
-    data: data,
+    data: null,
     error: error,
   }),
 };
 
+export function transformToArray<AC extends AnyAsyncActionCreator>(asyncActionCreator: AC) {
+  const { request, success, failure } = asyncActionCreator;
+  return [request, success, failure];
+}
 type AnyAsyncActionCreator = AsyncActionCreatorBuilder<any, any, any>;
 
 export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extends keyof S>(
   asyncActionCreator: AC,
-  key: K,
+  key: string,
 ) {
   return (state: S, action: AnyAction) => {
     // 각 액션 생성함수의 type 을 추출해줍니다.
@@ -58,7 +62,7 @@ export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extend
       case failure:
         return {
           ...state,
-          [key]: asyncState.error(action.payload, action.payload),
+          [key]: asyncState.error(action.payload),
         };
       default:
         return state;
