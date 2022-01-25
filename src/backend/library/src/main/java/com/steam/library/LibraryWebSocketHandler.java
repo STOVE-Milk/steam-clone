@@ -23,6 +23,10 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         log.info("payload : " + payload);
+        log.info("session id : " + session.getId());
+        log.info("user id : " + session.getAttributes().get("user_id"));
+        log.info("nickname : " + session.getAttributes().get("nickname"));
+
 
         for(WebSocketSession sess: list) {
             sess.sendMessage(message);

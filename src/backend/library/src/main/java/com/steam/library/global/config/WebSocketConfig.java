@@ -1,5 +1,7 @@
-package com.steam.library;
+package com.steam.library.global.config;
 
+import com.steam.library.LibraryWebSocketHandler;
+import com.steam.library.global.interceptor.WebSocketHandshakeInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +15,12 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
     private final LibraryWebSocketHandler libraryWebSocketHandler;
+    private final WebSocketHandshakeInterceptor webSocketHandshakeInterceptor;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(libraryWebSocketHandler, "/library")
-                .addInterceptors(new HttpSessionHandshakeInterceptor())
+                .addInterceptors(webSocketHandshakeInterceptor)
                 .setAllowedOrigins("*");
     }
 }
