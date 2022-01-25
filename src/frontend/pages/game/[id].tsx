@@ -63,16 +63,20 @@ const GameInfoBox = styled.div`
   margin: 0.5rem 0;
 `;
 
-const TitleBox = styled(GameInfoBox)`
+const GameInfoTitle = styled(Text)`
+  margin-bottom: 1rem;
+`;
+
+const DescBox = styled(GameInfoBox)`
   .desc {
-    padding-top: 1rem;
     line-height: 1.5rem;
   }
 `;
 
 const OSBox = styled(GameInfoBox)`
+  padding-bottom: 0.5rem;
   .OSCol {
-    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     align-items: center;
     display: flex;
 
@@ -84,7 +88,6 @@ const OSBox = styled(GameInfoBox)`
 
 const CategoryBox = styled(GameInfoBox)`
   .categories {
-    padding-top: 0.8rem;
     display: flex;
     flex-wrap: wrap;
   }
@@ -103,7 +106,6 @@ const GameBuyBox = styled(GameInfoBox)`
     justify-content: flex-end;
     flex-wrap: wrap;
     align-items: center;
-    padding-top: 0.5rem;
     ${(props) => props.theme.breakpoints.small} {
       justify-content: flex-start;
     }
@@ -136,26 +138,26 @@ const Detail: NextPage<IState> = () => {
       </GameIntroSection>
       <GameDetailSection>
         <GameDetailBox>
-          <TitleBox>
-            <Text types="large"> {game.data && game.data.name}</Text>
+          <DescBox>
+            <GameInfoTitle types="medium">게임 상세 설명</GameInfoTitle>
             <div className="desc">
               <Text types="small"> {game.data && game.data.description}</Text>
             </div>
-          </TitleBox>
+          </DescBox>
           <OSBox>
-            <Text types="medium">지원 가능 OS</Text>
+            <GameInfoTitle types="medium">지원 가능 OS</GameInfoTitle>
             {game.data &&
-              game.data.os.map((eachOs: string) => {
+              game.data.os_list.map((eachOs: string) => {
                 return (
                   <div className="OSCol">
-                    <FontAwesomeIcon icon={eachOs === 'windows' ? faWindowMaximize : faAppleAlt} inverse />
+                    <FontAwesomeIcon icon={eachOs === 'Window' ? faWindowMaximize : faAppleAlt} inverse />
                     <Text types="small">{eachOs}</Text>
                   </div>
                 );
               })}
           </OSBox>
           <CategoryBox>
-            <Text types="medium">게임 카테고리</Text>
+            <GameInfoTitle types="medium">게임 카테고리</GameInfoTitle>
             <div className="categories">
               {game.data &&
                 game.data.category_list.map((category: string) => {
@@ -168,16 +170,16 @@ const Detail: NextPage<IState> = () => {
             </div>
           </CategoryBox>
           <GameBuyBox>
-            <Text types="large"> {game.data && game.data.name}</Text>
+            <GameInfoTitle types="medium">구매 정보</GameInfoTitle>
             <div className="actionBox">
-              <Text types="medium"> {`${game.data && localePrice(game.data.price['KR'], game.data.country)}`}</Text>
+              <Text types="medium"> {`${game.data && localePrice(game.data.price, 'KR')}`}</Text>
               <FilledButton types={'primary'}>구매</FilledButton>
               <FilledButton types={'primary'}>장바구니</FilledButton>
             </div>
           </GameBuyBox>
           <DevInfoBox>
-            <Text types="medium">개발자 정보</Text>
-            {/* <Text types="small"> {game.data && game.data.name}</Text> */}
+            <GameInfoTitle types="medium">개발자 정보</GameInfoTitle>
+            <Text types="small">{game.data && game.data.publisher.name}</Text>
           </DevInfoBox>
         </GameDetailBox>
       </GameDetailSection>
