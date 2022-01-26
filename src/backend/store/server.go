@@ -120,7 +120,7 @@ func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
-	ctx = context.WithValue(ctx, "nickname", "roy")
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	res, err := store.gameCtr.GetUserData(ctx)
 	if err != nil {
 		return &pb.UserDataResponse{
@@ -162,7 +162,7 @@ func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryP
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
-	ctx = context.WithValue(ctx, "nickname", "roy")
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	ctx = context.WithValue(ctx, "gameId", req.GameId)
 	res, err := store.gameCtr.PostWishlist(ctx)
 	if err != nil {
@@ -184,7 +184,7 @@ func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQuer
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
-	ctx = context.WithValue(ctx, "nickname", "roy")
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	ctx = context.WithValue(ctx, "gameId", req.GameId)
 	res, err := store.gameCtr.DeleteWishlist(ctx)
 	if err != nil {
@@ -206,7 +206,7 @@ func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryReq
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
-	ctx = context.WithValue(ctx, "nickname", "roy")
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	ctx = context.WithValue(ctx, "gameId", req.GameId)
 	ctx = context.WithValue(ctx, "reviewContent", req.Content)
 	ctx = context.WithValue(ctx, "reviewRecommendation", req.Recommendation)
@@ -230,7 +230,7 @@ func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRe
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
-	ctx = context.WithValue(ctx, "nickname", "roy")
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	ctx = context.WithValue(ctx, "gameId", req.GameId)
 	ctx = context.WithValue(ctx, "reviewId", req.ReviewId)
 	ctx = context.WithValue(ctx, "reviewContent", req.Content)
@@ -254,7 +254,7 @@ func (store *storeServer) DeleteReview(ctx context.Context, req *pb.ReviewQueryR
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
-	ctx = context.WithValue(ctx, "nickname", "roy")
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	ctx = context.WithValue(ctx, "reviewId", req.ReviewId)
 	res, err := store.gameCtr.DeleteReview(ctx)
 	if err != nil {

@@ -3,9 +3,7 @@ package controller
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
-	"github.com/STOVE-Milk/steam-clone/store/model"
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 
 	"github.com/STOVE-Milk/steam-clone/store/repository"
@@ -22,12 +20,6 @@ func NewGameCtr(db *sql.DB) *GameController {
 }
 
 func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.CategoryListResponse_CategoryList, error) {
-	test, err := model.ExtractMetadata(ctx)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(test)
-	}
 	parentCategoryList, err := gc.r.GetAllCategoryList(ctx)
 	if err != nil {
 		return nil, err

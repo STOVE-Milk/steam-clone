@@ -19,6 +19,10 @@ type TokenMetaData struct {
 
 func extractToken(ctx context.Context) string {
 	headers, _ := metadata.FromIncomingContext(ctx)
+	if len(headers["authorization"]) == 0 {
+		return ""
+	}
+
 	bearToken := headers["authorization"][0]
 	//normally Authorization the_token_xxx
 	strArr := strings.Split(bearToken, " ")
@@ -31,6 +35,9 @@ func extractToken(ctx context.Context) string {
 func ExtractMetadata(ctx context.Context) (*TokenMetaData, error) {
 	metadata := &TokenMetaData{}
 	tokenString := extractToken(ctx)
+	if tokenString == "" {
+		return nil, errors.New("token.ExtractMetadata : 토큰 에러")
+	}
 	secretString := "5dc5085d01e85fd229e32fedbd0f1a4b10cd57e61a7f423bca91263d7ce22ac5cf298a1f8ecc5f5f8125b07627329d06cbde50d25b5d00a17286cf577fd86e8b"
 	secret := []byte(secretString)
 	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
