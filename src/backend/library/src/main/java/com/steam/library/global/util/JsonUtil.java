@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -25,7 +26,8 @@ public class JsonUtil {
         }
     }
 
-    private <T> T toObject(String json, Class<T> tClass) {
+    @Nullable
+    public static <T> T toObject(String json, Class<T> tClass) {
         try {
             return objectMapper.readValue(json, tClass);
         } catch (JsonProcessingException e) {
