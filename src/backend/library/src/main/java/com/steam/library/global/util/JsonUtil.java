@@ -36,6 +36,14 @@ public class JsonUtil {
         }
     }
 
+    public static <T> String toJson(T object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     //Mapper? 따로 분리해야할듯
     public Map<String, String> of(Object data) {
         return objectMapper.convertValue(data, new TypeReference<>() {});

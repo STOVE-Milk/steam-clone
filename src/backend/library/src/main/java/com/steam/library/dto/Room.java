@@ -1,4 +1,4 @@
-package com.steam.library;
+package com.steam.library.dto;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.UserDto;
@@ -30,4 +30,10 @@ public class Room {
                 .map(this.map)
                 .build();
     }
+
+//    public static Room newRoom(Integer roomId, UserDto user, MapDto map) {
+//        return Room.builder()
+//                .roomId()
+//                .build();
+//    }
 }
