@@ -37,35 +37,35 @@ export function transformToArray<AC extends AnyAsyncActionCreator>(asyncActionCr
 }
 type AnyAsyncActionCreator = AsyncActionCreatorBuilder<any, any, any>;
 
-export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extends keyof S>(
-  asyncActionCreator: AC,
-  key: string,
-) {
-  return (state: S, action: AnyAction) => {
-    // 각 액션 생성함수의 type 을 추출해줍니다.
-    const [request, success, failure] = [
-      asyncActionCreator.request,
-      asyncActionCreator.success,
-      asyncActionCreator.failure,
-    ].map(getType);
-    switch (action.type) {
-      case request:
-        return {
-          ...state,
-          [key]: asyncState.load(action.payload),
-        };
-      case success:
-        return {
-          ...state,
-          [key]: asyncState.success(action.payload),
-        };
-      case failure:
-        return {
-          ...state,
-          [key]: asyncState.error(action.payload),
-        };
-      default:
-        return state;
-    }
-  };
-}
+// export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extends keyof S>(
+//   asyncActionCreator: AC,
+//   key: string,
+// ) {
+//   return (state: S, action: AnyAction) => {
+//     // 각 액션 생성함수의 type 을 추출해줍니다.
+//     const [request, success, failure] = [
+//       asyncActionCreator.request,
+//       asyncActionCreator.success,
+//       asyncActionCreator.failure,
+//     ].map(getType);
+//     switch (action.type) {
+//       case request:
+//         return {
+//           ...state,
+//           [key]: asyncState.load(action.payload),
+//         };
+//       case success:
+//         return {
+//           ...state,
+//           [key]: asyncState.success(action.payload),
+//         };
+//       case failure:
+//         return {
+//           ...state,
+//           [key]: asyncState.error(action.payload),
+//         };
+//       default:
+//         return state;
+//     }
+//   };
+// }

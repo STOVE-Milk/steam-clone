@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import sImage from 'public/game.png';
-import { IGameInfo } from 'pages/category';
+import { gameInfo as IGameInfo } from 'modules/game/types';
 import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
 
@@ -179,32 +179,41 @@ export default function GameInfo(props: IGameInfo) {
             <Text types="medium">{gameData.name}</Text>
           </span>
           <OsBox>
-            {gameData.os.map((eachOs: string) => {
-              return <FontAwesomeIcon icon={eachOs === 'windows' ? faWindowMaximize : faAppleAlt} inverse />;
-            })}
+            {gameData.os_list &&
+              gameData.os_list.map((eachOs: string) => {
+                return (
+                  <FontAwesomeIcon
+                    icon={eachOs.toLocaleLowerCase().indexOf('window') ? faWindowMaximize : faAppleAlt}
+                    inverse
+                  />
+                );
+              })}
           </OsBox>
           <DescriptionBox>{gameData.description_snippet}</DescriptionBox>
           <span>
-            {gameData.category_list.map((each: string) => {
-              return <CategoryBox>{`#${each}`}</CategoryBox>;
-            })}
+            {gameData.category_list &&
+              gameData.category_list.map((each: string) => {
+                return <CategoryBox>{`#${each}`}</CategoryBox>;
+              })}
           </span>
         </section>
       </GameDetailBox>
       <EtcInfoBox>
         <section>
           {Boolean(gameData.sale) && <SaleBadge>-{gameData.sale}%</SaleBadge>}
-          <div>
-            {Boolean(gameData.sale) ? (
-              <>
-                {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
-                <DefaultPrice>{`${localePrice(gameData.price, 'KR')}`}</DefaultPrice>
-                <Text types="medium">{`${localePrice((gameData.price / 100) * (100 - gameData.sale), 'KR')}`}</Text>
-              </>
-            ) : (
-              <Text types="medium">{`${localePrice(gameData.price, 'KR')}`}</Text>
-            )}
-          </div>
+          {gameData.price && (
+            <div>
+              {Boolean(gameData.sale) ? (
+                <>
+                  {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
+                  <DefaultPrice>{`${localePrice(gameData.price, 'KR')}`}</DefaultPrice>
+                  <Text types="medium">{`${localePrice((gameData.price / 100) * (100 - gameData.sale), 'KR')}`}</Text>
+                </>
+              ) : (
+                <Text types="medium">{`${localePrice(gameData.price, 'KR')}`}</Text>
+              )}
+            </div>
+          )}
         </section>
         <section>
           <IconBox onClick={() => setLike(!like)}>

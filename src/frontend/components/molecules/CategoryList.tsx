@@ -43,11 +43,19 @@ const CategoryBox = styled(Text)`
   }
 `;
 
-export default function CategoryList({ list }: IGameCategory) {
+export default function CategoryList({ list, gameLoadFunc }: IGameCategory) {
   return (
     <CategoryWrapper>
       {list.map((eachCategory) => {
-        return <CategoryBox>{eachCategory}</CategoryBox>;
+        return (
+          <CategoryBox
+            onClick={() => {
+              gameLoadFunc && gameLoadFunc(eachCategory);
+            }}
+          >
+            {eachCategory}
+          </CategoryBox>
+        );
       })}
     </CategoryWrapper>
   );
