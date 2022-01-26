@@ -76,7 +76,7 @@ func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetailResp
 		return nil, err
 	}
 	return &pb.GameDetailResponse_Game{
-		&pb.GameDetail{
+		Game: &pb.GameDetail{
 			Id:                 int32(gameDetail.Id),
 			Name:               gameDetail.Name,
 			DescriptionSnippet: gameDetail.DescriptionSnippet,
