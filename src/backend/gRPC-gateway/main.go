@@ -12,9 +12,11 @@ import (
 )
 
 const (
-	gRPCGatewayPortNumber = "8100"
-	storeServerPortNumber = "8101"
+	gRPCGatewayPortNumber = ":8100"
+	storeServerPortNumber = ":8101"
+	chatServerPortNumber  = ":8102"
 	storeServerHost       = "localhost:"
+	chatServerHost        = "localhost:"
 	gRPCGatewayHost       = "grpc_gateway:"
 )
 
@@ -27,29 +29,11 @@ func CustomMatcher(key string) (string, bool) {
 	}
 }
 
-func registerServiceHandlers(ctx context.Context, mux *runtime.ServeMux) error {
-	options := []grpc.DialOption{
-		grpc.WithInsecure(),
-	}
-	if err := storePb.RegisterStoreHandlerFromEndpoint(
-		ctx,
-		mux,
-		storeServerHost+storeServerPortNumber,
-		options,
-	); err != nil {
-		log.Fatalf("failed to register gRPC gateway: %v", err)
-		return err
-	}
-
-	return nil
-}
-
 func preflightHandler(w http.ResponseWriter, r *http.Request) {
 	headers := []string{"Content-Type", "Accept"}
 	w.Header().Set("Access-Control-Allow-Headers", strings.Join(headers, ","))
 	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
 	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
-	return
 }
 
 func allowCORS(h http.Handler) http.Handler {
@@ -73,10 +57,21 @@ func main() {
 		runtime.WithIncomingHeaderMatcher(CustomMatcher),
 	)
 
-	registerServiceHandlers(ctx, mux)
+	options := []grpc.DialOption{
+		grpc.WithInsecure(),
+	}
+	if err := storePb.RegisterStoreHandlerFromEndpoint(
+		ctx,
+		mux,
+		storeServerHost+storeServerPortNumber,
+		options,
+	); err != nil {
+		log.Fatalf("failed to register gRPC gateway: %v", err)
+	}
 
 	log.Printf("start HTTP server on %s port", gRPCGatewayPortNumber)
-	if err := http.ListenAndServe(":"+gRPCGatewayPortNumber, allowCORS(mux)); err != nil {
+	if err := http.ListenAndServe(gRPCGatewayPortNumber, allowCORS(mux)); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
+
 }

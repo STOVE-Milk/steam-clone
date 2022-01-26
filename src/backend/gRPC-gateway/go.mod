@@ -11,9 +11,15 @@ require (
 )
 
 require (
+	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
+)
+
+require (
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/rs/xid v1.3.0
-	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d // indirect
+	github.com/tmc/grpc-websocket-proxy v0.0.0-20220101234140-673ab2c3ae75
+	golang.org/x/net v0.0.0-20211123203042-d83791d6bcd9 // indirect
 	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
