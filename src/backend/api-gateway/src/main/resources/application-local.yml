@@ -23,6 +23,14 @@ spring:
           uri: http://localhost:8100/
           predicates:
             - Path=/store/**
+        - id: chat-ws-svc
+          uri: ws://localhost:8102/
+          predicates:
+            - Path=/chat/**
+        - id: chat-http-svc
+          uri: http://localhost:8102/
+          predicates:
+            - Path=/chat/**
         - id: payment-svc
           uri: http://localhost:8200/
           predicates:
@@ -32,13 +40,17 @@ spring:
               args:
                 baseMessage: Spring Cloud Gateway AuthorizationCheckFilter
         - id: membership-svc
-            uri: http://localhost:8201/
-            predicates:
-              - Path=/membership/**
-            filters:
-              - name: AuthorizationCheckFilter
-                args:
-                  baseMessage: Membership AuthorizationCheckFilter
+          uri: http://localhost:8201/
+          predicates:
+            - Path=/membership/**
+          filters:
+            - name: AuthorizationCheckFilter
+              args:
+                baseMessage: Membership AuthorizationCheckFilter
+        - id: robby-ws-svc
+          uri: ws://localhost:8210/
+          predicates:
+            - Path=/library/**
       globalcors:
         corsConfigurations:
           '[/**]':
