@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, AnyAction } from 'redux';
+import { createStore, applyMiddleware, AnyAction, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer, { IState, rootSaga } from '.';
@@ -18,6 +18,6 @@ function configureStore() {
   return store;
 }
 
-const wrapper = createWrapper(configureStore);
+const wrapper = createWrapper<Store<IState>>(configureStore);
 
 export default wrapper;

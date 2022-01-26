@@ -13,6 +13,12 @@ interface TextThemeType {
 }
 
 const TextTheme: TextThemeType = {
+  title: {
+    size: '3rem',
+    weight: 'bold',
+    color: theme.colors.primaryText,
+  },
+
   large: {
     size: '1.5rem',
     weight: 'bold',
