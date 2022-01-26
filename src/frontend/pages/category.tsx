@@ -17,56 +17,6 @@ export type GameMedia = {
   main: string;
   sub: Array<string>;
 };
-// export interface IGameInfo {
-//   id: number;
-//   name: string;
-//   os: Array<string>; // 지원 가능한 os 가 모두 다 오는 식
-//   description_snippet: string;
-//   price: number;
-//   sale: number;
-//   image: GameMedia;
-//   video: GameMedia;
-//   category_list: Array<string>;
-// }
-
-// const mockData: Array<IGameInfo> = [
-//   {
-//     id: 1,
-//     name: 'Vampire Survivors',
-//     os: ['windows', 'apple'],
-//     description_snippet:
-//       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.za',
-//     price: 10000,
-//     sale: 10,
-//     image: {
-//       main: 'www',
-//       sub: ['www1', 'www2'],
-//     },
-//     video: {
-//       main: 'www',
-//       sub: ['www1', 'www2'],
-//     },
-//     category_list: ['Sandbox', 'RTS', 'FPS', 'MOBA'],
-//   },
-//   {
-//     id: 2,
-//     name: 'Vampire Survivors2',
-//     os: ['windows'],
-//     description_snippet:
-//       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.za',
-//     price: 20000,
-//     sale: 0,
-//     image: {
-//       main: 'www',
-//       sub: ['www1', 'www2'],
-//     },
-//     video: {
-//       main: 'www',
-//       sub: ['www1', 'www2'],
-//     },
-//     category_list: ['Sandbox', 'RTS', 'FPS'],
-//   },
-// ];
 
 const GameInfoWrapper = styled.div`
   width: fit-content;
@@ -84,7 +34,7 @@ const ContentWrapper = styled.div`
 const Category: NextPage<IState> = () => {
   const [curSelectedCategory, setCurSelectedCategory] = useState('ALL');
   const { categories, gamesByCategory } = useSelector((state: IState) => {
-    console.log('state:', state);
+    // console.log('state:', state);
     return state.game;
   });
 
@@ -100,15 +50,18 @@ const Category: NextPage<IState> = () => {
 
   return (
     <GameInfoWrapper>
-      {console.log(curSelectedCategory)}
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
         {categories.data && (
-          <CategoryList list={Object.values(categories.data)} gameLoadFunc={setCurSelectedCategory}></CategoryList>
+          <CategoryList
+            list={Object.values(categories.data)}
+            curSelectedCategory={curSelectedCategory}
+            setCurSelectedCategory={setCurSelectedCategory}
+          ></CategoryList>
         )}
       </ContentWrapper>
       <ContentWrapper>
-        <TitleStyle types="large">{`${curSelectedCategory}`} 게임 리스트</TitleStyle>
+        <TitleStyle types="large">{`${curSelectedCategory} 게임 리스트 (${gamesByCategoryData?.length})`}</TitleStyle>
         {gamesByCategoryData &&
           gamesByCategoryData.map((eachGame, i) => {
             return <GameInfo key={i} {...eachGame} />;
