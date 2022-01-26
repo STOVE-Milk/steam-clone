@@ -28,7 +28,7 @@ const Main: NextPage = () => {
   return (
     <MainWrapper>
       <CarouselSection>
-        <CarouselBox>
+        {/* <CarouselBox>
           <BigCarouselComponent
             slides={mockData.map((data) => {
               return (
@@ -59,7 +59,7 @@ const Main: NextPage = () => {
               );
             })}
           ></CarouselComponent>
-        </CarouselBox>
+        </CarouselBox> */}
       </CarouselSection>
     </MainWrapper>
   );

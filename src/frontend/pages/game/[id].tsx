@@ -70,7 +70,12 @@ const SnippetBox = styled.div``;
 
 const EvaluationBox = styled.div`
   width: 100%;
-  .Evaluation {
+`;
+
+const Evaluation = styled.div`
+  width: 100%;
+  display: flex;
+  .RecommendBox {
     display: flex;
     align-items: center;
   }
@@ -80,8 +85,11 @@ const RecommendCount = styled(Text)`
   margin: 0.5rem 0 0 0.5rem;
 `;
 
+const WishButtonBox = styled.div`
+  flex: 1;
+`;
 const WishButton = styled(FilledButton)`
-  justify-self: flex-end;
+  float: right;
 `;
 
 const Divider = styled.div`
@@ -174,15 +182,17 @@ const Detail: NextPage<IState> = () => {
         <Divider />
         <EvaluationBox>
           <GameInfoTitle types="medium">평가</GameInfoTitle>
-          <div className="Evaluation">
+          <Evaluation>
             <div className="RecommendBox">
               <Text types="large">{`${game.data && (game.data.recommend_count / game.data.review_count) * 100}%`}</Text>
               <RecommendCount types="tiny">{`${game.data && game.data.review_count}명 중 ${
                 game.data && game.data.recommend_count
               }명 추천`}</RecommendCount>
             </div>
-            <WishButton types="primary">위시리스트</WishButton>
-          </div>
+            <WishButtonBox>
+              <WishButton types="primary">위시리스트</WishButton>
+            </WishButtonBox>
+          </Evaluation>
         </EvaluationBox>
       </GameIntroSection>
       <GameDetailSection>
