@@ -108,7 +108,10 @@ message GameSimpleListResponse{
 message GameDetailResponse{
     int32 code = 1;
     string message = 2;
-    GameDetail data = 3;
+    Game data = 3;
+    message Game{
+        GameDetail game = 1;
+    }
 }
 
 message IsSuccessResponse{

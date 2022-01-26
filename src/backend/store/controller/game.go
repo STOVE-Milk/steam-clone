@@ -50,7 +50,7 @@ func (gc *GameController) GetUserData(ctx context.Context) (*pb.UserDataResponse
 	return &pbUserData, nil
 }
 
-func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetail, error) {
+func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetailResponse_Game, error) {
 	gameDetail, err := gc.r.GetGameDetail(ctx)
 	if err != nil {
 		return nil, err
@@ -75,31 +75,33 @@ func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetail, er
 	if err != nil {
 		return nil, err
 	}
-	return &pb.GameDetail{
-		Id:                 int32(gameDetail.Id),
-		Name:               gameDetail.Name,
-		DescriptionSnippet: gameDetail.DescriptionSnippet,
-		Price:              int32(gameDetail.Price),
-		Sale:               int32(gameDetail.Sale),
-		Image: &pb.ContentsPath{
-			Main: gameDetail.Image["main"].(string),
-			Sub:  imageSub,
+	return &pb.GameDetailResponse_Game{
+		&pb.GameDetail{
+			Id:                 int32(gameDetail.Id),
+			Name:               gameDetail.Name,
+			DescriptionSnippet: gameDetail.DescriptionSnippet,
+			Price:              int32(gameDetail.Price),
+			Sale:               int32(gameDetail.Sale),
+			Image: &pb.ContentsPath{
+				Main: gameDetail.Image["main"].(string),
+				Sub:  imageSub,
+			},
+			Video: &pb.ContentsPath{
+				Main: gameDetail.Video["main"].(string),
+				Sub:  videoSub,
+			},
+			CategoryList:  categoryTmp,
+			OsList:        gameDetail.Os.ToSlice(),
+			DownloadCount: int32(gameDetail.DownloadCount),
+			Language:      gameDetail.Language.ToSlice(),
+			Description:   gameDetail.Description,
+			Publisher: &pb.Publisher{
+				Id:   int32(gamePublisher.Id),
+				Name: gamePublisher.Name,
+			},
+			ReviewCount:    int32(gameDetail.ReviewCount),
+			RecommendCount: int32(gameDetail.RecommendCount),
 		},
-		Video: &pb.ContentsPath{
-			Main: gameDetail.Video["main"].(string),
-			Sub:  videoSub,
-		},
-		CategoryList:  categoryTmp,
-		OsList:        gameDetail.Os.ToSlice(),
-		DownloadCount: int32(gameDetail.DownloadCount),
-		Language:      gameDetail.Language.ToSlice(),
-		Description:   gameDetail.Description,
-		Publisher: &pb.Publisher{
-			Id:   int32(gamePublisher.Id),
-			Name: gamePublisher.Name,
-		},
-		ReviewCount:    int32(gameDetail.ReviewCount),
-		RecommendCount: int32(gameDetail.RecommendCount),
 	}, nil
 }
 
