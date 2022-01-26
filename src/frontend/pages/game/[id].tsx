@@ -18,6 +18,7 @@ import { localePrice } from 'util/localeString';
 
 import CarouselComponent from 'components/organisms/SelectCarousel';
 import BigGameSlide from 'components/molecules/BigGameSlide';
+import GameReview from 'components/organisms/GameReview';
 import gameImage1 from 'public/game.png';
 import gameImage2 from 'public/game2.jpg';
 
@@ -152,6 +153,17 @@ const GameBuyBox = styled(GameInfoBox)`
 
 const DevInfoBox = styled(GameInfoBox)``;
 
+const ReviewSection = styled.div`
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 3rem;
+`;
+
+const ReviewTitle = styled(Text)`
+  margin: 0 0 1rem 0.5rem;
+`;
+
 const Detail: NextPage<IState> = () => {
   const { game } = useSelector((state: IState) => state.game);
   const array = [1, 2, 3, 4];
@@ -240,6 +252,10 @@ const Detail: NextPage<IState> = () => {
           </DevInfoBox>
         </GameDetailBox>
       </GameDetailSection>
+      <ReviewSection>
+        <ReviewTitle types="large">사용자 리뷰</ReviewTitle>
+        <GameReview></GameReview>
+      </ReviewSection>
     </DetailWrapper>
   );
 };
