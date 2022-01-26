@@ -12,7 +12,7 @@ const CategoryWrapper = styled.section`
   width: 60rem;
   margin: 0.5rem;
   flex-wrap: wrap;
-
+  min-height: 5rem;
   .checked {
     background: ${(props) => props.theme.colors['activeBg']};
     border: 1px solid ${(props) => props.theme.colors.activeBg};
