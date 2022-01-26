@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -166,6 +166,12 @@ const ReviewTitle = styled(Text)`
 
 const Detail: NextPage<IState> = () => {
   const { game } = useSelector((state: IState) => state.game);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getGame.request({ id: 1 }));
+  }, []);
+
   const array = [1, 2, 3, 4];
 
   return (
@@ -214,8 +220,10 @@ const Detail: NextPage<IState> = () => {
             <DescText types="small"> {game.data && game.data.description}</DescText>
           </DescBox>
           <OSBox>
+            {console.log(game.data)}
             <GameInfoTitle types="medium">지원 가능 OS</GameInfoTitle>
             {game.data &&
+              game.data.os_list &&
               game.data.os_list.map((eachOs: string) => {
                 return (
                   <div className="OSCol">
@@ -229,6 +237,7 @@ const Detail: NextPage<IState> = () => {
             <GameInfoTitle types="medium">게임 카테고리</GameInfoTitle>
             <div className="categories">
               {game.data &&
+                game.data.category_list &&
                 game.data.category_list.map((category: string) => {
                   return (
                     <span>
@@ -248,7 +257,7 @@ const Detail: NextPage<IState> = () => {
           </GameBuyBox>
           <DevInfoBox>
             <GameInfoTitle types="medium">개발자 정보</GameInfoTitle>
-            <Text types="small">{game.data && game.data.publisher.name}</Text>
+            <Text types="small">{game.data && game.data.publisher && game.data.publisher.name}</Text>
           </DevInfoBox>
         </GameDetailBox>
       </GameDetailSection>

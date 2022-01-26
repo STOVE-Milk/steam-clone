@@ -36,11 +36,11 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_GAME]: (state, action) => ({
     ...state,
-    game: asyncState.load(action.payload),
+    game: asyncState.load(initalGame),
   }),
   [GET_GAME_SUCCESS]: (state, action) => ({
     ...state,
-    game: asyncState.success(action.payload),
+    game: asyncState.success(action.payload.data),
   }),
   [GET_GAME_FAIL]: (state, action) => ({
     ...state,
