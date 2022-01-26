@@ -1,5 +1,5 @@
 import { createAsyncAction } from 'typesafe-actions';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 import { createRequestActionTypes } from 'modules/utils/actionUtils';
 

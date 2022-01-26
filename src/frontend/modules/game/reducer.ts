@@ -28,7 +28,7 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_CATEGORIES_SUCCESS]: (state, action) => ({
     ...state,
-    categories: asyncState.success(action.payload),
+    categories: asyncState.success(action.payload.data.category_list),
   }),
   [GET_CATEGORIES_FAIL]: (state, action) => ({
     ...state,

@@ -1,4 +1,4 @@
-import { takeLatest } from 'redux-saga/effects';
+import { takeLatest, call, put } from 'redux-saga/effects';
 
 import createAsyncSaga from 'modules/utils/sagaUtils';
 
@@ -7,6 +7,7 @@ import { getCategoriesAPI, getGameAPI, getGamesByCategoryAPI } from 'pages/api/g
 import {
   getCategories,
   GET_CATEGORIES,
+  GET_CATEGORIES_SUCCESS,
   getGame,
   GET_GAME,
   getGamesByCategory,

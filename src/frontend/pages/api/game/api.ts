@@ -6,7 +6,7 @@ export async function getCategoriesAPI(param: IGetCategoriesReqType) {
   // const response = await axios.get<IGetCategoriesResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/categories`, {
   //   params: {},
   // });
-
+  // console.log(response.data);
   return response.data;
 }
 

@@ -34,15 +34,60 @@ const DetailWrapper = styled.div`
     width: calc(100vw - 150px);
   }
   margin: 0 auto;
-  /* margin-top: 3rem; */
 `;
 
 const GameTitle = styled(Text)`
   margin: 3rem 0;
 `;
 
-const GameIntroSection = styled.div`
+const GameImageSection = styled.div`
   width: 80%;
+`;
+
+const GameInfoBox = styled.div`
+  background: ${(props) => props.theme.colors.secondaryBg};
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+`;
+
+const GameIntroSection = styled(GameInfoBox)`
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 3rem;
+`;
+
+const GameInfoTitle = styled(Text)`
+  margin-bottom: 1rem;
+`;
+
+const DescText = styled(Text)`
+  line-height: 2rem;
+`;
+
+const SnippetBox = styled.div``;
+
+const EvaluationBox = styled.div`
+  width: 100%;
+  .Evaluation {
+    display: flex;
+    align-items: center;
+  }
+`;
+
+const RecommendCount = styled(Text)`
+  margin: 0.5rem 0 0 0.5rem;
+`;
+
+const WishButton = styled(FilledButton)`
+  justify-self: flex-end;
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  background: ${(props) => props.theme.colors.divider};
+  margin: 1rem 0;
 `;
 
 const GameDetailSection = styled.div`
@@ -56,22 +101,7 @@ const GameDetailBox = styled.div`
   flex-direction: column;
 `;
 
-const GameInfoBox = styled.div`
-  background: ${(props) => props.theme.colors.secondaryBg};
-  border-radius: 10px;
-  padding: 1rem;
-  margin: 0.5rem 0;
-`;
-
-const GameInfoTitle = styled(Text)`
-  margin-bottom: 1rem;
-`;
-
-const DescBox = styled(GameInfoBox)`
-  .desc {
-    line-height: 1.5rem;
-  }
-`;
+const DescBox = styled(GameInfoBox)``;
 
 const OSBox = styled(GameInfoBox)`
   padding-bottom: 0.5rem;
@@ -120,7 +150,7 @@ const Detail: NextPage<IState> = () => {
 
   return (
     <DetailWrapper>
-      <GameIntroSection>
+      <GameImageSection>
         <GameTitle types={'title'}>{game.data && game.data.name}</GameTitle>
         <CarouselComponent
           buttons={array.map((data) => {
@@ -135,14 +165,31 @@ const Detail: NextPage<IState> = () => {
             );
           })}
         ></CarouselComponent>
+      </GameImageSection>
+      <GameIntroSection>
+        <SnippetBox>
+          <GameInfoTitle types="large">{game.data && game.data.name}</GameInfoTitle>
+          <DescText types="small"> {game.data && game.data.description_snippet}</DescText>
+        </SnippetBox>
+        <Divider />
+        <EvaluationBox>
+          <GameInfoTitle types="medium">평가</GameInfoTitle>
+          <div className="Evaluation">
+            <div className="RecommendBox">
+              <Text types="large">{`${game.data && (game.data.recommend_count / game.data.review_count) * 100}%`}</Text>
+              <RecommendCount types="tiny">{`${game.data && game.data.review_count}명 중 ${
+                game.data && game.data.recommend_count
+              }명 추천`}</RecommendCount>
+            </div>
+            <WishButton types="primary">위시리스트</WishButton>
+          </div>
+        </EvaluationBox>
       </GameIntroSection>
       <GameDetailSection>
         <GameDetailBox>
           <DescBox>
             <GameInfoTitle types="medium">게임 상세 설명</GameInfoTitle>
-            <div className="desc">
-              <Text types="small"> {game.data && game.data.description}</Text>
-            </div>
+            <DescText types="small"> {game.data && game.data.description}</DescText>
           </DescBox>
           <OSBox>
             <GameInfoTitle types="medium">지원 가능 OS</GameInfoTitle>
@@ -187,10 +234,10 @@ const Detail: NextPage<IState> = () => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps((store) => async ({ params }) => {
-  // store.dispatch(getGame.request({ id: params && Number(params.id) }));
+// export const getServerSideProps = wrapper.getServerSideProps((store) => async ({ params }) => {
+//   store.dispatch(getGame.request({ id: params && Number(params.id) }));
 
-  return { props: {} };
-});
+//   return { props: {} };
+// });
 
 export default Detail;
