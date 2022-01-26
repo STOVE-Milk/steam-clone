@@ -84,7 +84,7 @@ const ContentWrapper = styled.div`
 const Category: NextPage<IState> = () => {
   const [curSelectedCategory, setCurSelectedCategory] = useState('ALL');
   const { categories, gamesByCategory } = useSelector((state: IState) => {
-    // console.log('state:', state);
+    console.log('state:', state);
     return state.game;
   });
 
@@ -94,12 +94,13 @@ const Category: NextPage<IState> = () => {
     dispatch(getCategories.request({}));
     dispatch(getGamesByCategory.request({ category: `${curSelectedCategory}` }));
     // dispatch(getGamesByCategory.request({ category: '액션' }));
-  }, []);
+  }, [curSelectedCategory]);
 
   const gamesByCategoryData = gamesByCategory.data && Object.values(gamesByCategory.data);
 
   return (
     <GameInfoWrapper>
+      {console.log(curSelectedCategory)}
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
         {categories.data && (
@@ -107,7 +108,7 @@ const Category: NextPage<IState> = () => {
         )}
       </ContentWrapper>
       <ContentWrapper>
-        <TitleStyle types="large">게임 리스트</TitleStyle>
+        <TitleStyle types="large">{`${curSelectedCategory}`} 게임 리스트</TitleStyle>
         {gamesByCategoryData &&
           gamesByCategoryData.map((eachGame, i) => {
             return <GameInfo key={i} {...eachGame} />;
