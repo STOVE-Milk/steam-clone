@@ -91,12 +91,13 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, err
 		category_name = "ALL"
 	}
 	page := ctx.Value("page").(int32)
-	if page == 0 {
-		page = 1
+	page = page - 1 // 1페이지는 논리 상 0페이지
+	if page < 0 {
+		page = 0
 	}
 	size := ctx.Value("size").(int32)
 	if size == 0 {
-		size = 1
+		size = 5
 	}
 	sort := ctx.Value("sort").(string)
 	if sort == "" {
