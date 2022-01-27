@@ -16,7 +16,7 @@ const reducer = createReducer<userState>(initialState, {
   }),
   [GET_GIFTCARDLIST_SUCCESS]: (state, action) => ({
     ...state,
-    giftcardList: asyncState.success(action.payload),
+    giftcardList: asyncState.success(action.payload.data),
   }),
   [GET_GIFTCARDLIST_FAIL]: (state, action) => ({
     ...state,
