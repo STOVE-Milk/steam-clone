@@ -1,30 +1,23 @@
 package com.steam.library;
 
 import com.steam.library.dto.MapDto;
-import com.steam.library.dto.Room;
 import com.steam.library.global.common.Behavior;
-import com.steam.library.global.common.UserDetails;
-import com.steam.library.global.common.message.InitMessage;
-import com.steam.library.global.util.JsonUtil;
+import com.steam.library.service.SocketService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Slf4j
+@Component
 public class LibraryWebSocketHandler extends TextWebSocketHandler {
-    // userId : UserDetail
-    private static Map<String, UserDetails> userData = new HashMap<>();
-    // sessionId : roomId
-    private static Map<String, String> session_room = new HashMap<>();
-    // roomId : room
-    private static Map<String, Room> robby = new HashMap<>();
-    // roomId : session
-    private static Map<String, WebSocketSession> sessions = new HashMap<>();
+    private final SocketService socketService;
+
+    public LibraryWebSocketHandler(SocketService socketService) {
+        this.socketService = socketService;
+    }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -35,22 +28,16 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
         String jsonData = payload.substring(2);
 
         //JsonUtil.toObject("{\"side\":5,\"games\":{\"test\":\"test\"},\"objects\":{\"test\":\"test\"}}", MapDto.class);
-        log.info(JsonUtil.toJson(MapDto.newMap()));
-        log.info(JsonUtil.toJson(session_room));
+        MapDto mapDto = MapDto.newMap();
+//        ObjectDto gameObject = ObjectDto.builder().name("test").x(0).y(0).build();
+//        mapDto.pushGameObject("1", gameObject);
+//        mapDto.pushObject("1", gameObject);
+        //JsonUtil.toObject(JsonUtil.toJson(mapDto), MapDto.class);
+//        log.info(JsonUtil.toMapDto(JsonUtil.toJson(mapDto)).toString());
+//        log.info(JsonUtil.toJson(session_room));
 
         if (behavior.equals(Behavior.INIT)) {
-            InitMessage initMessage = JsonUtil.toObject(jsonData, InitMessage.class);
-            session_room.put(session.getId(), initMessage.getRoomId());
-            sessions.put(initMessage.getRoomId(), session);
-
-            //REDIS 조회 (Room Data가 이미 있는지? 없으면 Room 생성 후 등록
-
-            //Room 생성 시 필요한 것 : roomId, user, map
-            //Map 데이터 조회
-
-            Room room = robby.get(initMessage.getRoomId());
-//            if(room == null)
-//                robby.put(initMessage.getRoomId())
+            socketService.init(session, jsonData);
         }
 
     }
@@ -70,8 +57,7 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
         log.info(session + " 클라이언트 접속 해제");
-        String closeSessionId = session_room.get(session.getId());
-        if(!closeSessionId.isBlank())
-            sessions.remove(closeSessionId);
+        socketService.closeConnection(session);
     }
+
 }

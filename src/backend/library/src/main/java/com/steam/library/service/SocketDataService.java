@@ -1,8 +1,11 @@
 package com.steam.library.service;
 
 import com.steam.library.dto.MapDto;
+import com.steam.library.dto.Room;
+import com.steam.library.entity.RoomHash;
 import com.steam.library.entity.User;
 import com.steam.library.global.util.JsonUtil;
+import com.steam.library.repository.RoomHashRepository;
 import com.steam.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +19,7 @@ import java.util.Optional;
 @Service
 public class SocketDataService {
     private final UserRepository userRepository;
+    private final RoomHashRepository roomHashRepository;
 
     @Nullable
     public MapDto getUserMap(Integer userId) {
@@ -33,6 +37,21 @@ public class SocketDataService {
             userRepository.save(user.get());
         }
 
-        return JsonUtil.toObject(mapJson, MapDto.class);
+        return JsonUtil.toMapDto(mapJson);
     }
+
+    public Room getRoomData(String roomId) {
+        Optional<RoomHash> roomHash = roomHashRepository.findById(roomId);
+        if(roomHash.isPresent()) {
+            return Room.of(roomHash);
+        } else {
+            return Room.builder()
+                    .roomId(Integer.parseInt(roomId))
+                    .gameList()
+                    .userList()
+                    .users()
+                    .build();
+        }
+    }
+
 }

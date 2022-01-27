@@ -3,12 +3,14 @@ package com.steam.library.global.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.steam.library.dto.MapDto;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -34,6 +36,17 @@ public class JsonUtil {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static MapDto toMapDto(String json) {
+        Integer side = Integer.parseInt(parse(json, "side").toString());
+        String games = parse(json, "games").toString();
+        String objects = parse(json, "objects").toString();
+        return MapDto.builder()
+                .side(side)
+                .games(toObject(games, HashMap.class))
+                .objects(toObject(objects, HashMap.class))
+                .build();
     }
 
     public static <T> String toJson(T object) {
