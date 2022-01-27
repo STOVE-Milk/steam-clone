@@ -53,6 +53,8 @@ const TextTheme: TextThemeType = {
 export interface TextProps {
   types: string;
   children: React.ReactNode;
+  onClick?: (e: any) => void;
+  className?: string;
 }
 
 export const TextStyle = styled.div<TextProps>`

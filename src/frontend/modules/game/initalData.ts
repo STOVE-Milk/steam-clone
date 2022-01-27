@@ -12,9 +12,9 @@ export const initalCategory = [
 export const initalGamesByCategory = [
   {
     id: 6,
-    name: 'Red Dead Redemption 2',
+    name: '[TEST]Red Dead Redemption 2',
     description_snippet:
-      '올해의 게임 175여 개를 수상하고 250개 이상의 완벽한 평가를 받은 Red Dead Redemption 2는 현대 시대가 시작될 무렵 무법자인 아서 모건과 악명 높은 반 더 린드 갱단이 미국 전역을 따라 도주하는 장대한 서사시입니다. 모두가 함께 즐길 수 있는 생생한 세계인 Red Dead 온라인 역시 포함됩니다.',
+      '[TEST]올해의 게임 175여 개를 수상하고 250개 이상의 완벽한 평가를 받은 Red Dead Redemption 2는 현대 시대가 시작될 무렵 무법자인 아서 모건과 악명 높은 반 더 린드 갱단이 미국 전역을 따라 도주하는 장대한 서사시입니다. 모두가 함께 즐길 수 있는 생생한 세계인 Red Dead 온라인 역시 포함됩니다.',
     price: 66000,
     sale: 50,
     image: {
@@ -35,9 +35,9 @@ export const initalGamesByCategory = [
 ];
 export const initalGame = {
   id: 1,
-  name: 'MONSTER HUNTER RISE',
+  name: '[TEST]MONSTER HUNTER RISE',
   description_snippet:
-    '역동하는 사냥 본능! 사냥에 새로운 바람을 불러일으킬, 종횡무진으로 도약하는 액션. 마음 가는 대로 달릴 수 있는 필드. 미지의 흥분과 놀라움을 선사할 새로운 몬스터들. 이제껏 없었던 사냥 체험이 「MONSTER HUNTER RISE」에서 헌터들을 기다린다!',
+    '[TEST]역동하는 사냥 본능! 사냥에 새로운 바람을 불러일으킬, 종횡무진으로 도약하는 액션. 마음 가는 대로 달릴 수 있는 필드. 미지의 흥분과 놀라움을 선사할 새로운 몬스터들. 이제껏 없었던 사냥 체험이 「MONSTER HUNTER RISE」에서 헌터들을 기다린다!',
   price: 66800,
   sale: 6,
   image: {
