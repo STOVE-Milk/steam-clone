@@ -2,12 +2,14 @@ package com.steam.membership.service;
 
 import com.steam.membership.dto.GuestBookResponse;
 import com.steam.membership.dto.UserDto;
+import com.steam.membership.entity.Friend;
 import com.steam.membership.entity.GuestBook;
 import com.steam.membership.entity.User;
 import com.steam.membership.global.common.Body;
 import com.steam.membership.global.common.EmptyData;
 import com.steam.membership.global.common.UserContext;
 import com.steam.membership.global.error.ErrorCode;
+import com.steam.membership.repository.FriendRepository;
 import com.steam.membership.repository.GuestBookRepository;
 import com.steam.membership.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +25,16 @@ import java.util.Optional;
 public class ProfileService {
     private final UserRepository userRepository;
     private final GuestBookRepository guestBookRepository;
+    private final FriendRepository friendRepository;
 
     public Body<Object> getUserProfile(Integer userId) {
         final Optional<User> user = userRepository.findById(userId);
         if(user.isEmpty())
             return Body.error(ErrorCode.USER_NOT_FOUND);
 
-        return Body.success(UserDto.of(user.get()));
+        final Optional<Friend> friend = friendRepository.findByUserAndFriend(user.get(), UserContext.getUser());
+
+        return Body.success(UserDto.of(user.get(), friend.isPresent()));
     }
 
     public Body<Object> getGuestBooks(Integer userId) {

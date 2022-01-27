@@ -19,9 +19,12 @@ public class JwtFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String accessToken = request.getHeader(AUTHORIZATION_HEADER).substring(TOKEN_PREFIX.length());
-        UserDetails userDetails = JwtUtil.getPayload(accessToken);
-        UserContext.setUserDetails(userDetails);
+
+        if(!request.getMethod().equals("OPTIONS")) {
+            String accessToken = request.getHeader(AUTHORIZATION_HEADER).substring(TOKEN_PREFIX.length());
+            UserDetails userDetails = JwtUtil.getPayload(accessToken);
+            UserContext.setUserDetails(userDetails);
+        }
 
         chain.doFilter(servletRequest, servletResponse);
     }
