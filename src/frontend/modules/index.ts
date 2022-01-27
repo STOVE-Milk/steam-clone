@@ -27,5 +27,5 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
 export default rootReducer;
 
 export function* rootSaga() {
-  yield all([gameSaga()]);
+  yield all([gameSaga(), userSaga()]);
 }

@@ -7,15 +7,15 @@ import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
 
 export interface IGiftCardInfoProps {
-  idx: number;
+  id: number; // TO DO(양하): id => id (백엔드 수정됨)
   name: string;
   price: number;
   checked?: boolean;
-  onClick?: (idx: number) => void;
+  onClick?: (id: number) => void;
 }
 interface IGiftCardStyledType {
   idx: number;
-  onClick?: (idx: number) => void;
+  onClick?: (id: number) => void;
 }
 const GiftCardBox = styled.div<IGiftCardStyledType>`
   width: 10rem;
@@ -46,9 +46,9 @@ export default function GiftCard(GiftCardInfoProps: IGiftCardInfoProps) {
   //TO DO & QUESTION(Yangha): 스타일드 컴포넌트 하나로 합치고싶은데 그게 더 좋은 코드가 맞을까요?
   return GiftCardInfoProps.checked ? (
     <GiftCardChecked
-      idx={GiftCardInfoProps.idx}
+      idx={GiftCardInfoProps.id}
       onClick={() => {
-        GiftCardInfoProps.onClick && GiftCardInfoProps.onClick(GiftCardInfoProps.idx);
+        GiftCardInfoProps.onClick && GiftCardInfoProps.onClick(GiftCardInfoProps.id);
       }}
     >
       <Image src={Logo} layout={'fixed'} width={50} height={50} />
@@ -57,9 +57,9 @@ export default function GiftCard(GiftCardInfoProps: IGiftCardInfoProps) {
     </GiftCardChecked>
   ) : (
     <GiftCardUnchecked
-      idx={GiftCardInfoProps.idx}
+      idx={GiftCardInfoProps.id}
       onClick={() => {
-        GiftCardInfoProps.onClick && GiftCardInfoProps.onClick(GiftCardInfoProps.idx);
+        GiftCardInfoProps.onClick && GiftCardInfoProps.onClick(GiftCardInfoProps.id);
       }}
     >
       <Image src={Logo} layout={'fixed'} width={40} height={40} />

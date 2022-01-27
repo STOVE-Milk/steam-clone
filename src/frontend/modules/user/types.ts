@@ -4,7 +4,7 @@ import { AsyncState } from 'modules/utils/reducerUtils';
 import * as actions from './actions';
 
 export interface IGiftcard {
-  idx: number; //TODO(양하): idx -> id
+  id: number; //TODO(양하): idx -> id
   name: string;
   price: number;
 }

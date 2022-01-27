@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 
 import styled from 'styled-components';
@@ -9,6 +9,10 @@ import { IGiftCardInfoProps } from 'components/molecules/GiftCard';
 import DefaultButton from 'components/atoms/DefaultButton';
 
 import { localePrice } from 'util/localeString';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { IState } from 'modules';
+import { getGiftCardList } from 'modules/user';
 
 const TitleStyle = styled(Text)`
   margin-bottom: 2rem;
@@ -38,22 +42,22 @@ const ConfirmBtnBox = styled.section`
 
 const giftcardsmockData: Array<IGiftCardInfoProps> = [
   {
-    idx: 1,
+    id: 1,
     name: '5000원',
     price: 5000,
   },
   {
-    idx: 2,
+    id: 2,
     name: '10000원',
     price: 10000,
   },
   {
-    idx: 3,
+    id: 3,
     name: '30000원',
     price: 30000,
   },
   {
-    idx: 4,
+    id: 4,
     name: '50000원',
     price: 50000,
   },
@@ -65,22 +69,32 @@ const ChargeTypes = [
   { name: 'Toss', value: 'Toss', disabled: true },
 ];
 
-const charge: NextPage = () => {
+const charge: NextPage<IState> = () => {
   const [curCheckedPriceIdx, setCurCheckedPriceIdx] = useState(1);
   const [chargeMethod, setChargeMethod] = useState('kakaopay');
+  const [giftcards, setGiftcards] = useState([]);
   //요청상태에따라 return 을 달리하고, store에 pg_token 보관해야겠다. 충전상태 == 'finished' ? 지금 만든 chargeWraaper로 감싸진 페이지 : 완료되었습니다 페이지
+  const { giftCardList } = useSelector((state: IState) => state.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getGiftCardList.request({}));
+  }, []);
+
   return (
     <ChargeWrapper>
       <TitleStyle types="large">구매 가능한 GIFTCARDS</TitleStyle>
+      {console.log(giftCardList.data)}
       <GiftCardWrapper>
-        {giftcardsmockData.map((eachGiftCard) => {
-          const gcDataObj = {
-            ...eachGiftCard,
-            checked: eachGiftCard.idx === curCheckedPriceIdx ? true : false,
-            onClick: setCurCheckedPriceIdx,
-          };
-          return <GiftCard {...gcDataObj}></GiftCard>;
-        })}
+        {giftCardList.data &&
+          giftCardList.data.map((eachGiftCard) => {
+            const gcDataObj = {
+              ...eachGiftCard,
+              checked: eachGiftCard.id === curCheckedPriceIdx ? true : false,
+              onClick: setCurCheckedPriceIdx,
+            };
+            return <GiftCard {...gcDataObj}></GiftCard>;
+          })}
       </GiftCardWrapper>
       <ChargeTypeSelectWrapper>
         <TitleStyle types="large">구매 방법</TitleStyle>
@@ -95,13 +109,14 @@ const charge: NextPage = () => {
           onClick={(e) =>
             // POST: /payment/charge/ready
             {
-              alert(
-                `충전하고자하는 금액은 총 ${localePrice(
-                  giftcardsmockData.find((ele) => ele.idx === curCheckedPriceIdx)!.price,
-                  'KR',
-                )} 입니다.\n충전 방식은 ${chargeMethod}입니다.
+              giftCardList.data &&
+                alert(
+                  `충전하고자하는 금액은 총 ${localePrice(
+                    giftCardList.data.find((ele) => ele.id === curCheckedPriceIdx)!.price,
+                    'KR',
+                  )} 입니다.\n충전 방식은 ${chargeMethod}입니다.
                 `,
-              );
+                );
               window.open('/category', 'next_pc_url', 'location,status,scrollbars,resizable,width=600, height=600');
             }
           }
