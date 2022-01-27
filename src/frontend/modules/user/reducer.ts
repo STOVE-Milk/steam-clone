@@ -12,15 +12,15 @@ const initialState: userState = {
 const reducer = createReducer<userState>(initialState, {
   [GET_GIFTCARDLIST]: (state, action) => ({
     ...state,
-    gitftcardList: asyncState.load(action.payload),
+    giftcardList: asyncState.load(action.payload),
   }),
   [GET_GIFTCARDLIST_SUCCESS]: (state, action) => ({
     ...state,
-    gitftcardList: asyncState.success(action.payload),
+    giftcardList: asyncState.success(action.payload),
   }),
   [GET_GIFTCARDLIST_FAIL]: (state, action) => ({
     ...state,
-    gitftcardList: asyncState.error(action.payload),
+    giftcardList: asyncState.error(action.payload),
   }),
 });
 
