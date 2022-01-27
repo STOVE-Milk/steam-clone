@@ -23,25 +23,13 @@ public class JwtFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        log.info(request.getMethod());
-        if(request.getMethod().equals("OPTIONS"))
-            chain.doFilter(servletRequest, servletResponse);
-        else {
-            Enumeration<String> headerNames = request.getHeaderNames();
 
-            if (headerNames != null) {
-                while (headerNames.hasMoreElements()) {
-                    String header = headerNames.nextElement();
-                    System.out.println(header + ": " + request.getHeader(header));
-                }
-            }
-
+        if(!request.getMethod().equals("OPTIONS")) {
             String accessToken = request.getHeader(AUTHORIZATION_HEADER).substring(TOKEN_PREFIX.length());
             UserDetails userDetails = JwtUtil.getPayload(accessToken);
             UserContext.setUserDetails(userDetails);
-
-            chain.doFilter(servletRequest, servletResponse);
         }
+        chain.doFilter(servletRequest, servletResponse);
     }
 
     @Override
