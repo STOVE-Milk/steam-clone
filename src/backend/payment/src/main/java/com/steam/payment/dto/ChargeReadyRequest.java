@@ -22,4 +22,13 @@ public class ChargeReadyRequest {
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .build();
     }
+
+    public ChargeLog toLog(GiftcardDto giftcardDto) {
+        return ChargeLog.builder()
+                .method(this.method)
+                .giftcard(giftcardDto)
+                .status("READY")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .build();
+    }
 }

@@ -13,10 +13,3 @@ server:
 spring:
   profiles:
     active: local
-
-  web:
-    resources:
-      cache:
-        cachecontrol:
-          no-store: true
-          no-cache: true

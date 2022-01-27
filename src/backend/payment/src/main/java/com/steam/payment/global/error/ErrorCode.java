@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ErrorCode {
     VALIDATION_FAILED(77100, "요청 데이터가 유효하지 않습니다."),
     USER_NOT_FOUND(77101, "유저 데이터를 불러오지 못했습니다."),
+    DATA_NOT_FOUND(77102, "요청한 데이터가 없습니다."),
 
     GAME_PRICE_VALIDATION_FAILED(77201, "게임 정보가 일치하지 않습니다."),
     GAME_PRICE_ACCUMULATE_FAILED(77202, "게임 가격 계산 중 오류가 발생했습니다."),

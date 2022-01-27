@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://13.209.84.182:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://13.209.97.146:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: milk
     password: milk
   jpa:

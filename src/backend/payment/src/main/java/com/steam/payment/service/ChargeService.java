@@ -4,6 +4,7 @@ import com.steam.payment.dto.ChargeApproveRequest;
 import com.steam.payment.dto.ChargeReadyRequest;
 import com.steam.payment.dto.GiftcardDto;
 import com.steam.payment.dto.kakaopay.KakaoPayApproveResponse;
+import com.steam.payment.entity.Giftcard;
 import com.steam.payment.entity.User;
 import com.steam.payment.entity.mongodb.ChargeLog;
 import com.steam.payment.entity.mongodb.ChargeLogDocument;
@@ -38,13 +39,17 @@ public class ChargeService {
 
     public Object chargeReady(ChargeReadyRequest request) {
         //TODO 고민: 이미 결제 준비가 진행됐을 때, 새로 만들 것인가?, 캐시된 데이터를 쓴다면 결제 완료 시 캐시도 삭제
+        final Giftcard giftcard = giftcardRepository.findById(request.getGiftcard().getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        GiftcardDto giftcardDto = GiftcardDto.of(giftcard);
+
         ChargeLogDocument chargeLogDocument = chargeLogDocumentRepository.findById(UserContext.getUserId().toString())
                 .orElseGet(() -> ChargeLogDocument.newUser(UserContext.getUserId()));
         chargeLogDocument.getChargeLogs().add(request.toLog());
         chargeLogDocument.plusCount();
         chargeLogDocumentRepository.save(chargeLogDocument);
 
-        return kakaoPay.ready(request.getGiftcard(), chargeLogDocument.getCount());
+        return kakaoPay.ready(giftcardDto, chargeLogDocument.getCount());
     }
 
     public Object chargeApprove(ChargeApproveRequest request) {

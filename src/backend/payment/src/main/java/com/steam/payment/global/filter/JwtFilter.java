@@ -29,6 +29,7 @@ public class JwtFilter implements Filter {
             UserDetails userDetails = JwtUtil.getPayload(accessToken);
             UserContext.setUserDetails(userDetails);
         }
+
         chain.doFilter(servletRequest, servletResponse);
     }
 
