@@ -30,7 +30,7 @@ spring:
         - id: chat-http-svc
           uri: http://localhost:8102/
           predicates:
-            - Path=/chat/**
+            - Path=/chat/info/**
         - id: payment-svc
           uri: http://localhost:8200/
           predicates:
@@ -47,6 +47,10 @@ spring:
             - name: AuthorizationCheckFilter
               args:
                 baseMessage: Membership AuthorizationCheckFilter
+        - id: robby-http-svc
+          uri: http://localhost:8210/
+          predicates:
+            - Path=/library/info/**
         - id: robby-ws-svc
           uri: ws://localhost:8210/
           predicates:
