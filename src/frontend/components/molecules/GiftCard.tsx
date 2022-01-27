@@ -27,6 +27,7 @@ const GiftCardBox = styled.div<IGiftCardStyledType>`
   border-radius: 10px;
   cursor: pointer;
   background: ${(props) => props.theme.colors.secondaryBg};
+  padding: 1rem;
   ${(props) => props.theme.breakpoints.medium} {
     margin: 0 1rem 1rem 0;
   }
@@ -41,7 +42,10 @@ const GiftCardChecked = styled(GiftCardBox)`
   border: 1px solid ${(props) => props.theme.colors.activeBg};
   background: ${(props) => props.theme.colors.activeBg};
 `;
-
+const GiftCardText = styled(Text)`
+  word-break: break-all;
+  text-align: center;
+`;
 export default function GiftCard(GiftCardInfoProps: IGiftCardInfoProps) {
   //TO DO & QUESTION(Yangha): 스타일드 컴포넌트 하나로 합치고싶은데 그게 더 좋은 코드가 맞을까요?
   return GiftCardInfoProps.checked ? (
@@ -52,7 +56,7 @@ export default function GiftCard(GiftCardInfoProps: IGiftCardInfoProps) {
       }}
     >
       <Image src={Logo} layout={'fixed'} width={50} height={50} />
-      <Text types="medium">{GiftCardInfoProps.name}</Text>
+      <GiftCardText types="medium">{GiftCardInfoProps.name}</GiftCardText>
       <Text types="medium">{`${localePrice(GiftCardInfoProps.price, 'KR')}`}</Text>
     </GiftCardChecked>
   ) : (
@@ -63,7 +67,7 @@ export default function GiftCard(GiftCardInfoProps: IGiftCardInfoProps) {
       }}
     >
       <Image src={Logo} layout={'fixed'} width={40} height={40} />
-      <Text>{GiftCardInfoProps.name}</Text>
+      <GiftCardText>{GiftCardInfoProps.name}</GiftCardText>
       <Text>{`${localePrice(GiftCardInfoProps.price, 'KR')}`}</Text>
     </GiftCardUnchecked>
   );

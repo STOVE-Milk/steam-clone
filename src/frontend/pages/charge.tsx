@@ -74,20 +74,24 @@ const charge: NextPage<IState> = () => {
   const [chargeMethod, setChargeMethod] = useState('kakaopay');
   const [giftcards, setGiftcards] = useState([]);
   //요청상태에따라 return 을 달리하고, store에 pg_token 보관해야겠다. 충전상태 == 'finished' ? 지금 만든 chargeWraaper로 감싸진 페이지 : 완료되었습니다 페이지
-  const { giftCardList } = useSelector((state: IState) => state.user);
+  const { giftCardList } = useSelector((state: IState) => {
+    // console.log(state);
+    return state.user;
+  });
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getGiftCardList.request({}));
   }, []);
+  const giftCardListData = giftCardList.data && Object.values(giftCardList.data);
 
   return (
     <ChargeWrapper>
       <TitleStyle types="large">구매 가능한 GIFTCARDS</TitleStyle>
-      {console.log(giftCardList.data)}
+      {/* {console.log(giftCardList)} */}
       <GiftCardWrapper>
-        {giftCardList.data &&
-          giftCardList.data.map((eachGiftCard) => {
+        {giftCardListData &&
+          giftCardListData.map((eachGiftCard) => {
             const gcDataObj = {
               ...eachGiftCard,
               checked: eachGiftCard.id === curCheckedPriceIdx ? true : false,
@@ -109,10 +113,10 @@ const charge: NextPage<IState> = () => {
           onClick={(e) =>
             // POST: /payment/charge/ready
             {
-              giftCardList.data &&
+              giftCardListData &&
                 alert(
                   `충전하고자하는 금액은 총 ${localePrice(
-                    giftCardList.data.find((ele) => ele.id === curCheckedPriceIdx)!.price,
+                    giftCardListData.find((ele) => ele.id === curCheckedPriceIdx)!.price,
                     'KR',
                   )} 입니다.\n충전 방식은 ${chargeMethod}입니다.
                 `,
