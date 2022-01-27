@@ -12,6 +12,9 @@ import {
   GET_GAMESBYCATEGORY,
   GET_GAMESBYCATEGORY_SUCCESS,
   GET_GAMESBYCATEGORY_FAIL,
+  GET_WISHLIST,
+  GET_WISHLIST_SUCCESS,
+  GET_WISHLIST_FAIL,
 } from './actions';
 import { initalCategory, initalGamesByCategory, initalGame } from './initalData';
 
@@ -19,6 +22,7 @@ const initialState: gameState = {
   categories: asyncState.initial(initalCategory),
   gamesByCategory: asyncState.initial(initalGamesByCategory),
   game: asyncState.initial(initalGame),
+  wishList: asyncState.initial(initalGamesByCategory), //임시로 inital data 넣어놓음
 };
 
 const reducer = createReducer<gameState>(initialState, {
@@ -57,6 +61,18 @@ const reducer = createReducer<gameState>(initialState, {
   [GET_GAMESBYCATEGORY_FAIL]: (state, action) => ({
     ...state,
     gamesByCategory: asyncState.error(action.payload),
+  }),
+  [GET_WISHLIST]: (state, action) => ({
+    ...state,
+    wishList: asyncState.load(action.payload),
+  }),
+  [GET_WISHLIST_SUCCESS]: (state, action) => ({
+    ...state,
+    wishList: asyncState.success(action.payload.data.game_list),
+  }),
+  [GET_WISHLIST_FAIL]: (state, action) => ({
+    ...state,
+    wishList: asyncState.error(action.payload),
   }),
 });
 
