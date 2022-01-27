@@ -12,10 +12,10 @@ public class Message<T> {
         MOVE: roomId
         LEAVE: roomId
 
-        extends
         BUILD: roomId, objectType, objectDto(game or other)
         DEMOLISH: roomId, objectType, objectId
 
+        estends
         BUILD_MODE: roomId
         BUILD_COMPLETE: roomId, gameObjectList, objectList
         BUILD_CANCEL: roomId

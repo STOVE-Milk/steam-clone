@@ -16,12 +16,12 @@ import java.util.Map;
 @Data
 public class Room {
     private Integer roomId;
-    private List<Integer> gameList = new ArrayList<>();
-    private List<Integer> userList = new ArrayList<>();
+    private List<String> gameList = new ArrayList<>();
+    private List<String> userList = new ArrayList<>();
     private Map<String, UserDto> users;
     private MapDto map;
 
-    public RoomHash toEntity() {
+    public RoomHash toHash() {
         return RoomHash.builder()
                 .roomId(this.roomId.toString())
                 .gameList(this.gameList)
@@ -31,9 +31,19 @@ public class Room {
                 .build();
     }
 
-//    public static Room newRoom(Integer roomId, UserDto user, MapDto map) {
-//        return Room.builder()
-//                .roomId()
-//                .build();
-//    }
+    public static Room of(RoomHash roomHash) {
+        return Room.builder()
+                .roomId(Integer.parseInt(roomHash.getRoomId()))
+                .gameList(roomHash.getGameList())
+                .userList(roomHash.getGameList())
+                .users(roomHash.getUsers())
+                .map(roomHash.getMap())
+                .build();
+    }
+
+    public Integer leave(String userId) {
+        this.getUserList().remove(userId);
+        this.getUsers().remove(userId);
+        return this.getUserList().size();
+    }
 }

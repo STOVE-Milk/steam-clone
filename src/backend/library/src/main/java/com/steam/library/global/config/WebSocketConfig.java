@@ -15,11 +15,11 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
     public final LibraryWebSocketHandler libraryWebSocketHandler;
-    public final WebSocketHandshakeInterceptor webSocketHandshakeInterceptor;
+    //public final WebSocketHandshakeInterceptor webSocketHandshakeInterceptor;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(libraryWebSocketHandler(), "/library")
+        registry.addHandler(libraryWebSocketHandler, "/library")
                 .addInterceptors(new HttpSessionHandshakeInterceptor())
                 .setAllowedOrigins("*");
     }

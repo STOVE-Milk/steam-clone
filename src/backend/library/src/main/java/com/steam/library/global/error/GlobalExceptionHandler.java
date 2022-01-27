@@ -22,6 +22,14 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(NullPointerException.class)
+    protected ResponseEntity<Body> handleNullPointerException(Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.ok(
+                Body.error(ErrorCode.NULL_POINTER_ERROR)
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Body> handleException(Exception e) {
         e.printStackTrace();

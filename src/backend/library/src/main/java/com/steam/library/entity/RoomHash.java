@@ -19,8 +19,8 @@ import java.util.Map;
 public class RoomHash {
     @Id
     private String roomId;
-    private List<Integer> gameList = new ArrayList<>();
-    private List<Integer> userList = new ArrayList<>();
+    private List<String> gameList = new ArrayList<>();
+    private List<String> userList = new ArrayList<>();
     private Map<String, UserDto> users;
     private MapDto map;
 }
