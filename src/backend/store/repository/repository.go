@@ -21,7 +21,7 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*model.Review, error) {
 	defer cancel()
 	gameId := ctx.Value("gameId").(int32)
 	rows, err := r.db.QueryContext(ctx, `
-	SELECT idx, user_id, displayed_name, content, recommendation, created_at
+	SELECT idx, user_id, displayed_name, content, recommendation, created_at, updated_at
 	FROM review
 	WHERE game_id=?
 	`, gameId)
@@ -34,7 +34,7 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*model.Review, error) {
 
 	for rows.Next() {
 		var review model.Review
-		err := rows.Scan(&review.Id, &review.UserId, &review.DisplayedName, &review.Content, &review.Recommendation, &review.CreatedAt)
+		err := rows.Scan(&review.Id, &review.UserId, &review.DisplayedName, &review.Content, &review.Recommendation, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}

@@ -62,19 +62,14 @@ func (m *StringJsonMap) Scan(src interface{}) error {
 	return nil
 }
 
-type rawTime []byte
-
-func (t rawTime) Time() (time.Time, error) {
-	return time.Parse("15:04:05", string(t))
-}
-
 type Review struct {
-	Id             int     `json:"idx"`
-	UserId         int     `json:"user_id"`
-	DisplayedName  string  `json:"displayed_name"`
-	Content        string  `json:"content"`
-	Recommendation int     `json:"recommendation"`
-	CreatedAt      rawTime `json:"created_at"`
+	Id             int       `json:"idx"`
+	UserId         int       `json:"user_id"`
+	DisplayedName  string    `json:"displayed_name"`
+	Content        string    `json:"content"`
+	Recommendation int       `json:"recommendation"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 type GameDetail struct {

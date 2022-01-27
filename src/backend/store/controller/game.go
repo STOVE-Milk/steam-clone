@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/STOVE-Milk/steam-clone/store/repository"
 )
@@ -167,6 +168,8 @@ func (gc *GameController) GetReviewList(ctx context.Context) (*pb.ReviewListResp
 			DisplayedName:  review.DisplayedName,
 			Content:        review.Content,
 			Recommendation: int32(review.Recommendation),
+			CreatedAt:      timestamppb.New(review.CreatedAt),
+			UpdatedAt:      timestamppb.New(review.UpdatedAt),
 		}
 	}
 	return &pbReviewList, nil
