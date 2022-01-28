@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: milk
+    password: milk
+  jpa:
+    show-sql: true
+    database: mysql
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        use_sql_comments: true
+        globally_quoted_identifiers: true
+  redis:
+    port: 6379
+    host: redis
+    lettuce:
+      shutdown-timeout: 100ms
+  data:
+    mongodb:
+      uri: mongodb://milk:milk@mongodb/steam?retryWrites=true&w=majority
