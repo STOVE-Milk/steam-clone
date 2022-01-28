@@ -35,7 +35,7 @@ export const initalGamesByCategory = [
 ];
 export const initalGame = {
   id: 1,
-  name: 'MONSTER HUNTER RISE',
+  name: '[test]MONSTER HUNTER RISE',
   description_snippet:
     '역동하는 사냥 본능! 사냥에 새로운 바람을 불러일으킬, 종횡무진으로 도약하는 액션. 마음 가는 대로 달릴 수 있는 필드. 미지의 흥분과 놀라움을 선사할 새로운 몬스터들. 이제껏 없었던 사냥 체험이 「MONSTER HUNTER RISE」에서 헌터들을 기다린다!',
   price: 66800,

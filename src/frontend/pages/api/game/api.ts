@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { IGetCategoriesReqType, IGetGameReqType, IResType, IGetGamesByCategoryReqType } from './type';
+import {
+  IGetCategoriesReqType,
+  IGetGameReqType,
+  IResType,
+  IGetGamesByCategoryReqType,
+  IGetReviewReqType,
+} from './type';
 
 export async function getCategoriesAPI(param: IGetCategoriesReqType) {
   const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/categories`);
@@ -19,6 +25,12 @@ export async function getGamesByCategoryAPI(param: IGetGamesByCategoryReqType) {
 
 export async function getGameAPI(param: IGetGameReqType) {
   const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/games/${param.id}`);
+
+  return response.data;
+}
+
+export async function getReviewAPI(param: IGetReviewReqType) {
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/games/${param.id}/reviews`);
 
   return response.data;
 }

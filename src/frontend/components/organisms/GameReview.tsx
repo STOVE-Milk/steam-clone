@@ -6,6 +6,13 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 
+export interface IReviewProps {
+  name: string;
+  time: string;
+  text: string;
+  recommendation: boolean;
+}
+
 const ReviewWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -34,16 +41,17 @@ const Divider = styled.div`
 
 const TextBox = styled.div``;
 
-export default function GameReview() {
+export default function GameReview(props: IReviewProps) {
   return (
     <ReviewWrapper>
       <UserBox>
         <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-        <Name types="medium">이름</Name>
-        <CreatedAt types="tiny">작성 시간</CreatedAt>
+        <Name types="medium">{props.name}</Name>
+        <CreatedAt types="tiny">{props.time}</CreatedAt>
       </UserBox>
       <Divider />
-      <TextBox>리뷰 내용</TextBox>
+      <TextBox>{props.text}</TextBox>
+      {props.recommendation}
     </ReviewWrapper>
   );
 }

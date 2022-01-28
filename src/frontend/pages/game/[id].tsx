@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
@@ -9,8 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 
 import { getGame } from 'modules/game';
-import wrapper from 'modules/configureStore';
 import { IState } from 'modules';
+import { getReviewAPI } from 'pages/api/game/api';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
@@ -164,12 +164,30 @@ const ReviewTitle = styled(Text)`
   margin: 0 0 1rem 0.5rem;
 `;
 
+interface IResReview {
+  id: number;
+  user_id: number;
+  displayed_name: string;
+  content: string;
+  recommendation: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 const Detail: NextPage<IState> = () => {
   const { game } = useSelector((state: IState) => state.game);
   const dispatch = useDispatch();
+  const [reviews, setReviews] = useState<IResReview[]>([]);
+
+  const getReviews = async (id: number) => {
+    const res = (await getReviewAPI({ id: id })).data.review_list;
+    console.log(res);
+    setReviews(res);
+  };
 
   useEffect(() => {
     dispatch(getGame.request({ id: 1 }));
+    getReviews(1);
   }, []);
 
   const array = [1, 2, 3, 4];
@@ -194,18 +212,16 @@ const Detail: NextPage<IState> = () => {
       </GameImageSection>
       <GameIntroSection>
         <SnippetBox>
-          <GameInfoTitle types="large">{game.data && game.data.name}</GameInfoTitle>
-          <DescText types="small"> {game.data && game.data.description_snippet}</DescText>
+          <GameInfoTitle types="large">{game.data.name}</GameInfoTitle>
+          <DescText types="small"> {game.data.description_snippet}</DescText>
         </SnippetBox>
         <Divider />
         <EvaluationBox>
           <GameInfoTitle types="medium">평가</GameInfoTitle>
           <Evaluation>
             <div className="RecommendBox">
-              <Text types="large">{`${game.data && (game.data.recommend_count / game.data.review_count) * 100}%`}</Text>
-              <RecommendCount types="tiny">{`${game.data && game.data.review_count}명 중 ${
-                game.data && game.data.recommend_count
-              }명 추천`}</RecommendCount>
+              <Text types="large">{`${(game.data.recommend_count / game.data.review_count) * 100}%`}</Text>
+              <RecommendCount types="tiny">{`${game.data.review_count}명 중 ${game.data.recommend_count}명 추천`}</RecommendCount>
             </div>
             <WishButtonBox>
               <WishButton types="primary">위시리스트</WishButton>
@@ -220,50 +236,54 @@ const Detail: NextPage<IState> = () => {
             <DescText types="small"> {game.data && game.data.description}</DescText>
           </DescBox>
           <OSBox>
-            {console.log(game.data)}
             <GameInfoTitle types="medium">지원 가능 OS</GameInfoTitle>
-            {game.data &&
-              game.data.os_list &&
-              game.data.os_list.map((eachOs: string) => {
-                return (
-                  <div className="OSCol">
-                    <FontAwesomeIcon icon={eachOs === 'Window' ? faWindowMaximize : faAppleAlt} inverse />
-                    <Text types="small">{eachOs}</Text>
-                  </div>
-                );
-              })}
+            {game.data.os_list.map((eachOs: string) => {
+              return (
+                <div className="OSCol">
+                  <FontAwesomeIcon icon={eachOs === 'Window' ? faWindowMaximize : faAppleAlt} inverse />
+                  <Text types="small">{eachOs}</Text>
+                </div>
+              );
+            })}
           </OSBox>
           <CategoryBox>
             <GameInfoTitle types="medium">게임 카테고리</GameInfoTitle>
             <div className="categories">
-              {game.data &&
-                game.data.category_list &&
-                game.data.category_list.map((category: string) => {
-                  return (
-                    <span>
-                      <Text types="small">{`#${category}`}</Text>
-                    </span>
-                  );
-                })}
+              {game.data.category_list.map((category: string) => {
+                return (
+                  <span>
+                    <Text types="small">{`#${category}`}</Text>
+                  </span>
+                );
+              })}
             </div>
           </CategoryBox>
           <GameBuyBox>
             <GameInfoTitle types="medium">구매 정보</GameInfoTitle>
             <div className="actionBox">
-              <Text types="medium"> {`${game.data && localePrice(game.data.price, 'KR')}`}</Text>
+              <Text types="medium"> {`${localePrice(game.data.price, 'KR')}`}</Text>
               <FilledButton types={'primary'}>구매</FilledButton>
               <FilledButton types={'primary'}>장바구니</FilledButton>
             </div>
           </GameBuyBox>
           <DevInfoBox>
             <GameInfoTitle types="medium">개발자 정보</GameInfoTitle>
-            <Text types="small">{game.data && game.data.publisher && game.data.publisher.name}</Text>
+            <Text types="small">{game.data.publisher.name}</Text>
           </DevInfoBox>
         </GameDetailBox>
       </GameDetailSection>
       <ReviewSection>
         <ReviewTitle types="large">사용자 리뷰</ReviewTitle>
-        <GameReview></GameReview>
+        {reviews.map((review: IResReview) => {
+          return (
+            <GameReview
+              name={review.displayed_name}
+              time={'1시'}
+              text={review.content}
+              recommendation={review.recommendation}
+            ></GameReview>
+          );
+        })}
       </ReviewSection>
     </DetailWrapper>
   );

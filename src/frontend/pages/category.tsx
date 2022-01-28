@@ -84,7 +84,7 @@ const Category = () => {
 
   useEffect(() => {
     dispatch(getCategories.request({}));
-    dispatch(getGamesByCategory.request({ category: '액션' }));
+    // dispatch(getGamesByCategory.request({ category: '액션' }));
   }, []);
 
   return (

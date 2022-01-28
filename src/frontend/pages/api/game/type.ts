@@ -13,3 +13,7 @@ export interface IResType {
 export interface IGetGamesByCategoryReqType {
   category: string;
 }
+
+export interface IGetReviewReqType {
+  id: number;
+}
