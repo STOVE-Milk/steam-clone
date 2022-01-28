@@ -24,31 +24,31 @@ const initialState: gameState = {
 const reducer = createReducer<gameState>(initialState, {
   [GET_CATEGORIES]: (state, action) => ({
     ...state,
-    categories: asyncState.load(action.payload),
+    categories: asyncState.load(initalCategory),
   }),
   [GET_CATEGORIES_SUCCESS]: (state, action) => ({
     ...state,
-    categories: asyncState.success(action.payload),
+    categories: asyncState.success(action.payload.data.category_list),
   }),
   [GET_CATEGORIES_FAIL]: (state, action) => ({
     ...state,
-    categories: asyncState.error(action.payload),
+    categories: asyncState.error(initalCategory, action.payload),
   }),
   [GET_GAME]: (state, action) => ({
     ...state,
-    game: asyncState.load(action.payload),
+    game: asyncState.load(initalGame),
   }),
   [GET_GAME_SUCCESS]: (state, action) => ({
     ...state,
-    game: asyncState.success(action.payload),
+    game: asyncState.success(action.payload.data.game),
   }),
   [GET_GAME_FAIL]: (state, action) => ({
     ...state,
-    game: asyncState.error(action.payload),
+    game: asyncState.error(initalGame, action.payload),
   }),
   [GET_GAMESBYCATEGORY]: (state, action) => ({
     ...state,
-    gamesByCategory: asyncState.load(action.payload),
+    gamesByCategory: asyncState.load(initalGamesByCategory),
   }),
   [GET_GAMESBYCATEGORY_SUCCESS]: (state, action) => ({
     ...state,
@@ -56,7 +56,7 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_GAMESBYCATEGORY_FAIL]: (state, action) => ({
     ...state,
-    gamesByCategory: asyncState.error(action.payload),
+    gamesByCategory: asyncState.error(initalGamesByCategory, action.payload.data.game_list),
   }),
 });
 
