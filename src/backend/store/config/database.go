@@ -18,7 +18,7 @@ type dbConfig struct {
 }
 
 func (cfg dbConfig) String() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.dbUser, cfg.dbPwd, cfg.dbHost, cfg.dbPort, cfg.dbName)
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", cfg.dbUser, cfg.dbPwd, cfg.dbHost, cfg.dbPort, cfg.dbName)
 }
 
 func makeDbConfig() string {

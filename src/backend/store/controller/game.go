@@ -159,6 +159,7 @@ func (gc *GameController) GetReviewList(ctx context.Context) (*pb.ReviewListResp
 	if err != nil {
 		return nil, err
 	}
+
 	var pbReviewList pb.ReviewListResponse_ReviewList
 	pbReviewList.ReviewList = make([]*pb.Review, len(reviewList))
 	for i, review := range reviewList {

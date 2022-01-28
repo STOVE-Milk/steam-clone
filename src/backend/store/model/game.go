@@ -6,18 +6,7 @@ import (
 	"errors"
 	"strings"
 	"time"
-
-	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 )
-
-type GameRepository interface {
-	GetCategoryList() []string
-	GetGameListByCategory(category string) []*pb.GameSimple
-	GetGameDetail(gameId int) *pb.GameDetail
-	// GetReviewList()
-	// GetGameListInWishlist()
-	// GetDiscountingGameList()
-}
 
 type StringSlice []byte
 
@@ -60,6 +49,12 @@ func (m *StringJsonMap) Scan(src interface{}) error {
 	}
 	*m = StringJsonMap(_m)
 	return nil
+}
+
+type RawTime []byte
+
+func (t RawTime) Time() (time.Time, error) {
+	return time.Parse(time.RFC3339, string(t))
 }
 
 type Review struct {
