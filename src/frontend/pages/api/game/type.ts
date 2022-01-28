@@ -9,3 +9,7 @@ export interface IResType {
   message: string;
   payload: any;
 }
+
+export interface IGetGamesByCategoryReqType {
+  category: string;
+}
