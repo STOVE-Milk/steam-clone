@@ -20,3 +20,8 @@ export const initialGiftCard = [
     price: 50000,
   },
 ];
+export const initialChargeInfo = {
+  tid: '',
+  next_redirect_pc_url: 'string',
+  created_at: 'string',
+};

@@ -7,7 +7,7 @@ import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
 
 export interface IGiftCardInfoProps {
-  id: number; // TO DO(양하): id => id (백엔드 수정됨)
+  id: number;
   name: string;
   price: number;
   checked?: boolean;

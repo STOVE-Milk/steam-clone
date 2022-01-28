@@ -8,9 +8,15 @@ export interface IGiftcard {
   name: string;
   price: number;
 }
+export interface IChargeInfo {
+  tid: string;
+  next_redirect_pc_url: string;
+  created_at?: string;
+}
 
 export interface userState {
   giftCardList: AsyncState<IGiftcard[], Error>;
+  charge: AsyncState<IChargeInfo, Error>;
 }
 
 export type userAction = ActionType<typeof actions>;

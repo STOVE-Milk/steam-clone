@@ -12,7 +12,8 @@ import { localePrice } from 'util/localeString';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { IState } from 'modules';
-import { getGiftCardList } from 'modules/user';
+import { getGiftCardList, doCharge } from 'modules/user';
+import { IGiftcard } from 'modules/user/types';
 
 const TitleStyle = styled(Text)`
   margin-bottom: 2rem;
@@ -40,29 +41,6 @@ const ConfirmBtnBox = styled.section`
   justify-content: right;
 `;
 
-const giftcardsmockData: Array<IGiftCardInfoProps> = [
-  {
-    id: 1,
-    name: '5000원',
-    price: 5000,
-  },
-  {
-    id: 2,
-    name: '10000원',
-    price: 10000,
-  },
-  {
-    id: 3,
-    name: '30000원',
-    price: 30000,
-  },
-  {
-    id: 4,
-    name: '50000원',
-    price: 50000,
-  },
-];
-
 //TO DO(양하): 결제수단 확장성때문에 만들어놓음
 const ChargeTypes = [
   { name: 'Kakao Pay', value: 'Kakaopay', disabled: false },
@@ -72,21 +50,91 @@ const ChargeTypes = [
 const charge: NextPage<IState> = () => {
   const [curCheckedPriceIdx, setCurCheckedPriceIdx] = useState(1);
   const [chargeMethod, setChargeMethod] = useState('kakaopay');
-  const [giftcards, setGiftcards] = useState([]);
+  // const [chargeReqInfoObj, setChargeReqInfoObj] = useState({
+  //   method: chargeMethod,
+  //   giftcard: {
+  //     id: curCheckedPriceIdx,
+  //     name: 'name', //아무거나(검증로직 없음)
+  //     price: 5000, //아무거나(검증로직 없음)
+  //   },
+  // });
   //요청상태에따라 return 을 달리하고, store에 pg_token 보관해야겠다. 충전상태 == 'finished' ? 지금 만든 chargeWraaper로 감싸진 페이지 : 완료되었습니다 페이지
-  const { giftCardList } = useSelector((state: IState) => {
-    // console.log(state);
+  const { giftCardList, charge } = useSelector((state: IState) => {
+    console.log(state);
     return state.user;
   });
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getGiftCardList.request({}));
+    // dispatch(doCharge.request(chargeReqInfoObj));
   }, []);
+
   const giftCardListData = giftCardList.data && Object.values(giftCardList.data);
+  // setState 비동기처리
+  // const updateState = async (chargeMethod: string, curCheckedPriceIdx: number) => {
+  //   return new Promise((resolve, reject) => {
+  //     dispatch(
+  //       doCharge.request({
+  //         method: chargeMethod,
+  //         giftcard: {
+  //           id: curCheckedPriceIdx,
+  //           name: '', //아무거나(검증로직 없음)
+  //           price: 0, //아무거나(검증로직 없음)
+  //         },
+  //       }),
+  //     );
+  //   }).then(() => {
+  //     () => {
+  //       console.log('here');
+  //       // http://localhost:3000/charge/approval?pg_token=e703bc6b3f22d3e90ece
+  //       window.open(
+  //         `${charge.data!.next_redirect_pc_url}`,
+  //         'next_pc_url',
+  //         'location,status,scrollbars,resizable,width=600,height=600',
+  //       );
+  //     };
+  //   });
+  // };
+  const updateState = async (chargeMethod: string, curCheckedPriceIdx: number) => {
+    console.log('here');
+    // http://localhost:3000/charge/approval?pg_token=e703bc6b3f22d3e90ece
+  };
+
+  // const doDispatch = (chargeReqInfoObj: IDoChargeReqType) => {
+  //   return new Promise((resolve, reject) => {
+  //     dispatch(doCharge.request(chargeReqInfoObj));
+  //   });
+  // };
+  const doChargeByBtn = async (giftCardListData: IGiftcard[]) => {
+    alert(
+      `충전하고자하는 금액은 총 ${localePrice(
+        giftCardListData.find((ele: any) => ele.id === curCheckedPriceIdx)!.price,
+        'KR',
+      )} 입니다.\n충전 방식은 ${chargeMethod}입니다.
+    `,
+    );
+    dispatch(
+      doCharge.request({
+        method: chargeMethod,
+        giftcard: {
+          id: curCheckedPriceIdx,
+          name: '', //아무거나(검증로직 없음)
+          price: 0, //아무거나(검증로직 없음)
+        },
+      }),
+    );
+    //자꾸 통신 성공인데 null 보내줘서 처리해야됨
+    window.open(
+      `${charge.data!.next_redirect_pc_url}`,
+      'next_pc_url',
+      'location,status,scrollbars,resizable,width=600,height=600',
+    );
+  };
 
   return (
     <ChargeWrapper>
+      {console.log(giftCardListData)}
       <TitleStyle types="large">구매 가능한 GIFTCARDS</TitleStyle>
       {/* {console.log(giftCardList)} */}
       <GiftCardWrapper>
@@ -110,20 +158,9 @@ const charge: NextPage<IState> = () => {
       <ConfirmBtnBox>
         <DefaultButton
           types={'secondary'}
-          onClick={(e) =>
-            // POST: /payment/charge/ready
-            {
-              giftCardListData &&
-                alert(
-                  `충전하고자하는 금액은 총 ${localePrice(
-                    giftCardListData.find((ele) => ele.id === curCheckedPriceIdx)!.price,
-                    'KR',
-                  )} 입니다.\n충전 방식은 ${chargeMethod}입니다.
-                `,
-                );
-              window.open('/category', 'next_pc_url', 'location,status,scrollbars,resizable,width=600, height=600');
-            }
-          }
+          onClick={(e) => {
+            giftCardListData && doChargeByBtn(giftCardListData);
+          }}
         >
           충전하기
         </DefaultButton>
