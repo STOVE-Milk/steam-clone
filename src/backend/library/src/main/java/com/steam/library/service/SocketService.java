@@ -62,6 +62,12 @@ public class SocketService {
         return true;
     }
 
+    public boolean move(String sessionId, String data) {
+
+
+        return true;
+    }
+
     public boolean closeConnection(WebSocketSession session) {
         String closeRoomId = session_room.get(session.getId());
         String userId = userData.get(session.getId()).getIdx().toString();

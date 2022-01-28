@@ -29,8 +29,9 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
 
         if (behavior.equals(Behavior.ENTER)) {
             socketService.enter(session, jsonData);
+        } else if (behavior.equals(Behavior.MOVE)) {
+            socketService.move(session.getId(), jsonData);
         }
-
     }
 
     /* Client가 접속 시 호출되는 메서드 */
