@@ -3,6 +3,7 @@ package com.steam.library.dto;
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.UserDto;
 import com.steam.library.entity.RoomHash;
+import com.steam.library.global.common.Direction;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -45,5 +46,9 @@ public class Room {
         this.getUserList().remove(userId);
         this.getUsers().remove(userId);
         return this.getUserList().size();
+    }
+
+    public void move(String userId, Direction direction) {
+        this.getUsers().get(userId).move(direction, this.map.getSide());
     }
 }

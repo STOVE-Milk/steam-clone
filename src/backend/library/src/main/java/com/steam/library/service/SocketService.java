@@ -3,7 +3,8 @@ package com.steam.library.service;
 import com.steam.library.dto.Room;
 import com.steam.library.dto.UserDto;
 import com.steam.library.global.common.UserDetails;
-import com.steam.library.global.common.message.EnterMessage;
+import com.steam.library.global.common.messages.EnterMessage;
+import com.steam.library.global.common.messages.MoveMessage;
 import com.steam.library.global.util.JsonUtil;
 import com.steam.library.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,12 @@ public class SocketService {
     }
 
     public boolean move(String sessionId, String data) {
+        String userId = userData.get(sessionId).getIdx().toString();
+        String roomId = session_room.get(sessionId);
+        MoveMessage moveMessage = JsonUtil.toObject(data, MoveMessage.class);
+        robby.get(roomId).move(userId, moveMessage.getDirection());
 
+        logObjectJson(robby.get(roomId));
 
         return true;
     }

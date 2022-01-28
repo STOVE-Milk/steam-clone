@@ -23,14 +23,16 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         log.info("payload : " + payload);
-
-        Integer behavior = Integer.parseInt(payload.substring(0, 2));
+        Behavior behavior = Behavior.fromInteger(Integer.parseInt(payload.substring(0, 2)));
         String jsonData = payload.substring(2);
 
-        if (behavior.equals(Behavior.ENTER)) {
-            socketService.enter(session, jsonData);
-        } else if (behavior.equals(Behavior.MOVE)) {
-            socketService.move(session.getId(), jsonData);
+        switch (behavior) {
+            case ENTER :
+                socketService.enter(session, jsonData);
+                break;
+            case MOVE:
+                socketService.move(session.getId(), jsonData);
+                break;
         }
     }
 
