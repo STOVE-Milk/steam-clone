@@ -9,12 +9,16 @@ import {
   DO_CHARGE,
   DO_CHARGE_SUCCESS,
   DO_CHARGE_FAIL,
+  DO_APPROVAL_CHARGE,
+  DO_APPROVAL_CHARGE_SUCCESS,
+  DO_APPROVAL_CHARGE_FAIL,
 } from './actions';
-import { initialGiftCard, initialChargeInfo } from './initalData';
+import { initialGiftCard, initialChargeInfo, initialApprovalCharge } from './initalData';
 
 const initialState: userState = {
   giftCardList: asyncState.initial(initialGiftCard),
   charge: asyncState.initial(initialChargeInfo),
+  approvalCharge: asyncState.initial(initialApprovalCharge),
 };
 
 const reducer = createReducer<userState>(initialState, {
@@ -28,7 +32,7 @@ const reducer = createReducer<userState>(initialState, {
   }),
   [GET_GIFTCARDLIST_FAIL]: (state, action) => ({
     ...state,
-    giftCardList: asyncState.error(action.payload),
+    giftCardList: asyncState.error(initialGiftCard, action.payload),
   }),
   [DO_CHARGE]: (state, action) => ({
     ...state,
@@ -40,7 +44,19 @@ const reducer = createReducer<userState>(initialState, {
   }),
   [DO_CHARGE_FAIL]: (state, action) => ({
     ...state,
-    charge: asyncState.error(action.payload),
+    charge: asyncState.error(initialChargeInfo, action.payload),
+  }),
+  [DO_APPROVAL_CHARGE]: (state, action) => ({
+    ...state,
+    approvalCharge: asyncState.load(action.payload),
+  }),
+  [DO_APPROVAL_CHARGE_SUCCESS]: (state, action) => ({
+    ...state,
+    approvalCharge: asyncState.success(action.payload.data),
+  }),
+  [DO_APPROVAL_CHARGE_FAIL]: (state, action) => ({
+    ...state,
+    approvalCharge: asyncState.error(initialApprovalCharge, action.payload),
   }),
 });
 

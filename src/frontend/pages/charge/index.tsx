@@ -60,7 +60,7 @@ const charge: NextPage<IState> = () => {
   // });
   //요청상태에따라 return 을 달리하고, store에 pg_token 보관해야겠다. 충전상태 == 'finished' ? 지금 만든 chargeWraaper로 감싸진 페이지 : 완료되었습니다 페이지
   const { giftCardList, charge } = useSelector((state: IState) => {
-    console.log(state);
+    console.log(state.user.giftCardList);
     return state.user;
   });
   const dispatch = useDispatch();
@@ -98,7 +98,6 @@ const charge: NextPage<IState> = () => {
   // };
   const updateState = async (chargeMethod: string, curCheckedPriceIdx: number) => {
     console.log('here');
-    // http://localhost:3000/charge/approval?pg_token=e703bc6b3f22d3e90ece
   };
 
   // const doDispatch = (chargeReqInfoObj: IDoChargeReqType) => {
