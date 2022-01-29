@@ -29,7 +29,7 @@ export async function getGameAPI(param: IGetGameReqType) {
 
   return response.data;
 }
-
+// 찜 하기
 export async function getWishListAPI(param: IGetWishListReqType) {
   const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/wishes`);
 

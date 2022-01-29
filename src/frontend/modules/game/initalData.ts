@@ -63,3 +63,7 @@ export const initalGame = {
   recommend_count: 3,
   language: ['한국어', '영어'],
 };
+
+export const initialWishlist = {
+  success: true,
+};
