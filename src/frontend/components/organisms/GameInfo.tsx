@@ -169,7 +169,7 @@ export default function GameInfo(props: IGameInfo) {
       <ImageBox>
         {/* {image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
         {/* TO DO(yangha): 게임데이터에서 온 이미지로 변경하기 ->  이미지 url domain 고정되면 config파일도 수정해야함. */}
-        <GameImage alt={'mainimage'} src={`${gameData.image.main}`} layout={'fill'}></GameImage>
+        <GameImage alt={'mainimage'} src={`${gameData.image.main}`} layout={'fill'} />
       </ImageBox>
       {/* 할인중인지 여부에 따라서 ui 가 좀 다름 */}
       <GameDetailBox>

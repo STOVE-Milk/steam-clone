@@ -67,3 +67,8 @@ export const initalGame = {
 export const initialWishlist = {
   success: true,
 };
+export const initialWishlistData = {};
+export const initialUserData = {
+  wish_list: [1, 2],
+  purchase_list: [6],
+};
