@@ -7,6 +7,7 @@ import {
   IGetCategoriesReqType,
   IGetGameReqType,
   IGetGamesByCategoryReqType,
+  IGetWishListDataReqType,
   IGetWishListReqType,
   IGetUserDataReqType,
   IResType,

@@ -22,13 +22,20 @@ import {
   GET_USERDATA_SUCCESS,
   GET_USERDATA_FAIL,
 } from './actions';
-import { initalCategory, initalGamesByCategory, initalGame, initialWishlist, initialUserData } from './initalData';
+import {
+  initalCategory,
+  initalGamesByCategory,
+  initalGame,
+  initialWishlist,
+  initialUserData,
+  initialWishlistData,
+} from './initalData';
 
 const initialState: gameState = {
   categories: asyncState.initial(initalCategory),
   gamesByCategory: asyncState.initial(initalGamesByCategory),
   game: asyncState.initial(initalGame),
-  wishListData: asyncState.initial(initalGamesByCategory),
+  wishListData: asyncState.initial(initialWishlistData),
   wishList: asyncState.initial(initialWishlist), //임시로 inital data 넣어놓음
   userData: asyncState.initial(initialUserData),
 };
@@ -36,7 +43,7 @@ const initialState: gameState = {
 const reducer = createReducer<gameState>(initialState, {
   [GET_CATEGORIES]: (state, action) => ({
     ...state,
-    categories: asyncState.load(action.payload),
+    categories: asyncState.load(initalCategory),
   }),
   [GET_CATEGORIES_SUCCESS]: (state, action) => ({
     ...state,
@@ -48,11 +55,11 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_GAME]: (state, action) => ({
     ...state,
-    game: asyncState.load(action.payload),
+    game: asyncState.load(initalGame),
   }),
   [GET_GAME_SUCCESS]: (state, action) => ({
     ...state,
-    game: asyncState.success(action.payload),
+    game: asyncState.success(action.payload.data.game),
   }),
   [GET_GAME_FAIL]: (state, action) => ({
     ...state,
@@ -60,7 +67,7 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_GAMESBYCATEGORY]: (state, action) => ({
     ...state,
-    gamesByCategory: asyncState.load(action.payload),
+    gamesByCategory: asyncState.load(initalGamesByCategory),
   }),
   [GET_GAMESBYCATEGORY_SUCCESS]: (state, action) => ({
     ...state,
@@ -72,7 +79,7 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_WISHLISTDATA]: (state, action) => ({
     ...state,
-    wishListData: asyncState.load(action.payload),
+    wishListData: asyncState.load(initialWishlistData),
   }),
   [GET_WISHLISTDATA_SUCCESS]: (state, action) => ({
     ...state,
@@ -80,11 +87,11 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_WISHLISTDATA_FAIL]: (state, action) => ({
     ...state,
-    wishListData: asyncState.error(initialWishlist, action.payload),
+    wishListData: asyncState.error(initialWishlistData, action.payload),
   }),
   [GET_WISHLIST]: (state, action) => ({
     ...state,
-    wishList: asyncState.load(action.payload),
+    wishList: asyncState.load(initialWishlist),
   }),
   [GET_WISHLIST_SUCCESS]: (state, action) => ({
     ...state,
@@ -96,7 +103,7 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_USERDATA]: (state, action) => ({
     ...state,
-    userData: asyncState.load(action.payload),
+    userData: asyncState.load(initialUserData),
   }),
   [GET_USERDATA_SUCCESS]: (state, action) => ({
     ...state,
