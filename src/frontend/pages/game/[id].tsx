@@ -177,7 +177,26 @@ interface IResReview {
 const Detail: NextPage<IState> = () => {
   const { game } = useSelector((state: IState) => state.game);
   const dispatch = useDispatch();
-  const [reviews, setReviews] = useState<IResReview[]>([]);
+  const [reviews, setReviews] = useState<IResReview[]>([
+    {
+      id: 1,
+      user_id: 1,
+      displayed_name: 'user1',
+      content: 'review1\nreview1\nreview2',
+      recommendation: false,
+      created_at: 'time1',
+      updated_at: 'time2',
+    },
+    {
+      id: 2,
+      user_id: 2,
+      displayed_name: 'user2',
+      content: 'review2\nreview2\nreview2',
+      recommendation: true,
+      created_at: 'time3',
+      updated_at: 'time4',
+    },
+  ]);
 
   const getReviews = async (id: number) => {
     const res = (await getReviewAPI({ id: id })).data.review_list;
@@ -187,7 +206,7 @@ const Detail: NextPage<IState> = () => {
 
   useEffect(() => {
     dispatch(getGame.request({ id: 1 }));
-    getReviews(1);
+    // getReviews(1);
   }, []);
 
   const array = [1, 2, 3, 4];
