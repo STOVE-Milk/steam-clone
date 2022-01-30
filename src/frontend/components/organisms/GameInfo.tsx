@@ -3,10 +3,17 @@ import styled from 'styled-components';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import sImage from 'public/game.png';
-import { gameInfo as IGameInfo } from 'modules/game/types';
+import { gameInfo } from 'modules/game/types';
 import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
+
+interface IGameInfo extends gameInfo {
+  wishFunc?: IdoWishFunc;
+}
+interface IdoWishFunc {
+  doWishFunc: (e: any) => void;
+  doUnWishFunc: (e: any) => void;
+}
 
 const GameInfoBox = styled.section`
   width: 60rem;
@@ -219,13 +226,18 @@ export default function GameInfo(props: IGameInfo) {
           )}
         </section>
         <section>
-          <IconBox onClick={() => setLike(!like)}>
+          <IconBox
+            onClick={() => {
+              like ? gameData.wishFunc?.doUnWishFunc(gameData.id) : gameData.wishFunc?.doWishFunc(gameData.id);
+              setLike(!like);
+            }}
+          >
             <span>
-              <FontAwesomeIcon className={like ? '' : 'pink-highlight'} icon={faHeart} inverse />
+              <FontAwesomeIcon className={like ? 'pink-highlight' : ''} icon={faHeart} inverse />
             </span>
           </IconBox>
           <IconBox onClick={() => setCart(!cart)}>
-            <FontAwesomeIcon className={cart ? '' : 'blue-highlight'} icon={faShoppingCart} inverse />
+            <FontAwesomeIcon className={cart ? 'blue-highlight' : ''} icon={faShoppingCart} inverse />
           </IconBox>
         </section>
       </EtcInfoBox>

@@ -64,10 +64,13 @@ export const initalGame = {
   language: ['한국어', '영어'],
 };
 
-export const initialWishlist = {
+export const initialWish = {
   success: true,
 };
-export const initialWishlistData = [
+export const initialUnWish = {
+  success: true,
+};
+export const initialWishList = [
   {
     id: 6,
     name: '[TEST]Red Dead Redemption 2',

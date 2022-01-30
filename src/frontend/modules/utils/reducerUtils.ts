@@ -10,7 +10,7 @@ export type AsyncState<T, E = any> = {
 export const asyncState = {
   // 다음 코드는 화살표 함수에 Generic 을 설정 한 것입니다.
   initial: <T, E = any>(initialData: T): AsyncState<T, E> => ({
-    loading: false,
+    loading: true,
     data: initialData,
     error: null,
   }),

@@ -12,31 +12,36 @@ import {
   GET_GAMESBYCATEGORY,
   GET_GAMESBYCATEGORY_SUCCESS,
   GET_GAMESBYCATEGORY_FAIL,
-  GET_WISHLISTDATA,
-  GET_WISHLISTDATA_SUCCESS,
-  GET_WISHLISTDATA_FAIL,
   GET_WISHLIST,
   GET_WISHLIST_SUCCESS,
   GET_WISHLIST_FAIL,
+  DO_WISH,
+  DO_WISH_SUCCESS,
+  DO_WISH_FAIL,
   GET_USERDATA,
   GET_USERDATA_SUCCESS,
   GET_USERDATA_FAIL,
+  DO_UNWISH,
+  DO_UNWISH_SUCCESS,
+  DO_UNWISH_FAIL,
 } from './actions';
 import {
   initalCategory,
   initalGamesByCategory,
   initalGame,
-  initialWishlist,
+  initialWish,
   initialUserData,
-  initialWishlistData,
+  initialWishList,
+  initialUnWish,
 } from './initalData';
 
 const initialState: gameState = {
   categories: asyncState.initial(initalCategory),
   gamesByCategory: asyncState.initial(initalGamesByCategory),
   game: asyncState.initial(initalGame),
-  wishListData: asyncState.initial(initialWishlistData),
-  wishList: asyncState.initial(initialWishlist), //임시로 inital data 넣어놓음
+  wish: asyncState.initial(initialWish),
+  unWish: asyncState.initial(initialUnWish),
+  wishList: asyncState.initial(initialWishList), //임시로 inital data 넣어놓음
   userData: asyncState.initial(initialUserData),
 };
 
@@ -77,21 +82,9 @@ const reducer = createReducer<gameState>(initialState, {
     ...state,
     gamesByCategory: asyncState.error(initalGamesByCategory, action.payload),
   }),
-  [GET_WISHLISTDATA]: (state, action) => ({
-    ...state,
-    wishListData: asyncState.load(initialWishlistData),
-  }),
-  [GET_WISHLISTDATA_SUCCESS]: (state, action) => ({
-    ...state,
-    wishListData: asyncState.success(action.payload.data.game_list),
-  }),
-  [GET_WISHLISTDATA_FAIL]: (state, action) => ({
-    ...state,
-    wishListData: asyncState.error(initialWishlistData, action.payload),
-  }),
   [GET_WISHLIST]: (state, action) => ({
     ...state,
-    wishList: asyncState.load(initialWishlist),
+    wishList: asyncState.load(initialWishList),
   }),
   [GET_WISHLIST_SUCCESS]: (state, action) => ({
     ...state,
@@ -99,7 +92,31 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_WISHLIST_FAIL]: (state, action) => ({
     ...state,
-    wishList: asyncState.error(initialWishlist, action.payload),
+    wishList: asyncState.error(initialWishList, action.payload),
+  }),
+  [DO_WISH]: (state, action) => ({
+    ...state,
+    wish: asyncState.load(initialWish),
+  }),
+  [DO_WISH_SUCCESS]: (state, action) => ({
+    ...state,
+    wish: asyncState.success(action.payload.data.success),
+  }),
+  [DO_WISH_FAIL]: (state, action) => ({
+    ...state,
+    wish: asyncState.error(initialWish, action.payload),
+  }),
+  [DO_UNWISH]: (state, action) => ({
+    ...state,
+    unWish: asyncState.load(initialUnWish),
+  }),
+  [DO_UNWISH_SUCCESS]: (state, action) => ({
+    ...state,
+    unWish: asyncState.success(action.payload.data.success),
+  }),
+  [DO_UNWISH_FAIL]: (state, action) => ({
+    ...state,
+    unWish: asyncState.error(initialUnWish, action.payload),
   }),
   [GET_USERDATA]: (state, action) => ({
     ...state,

@@ -13,7 +13,12 @@ export interface IResType {
 export interface IGetGamesByCategoryReqType {
   category: string;
 }
-export interface IGetWishListDataReqType {}
-export interface IGetWishListReqType {}
+export interface IgetWishListReqType {}
+export interface IDoWishReqType {
+  game_id: number;
+}
+export interface IDoUnWishReqType {
+  game_id: number;
+}
 
 export interface IGetUserDataReqType {}

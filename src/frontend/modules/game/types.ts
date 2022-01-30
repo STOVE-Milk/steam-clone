@@ -30,7 +30,7 @@ interface gameDetail extends gameInfo {
   review_count: number;
   recommend_count: number;
 }
-interface IWishList {
+interface IWish {
   success: Boolean;
 }
 interface IUserData {
@@ -42,9 +42,10 @@ export interface gameState {
   categories: AsyncState<string[], Error>;
   gamesByCategory: AsyncState<gameInfo[], Error>;
   game: AsyncState<gameDetail, Error>; // 상세 페이지에서 쓰일 1개 게임에 대한 정보
-  wishList: AsyncState<IWishList, Error>;
+  wish: AsyncState<IWish, Error>;
+  unWish: AsyncState<IWish, Error>;
   userData: AsyncState<IUserData, Error>;
-  wishListData: AsyncState<gameInfo[], Error>;
+  wishList: AsyncState<gameInfo[], Error>;
 }
 
 export type gameAction = ActionType<typeof actions>;
