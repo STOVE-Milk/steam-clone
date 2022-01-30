@@ -8,7 +8,7 @@ import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
 
 interface IGameInfo extends gameInfo {
-  wishFunc?: IdoWishFunc;
+  wishFunc?: (game_id: number, curStatus: Boolean) => void;
 }
 interface IdoWishFunc {
   doWishFunc: (e: any) => void;
@@ -224,7 +224,7 @@ export default function GameInfo(props: IGameInfo) {
         <section>
           <IconBox
             onClick={() => {
-              like ? gameData.wishFunc?.doUnWishFunc(gameData.id) : gameData.wishFunc?.doWishFunc(gameData.id);
+              gameData.wishFunc && gameData.wishFunc(gameData.id, like);
               setLike(!like);
             }}
           >

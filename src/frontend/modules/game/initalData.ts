@@ -68,7 +68,7 @@ export const initialWish = {
   success: true,
 };
 export const initialUnWish = {
-  success: true,
+  success: false,
 };
 export const initialWishList = [
   {
