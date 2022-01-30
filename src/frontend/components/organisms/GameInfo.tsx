@@ -182,22 +182,20 @@ export default function GameInfo(props: IGameInfo) {
           layout={'fill'}
         />
       </ImageBox>
-      {/* 할인중인지 여부에 따라서 ui 가 좀 다름 */}
       <GameDetailBox>
         <section className="info">
           <span>
             <Text types="medium">{gameData.name}</Text>
           </span>
           <OsBox>
-            {gameData.os_list &&
-              gameData.os_list.map((eachOs: string) => {
-                return (
-                  <FontAwesomeIcon
-                    icon={eachOs.toLocaleLowerCase().indexOf('window') ? faWindowMaximize : faAppleAlt}
-                    inverse
-                  />
-                );
-              })}
+            {gameData.os_list.map((eachOs: string) => {
+              return (
+                <FontAwesomeIcon
+                  icon={eachOs.toLocaleLowerCase().indexOf('window') ? faWindowMaximize : faAppleAlt}
+                  inverse
+                />
+              );
+            })}
           </OsBox>
           <DescriptionBox>{gameData.description_snippet}</DescriptionBox>
           <span>
@@ -210,20 +208,18 @@ export default function GameInfo(props: IGameInfo) {
       </GameDetailBox>
       <EtcInfoBox>
         <section>
-          {Boolean(gameData.sale) && <SaleBadge>-{gameData.sale}%</SaleBadge>}
-          {gameData.price && (
-            <div>
-              {Boolean(gameData.sale) ? (
-                <>
-                  {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
-                  <DefaultPrice>{`${localePrice(gameData.price, 'KR')}`}</DefaultPrice>
-                  <Text types="medium">{`${localePrice((gameData.price / 100) * (100 - gameData.sale), 'KR')}`}</Text>
-                </>
-              ) : (
-                <Text types="medium">{`${localePrice(gameData.price, 'KR')}`}</Text>
-              )}
-            </div>
-          )}
+          {gameData.sale && <SaleBadge>-{gameData.sale}%</SaleBadge>}
+          <div>
+            {gameData.sale ? (
+              <>
+                {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
+                <DefaultPrice>{`${localePrice(gameData.price, 'KR')}`}</DefaultPrice>
+                <Text types="medium">{`${localePrice((gameData.price / 100) * (100 - gameData.sale), 'KR')}`}</Text>
+              </>
+            ) : (
+              <Text types="medium">{`${localePrice(gameData.price, 'KR')}`}</Text>
+            )}
+          </div>
         </section>
         <section>
           <IconBox
