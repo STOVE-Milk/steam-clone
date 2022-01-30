@@ -295,7 +295,9 @@ const Detail: NextPage<IState> = () => {
         <ReviewTitle types="large">사용자 리뷰</ReviewTitle>
         {reviews.map((review: IResReview) => {
           return (
+            // isMine: 로그인했을 때 내 리뷰면 true, 아니면 false
             <GameReview
+              isMine={true}
               name={review.displayed_name}
               time={'1시'}
               text={review.content}

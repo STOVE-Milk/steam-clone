@@ -5,8 +5,10 @@ import { faUser, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-ic
 
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
+import FilledButton from 'components/atoms/FilledButton';
 
 export interface IReviewProps {
+  isMine: boolean;
   name: string;
   time: string;
   text: string;
@@ -24,14 +26,16 @@ const ReviewWrapper = styled.div`
 
 const UserBox = styled.div`
   display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const Name = styled(Text)`
-  margin: 0.2rem 0.7rem 0 0.3rem;
+  margin: 0 0.7rem 0 0.3rem;
 `;
 
 const ThumbsUp = styled(FontAwesomeIcon)`
-  margin: 0.3rem 0 0 0.3rem;
+  margin-left: 0.3rem;
 `;
 
 const ThumbsDown = styled(FontAwesomeIcon)`
@@ -39,7 +43,13 @@ const ThumbsDown = styled(FontAwesomeIcon)`
 `;
 
 const CreatedAt = styled(Text)`
-  margin: 0.8rem 0 0 1rem;
+  margin: 0.3rem 0 0 1rem;
+`;
+
+const PostActionBox = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 `;
 
 const Divider = styled.div`
@@ -61,6 +71,10 @@ export default function GameReview(props: IReviewProps) {
         <Name types="medium">{props.name}</Name>
         {props.recommendation ? <ThumbsUp icon={faThumbsUp} inverse /> : <ThumbsDown icon={faThumbsDown} inverse />}
         <CreatedAt types="tiny">{props.time}</CreatedAt>
+        <PostActionBox>
+          <FilledButton types="primary">수정</FilledButton>
+          <FilledButton types="primary">삭제</FilledButton>
+        </PostActionBox>
       </UserBox>
       <Divider />
       <TextBox>
