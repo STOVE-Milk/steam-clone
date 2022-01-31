@@ -10,7 +10,7 @@ export type AsyncState<T, E = any> = {
 export const asyncState = {
   // 다음 코드는 화살표 함수에 Generic 을 설정 한 것입니다.
   initial: <T, E = any>(initialData: T): AsyncState<T, E> => ({
-    loading: true,
+    loading: false,
     data: initialData,
     error: null,
   }),
@@ -62,7 +62,7 @@ export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extend
       case failure:
         return {
           ...state,
-          [key]: asyncState.error(action.payload),
+          [key]: asyncState.error(action.payload, action.payload), //수정!
         };
       default:
         return state;

@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import { gameInfo } from 'modules/game/types';
 import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
+
+import { gameInfo } from 'modules/game/types';
+import { doWish, doUnWish } from 'modules/game';
+import { IState } from 'modules';
 
 interface IGameInfo extends gameInfo {
   wishFunc?: (game_id: number, curStatus: Boolean) => void;
@@ -167,6 +172,24 @@ const OsBox = styled.span`
 // 게임 정보가 담긴 obj {}를 props로 내려주면,
 // to do -> 1. 게임정보 타입 정하고 2. props들을 내려주고 3. 제대로 나오나 테스팅하고, 4. 혹시 정보가 없었을 떄 alt로 나오는 정보들이 제대로 나오는지 체크하고
 export default function GameInfo(props: IGameInfo) {
+  const { wish, unWish } = useSelector((state: IState) => state.game);
+  const dispatch = useDispatch();
+
+  const wishFunc = (game_id: number, curStatus: Boolean) => {
+    curStatus
+      ? dispatch(
+          doUnWish.request({
+            game_id,
+          }),
+        )
+      : dispatch(
+          doWish.request({
+            game_id,
+          }),
+        );
+    curStatus ? console.log('un wish') : console.log('wish');
+  };
+
   const gameData = props;
   const [like, setLike] = useState(false);
   const [cart, setCart] = useState(false);
@@ -199,10 +222,9 @@ export default function GameInfo(props: IGameInfo) {
           </OsBox>
           <DescriptionBox>{gameData.description_snippet}</DescriptionBox>
           <span>
-            {gameData.category_list &&
-              gameData.category_list.map((each: string) => {
-                return <CategoryBox>{`#${each}`}</CategoryBox>;
-              })}
+            {gameData.category_list.map((each: string) => {
+              return <CategoryBox>{`#${each}`}</CategoryBox>;
+            })}
           </span>
         </section>
       </GameDetailBox>
@@ -224,7 +246,7 @@ export default function GameInfo(props: IGameInfo) {
         <section>
           <IconBox
             onClick={() => {
-              gameData.wishFunc && gameData.wishFunc(gameData.id, like);
+              wishFunc(gameData.id, like);
               setLike(!like);
             }}
           >
