@@ -11,8 +11,8 @@ interface CarouselProps {
 
 const CustomCarousel = styled(Carousel)`
   width: 80%;
-
   margin: 0 auto;
+  
   .react-multiple-carousel__arrow--right {
     margin-right: -3%;
     margin-bottom: 8%;

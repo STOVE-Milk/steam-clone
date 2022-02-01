@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import Text from 'components/atoms/Text';
 
 interface IGameCategory {
-  list: Array<string> | null;
+  list: Array<string>;
+  gameLoadFunc?: (e: any) => void;
 }
 const CategoryWrapper = styled.section`
   display: flex;
@@ -17,6 +18,13 @@ const CategoryWrapper = styled.section`
     width: 20rem;
   }
 `;
+interface ICategoryBoxProps {
+  onclick: (e: any) => void;
+}
+interface TextProps {
+  types: string;
+  children: React.ReactNode;
+}
 const CategoryBox = styled(Text)`
   border: 1px solid ${(props) => props.theme.colors.divider};
   background-color: ${(props) => props.theme.colors.secondaryBg};

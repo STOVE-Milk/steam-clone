@@ -2,7 +2,7 @@ import { AnyAction } from 'redux';
 import { AsyncActionCreatorBuilder, getType } from 'typesafe-actions';
 
 export type AsyncState<T, E = any> = {
-  data: T | null;
+  data: T;
   loading: boolean;
   error: E | null;
 };
@@ -14,9 +14,9 @@ export const asyncState = {
     data: initialData,
     error: null,
   }),
-  load: <T, E = any>(data?: T): AsyncState<T, E> => ({
+  load: <T, E = any>(data: T): AsyncState<T, E> => ({
     loading: true,
-    data: data || null,
+    data: data,
     error: null,
   }),
   success: <T, E = any>(data: T): AsyncState<T, E> => ({
@@ -24,9 +24,9 @@ export const asyncState = {
     data,
     error: null,
   }),
-  error: <T, E>(error: E): AsyncState<T, E> => ({
+  error: <T, E>(initialData: T, error: E): AsyncState<T, E> => ({
     loading: false,
-    data: null,
+    data: initialData,
     error: error,
   }),
 };
@@ -62,7 +62,7 @@ export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extend
       case failure:
         return {
           ...state,
-          [key]: asyncState.error(action.payload),
+          [key]: asyncState.error(action.payload, action.payload),
         };
       default:
         return state;

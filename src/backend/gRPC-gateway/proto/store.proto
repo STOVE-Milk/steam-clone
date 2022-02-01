@@ -1,0 +1,213 @@
+syntax = "proto3";
+
+package storepb;
+
+option go_package = "github.com/STOVE-Milk/steam-clone/store/proto;storepb";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Store {
+    rpc GetCategoryList(google.protobuf.Empty) returns (CategoryListResponse) {
+        option (google.api.http) = {
+            get: "/store/categories"
+        };
+    }
+    rpc GetSortingGameList(SortingParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/games"
+        };
+    }
+    rpc GetGame(GameIdQueryParamRequest) returns (GameDetailResponse){
+        option (google.api.http) = {
+            get: "/store/games/{game_id}"
+        };
+    }
+    rpc GetReviewList(GameIdQueryParamRequest) returns (ReviewListResponse){
+        option (google.api.http) = {
+            get: "/store/games/{game_id}/reviews"
+        };
+    }
+    rpc GetUserData(google.protobuf.Empty) returns (UserDataResponse){
+        option (google.api.http) = {
+            get: "/store/userdata"
+        };
+    }
+    rpc GetGameListInWishlist(google.protobuf.Empty) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/wishes"
+        };
+    }
+    rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            post: "/store/wishes"
+            body: "*"
+        };
+    }
+    rpc DeleteWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            delete: "/store/wishes/{game_id}"
+        };
+    }
+    rpc PostReview(ReviewQueryRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            post: "/store/games/{game_id}/reviews"
+            body: "*"
+        };
+    }
+    rpc PatchReview(ReviewQueryRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            patch: "/store/games/reviews/{review_id}"
+            body: "*"
+        };
+    }
+    rpc DeleteReview(ReviewQueryRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            delete: "/store/games/reviews/{review_id}"
+        };
+    }
+}
+
+message UserDataResponse{
+    int32 code = 1;
+    string message = 2;
+    UserData data = 3;
+    message UserData{
+        repeated int32 wish_list = 1 [json_name = "wish_list"];
+        repeated int32 purchase_list = 2 [json_name = "purchase_list"];
+    }
+}
+
+message ReviewListResponse{
+    int32 code = 1;
+    string message = 2;
+    ReviewList data = 3;
+    message ReviewList{
+        repeated Review review_list = 1 [json_name = "review_list"];
+    }
+}
+
+message CategoryListResponse{
+    int32 code = 1;
+    string message = 2;
+    CategoryList data = 3;
+    message CategoryList{
+        repeated string category_list = 1 [json_name = "category_list"];
+    }
+}
+
+message GameSimpleListResponse{
+    int32 code = 1;
+    string message = 2;
+    GameSimpleList data = 3;
+    message GameSimpleList{
+        repeated GameSimple game_list = 1 [json_name = "game_list"];
+    }
+}
+
+message GameDetailResponse{
+    int32 code = 1;
+    string message = 2;
+    Game data = 3;
+    message Game{
+        GameDetail game = 1;
+    }
+}
+
+message IsSuccessResponse{
+    int32 code = 1;
+    string message = 2;
+    Success data = 3;
+    message Success{
+        bool success = 1;
+    }
+}
+
+
+message Review{
+    int32 id = 1;
+    int32 user_id = 2 [json_name = "user_id"];
+    string displayed_name = 3 [json_name = "displayed_name"];
+    string content = 4;
+    int32 recommendation = 5;
+    google.protobuf.Timestamp created_at = 6 [json_name = "created_at"];
+    google.protobuf.Timestamp updated_at = 7 [json_name = "updated_at"];
+}
+
+message GameDetail{
+    int32 id = 1;
+    string name = 2;
+    string description_snippet = 3 [json_name = "description_snippet"];
+    int32 price = 4;
+    int32 sale = 5;
+    ContentsPath image = 6;
+    ContentsPath video = 7;
+    repeated string category_list = 8 [json_name = "category_list"];
+    repeated string os_list = 9 [json_name = "os_list"];
+    int32 download_count = 10 [json_name = "download_count"];
+    string description = 11;
+    Publisher publisher = 12;
+    int32 review_count = 13 [json_name = "review_count"];
+    int32 recommend_count = 14 [json_name = "recommend_count"];
+    repeated string language = 15;
+    //SystemRequirements system_least = 14 [json_name = "system_least"];
+    //SystemRequirements system_recommend = 15 [json_name = "system_recommend"];
+}
+
+message Publisher{ 
+    int32 id = 1;
+    string name = 2;
+}
+
+message SystemRequirements{
+    string os = 1;
+    string processor= 2;
+    string memory= 3;
+    string graphics = 4;
+    string storage = 7;
+    string additional_notes= 9 [json_name = "additional_notes"];
+}
+
+// 간단한 게임 정보를 나타내는 message
+message GameSimple {
+    int32 id = 1;
+    string name = 2;
+    string description_snippet = 3 [json_name = "description_snippet"];
+    int32 price = 4;
+    int32 sale = 5;
+    ContentsPath image = 6;
+    ContentsPath video = 7;
+    repeated string category_list = 8 [json_name = "category_list"];
+    repeated string os_list = 9 [json_name = "os_list"];
+    int32 download_count = 10 [json_name = "download_count"];
+}
+
+
+// 미디어 컨텐츠를 Response 해야할 때.
+message ContentsPath{
+    string main = 1;
+    repeated string sub = 2;
+}
+
+
+//Request Parameter에 사용되는 message
+
+// Client 측에서 하나의 카테고리를 Request 받을 때. 
+message GameIdQueryParamRequest{
+    int32 game_id = 1;
+}
+
+message SortingParamRequest{
+    string category=1;
+    int32 page = 2;
+    int32 size = 3;
+    string sort = 4;
+}
+
+message ReviewQueryRequest{
+    int32 review_id = 1 [json_name = "review_id"];
+    int32 game_id = 2 [json_name = "game_id"];
+    string content = 3;
+    int32 recommendation = 4;
+}
