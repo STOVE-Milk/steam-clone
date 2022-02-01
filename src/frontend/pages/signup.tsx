@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import AuthInput from 'components/molecules/AuthInput';
 import Text from 'components/atoms/Text';
@@ -49,20 +50,23 @@ const signup: NextPage<IState> = () => {
   const [errors, setErrors] = useState({} as Record<any, string>);
   const [overallWarning, setOverallWarning] = useState(['']);
 
-  // const { signupResult } = useSelector((state: IState) => state.user);
+  const { doSignup } = useSelector((state: IState) => {
+    console.log(state.user);
+    return state.user;
+  });
   // const dispatch = useDispatch();
 
-  // // useEffect(() => {
+  // useEffect(() => {
   // const doSignUp = (inputs: any) => {
   //   dispatch(
   //     doSignup.request({
   //       ...inputs,
   //     }),
   //   );
-  //   console.log(signupResult);
+  //   console.log(doSignup);
   // };
 
-  // }, [signupResult.data]);
+  // }, [doSignup.data]);
 
   const checkEmail = (email: string) => {
     if (email.length === 0) {

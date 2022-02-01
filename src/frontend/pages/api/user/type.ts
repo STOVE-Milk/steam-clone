@@ -6,7 +6,9 @@ export interface IDoSignupReqType {
   language: string;
   country: string;
 }
-
+export interface ICheckEmailReqtype {
+  email: string;
+}
 export interface IResType {
   code: number;
   message: string;
