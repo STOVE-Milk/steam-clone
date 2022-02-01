@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
+
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import AuthInput from 'components/molecules/AuthInput';
@@ -10,6 +11,10 @@ import { countryOption, languageOption, validateEmail, validatePassWord } from '
 
 import { IState } from 'modules';
 import { doSignup } from 'modules/user';
+
+import { axiosClient } from 'pages/api/axiosClient';
+import { IDoSignupReqType, IResType } from 'pages/api/user/type';
+import { checkEmailAPI } from 'pages/api/user/api';
 
 const SignUpFormWrapper = styled.div`
   width: 40rem;
@@ -36,6 +41,14 @@ const WarningMsg = styled(Text)`
   margin-top: 0.5rem;
   color: ${(props) => props.theme.colors.wish};
 `;
+interface IInputType {
+  email: string;
+  password: string;
+  username: string;
+  nickname: string;
+  language: string;
+  country: string;
+}
 
 const signup: NextPage<IState> = () => {
   const [inputs, setInputs] = useState({
@@ -54,6 +67,22 @@ const signup: NextPage<IState> = () => {
     console.log(state.user);
     return state.user;
   });
+  const tmpCheck = async (type: string) => {
+    switch (type) {
+      case 'email': {
+        const res = await checkEmailAPI({ email: inputs.email });
+        alert(res.message);
+      }
+      case 'nickname': {
+        alert('nickname zone');
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   checkEmailAPI
+  // },[])
+
   // const dispatch = useDispatch();
 
   // useEffect(() => {
@@ -117,7 +146,7 @@ const signup: NextPage<IState> = () => {
         type="email"
         placeholder="EMAIL"
         name="email"
-        checkValidation={true}
+        checkValidation={() => tmpCheck('email')}
         warningMsg={errors.email}
         onChange={(e: any) => onChangeSetInfo(e)}
       />
@@ -134,7 +163,7 @@ const signup: NextPage<IState> = () => {
         title="NICK NAME"
         type="text"
         placeholder="NICK NAME"
-        checkValidation={true}
+        checkValidation={() => tmpCheck('nickname')}
         name="nickname"
         onChange={onChangeSetInfo}
       />

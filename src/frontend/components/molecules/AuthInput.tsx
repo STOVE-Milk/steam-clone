@@ -8,7 +8,7 @@ export interface IAuthInputProps {
   type: 'email' | 'password' | 'text';
   placeholder?: string;
   onChange?: React.ChangeEventHandler;
-  checkValidation?: boolean;
+  checkValidation?: (e: any) => void;
   warningMsg?: string;
 }
 const InputTitleText = styled(Text)`
@@ -52,7 +52,11 @@ export default function AuthInput({
       <InputTitleText>{title}</InputTitleText>
       <InputBoxWrapper>
         <InputBox name={name} type={type} placeholder={placeholder} onChange={onChange} />
-        {checkValidation && <ValidateBtnStyle types="primary">중복확인</ValidateBtnStyle>}
+        {checkValidation && (
+          <ValidateBtnStyle types="primary" onClick={checkValidation}>
+            중복확인
+          </ValidateBtnStyle>
+        )}
       </InputBoxWrapper>
       <WarningMsg>{warningMsg}</WarningMsg>
     </InputWrapper>
