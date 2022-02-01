@@ -3,9 +3,7 @@ import { axiosClient } from '../axiosClient';
 import { IDoSignupReqType, IResType, ICheckEmailReqType } from './type';
 
 export async function doSignupAPI(param: IDoSignupReqType) {
-  const response = await axiosClient.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/signup}`, {
-    param,
-  });
+  const response = await axiosClient.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/signup}`, param);
   return response.data;
 }
 
