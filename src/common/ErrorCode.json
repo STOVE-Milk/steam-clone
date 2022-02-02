@@ -138,8 +138,8 @@
         "developer" : "한태현",
         "developer_id": 7,
         "server_id": 5,
-        "success_code": 75000,
-        "VALIDATION_FAILED": {
+        "success_code": 10000,
+        "": {
             "code": 75100,
             "message": "요청 데이터가 유효하지 않습니다.",
             "description": "Path Variable 혹은 Request Body 데이터의 검증 실패 에러"
@@ -180,6 +180,43 @@
             "code": 75999,
             "message": "예상하지 못한 문제가 발생했습니다. 관리자에게 문의해주세요",
             "description": ""
+        }
+    },
+    
+     "auth": {
+        "developer": "민지호",
+        "developer_id": 1,
+        "server_id": 0,
+        "description": "인증 서버 성공/실패 응답",
+        "EXISTED_EMAIL": {
+            "status_code": 10100,
+            "message": "Existed Email",
+            "description": "이미 존재하는 이메일입니다."
+        },
+        "EXISTED_NICKNAME": {
+            "status_code": 10101,
+            "message": "Existed Nickname",
+            "description": "이미 존재하는 닉네임입니다."
+        },
+        "NOT_EXITED_USER": {
+            "status_code": 10102,
+            "message": "Not Existed User",
+            "description": "유저가 존재하지 않습니다."
+        },
+        "PASSWORD_ERROR": {
+            "status_code": 10103,
+            "message": "Password Error",
+            "description": "비밀번호가 일치하지 않습니다."
+        },
+        "REFRESH_TOKEN_ERROR": {
+            "status_code": 10104,
+            "message": "RefreshToken Error",
+            "description": "refreshToken이 유효하지 않습니다. 다시 로그인해주세요."
+        },
+        "ACCESS_TOKEN_ERROR": {
+            "status_code": 10105,
+            "message": "AccessToken Error",
+            "description": "잘못된 accessToken 입니다."
         }
     }
 }
