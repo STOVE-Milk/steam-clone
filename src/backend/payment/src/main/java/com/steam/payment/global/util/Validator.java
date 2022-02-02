@@ -6,18 +6,20 @@ import com.steam.payment.entity.User;
 import com.steam.payment.global.error.CustomException;
 import com.steam.payment.global.error.ErrorCode;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Validator {
     //List<GameDto>
     public static boolean validGamePrice(final List<GameDto> gameEntityData, final List<GameDto> gameRequestData) {
-        List<GameDto> sortedGames = gameRequestData.stream()
-                .sorted(Comparator.comparingInt(GameDto::getId))
-                .collect(Collectors.toList());
+        List<GameDto> sortedGames = new ArrayList<>();
+        if(gameRequestData.size() > 1) {
+            sortedGames = gameRequestData.stream()
+                    .sorted(Comparator.comparingInt(GameDto::getId))
+                    .collect(Collectors.toList());
+        } else {
+            sortedGames = gameRequestData;
+        }
 
         for(int i = 0; i < gameEntityData.size(); i++) {
             GameDto game1 = gameEntityData.get(i);

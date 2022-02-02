@@ -20,12 +20,12 @@ public class PurchaseLog {
     private String status;
     private Date createdAt;
 
-    public static PurchaseLog of(User user, List<GameDto> games, Double totalPrice) {
+    public static PurchaseLog of(Double userMoney, List<GameDto> games, Double totalPrice) {
         return PurchaseLog.builder()
                 .method("money")
                 .totalPrice(totalPrice)
-                .beforeMoney(user.getMoney())
-                .afterMoney(user.getMoney())
+                .beforeMoney(userMoney)
+                .afterMoney(userMoney)
                 .games(games)
                 .status("READY")
                 .createdAt(new Date())
