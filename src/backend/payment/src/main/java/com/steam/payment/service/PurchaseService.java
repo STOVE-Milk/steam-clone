@@ -66,7 +66,7 @@ public class PurchaseService {
 
         PurchaseLogDocument purchaseLogDocument = purchaseLogDocumentRepository.findById(user.getIdx().toString())
                         .orElseGet(() -> PurchaseLogDocument.newUser(user.getIdx()));
-        purchaseLogDocument.getPurchaseLogs().add(PurchaseLog.of(user, gameDatas, totalPrice));
+        purchaseLogDocument.addLog(PurchaseLog.of(user.getMoney(), gameDatas, totalPrice));
         purchaseLogDocumentRepository.save(purchaseLogDocument);
 
         purchase(user, publisherAccounts, gameDatas, totalPrice);
