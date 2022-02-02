@@ -2,6 +2,7 @@ package com.steam.membership.repository;
 
 import com.steam.membership.entity.Friend;
 import com.steam.membership.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,9 +15,15 @@ import java.util.Optional;
 @Repository
 public interface FriendRepository extends JpaRepository<Friend, Map<Integer, Integer>> {
     @Query("SELECT f FROM Friend f WHERE (f.user.idx = :userId AND f.friend.idx = :friendId) OR (f.user.idx = :friendId AND f.user.idx = :userId)")
-    public List<Friend> findFriendsByUserIdAndFriendId(@Param("userId") Integer userId, @Param("friendId") Integer friendId);
+    List<Friend> findFriendsByUserIdAndFriendId(@Param("userId") Integer userId, @Param("friendId") Integer friendId);
+    @Query(value = "SELECT * FROM steam.friend f1 " +
+            "INNER JOIN steam.friend f2 " +
+            "ON (f1.friend_id = f2.friend_id AND f2.user_id = 3) " +
+            "WHERE (f1.user_id = 1)", nativeQuery = true)
+    List<Friend> findFriendsTop20ByUserId(@Param("myId") Integer myId, @Param("userId") Integer userId, Pageable limit);
 
-    public Optional<Friend> findByUserAndFriend(User user, User friend);
-    public List<Friend> findTop20ByUser(User user);
-    public List<Friend> findAllByUser(User user);
+    Optional<Friend> findByUserAndFriend(User user, User friend);
+    List<Friend> findTop20ByUser(User user);
+    List<Friend> findAllByUser(User user);
+
 }

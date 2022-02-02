@@ -1,5 +1,6 @@
 package com.steam.membership.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.steam.membership.dto.FriendRequestResponse;
 import com.steam.membership.dto.FriendsResponse;
 import com.steam.membership.dto.UserDto;
@@ -11,10 +12,13 @@ import com.steam.membership.global.common.EmptyData;
 import com.steam.membership.global.common.UserContext;
 import com.steam.membership.global.error.CustomException;
 import com.steam.membership.global.error.ErrorCode;
+import com.steam.membership.global.util.JsonUtil;
 import com.steam.membership.repository.FriendRepository;
 import com.steam.membership.repository.FriendRequestRepository;
 import com.steam.membership.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -45,21 +49,23 @@ public class FriendService {
     }
 
     public Body<Object> getFriendListRelatedMe(Integer userId) {
-        final List<Friend> myFriends = friendRepository.findAllByUser(UserContext.getUser());
-        final List<User> usersFriends = friendRepository.findAllByUser(UserContext.getUser()).stream()
-                .map(Friend::getFriend)
-                .collect(Collectors.toList());
-
-        if(myFriends.isEmpty() || usersFriends.isEmpty())
+        final List<Friend> sameFriends = friendRepository.findFriendsTop20ByUserId(
+                UserContext.getUserId(),
+                userId,
+                PageRequest.ofSize(20)
+        );
+//
+        if(sameFriends.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
-        List<UserDto> sameFriends = myFriends.stream()
+        // 현재 하나씩 불러오게 됨
+        // Id List를 뽑아 한꺼번에 SELECT 하도록 or 처음부터 join해서 가져오기
+        List<UserDto> userDatas = sameFriends.stream()
                 .map(Friend::getFriend)
-                .filter(usersFriends::contains)
                 .map(UserDto::of)
                 .collect(Collectors.toList());
 
-        return Body.success(FriendsResponse.builder().friends(sameFriends).build());
+        return Body.success(FriendsResponse.builder().friends(userDatas).build());
     }
 
     @Transactional
@@ -95,7 +101,7 @@ public class FriendService {
         final Integer userId = UserContext.getUserId();
         final List<Friend> friend = friendRepository.findFriendsByUserIdAndFriendId(userId, friendId);
 
-        if(friend == null)
+        if(friend.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
         friendRepository.deleteAll(friend);
