@@ -1,6 +1,10 @@
 export interface ICheckEmailReqType {
   email: string;
 }
+export interface IDoLogInReqType {
+  email: string;
+  password: string;
+}
 export interface IDoSignupReqType {
   email: string;
   password: string;

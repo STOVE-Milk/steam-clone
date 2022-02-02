@@ -12,7 +12,6 @@ import { countryOption, languageOption, validateEmail, validatePassWord } from '
 import { IState } from 'modules';
 import { doSignup } from 'modules/user';
 import { checkEmailAPI } from 'pages/api/user/api';
-import mitt from 'next/dist/shared/lib/mitt';
 
 const SignUpFormWrapper = styled.div`
   width: 40rem;
@@ -106,6 +105,7 @@ const signup: NextPage<IState> = () => {
   };
 
   const checkAllnSubmit = () => {
+    // alert비동기처리
     let nullChecker = true; //다 채워짐
     Object.values(inputs).forEach((each) => {
       each.length == 0 && (nullChecker = false);
