@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { axiosClient } from 'pages/api/axiosClient';
 import {
   IGetCategoriesReqType,
   IGetGameReqType,
@@ -10,7 +11,7 @@ import {
 } from './type';
 
 export async function getCategoriesAPI(param: IGetCategoriesReqType) {
-  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/categories`);
+  const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/categories`);
   // const response = await axios.get<IGetCategoriesResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/categories`, {
   //   params: {},
   // });

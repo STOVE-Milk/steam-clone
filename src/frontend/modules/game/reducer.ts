@@ -24,7 +24,7 @@ const initialState: gameState = {
 const reducer = createReducer<gameState>(initialState, {
   [GET_CATEGORIES]: (state, action) => ({
     ...state,
-    categories: asyncState.load(action.payload),
+    categories: asyncState.load(initalCategory),
   }),
   [GET_CATEGORIES_SUCCESS]: (state, action) => ({
     ...state,
@@ -48,15 +48,15 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_GAMESBYCATEGORY]: (state, action) => ({
     ...state,
-    gamesByCategory: asyncState.load(action.payload),
+    gamesByCategory: asyncState.load(initalGamesByCategory),
   }),
   [GET_GAMESBYCATEGORY_SUCCESS]: (state, action) => ({
     ...state,
-    gamesByCategory: asyncState.success(action.payload),
+    gamesByCategory: asyncState.success(action.payload.data.game_list),
   }),
   [GET_GAMESBYCATEGORY_FAIL]: (state, action) => ({
     ...state,
-    gamesByCategory: asyncState.error(initalGamesByCategory, action.payload),
+    gamesByCategory: asyncState.error(initalGamesByCategory, action.payload.data.game_list),
   }),
 });
 
