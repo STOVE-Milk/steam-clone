@@ -204,8 +204,13 @@ const Detail: NextPage<IState> = () => {
     setReviews(res);
   };
 
-  const addReview = async (id: number) => {
-    const res = (await addReviewAPI({ id: id, content: '', recommendation: false })).data.success;
+  const [userReview, setUserReview] = useState({ content: '', recommendation: true });
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUserReview({ ...userReview, content: e.target.value });
+  };
+  const addReview = async () => {
+    // id: game.data.id
+    const res = (await addReviewAPI({ id: 1, content: '', recommendation: false })).data.success;
     console.log(res);
   };
 
@@ -298,6 +303,17 @@ const Detail: NextPage<IState> = () => {
       </GameDetailSection>
       <ReviewSection>
         <ReviewTitle types="large">사용자 리뷰</ReviewTitle>
+        <GameReview
+          isMine={false}
+          name={'username'}
+          time={'1시'}
+          text={'abc'}
+          recommendation={true}
+          isEdited={true}
+          userReview={userReview}
+          onChange={onChange}
+          addReview={addReview}
+        ></GameReview>
         {reviews.map((review: IResReview) => {
           return (
             // isMine: 로그인했을 때 내 리뷰면 true, 아니면 false
@@ -307,6 +323,7 @@ const Detail: NextPage<IState> = () => {
               time={'1시'}
               text={review.content}
               recommendation={review.recommendation}
+              isEdited={false}
             ></GameReview>
           );
         })}
