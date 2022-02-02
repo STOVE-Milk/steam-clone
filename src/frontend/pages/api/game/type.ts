@@ -17,3 +17,9 @@ export interface IGetGamesByCategoryReqType {
 export interface IGetReviewReqType {
   id: number;
 }
+
+export interface IAddReviewReqType {
+  id: number;
+  content: string;
+  recommendation: boolean;
+}

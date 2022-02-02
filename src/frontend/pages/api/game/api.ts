@@ -5,6 +5,7 @@ import {
   IResType,
   IGetGamesByCategoryReqType,
   IGetReviewReqType,
+  IAddReviewReqType,
 } from './type';
 
 export async function getCategoriesAPI(param: IGetCategoriesReqType) {
@@ -31,6 +32,17 @@ export async function getGameAPI(param: IGetGameReqType) {
 
 export async function getReviewAPI(param: IGetReviewReqType) {
   const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/games/${param.id}/reviews`);
+
+  return response.data;
+}
+
+export async function addReviewAPI(param: IAddReviewReqType) {
+  const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/games/${param.id}/reviews`, {
+    params: {
+      content: param.content,
+      recommendation: param.recommendation,
+    },
+  });
 
   return response.data;
 }

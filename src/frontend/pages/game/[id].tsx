@@ -10,7 +10,7 @@ import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawes
 
 import { getGame } from 'modules/game';
 import { IState } from 'modules';
-import { getReviewAPI } from 'pages/api/game/api';
+import { getReviewAPI, addReviewAPI } from 'pages/api/game/api';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
@@ -202,6 +202,11 @@ const Detail: NextPage<IState> = () => {
     const res = (await getReviewAPI({ id: id })).data.review_list;
     console.log(res);
     setReviews(res);
+  };
+
+  const addReview = async (id: number) => {
+    const res = (await addReviewAPI({ id: id, content: '', recommendation: false })).data.success;
+    console.log(res);
   };
 
   useEffect(() => {
