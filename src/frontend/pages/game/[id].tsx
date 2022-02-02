@@ -208,6 +208,9 @@ const Detail: NextPage<IState> = () => {
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserReview({ ...userReview, content: e.target.value });
   };
+  const setRecommend = (r: boolean) => {
+    setUserReview({ ...userReview, recommendation: r });
+  };
 
   const addReview = async () => {
     // id: game.data.id
@@ -316,21 +319,27 @@ const Detail: NextPage<IState> = () => {
           time={'1시'}
           text={'abc'}
           recommendation={true}
-          isEdited={true}
+          isFirst={true}
           userReview={userReview}
           onChange={onChange}
           addReview={addReview}
+          setRecommend={setRecommend}
         ></GameReview>
         {reviews.map((review: IResReview) => {
           return (
             // isMine: 로그인했을 때 내 리뷰면 true, 아니면 false
             <GameReview
+              reviewId={review.id}
               isMine={true}
               name={review.displayed_name}
               time={'1시'}
               text={review.content}
               recommendation={review.recommendation}
-              isEdited={false}
+              isFirst={false}
+              userReview={userReview}
+              onChange={onChange}
+              modifyReview={modifyReview}
+              setRecommend={setRecommend}
             ></GameReview>
           );
         })}
