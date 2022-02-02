@@ -23,3 +23,10 @@ export interface IAddReviewReqType {
   content: string;
   recommendation: boolean;
 }
+
+export interface IModifyReviewReqType {
+  id: number;
+  reviewId: number;
+  content: string;
+  recommendation: boolean;
+}

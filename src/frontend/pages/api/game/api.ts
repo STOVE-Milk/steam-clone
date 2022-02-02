@@ -6,6 +6,7 @@ import {
   IGetGamesByCategoryReqType,
   IGetReviewReqType,
   IAddReviewReqType,
+  IModifyReviewReqType,
 } from './type';
 
 export async function getCategoriesAPI(param: IGetCategoriesReqType) {
@@ -43,6 +44,21 @@ export async function addReviewAPI(param: IAddReviewReqType) {
       recommendation: param.recommendation,
     },
   });
+
+  return response.data;
+}
+
+export async function modifyReviewAPI(param: IModifyReviewReqType) {
+  const response = await axios.patch<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/store/games/${param.id}/reviews/${param.reviewId}`,
+    {
+      params: {
+        review_id: param.reviewId,
+        content: param.content,
+        recommendation: param.recommendation,
+      },
+    },
+  );
 
   return response.data;
 }

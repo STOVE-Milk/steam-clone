@@ -10,7 +10,7 @@ import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawes
 
 import { getGame } from 'modules/game';
 import { IState } from 'modules';
-import { getReviewAPI, addReviewAPI } from 'pages/api/game/api';
+import { getReviewAPI, addReviewAPI, modifyReviewAPI } from 'pages/api/game/api';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
@@ -208,9 +208,16 @@ const Detail: NextPage<IState> = () => {
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserReview({ ...userReview, content: e.target.value });
   };
+
   const addReview = async () => {
     // id: game.data.id
     const res = (await addReviewAPI({ id: 1, content: '', recommendation: false })).data.success;
+    console.log(res);
+  };
+
+  const modifyReview = async (id: number) => {
+    // id: game.data.id
+    const res = (await modifyReviewAPI({ id: 1, reviewId: id, content: '', recommendation: false })).data.success;
     console.log(res);
   };
 
