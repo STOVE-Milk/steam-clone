@@ -19,8 +19,6 @@ spring:
         use_sql_comments: true
         globally_quoted_identifiers: true
   redis:
-    username: fortice
-    password: redis6379
     port: 6379
     host: 54.180.117.120
     lettuce:
@@ -35,9 +33,9 @@ spring:
       password: milk
 logging:
   file:
-    path: ~/payment_log
+    path: /home/ubuntu/payment_log
     max-size: 10MB
     max-history: 10
   level:
     root: info
-    com.steam.paymen: debug
+    com.steam.payment: debug

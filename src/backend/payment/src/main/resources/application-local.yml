@@ -18,8 +18,6 @@ spring:
         use_sql_comments: true
         globally_quoted_identifiers: true
   redis:
-    username: fortice
-    password: redis6379
     port: 6379
     host: 54.180.117.120
     lettuce:

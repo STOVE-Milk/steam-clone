@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CustomExceptionHandler {
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<Body<Object>> handleCustomException(CustomException e) {
-        e.printStackTrace();
+        //e.printStackTrace();
         return ResponseEntity.ok(
                 Body.error(e.getErrorCode())
         );
