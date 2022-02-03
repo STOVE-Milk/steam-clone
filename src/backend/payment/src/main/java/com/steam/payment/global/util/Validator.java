@@ -35,7 +35,7 @@ public class Validator {
         System.out.println("게임 총 가격 : " + totalPrice);
         System.out.println("유저 잔액 : " + user.getMoney());
         if(user.getMoney() < totalPrice)
-            throw new CustomException(ErrorCode.GAME_PRICE_ACCUMULATE_FAILED);
+            throw new CustomException(ErrorCode.USER_MONEY_NOT_ENOUGH);
         return totalPrice;
     }
 }
