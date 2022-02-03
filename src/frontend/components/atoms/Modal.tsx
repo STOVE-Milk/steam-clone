@@ -4,22 +4,24 @@ import styled, { css } from 'styled-components';
 
 export type ModalProps = {
   show: boolean;
-  onClose: Function;
+  onClose: () => void;
   title?: string;
   children: React.ReactChild;
 };
 
-const StyledModalBody = styled.div`
-  padding-top: 10px;
-`;
-
-const StyledModalHeader = styled.div`
+const ModalOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
-  justify-content: flex-end;
-  font-size: 25px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
 `;
 
-const StyledModal = styled.div<{ show: boolean }>`
+const ModalWrapper = styled.div<{ show: boolean }>`
   background: white;
   width: 500px;
   height: 600px;
@@ -38,11 +40,11 @@ const StyledModal = styled.div<{ show: boolean }>`
   @keyframes popInFromBottom {
     0% {
       opacity: 0;
-      transform: translateY(400px) scale(0.75);
+      transform: translateY(50%) scale(0.75);
     }
     75% {
       opacity: 1;
-      transform: translateY(-16px) scale(1);
+      transform: translateY(-10%) scale(1);
     }
     100% {
       opacity: 1;
@@ -56,21 +58,19 @@ const StyledModal = styled.div<{ show: boolean }>`
     }
     100% {
       opacity: 0;
-      transform: translateY(400px) scale(0.75);
+      transform: translateY(50%) scale(0.75);
     }
   }
 `;
 
-const StyledModalOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+const ModalHeader = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: flex-end;
+  font-size: 25px;
+`;
+
+const ModalBody = styled.div`
+  padding-top: 10px;
 `;
 
 export default function Modal(props: ModalProps) {
@@ -103,23 +103,23 @@ export default function Modal(props: ModalProps) {
     };
   }, []);
 
-  const handleCloseClick = (e) => {
+  const handleCloseClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     props.onClose();
   };
 
   const modalContent = props.show ? (
-    <StyledModalOverlay>
-      <StyledModal show={props.show}>
-        <StyledModalHeader>
+    <ModalOverlay>
+      <ModalWrapper show={props.show}>
+        <ModalHeader>
           <a href="#" onClick={handleCloseClick}>
             x
           </a>
-        </StyledModalHeader>
+        </ModalHeader>
         {props.title && <div>{props.title}</div>}
-        <StyledModalBody>{props.children}</StyledModalBody>
-      </StyledModal>
-    </StyledModalOverlay>
+        <ModalBody>{props.children}</ModalBody>
+      </ModalWrapper>
+    </ModalOverlay>
   ) : null;
 
   if (props.show && isBrowser) {
