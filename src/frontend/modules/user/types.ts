@@ -17,7 +17,7 @@ export interface IChargeInfo {
 export interface userState {
   giftCardList: AsyncState<IGiftcard[], Error>;
   charge: AsyncState<IChargeInfo, Error>;
-  approvalCharge: AsyncState<null, Error>;
+  approvalCharge: AsyncState<{}, Error>;
 }
 
 export type userAction = ActionType<typeof actions>;

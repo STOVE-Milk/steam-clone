@@ -19,7 +19,7 @@ const doApprovalChargeSaga = createAsyncSaga(doApprovalCharge, doApprovalChargeA
 export function* userSaga() {
   yield takeLatest(GET_GIFTCARDLIST, getCategoriesSaga);
   yield takeLatest(DO_CHARGE, doChargeSaga);
-  yield takeLatest(DO_APPROVAL_CHARGE, doChargeSaga);
+  yield takeLatest(DO_APPROVAL_CHARGE, doApprovalChargeSaga);
 }
 
 export { userSaga as default };
