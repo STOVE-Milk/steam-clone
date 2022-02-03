@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 
 import Modal from 'components/atoms/Modal';
-import CardModal from 'components/molecules/CardModal';
-import Portal from 'components/atoms/Portal';
 
 const ModalPage = () => {
   const [showModal, setShowModal] = useState(false);

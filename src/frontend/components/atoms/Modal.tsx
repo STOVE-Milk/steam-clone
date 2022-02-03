@@ -19,12 +19,46 @@ const StyledModalHeader = styled.div`
   font-size: 25px;
 `;
 
-const StyledModal = styled.div`
+const StyledModal = styled.div<{ show: boolean }>`
   background: white;
   width: 500px;
   height: 600px;
   border-radius: 15px;
   padding: 15px;
+
+  ${(props) =>
+    props.show
+      ? css`
+          animation: popInFromBottom 0.4s forwards ease-in-out;
+        `
+      : css`
+          animation: popOutToBottom 0.4s forwards ease-in-out;
+        `}
+
+  @keyframes popInFromBottom {
+    0% {
+      opacity: 0;
+      transform: translateY(400px) scale(0.75);
+    }
+    75% {
+      opacity: 1;
+      transform: translateY(-16px) scale(1);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+  }
+  @keyframes popOutToBottom {
+    0% {
+      opacity: 1;
+      transform: translateY(0px) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(400px) scale(0.75);
+    }
+  }
 `;
 
 const StyledModalOverlay = styled.div`
@@ -43,7 +77,30 @@ export default function Modal(props: ModalProps) {
   const [isBrowser, setIsBrowser] = useState(false);
 
   useEffect(() => {
+    document.body.style.overflowY = props.show ? 'hidden' : 'initial';
+
+    let timeoutId: any;
+
+    if (props.show) {
+      setIsBrowser(true);
+    } else {
+      timeoutId = setTimeout(() => {
+        setIsBrowser(false);
+      }, 5000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [props.show]);
+
+  useEffect(() => {
     setIsBrowser(true);
+
+    return () => {
+      document.body.style.overflowY = 'initial';
+    };
   }, []);
 
   const handleCloseClick = (e) => {
@@ -53,7 +110,7 @@ export default function Modal(props: ModalProps) {
 
   const modalContent = props.show ? (
     <StyledModalOverlay>
-      <StyledModal>
+      <StyledModal show={props.show}>
         <StyledModalHeader>
           <a href="#" onClick={handleCloseClick}>
             x
@@ -65,7 +122,7 @@ export default function Modal(props: ModalProps) {
     </StyledModalOverlay>
   ) : null;
 
-  if (isBrowser) {
+  if (props.show && isBrowser) {
     return ReactDOM.createPortal(modalContent, document.getElementById('portal')!!);
   } else {
     return null;
