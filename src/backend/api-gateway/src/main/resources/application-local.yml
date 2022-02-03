@@ -12,8 +12,8 @@ spring:
         - name: GlobalFilter
           args:
             baseMessage: Spring Cloud Gateway GlobalFilter
-            preLogger: false
-            postLogger: false
+            preLogger: true
+            postLogger: true
       routes:
         - id: auth-svc
           uri: http://localhost:8081/
