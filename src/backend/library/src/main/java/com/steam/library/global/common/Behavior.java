@@ -5,7 +5,9 @@ import lombok.Getter;
 
 public enum Behavior {
     ENTER(10),
-    MOVE(20);
+    MOVE(20),
+    BUILD(40)
+    ;
 
     private final int value;
     Behavior(int value) { this.value = value; }

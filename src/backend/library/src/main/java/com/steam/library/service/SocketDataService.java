@@ -55,6 +55,7 @@ public class SocketDataService {
             mapDto.getGames().forEach((key, value) -> games.add(key));
             return Room.builder()
                     .roomId(Integer.parseInt(roomId))
+                    .sessions(new ArrayList<>())
                     .gameList(games)
                     .userList(new ArrayList<>())
                     .users(new HashMap<>())
@@ -63,4 +64,14 @@ public class SocketDataService {
         }
     }
 
+    public boolean saveRoomData(Room room) {
+        try {
+            RoomHash roomHash = room.toHash();
+            roomHashRepository.save(roomHash);
+            return true;
+        } catch (RuntimeException e) {
+            log.debug("Room data 캐싱 실패 " + e.getMessage());
+            return false;
+        }
+    }
 }

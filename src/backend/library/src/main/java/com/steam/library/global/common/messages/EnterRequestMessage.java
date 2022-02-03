@@ -6,7 +6,7 @@ import lombok.*;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class EnterMessage {
+public class EnterRequestMessage {
     private String roomId;
     private String token;
 }
