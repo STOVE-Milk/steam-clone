@@ -71,7 +71,7 @@ public class PurchaseService {
 
         purchase(user, publisherAccounts, gameDatas, totalPrice);
 
-        purchaseLogDocument.getLastPurchaseLog().success(user.getMoney());
+        purchaseLogDocument.getLastPurchaseLog().success(totalPrice);
         purchaseLogDocumentRepository.save(purchaseLogDocument);
 
         return gameDatas;
