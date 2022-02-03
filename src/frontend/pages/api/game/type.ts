@@ -7,5 +7,9 @@ export interface IGetGameReqType {
 export interface IResType {
   code: number;
   message: string;
-  payload: any;
+  data: any;
+}
+
+export interface IGetGamesByCategoryReqType {
+  category: string;
 }

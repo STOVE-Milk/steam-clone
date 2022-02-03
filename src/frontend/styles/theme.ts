@@ -43,7 +43,7 @@ export const theme: DefaultTheme = {
     primaryText: '#ffffff',
     secondaryText: '#C7CED4',
 
-    divider: '#C7CED4',
+    divider: '#858c91',
 
     online: '#ADD1D4',
     offline: '',

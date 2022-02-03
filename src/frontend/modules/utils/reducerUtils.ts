@@ -24,18 +24,22 @@ export const asyncState = {
     data,
     error: null,
   }),
-  error: <T, E>(data: T, error: E): AsyncState<T, E> => ({
+  error: <T, E>(initialData: T, error: E): AsyncState<T, E> => ({
     loading: false,
-    data: data,
+    data: initialData,
     error: error,
   }),
 };
 
+export function transformToArray<AC extends AnyAsyncActionCreator>(asyncActionCreator: AC) {
+  const { request, success, failure } = asyncActionCreator;
+  return [request, success, failure];
+}
 type AnyAsyncActionCreator = AsyncActionCreatorBuilder<any, any, any>;
 
 export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extends keyof S>(
   asyncActionCreator: AC,
-  key: K,
+  key: string,
 ) {
   return (state: S, action: AnyAction) => {
     // 각 액션 생성함수의 type 을 추출해줍니다.
@@ -58,7 +62,7 @@ export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extend
       case failure:
         return {
           ...state,
-          [key]: asyncState.error(action.payload, action.payload),
+          [key]: asyncState.error(action.payload),
         };
       default:
         return state;
