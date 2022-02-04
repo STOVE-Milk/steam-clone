@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -33,6 +34,9 @@ var (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  4096,
 	WriteBufferSize: 4096,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 // Client represents the websocket client at the server
@@ -134,14 +138,6 @@ func (client *Client) disconnect() {
 
 // ServeWs handles websocket requests from clients requests.
 func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
-
-	name, ok := r.URL.Query()["name"]
-
-	if !ok || len(name[0]) < 1 {
-		log.Println("Url Param 'name' is missing")
-		return
-	}
-
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -149,7 +145,7 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 	}
 	var user models.User
 	for _, u := range wsServer.users {
-		if u.GetName() == name[0] {
+		if u.GetName() == "test" {
 			user = u
 			break
 		}
@@ -178,6 +174,8 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		if room := client.wsServer.findRoomByID(roomID); room != nil {
 			room.broadcast <- &message
 		}
+		fmt.Println(string(message.encode()))
+		client.wsServer.loggingChat(roomID, message.Sender.GetId(), message.Sender.GetName(), message.Message)
 
 	case JoinRoomAction:
 		client.handleJoinRoomMessage(message)
@@ -219,7 +217,12 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	}
 
 	// create unique room name combined to the two IDs
-	roomName := message.Message + client.ID
+	userA := message.Message
+	userB := client.ID
+	if userA > userB {
+		userA, userB = userB, userA
+	}
+	roomName := userA + "-" + userB
 
 	// Join room
 	joinedRoom := client.joinRoom(roomName, target)
@@ -278,11 +281,11 @@ func (client *Client) inviteTargetUser(target models.User, room *Room) {
 
 func (client *Client) notifyRoomJoined(room *Room, sender models.User) {
 	message := Message{
-		Action: RoomJoinedAction,
-		Target: room,
-		Sender: sender,
+		Action:  RoomJoinedAction,
+		Target:  room,
+		Message: string((&Message{Message: "이거 나와라"}).encode()),
+		Sender:  sender,
 	}
-
 	client.send <- message.encode()
 }
 

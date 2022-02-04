@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/config"
 	"github.com/STOVE-Milk/steam-clone/chat/models"
-	uuid "github.com/google/uuid"
 )
 
 const PubSubGeneralChannel = "general"
@@ -82,10 +83,13 @@ func (server *WsServer) publishClientJoined(client *Client) {
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
 		log.Println(err)
 	}
+	fmt.Println(message)
 }
 
 func (server *WsServer) publishClientLeft(client *Client) {
-
+	for k, _ := range server.clients {
+		fmt.Println(k)
+	}
 	message := &Message{
 		Action: UserLeftAction,
 		Sender: client,
@@ -130,7 +134,7 @@ func (server *WsServer) handleUserJoinPrivate(message Message) {
 func (server *WsServer) findUserByID(ID string) models.User {
 	var foundUser models.User
 	for _, client := range server.users {
-		if client.GetId() == ID {
+		if string(client.GetId()) == ID {
 			foundUser = client
 			break
 		}
@@ -140,18 +144,12 @@ func (server *WsServer) findUserByID(ID string) models.User {
 }
 func (server *WsServer) handleUserJoined(message Message) {
 	// Add the user to the slice
-	server.users = append(server.users, message.Sender)
 	server.broadcastToClients(message.encode())
 }
 
 func (server *WsServer) handleUserLeft(message Message) {
 	// Remove the user from the slice
-	for i, user := range server.users {
-		if user.GetId() == message.Sender.GetId() {
-			server.users[i] = server.users[len(server.users)-1]
-			server.users = server.users[:len(server.users)-1]
-		}
-	}
+
 	server.broadcastToClients(message.encode())
 }
 
@@ -195,7 +193,7 @@ func (server *WsServer) runRoomFromRepository(name string) *Room {
 	dbRoom := server.roomRepository.FindRoomByName(name)
 	if dbRoom != nil {
 		room = NewRoom(dbRoom.GetName(), dbRoom.GetPrivate())
-		room.ID, _ = uuid.Parse(dbRoom.GetId())
+		room.ID = dbRoom.GetId()
 
 		go room.RunRoom()
 		server.rooms[room] = true
@@ -235,4 +233,14 @@ func (server *WsServer) createRoom(name string, private bool) *Room {
 	server.rooms[room] = true
 
 	return room
+}
+
+func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content string) {
+	chatLogData := models.ChatLogData{
+		SenderId:       senderId,
+		SenderNickname: senderNickname,
+		Content:        content,
+		SendTime:       time.Now(),
+	}
+	server.roomRepository.LoggingChat(chatLogData, roomId)
 }

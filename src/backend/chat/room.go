@@ -12,8 +12,8 @@ const welcomeMessage = "%s joined the room"
 const goodbyeMessage = "%s leave the room"
 
 type Room struct {
-	ID         uuid.UUID `json:"id"`
-	Name       string    `json:"name"`
+	ID         string `json:"id"`
+	Name       string `json:"name"`
 	clients    map[*Client]bool
 	register   chan *Client
 	unregister chan *Client
@@ -24,7 +24,7 @@ type Room struct {
 // NewRoom creates a new Room
 func NewRoom(name string, private bool) *Room {
 	return &Room{
-		ID:         uuid.New(),
+		ID:         uuid.New().String(),
 		Name:       name,
 		clients:    make(map[*Client]bool),
 		register:   make(chan *Client),
@@ -48,6 +48,7 @@ func (room *Room) RunRoom() {
 			room.unregisterClientInRoom(client)
 
 		case message := <-room.broadcast:
+
 			room.publishRoomMessage(message.encode())
 		}
 
@@ -79,7 +80,6 @@ func (room *Room) broadcastToClientsInRoom(message []byte) {
 
 func (room *Room) publishRoomMessage(message []byte) {
 	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
-
 	if err != nil {
 		log.Println(err)
 	}
@@ -116,7 +116,7 @@ func (room *Room) notifyClientJoined(client *Client) {
 }
 
 func (room *Room) GetId() string {
-	return room.ID.String()
+	return room.ID
 }
 
 func (room *Room) GetName() string {

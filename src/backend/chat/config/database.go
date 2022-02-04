@@ -8,7 +8,7 @@ import (
 )
 
 func InitDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:12345678@tcp(127.0.0.1:3306)/test")
+	db, err := sql.Open("mysql", "milk:milk@tcp(54.180.117.120:3306)/steam")
 	if err != nil {
 		log.Fatal(err)
 	}

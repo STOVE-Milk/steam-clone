@@ -2,7 +2,7 @@ var app = new Vue({
   el: '#app',
   data: {
     ws: null,
-    serverUrl: "ws://" + "localhost:8080" + "/chat/ws",
+    serverUrl: "ws://"  + location.host +  "/ws",
     roomInput: null,
     rooms: [],
     user: {
@@ -21,7 +21,7 @@ var app = new Vue({
     },
     connectToWebsocket() {
       console.log(this.serverUrl)
-      this.ws = new WebSocket("ws://localhost:8080/chat/ws" + "?name=" + this.user.name);
+      this.ws = new WebSocket(this.serverUrl + "?name=" + this.user.name);
       this.ws.addEventListener('open', (event) => { this.onWebsocketOpen(event) });
       this.ws.addEventListener('message', (event) => { this.handleNewMessage(event) });
       this.ws.addEventListener('close', (event) => { this.onWebsocketClose(event) });
@@ -50,7 +50,7 @@ var app = new Vue({
     handleNewMessage(event) {
       let data = event.data;
       data = data.split(/\r?\n/);
-      
+      console.log("event : " + event.data)
       for (let i = 0; i < data.length; i++) {
         let msg = JSON.parse(data[i]);
         switch (msg.action) {
@@ -76,17 +76,23 @@ var app = new Vue({
       const room = this.findRoom(msg.target.id);
       if (typeof room !== "undefined") {
         room.messages.push(msg);
+
       }
     },
-    handleUserJoined(msg) {
-      this.users.push(msg.sender);
-    },
-    handleUserLeft(msg) {
+    handleUserJoined(msg) { //활동 상태 변경
+      a = false
       for (let i = 0; i < this.users.length; i++) {
-        if (this.users[i].id == msg.sender.id) {
-          this.users.splice(i, 1);
+        if (this.users[i].id === msg.sender.id) {
+          a = true
+          break;
         }
       }
+      if(a==false){
+        this.users.push(msg.sender);
+      }
+    },
+    handleUserLeft(msg) { // 활동 상태 변경
+
     },
     handleRoomJoined(msg) {
       room = msg.target;

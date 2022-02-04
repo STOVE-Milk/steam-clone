@@ -7,7 +7,6 @@ import (
 	"github.com/STOVE-Milk/steam-clone/chat/models"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -36,11 +35,11 @@ type RoomRepository struct {
 func (repo *RoomRepository) AddRoom(room models.Room) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	roomsInfo := models.RoomsMongo{
-		ID:        uuid.New(),
+		ID:        uuid.New().String(),
 		Name:      room.GetName(),
 		No:        1,
-		Private:   false,
-		Memebers:  []int32{},
+		Private:   room.GetPrivate(),
+		Memebers:  []string{},
 		Amount:    1,
 		CreatedAt: time.Now(),
 	}
@@ -48,28 +47,20 @@ func (repo *RoomRepository) AddRoom(room models.Room) {
 	chatCollection.InsertOne(context.TODO(), roomsInfo)
 }
 
+func (repo *RoomRepository) LoggingChat(chatLogData models.ChatLogData, roomId string) {
+	chatCollection := repo.Db.Database("chat").Collection("rooms")
+	updateFilter := bson.D{{"id", roomId}}
+	updateBson := bson.D{{"$push",
+		bson.D{{
+			"chat_log", chatLogData,
+		}},
+	}}
+	chatCollection.UpdateOne(context.TODO(), updateFilter, updateBson)
+}
+
 func (repo *RoomRepository) FindRoomByName(name string) models.Room {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	findFilter := bson.D{{"name", name}}
-	var roomB bson.M
-	chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomB)
-
-	if roomB == nil {
-		return nil
-	}
-	room := Room{
-		Id:      string(roomB["id"].(primitive.Binary).Data),
-		Name:    roomB["name"].(string),
-		Private: roomB["private"].(bool),
-	}
-
-	return &room
-}
-
-func (repo *RoomRepository) FindRoomById(id string) models.Room {
-
-	chatCollection := repo.Db.Database("chat").Collection("rooms")
-	findFilter := bson.D{{"id", id}}
 	var roomB bson.M
 	chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomB)
 
@@ -83,5 +74,4 @@ func (repo *RoomRepository) FindRoomById(id string) models.Room {
 	}
 
 	return &room
-
 }

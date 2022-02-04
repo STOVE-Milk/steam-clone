@@ -40,6 +40,7 @@ func (message *Message) UnmarshalJSON(data []byte) error {
 		Alias: (*Alias)(message),
 	}
 	if err := json.Unmarshal(data, &msg); err != nil {
+
 		return err
 	}
 	message.Sender = &msg.Sender
