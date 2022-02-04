@@ -47,29 +47,22 @@ public class PurchaseService {
         User user = userRepository.findById(UserContext.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        // 검증
         Validator.validGamePrice(gameDatas, request.getGames());
         Validator.validUserMoney(user, totalPrice);
-
-        List<Account> publisherAccounts = new ArrayList<>();
-        for(GameDto game : gameDatas) {
-            Account account = accountRepository.findByPublisherIdAndCountry(game.getPublisherId(), userCountry)
-                    .orElseGet(() -> Account.builder()
-                            .publisherId(game.getPublisherId())
-                            .money(0.0)
-                            .country(userCountry)
-                            .isValid(false)
-                            .build()
-                    );
-
-            publisherAccounts.add(account);
-        }
+        List<Integer> gameIds = gameDatas.stream()
+                .map(GameDto::getId)
+                .collect(Collectors.toList());
+        List<Library> libraries = libraryRepository.findAllById(gameIds);
+        if(!libraries.isEmpty())
+            throw new CustomException(ErrorCode.GAME_ALEADY_PURCHASED);
 
         PurchaseLogDocument purchaseLogDocument = purchaseLogDocumentRepository.findById(user.getIdx().toString())
                         .orElseGet(() -> PurchaseLogDocument.newUser(user.getIdx()));
         purchaseLogDocument.addLog(PurchaseLog.of(user.getMoney(), gameDatas, totalPrice));
         purchaseLogDocumentRepository.save(purchaseLogDocument);
 
-        purchase(user, publisherAccounts, gameDatas, totalPrice);
+        purchase(user, gameDatas, totalPrice, userCountry);
 
         purchaseLogDocument.getLastPurchaseLog().success(totalPrice);
         purchaseLogDocumentRepository.save(purchaseLogDocument);
@@ -77,19 +70,17 @@ public class PurchaseService {
         return gameDatas;
     }
 
-    protected void purchase(User user, List<Account> publisherAccounts, List<GameDto> games, Double totalPrice) {
+    protected void purchase(User user, List<GameDto> games, Double totalPrice, String userCountry) {
         List<Library> libraries = games.stream()
                 .map(game -> game.toLibraryEntity(user))
                 .collect(Collectors.toList());
-        for(int i = 0; i < games.size(); i++)
-            publisherAccounts.get(i).addMoney(games.get(i));
-        user.substractMoney(totalPrice);
-        try {
-            libraryRepository.saveAll(libraries);
-        } catch (DataIntegrityViolationException e) {
-            throw new CustomException(ErrorCode.GAME_ALEADY_PURCHASED);
+        for(GameDto game : games) {
+            Account account = accountRepository.findByPublisherIdAndCountry(game.getPublisherId(), userCountry).get();
+            account.addMoney(game.getSalePrice());
+            accountRepository.save(account);
         }
-        accountRepository.saveAll(publisherAccounts);
+        user.substractMoney(totalPrice);
+        libraryRepository.saveAll(libraries);
         userRepository.save(user);
     }
 }
