@@ -44,7 +44,8 @@ const signup: NextPage<IState> = () => {
     country: 'korea',
   });
 
-  const [errors, setErrors] = useState({} as Record<any, string>);
+  // [refer]: Record타입으로 errors의 타입을 지정(이전 프로젝트의 팀원의 코드를 이해하여 참고)
+  const [errors, setErrors] = useState({} as Record<string, string>);
   const dispatch = useDispatch();
 
   const duplicateCheck = async (type: string) => {
@@ -71,12 +72,15 @@ const signup: NextPage<IState> = () => {
   };
 
   const checkEmail = (email: string) => {
+    // [explain]: errors는 Record<string, string>타입을 가진 객체이고, 이 안에는 여러가지 에러에 관련된 key(email, password 등)와 에러메시지에 관련된 string이 담겨있습니다.
+    // 지금까지 있던 에러에 새 에러를 업데이트 하기위해서 ...prev, 새 key:value를 넣었습니다.
     if (email.length === 0) {
       setErrors((prev) => ({ ...prev, email: '이메일을 필수로 입력해주세요' }));
     } else if (!validateEmail(email)) {
       setErrors((prev) => ({ ...prev, email: '유효하지 않은 이메일입니다.' }));
     } else {
       setErrors((prev) => {
+        // [explain]: 에러가 없다면 그에 해당하는 key value를 삭제합니다.
         const state = prev;
         delete state.email;
         return { ...state };
@@ -99,18 +103,20 @@ const signup: NextPage<IState> = () => {
   };
   const onChangeSetInfo = (e: any) => {
     const { value, name } = e.target;
+    //[explain]: 객체 key, value를 할당할 떄 사용하는 javascript ES6+의 computed property names 문법입니다. 문서 참고
     setInputs({ ...inputs, [name]: value });
     if (name === 'email') checkEmail(inputs.email);
     else if (name === 'password') checkPassword(inputs.password);
   };
 
   const checkAllnSubmit = () => {
-    // alert비동기처리
-    let nullChecker = true; //다 채워짐
+    // TO DO: alert비동기처리
+    //[explain]: 회원가입을 위한 모든 input이 채워졌을 때 true
+    let nullChecker = true;
     Object.values(inputs).forEach((each) => {
       each.length == 0 && (nullChecker = false);
     });
-    console.log(nullChecker);
+
     if (!nullChecker) {
       setErrors((prev) => ({
         ...prev,
@@ -124,6 +130,7 @@ const signup: NextPage<IState> = () => {
       });
     }
 
+    //[explain]: 에러 객체가 비어있고, 모든 input이 채워져있을 때 signup요청을 보냅니다.
     if (Object.keys(errors).length === 0 && nullChecker) {
       dispatch(
         doSignup.request({
@@ -137,7 +144,6 @@ const signup: NextPage<IState> = () => {
 
   return (
     <SignUpFormWrapper>
-      {console.log(errors)}
       <Text types="large">회원가입</Text>
       <AuthInput
         title="EMAIL"
@@ -145,8 +151,8 @@ const signup: NextPage<IState> = () => {
         placeholder="EMAIL"
         name="email"
         checkValidation={() => duplicateCheck('email')}
-        warningMsg={errors.email}
         onChange={onChangeSetInfo}
+        warningMsg={errors.email}
       />
       <AuthInput
         title="PASSWORD"

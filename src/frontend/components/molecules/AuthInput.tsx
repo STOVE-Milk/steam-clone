@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
+
 export interface IAuthInputProps {
   title: string;
   name: string;
@@ -11,6 +12,7 @@ export interface IAuthInputProps {
   checkValidation?: (e: any) => void;
   warningMsg?: string;
 }
+
 const InputTitleText = styled(Text)`
   margin-bottom: 0.5rem;
 `;

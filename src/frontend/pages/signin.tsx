@@ -30,7 +30,8 @@ const signin = () => {
   const [errors, setErrors] = useState({} as Record<any, string>);
 
   const doSignIn = async () => {
-    let nullChecker = true; //다 채워짐
+    //[explain]: 회원가입을 위한 모든 input이 채워졌을 때 true
+    let nullChecker = true;
     Object.values(signInInfo).forEach((each) => {
       each.length == 0 && (nullChecker = false);
     });
@@ -61,7 +62,6 @@ const signin = () => {
 
   return (
     <SignInFormWrapper>
-      {console.log(errors)}
       <Text types="large">로그인</Text>
       <AuthInput title="EMAIL" name="email" type="email" placeholder="EMAIL" />
       <AuthInput title="PASSWORD" name="password" type="password" placeholder="PASSWORD" />
