@@ -4,10 +4,9 @@ import com.steam.library.dto.Room;
 import com.steam.library.global.common.Behavior;
 import com.steam.library.global.common.Direction;
 import com.steam.library.global.common.UserDetails;
-import com.steam.library.global.common.messages.EnterRequestMessage;
-import com.steam.library.global.common.messages.EnterUserMessage;
-import com.steam.library.global.common.messages.MoveRequestMessage;
-import com.steam.library.global.common.messages.MoveUserMessage;
+import com.steam.library.global.common.messages.*;
+import com.steam.library.global.error.CustomException;
+import com.steam.library.global.error.ErrorCode;
 import com.steam.library.global.util.JsonUtil;
 import com.steam.library.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +30,13 @@ public class SocketService {
     private static Map<String, String> session_room = new HashMap<>();
     // roomId : room
     private static Map<String, Room> robby = new HashMap<>();
-    // roomId : session
-    private static Map<String, WebSocketSession> sessions = new HashMap<>();
 
     private final SocketDataService socketDataService;
 
     public String enter(WebSocketSession session, String data) {
         EnterRequestMessage enterRequestMessage = JsonUtil.toObject(data, EnterRequestMessage.class);
         //UserData 토큰에서 가져오기
-        UserDetails userDetails = JwtUtil.getPayload(enterRequestMessage.getToken());
+        UserDetails userDetails = JwtUtil.getPayload(enterRequestMessage.getAuthorization());
         String roomId = enterRequestMessage.getRoomId();
         String userId = userDetails.getIdx().toString();
         String sessionId = session.getId();
@@ -65,14 +62,13 @@ public class SocketService {
         userData.put(sessionId, userDetails);
         session_room.put(sessionId, roomId);
 
-        logObjectJson(userData);
-        logObjectJson(session_room);
-        logObjectJson(robby.get(roomId));
+        EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
+        sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
 
-        EnterUserMessage enterUserMessage = EnterUserMessage.builder()
-                .userId(userId)
-                .build();
-        sendMessageByRoomId(roomId, userId, Behavior.ENTER, enterUserMessage);
+        SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(room);
+        sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
+
+        socketDataService.saveRoomData(room);
 
         return roomId;
     }
@@ -81,15 +77,13 @@ public class SocketService {
         String userId = userData.get(sessionId).getIdx().toString();
         String roomId = session_room.get(sessionId);
         MoveRequestMessage moveRequestMessage = JsonUtil.toObject(data, MoveRequestMessage.class);
+
         robby.get(roomId).move(userId, moveRequestMessage.getDirection());
 
         logObjectJson(robby.get(roomId));
 
-        MoveUserMessage moveUserMessage = MoveUserMessage.builder()
-                .userId(userId)
-                .direction(moveRequestMessage.getDirection().getValue())
-                .build();
-        sendMessageByRoomId(roomId, userId, Behavior.MOVE, moveUserMessage);
+        MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
+        sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
 
         return roomId;
     }
@@ -109,13 +103,29 @@ public class SocketService {
         return closeRoomId;
     }
 
-    public <T> boolean sendMessageByRoomId(String roomId, String myId, Behavior behavior, T data) {
+    private <T> boolean sendMessageToMe(WebSocketSession session, Behavior behavior, T data) {
         TextMessage textMessage = new TextMessage(behavior.getValue() + JsonUtil.toJson(data));
 
-        return sendMessageByRoomId(roomId, myId, textMessage);
+        return sendMessageToMe(session, textMessage);
     }
 
-    public boolean sendMessageByRoomId(String roomId, String myId, TextMessage message) {
+    public boolean sendMessageToMe(WebSocketSession session, TextMessage message) {
+        try {
+            session.sendMessage(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    private <T> boolean sendMessageToRoom(String roomId, String myId, Behavior behavior, T data) {
+        TextMessage textMessage = new TextMessage(behavior.getValue() + JsonUtil.toJson(data));
+
+        return sendMessageToRoom(roomId, myId, textMessage);
+    }
+
+    public boolean sendMessageToRoom(String roomId, String myId, TextMessage message) {
         final List<WebSocketSession> sessions = robby.get(roomId).getSessions();
 
         for(WebSocketSession session : sessions) {

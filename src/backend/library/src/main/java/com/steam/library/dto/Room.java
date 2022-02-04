@@ -1,6 +1,8 @@
 package com.steam.library.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.UserDto;
 import com.steam.library.entity.RoomHash;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 @Builder
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Room {
     private Integer roomId;
     @JsonIgnore

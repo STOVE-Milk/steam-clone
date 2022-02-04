@@ -8,5 +8,5 @@ import lombok.*;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class EnterRequestMessage {
     private String roomId;
-    private String token;
+    private String authorization;
 }

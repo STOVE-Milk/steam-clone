@@ -9,4 +9,8 @@ import java.util.function.Supplier;
 @AllArgsConstructor
 public class CustomException extends RuntimeException {
     private ErrorCode errorCode;
+
+    public static CustomException withCode(ErrorCode errorCode) {
+        return new CustomException(errorCode);
+    }
 }

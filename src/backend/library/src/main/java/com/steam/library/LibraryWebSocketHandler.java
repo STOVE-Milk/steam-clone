@@ -25,6 +25,7 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
         log.info("payload : " + payload);
         Behavior behavior = Behavior.fromInteger(Integer.parseInt(payload.substring(0, 2)));
         String jsonData = payload.substring(2);
+        Boolean isSuccessed = false;
 
         switch (behavior) {
             case ENTER :
