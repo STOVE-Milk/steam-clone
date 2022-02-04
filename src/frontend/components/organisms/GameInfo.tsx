@@ -175,6 +175,7 @@ export default function GameInfo(props: IGameInfo) {
   useEffect(() => {
     dispatch(getUserData.request({}));
   }, []);
+
   const wishFunc = (game_id: number, curStatus: Boolean) => {
     curStatus
       ? dispatch(

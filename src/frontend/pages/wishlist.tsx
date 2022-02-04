@@ -16,9 +16,9 @@ const wishlist: NextPage<IState> = () => {
   const { wishList } = useSelector((state: IState) => state.game);
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(getWishList.request({}));
-  // }, []);
+  useEffect(() => {
+    dispatch(getWishList.request({}));
+  }, []);
 
   return (
     <div>
