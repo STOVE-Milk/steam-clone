@@ -17,7 +17,7 @@ public class JwtUtil {
             return objectMapper.readValue(payload, UserDetails.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            throw CustomException.withCode(ErrorCode.JSON_PARSE_EXCEPTION);
+            return null;
         }
     }
 }

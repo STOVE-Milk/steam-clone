@@ -8,6 +8,7 @@ public enum Behavior {
     SYNC(11),
     MOVE(20),
     BUILD(40)
+    ERROR(99)
     ;
 
     private final int value;

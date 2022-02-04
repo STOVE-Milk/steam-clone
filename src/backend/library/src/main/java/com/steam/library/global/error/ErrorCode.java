@@ -6,7 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    VALIDATION_FAILED(76100, "요청 데이터가 유효하지 않습니다."),
+    MESSAGE_PARSE_UNAVAILABLE(76100, "메시지 형식이 옳지 않습니다. 해석할 수 없습니다."),
+
+    UNAUTHORIZED(76401, "유저 인증에 실패했습니다. 재접속 해주세요"),
+    NO_PERMISSION(76403, "권한이 없습니다."),
 
     JSON_PARSE_EXCEPTION(76802, "JSON 파싱 중 오류가 발생했습니다. 관리자에게 문의해주세요"),
     JWT_CLAIM_EXCEPTION(76803, "JWT 해석 중 오류가 발생했습니다. 관리자에게 문의해주세요"),

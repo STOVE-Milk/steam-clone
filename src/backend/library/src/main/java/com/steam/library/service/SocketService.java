@@ -35,8 +35,13 @@ public class SocketService {
 
     public String enter(WebSocketSession session, String data) {
         EnterRequestMessage enterRequestMessage = JsonUtil.toObject(data, EnterRequestMessage.class);
-        //UserData 토큰에서 가져오기
+        if(enterRequestMessage == null)
+            return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
+
         UserDetails userDetails = JwtUtil.getPayload(enterRequestMessage.getAuthorization());
+        if(userDetails == null)
+            return sendErrorMessage(session, ErrorCode.UNAUTHORIZED);
+
         String roomId = enterRequestMessage.getRoomId();
         String userId = userDetails.getIdx().toString();
         String sessionId = session.getId();
@@ -77,6 +82,8 @@ public class SocketService {
         String userId = userData.get(sessionId).getIdx().toString();
         String roomId = session_room.get(sessionId);
         MoveRequestMessage moveRequestMessage = JsonUtil.toObject(data, MoveRequestMessage.class);
+        if(moveRequestMessage == null)
+            return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
 
         robby.get(roomId).move(userId, moveRequestMessage.getDirection());
 
@@ -101,6 +108,7 @@ public class SocketService {
         userData.remove(sessionId);
 
         return closeRoomId;
+    private boolean sendErrorMessage(WebSocketSession session, ErrorCode errorCode) {
     }
 
     private <T> boolean sendMessageToMe(WebSocketSession session, Behavior behavior, T data) {
