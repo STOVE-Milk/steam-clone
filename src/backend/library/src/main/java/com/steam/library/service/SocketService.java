@@ -24,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Service
 public class SocketService {
-    // sessionId : UserDetail
+    // sessionId : UserDetails
     private static Map<String, UserDetails> userData = new HashMap<>();
     // sessionId : roomId
     private static Map<String, String> session_room = new HashMap<>();
@@ -33,7 +33,7 @@ public class SocketService {
 
     private final SocketDataService socketDataService;
 
-    public String enter(WebSocketSession session, String data) {
+    public Boolean enter(WebSocketSession session, String data) {
         EnterRequestMessage enterRequestMessage = JsonUtil.toObject(data, EnterRequestMessage.class);
         if(enterRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
@@ -63,22 +63,25 @@ public class SocketService {
         Room room = robby.get(roomId);
         room.enter(userDetails, session);
 
-        //Map 데이터 연결
+        // Map 데이터 연결
         userData.put(sessionId, userDetails);
         session_room.put(sessionId, roomId);
 
+        // 입장 이벤트 전파
         EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
         sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
 
+        // 기존 데이터랑 SYNC 
         SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(room);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
 
-        socketDataService.saveRoomData(room);
+        socketDataService.saveRoomHash(room);
 
-        return roomId;
+        return true;
     }
 
-    public String move(String sessionId, String data) {
+    public Boolean move(WebSocketSession session, String data) {
+        String sessionId = session.getId();
         String userId = userData.get(sessionId).getIdx().toString();
         String roomId = session_room.get(sessionId);
         MoveRequestMessage moveRequestMessage = JsonUtil.toObject(data, MoveRequestMessage.class);
@@ -88,7 +91,6 @@ public class SocketService {
         robby.get(roomId).move(userId, moveRequestMessage.getDirection());
 
         // 움직임 이벤트 전파
-
         MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
         sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
 
@@ -132,7 +134,9 @@ public class SocketService {
         session_room.remove(sessionId);
         userData.remove(sessionId);
 
-        return closeRoomId;
+        return true;
+    }
+
     private boolean sendErrorMessage(WebSocketSession session, ErrorCode errorCode) {
         return sendMessageToMe(session, Behavior.ERROR, errorCode.getMessage());
     }
