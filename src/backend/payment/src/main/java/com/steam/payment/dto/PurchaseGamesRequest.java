@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Getter
 public class PurchaseGamesRequest {
-    @NotNull
+    @NotNull(message = "장바구니에 구매할 게임이 없습니다.")
     List<GameDto> games = new ArrayList<>();
 
     public List<Integer> getGamesId() {
