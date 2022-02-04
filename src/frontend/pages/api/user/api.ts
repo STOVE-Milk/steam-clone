@@ -13,8 +13,6 @@ export async function doChargeAPI(param: IDoChargeReqType) {
     `${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/charge/ready`,
     param,
   );
-
-  return response.data;
 }
 
 export async function doApprovalChargeAPI(param: IDoApprovalChargeReqType) {
