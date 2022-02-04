@@ -222,7 +222,7 @@ export default function GameInfo(props: IGameInfo) {
           </OsBox>
           <DescriptionBox>{gameData.description_snippet}</DescriptionBox>
           <span>
-            {gameData.category_list.map((each: string) => {
+            {gameData.category_list!.map((each: string) => {
               return <CategoryBox>{`#${each}`}</CategoryBox>;
             })}
           </span>
