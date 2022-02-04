@@ -51,12 +51,9 @@ public class SocketDataService {
             return Room.of(roomHash.get());
         } else {
             MapDto mapDto = getUserMap(userId);
-            List<String> games = new ArrayList<>();
-            mapDto.getGames().forEach((key, value) -> games.add(key));
             return Room.builder()
                     .roomId(Integer.parseInt(roomId))
                     .sessions(new ArrayList<>())
-                    .gameList(games)
                     .userList(new ArrayList<>())
                     .users(new HashMap<>())
                     .map(mapDto)

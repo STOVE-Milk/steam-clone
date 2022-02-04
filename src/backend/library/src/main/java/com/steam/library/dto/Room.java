@@ -28,7 +28,6 @@ public class Room {
     private Integer roomId;
     @JsonIgnore
     private List<WebSocketSession> sessions = new ArrayList<>();
-    private List<String> gameList = new ArrayList<>();
     private List<String> userList = new ArrayList<>();
     private Map<String, UserDto> users;
     private MapDto map;
@@ -36,7 +35,6 @@ public class Room {
     public RoomHash toHash() {
         return RoomHash.builder()
                 .roomId(this.roomId.toString())
-                .gameList(this.gameList)
                 .userList(this.userList)
                 .users(this.users)
                 .map(this.map)
@@ -47,7 +45,6 @@ public class Room {
         return Room.builder()
                 .roomId(Integer.parseInt(roomHash.getRoomId()))
                 .sessions(new ArrayList<>())
-                .gameList(roomHash.getGameList())
                 .userList(roomHash.getUserList())
                 .users(roomHash.getUsers())
                 .map(roomHash.getMap())
