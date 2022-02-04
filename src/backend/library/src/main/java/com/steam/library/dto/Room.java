@@ -79,4 +79,13 @@ public class Room {
     public void move(String userId, Direction direction) {
         this.getUsers().get(userId).move(direction, this.map.getSide());
     }
+
+    public void resetUserLocation() {
+        for(String userId : this.userList)
+            this.users.get(userId).resetLocation();
+    }
+
+    public void updateMap(MapDto map) {
+        this.map = map;
+    }
 }

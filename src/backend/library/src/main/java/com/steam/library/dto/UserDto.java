@@ -41,6 +41,10 @@ public class UserDto {
                     x--;
                 break;
         }
+    }
 
+    public void resetLocation() {
+        this.x = 0;
+        this.y = 0;
     }
 }

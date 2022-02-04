@@ -87,15 +87,40 @@ public class SocketService {
 
         robby.get(roomId).move(userId, moveRequestMessage.getDirection());
 
-        logObjectJson(robby.get(roomId));
+        // 움직임 이벤트 전파
 
         MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
         sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
 
-        return roomId;
+        return true;
     }
 
-    public String closeConnection(WebSocketSession session) {
+    public Boolean updateMap(WebSocketSession session, String data) {
+        UserDetails userDetails = userData.get(session.getId());
+        BuildRequestMessage buildRequestMessage = JsonUtil.toObject(data, BuildRequestMessage.class);
+        String roomId = session_room.get(session.getId());
+
+        if(userDetails == null) {
+            return sendErrorMessage(session, ErrorCode.UNAUTHORIZED);
+        } else if(!userDetails.getIdx().toString().equals(roomId)) {
+            return sendErrorMessage(session, ErrorCode.NO_PERMISSION);
+        } else if(buildRequestMessage == null || buildRequestMessage.getMap() == null) {
+            return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
+        }
+
+        // Map 데이터 수정
+        socketDataService.updateUserMap(Integer.parseInt(roomId), buildRequestMessage.getMap());
+        robby.get(roomId).updateMap(buildRequestMessage.getMap());
+        socketDataService.saveRoomHash(robby.get(roomId));
+
+        // 리셋 & SYNC
+        robby.get(roomId).resetUserLocation();
+        sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, robby.get(roomId));
+
+        return true;
+    }
+
+    public Boolean closeConnection(WebSocketSession session) {
         String sessionId = session.getId();
         String closeRoomId = session_room.get(sessionId);
         String userId = userData.get(sessionId).getIdx().toString();
@@ -109,6 +134,7 @@ public class SocketService {
 
         return closeRoomId;
     private boolean sendErrorMessage(WebSocketSession session, ErrorCode errorCode) {
+        return sendMessageToMe(session, Behavior.ERROR, errorCode.getMessage());
     }
 
     private <T> boolean sendMessageToMe(WebSocketSession session, Behavior behavior, T data) {

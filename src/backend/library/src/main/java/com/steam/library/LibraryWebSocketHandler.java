@@ -32,9 +32,10 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
                 socketService.enter(session, jsonData);
                 break;
             case MOVE:
-                socketService.move(session.getId(), jsonData);
+                socketService.move(session, jsonData);
                 break;
             case BUILD:
+                socketService.updateMap(session, jsonData);
                 break;
         }
     }

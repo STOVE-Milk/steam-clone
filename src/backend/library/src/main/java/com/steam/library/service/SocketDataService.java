@@ -61,7 +61,22 @@ public class SocketDataService {
         }
     }
 
-    public boolean saveRoomData(Room room) {
+    public boolean updateUserMap(Integer userId, MapDto map) {
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty())
+            return false;
+
+        String mapJson = JsonUtil.toJson(map);
+        if(mapJson == null)
+            return false;
+
+        user.get().updateMap(mapJson);
+        userRepository.save(user.get());
+
+        return true;
+    }
+
+    public boolean saveRoomHash(Room room) {
         try {
             RoomHash roomHash = room.toHash();
             roomHashRepository.save(roomHash);

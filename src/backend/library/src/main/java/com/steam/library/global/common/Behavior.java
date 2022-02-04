@@ -6,8 +6,9 @@ import lombok.Getter;
 public enum Behavior {
     ENTER(10),
     SYNC(11),
+    RESET(12),
     MOVE(20),
-    BUILD(40)
+    BUILD(40),
     ERROR(99)
     ;
 
