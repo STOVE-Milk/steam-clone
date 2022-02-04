@@ -7,7 +7,7 @@ import {
   IGetGamesByCategoryReqType,
   IDoWishReqType,
   IGetUserDataReqType,
-  IgetWishListReqType,
+  IGetWishListReqType,
   IDoUnWishReqType,
 } from './type';
 
@@ -33,7 +33,7 @@ export async function getGameAPI(param: IGetGameReqType) {
   return response.data;
 }
 // 찜 목록 불러오기
-export async function getWishListAPI(param: IgetWishListReqType) {
+export async function getWishListAPI(param: IGetWishListReqType) {
   const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/wishes`);
 
   return response.data;
@@ -54,7 +54,7 @@ export async function doUnWishAPI(param: IDoUnWishReqType) {
 }
 ///store/userdata
 export async function getUserDataAPI(param: IGetUserDataReqType) {
-  const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/wishes`);
+  const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/userdata`);
 
   return response.data;
 }

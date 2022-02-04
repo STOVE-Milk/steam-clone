@@ -124,7 +124,7 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_USERDATA_SUCCESS]: (state, action) => ({
     ...state,
-    userData: asyncState.success(action.payload.data.game_list),
+    userData: asyncState.success(action.payload.data),
   }),
   [GET_USERDATA_FAIL]: (state, action) => ({
     ...state,

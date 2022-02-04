@@ -7,7 +7,7 @@ import {
   IGetCategoriesReqType,
   IGetGameReqType,
   IGetGamesByCategoryReqType,
-  IgetWishListReqType,
+  IGetWishListReqType,
   IDoWishReqType,
   IGetUserDataReqType,
   IDoUnWishReqType,
@@ -42,7 +42,7 @@ export const getGamesByCategory = createAsyncAction(
 )<IGetGamesByCategoryReqType, IResType, AxiosError>();
 
 export const getWishList = createAsyncAction(GET_WISHLIST, GET_WISHLIST_SUCCESS, GET_WISHLIST_FAIL)<
-  IgetWishListReqType,
+  IGetWishListReqType,
   IResType,
   AxiosError
 >();

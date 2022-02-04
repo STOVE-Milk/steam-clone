@@ -95,6 +95,6 @@ export const initialWishList = [
   },
 ];
 export const initialUserData = {
-  wish_list: [1, 2],
+  wish_list: [1, 3],
   purchase_list: [6],
 };

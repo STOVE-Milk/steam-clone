@@ -2,7 +2,6 @@ import { takeLatest } from 'redux-saga/effects';
 
 import createAsyncSaga from 'modules/utils/sagaUtils';
 
-import { IResType } from 'pages/api/game/type';
 import {
   getCategoriesAPI,
   getGameAPI,
