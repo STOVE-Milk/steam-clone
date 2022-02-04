@@ -16,7 +16,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @RedisHash(value = "library", timeToLive = 900)
-public class RoomHash {
+public class RoomCache {
     @Id
     private String roomId;
     private List<String> userList = new ArrayList<>();

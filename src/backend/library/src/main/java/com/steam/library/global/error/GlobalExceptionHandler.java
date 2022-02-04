@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
         e.getAllErrors().forEach(s -> message.append(s.getDefaultMessage()).append('\n'));
 
         return ResponseEntity.ok(
-                Body.error(ErrorCode.VALIDATION_FAILED, "요청 데이터들이 유효하지 않습니다.\n" + message)
+                Body.error(ErrorCode.MESSAGE_PARSE_UNAVAILABLE, "요청 데이터들이 유효하지 않습니다.\n" + message)
         );
     }
 

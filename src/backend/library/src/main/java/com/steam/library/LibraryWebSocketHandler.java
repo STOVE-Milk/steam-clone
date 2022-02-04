@@ -22,21 +22,29 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        log.info("payload : " + payload);
         Behavior behavior = Behavior.fromInteger(Integer.parseInt(payload.substring(0, 2)));
         String jsonData = payload.substring(2);
         Boolean isSuccessed = false;
-
-        switch (behavior) {
-            case ENTER :
-                socketService.enter(session, jsonData);
-                break;
-            case MOVE:
-                socketService.move(session, jsonData);
-                break;
-            case BUILD:
-                socketService.updateMap(session, jsonData);
-                break;
+        if (session.isOpen()) {
+            try {
+                switch (behavior) {
+                    case ENTER:
+                        socketService.enter(session, jsonData);
+                        break;
+                    case SYNC:
+                        socketService.synchronizeRoom(session);
+                        break;
+                    case MOVE:
+                        socketService.move(session, jsonData);
+                        break;
+                    case BUILD:
+                        socketService.updateMap(session, jsonData);
+                        break;
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                socketService.closeConnection(session);
+            }
         }
     }
 

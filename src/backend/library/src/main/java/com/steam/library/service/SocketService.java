@@ -19,21 +19,22 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class SocketService {
     // sessionId : UserDetails
-    private static Map<String, UserDetails> userData = new HashMap<>();
+    private static Map<String, UserDetails> userData = new ConcurrentHashMap<>();
     // sessionId : roomId
-    private static Map<String, String> session_room = new HashMap<>();
+    private static Map<String, String> session_room = new ConcurrentHashMap<>();
     // roomId : room
-    private static Map<String, Room> robby = new HashMap<>();
+    private static Map<String, Room> robby = new ConcurrentHashMap<>();
 
     private final SocketDataService socketDataService;
 
-    public Boolean enter(WebSocketSession session, String data) {
+    public synchronized Boolean enter(WebSocketSession session, String data) {
         EnterRequestMessage enterRequestMessage = JsonUtil.toObject(data, EnterRequestMessage.class);
         if(enterRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
@@ -55,7 +56,7 @@ public class SocketService {
         }
 
         if(!robby.containsKey(roomId)) {
-            Room newRoom = socketDataService.getRoomData(roomId, userDetails.getIdx());
+            Room newRoom = socketDataService.getRoomHash(roomId, userDetails.getIdx());
             robby.put(roomId, newRoom);
         }
 
@@ -66,6 +67,8 @@ public class SocketService {
         // Map 데이터 연결
         userData.put(sessionId, userDetails);
         session_room.put(sessionId, roomId);
+
+        logObjectJson(room);
 
         // 입장 이벤트 전파
         EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
@@ -122,10 +125,23 @@ public class SocketService {
         return true;
     }
 
-    public Boolean closeConnection(WebSocketSession session) {
+    public Boolean synchronizeRoom(WebSocketSession session) {
+        logObjectJson(robby.get(session_room.get(session.getId())));
+
+        return sendMessageToRoom(
+                session_room.get(session.getId()),
+                userData.get(session.getId()).getIdx().toString(),
+                Behavior.SYNC,
+                SyncRoomMessage.of(robby.get(session.getId()))
+        );
+    }
+
+    public synchronized Boolean closeConnection(WebSocketSession session) {
         String sessionId = session.getId();
         String closeRoomId = session_room.get(sessionId);
         String userId = userData.get(sessionId).getIdx().toString();
+
+        log.info("Close Connection : "  + sessionId + " " +userId);
 
         // 떠나기
         Integer userNum = robby.get(closeRoomId).leave(userId, session);
@@ -149,7 +165,9 @@ public class SocketService {
 
     public boolean sendMessageToMe(WebSocketSession session, TextMessage message) {
         try {
-            session.sendMessage(message);
+            synchronized (session) {
+                session.sendMessage(message);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -163,13 +181,15 @@ public class SocketService {
         return sendMessageToRoom(roomId, myId, textMessage);
     }
 
-    public boolean sendMessageToRoom(String roomId, String myId, TextMessage message) {
+    public synchronized boolean sendMessageToRoom(String roomId, String myId, TextMessage message) {
         final List<WebSocketSession> sessions = robby.get(roomId).getSessions();
-
         for(WebSocketSession session : sessions) {
             try {
-                if(!userData.get(session.getId()).getIdx().toString().equals(myId))
-                    session.sendMessage(message);
+                if(!userData.get(session.getId()).getIdx().toString().equals(myId)) {
+                    synchronized (session) {
+                        session.sendMessage(message);
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

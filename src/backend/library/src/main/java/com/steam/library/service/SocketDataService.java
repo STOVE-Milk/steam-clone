@@ -2,28 +2,28 @@ package com.steam.library.service;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.Room;
-import com.steam.library.entity.RoomHash;
+import com.steam.library.entity.RoomCache;
 import com.steam.library.entity.User;
 import com.steam.library.global.util.JsonUtil;
-import com.steam.library.repository.RoomHashRepository;
+import com.steam.library.repository.RoomCacheRepository;
 import com.steam.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class SocketDataService {
     private final UserRepository userRepository;
-    private final RoomHashRepository roomHashRepository;
+    private final RoomCacheRepository roomCacheRepository;
 
     @Nullable
     public MapDto getUserMap(Integer userId) {
@@ -34,7 +34,7 @@ public class SocketDataService {
         }
 
         String mapJson = user.get().getMap();
-        if(mapJson == null || mapJson == "" || mapJson == "{}") {
+        if(mapJson == null || "".equals(mapJson) || "{}".equals(mapJson)) {
             log.info("map 데이터 없음");
             MapDto newMap = MapDto.newMap();
             user.get().updateMap(JsonUtil.toJson(newMap));
@@ -45,17 +45,17 @@ public class SocketDataService {
         return JsonUtil.toMapDto(mapJson);
     }
 
-    public Room getRoomData(String roomId, Integer userId) {
-        Optional<RoomHash> roomHash = roomHashRepository.findById(roomId);
-        if(roomHash.isPresent()) {
-            return Room.of(roomHash.get());
+    public Room getRoomHash(String roomId, Integer userId) {
+        Optional<RoomCache> roomCache = roomCacheRepository.findById(roomId);
+        if(roomCache.isPresent()) {
+            return Room.of(roomCache.get());
         } else {
             MapDto mapDto = getUserMap(userId);
             return Room.builder()
                     .roomId(Integer.parseInt(roomId))
-                    .sessions(new ArrayList<>())
-                    .userList(new ArrayList<>())
-                    .users(new HashMap<>())
+                    .sessions(Collections.synchronizedList(new ArrayList<>()))
+                    .userList(Collections.synchronizedList(new ArrayList<>()))
+                    .users(new ConcurrentHashMap<>())
                     .map(mapDto)
                     .build();
         }
@@ -78,8 +78,8 @@ public class SocketDataService {
 
     public boolean saveRoomHash(Room room) {
         try {
-            RoomHash roomHash = room.toHash();
-            roomHashRepository.save(roomHash);
+            RoomCache roomCache = room.toHash();
+            roomCacheRepository.save(roomCache);
             return true;
         } catch (RuntimeException e) {
             log.debug("Room data 캐싱 실패 " + e.getMessage());

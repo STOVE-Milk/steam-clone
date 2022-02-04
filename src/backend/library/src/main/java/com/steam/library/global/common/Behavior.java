@@ -17,12 +17,19 @@ public enum Behavior {
     public int getValue() { return value; }
 
     public static Behavior fromInteger(Integer value) {
-        System.out.println(value);
         switch(value) {
             case 10:
                 return ENTER;
+            case 11:
+                return SYNC;
+            case 12:
+                return RESET;
             case 20:
                 return MOVE;
+            case 40:
+                return BUILD;
+            case 99:
+                return ERROR;
         }
         return null;
     }

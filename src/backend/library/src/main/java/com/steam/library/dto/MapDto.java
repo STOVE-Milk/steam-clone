@@ -13,8 +13,8 @@ import java.util.Map;
 @Data
 public class MapDto {
     private Integer side;
-    private List<String> gameList = new ArrayList<>();
-    private List<String> objectList = new ArrayList<>();
+    private List<String> gameList;
+    private List<String> objectList;
     private Map<String, ObjectDto> games;
     private Map<String, ObjectDto> objects;
 
@@ -28,6 +28,16 @@ public class MapDto {
                 .build();
     }
 
+    public void initializeNullCollection() {
+        if(this.gameList == null)
+            this.gameList = new ArrayList<>();
+        if(this.objectList == null)
+            this.objectList = new ArrayList<>();
+        if(this.games == null)
+            this.games = new HashMap<>();
+        if(this.objects == null)
+            this.objects = new HashMap<>();
+    }
     public void pushGameObject(String id, ObjectDto game) {
         this.games.put(id, game);
     }
