@@ -44,7 +44,7 @@ public class ChargeService {
 
         ChargeLogDocument chargeLogDocument = chargeLogDocumentRepository.findById(UserContext.getUserId().toString())
                 .orElseGet(() -> ChargeLogDocument.newUser(UserContext.getUserId()));
-        chargeLogDocument.addLog(request.toLog());
+        chargeLogDocument.addLog(request.toLog(giftcardDto));
         chargeLogDocumentRepository.save(chargeLogDocument);
 
         return kakaoPay.ready(giftcardDto, chargeLogDocument.getCount());
