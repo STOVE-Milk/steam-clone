@@ -36,7 +36,6 @@ public class PurchaseService {
 
     @Transactional
     public Object purchaseGames(PurchaseGamesRequest request) {
-        //TODO: 로깅 AOP로 분리
         String userCountry = UserContext.getUserCountry();
         List<GameDto> gameDatas = gameRepository.findAllById(request.getGamesId()).stream()
                 .map(game -> GameDto.of(game, userCountry))
