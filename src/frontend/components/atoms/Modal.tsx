@@ -69,6 +69,11 @@ const ModalHeader = styled.div`
   font-size: 25px;
 `;
 
+const CloseBtn = styled.span`
+  color: black;
+  cursor: pointer;
+`;
+
 const ModalBody = styled.div`
   padding-top: 10px;
 `;
@@ -112,9 +117,7 @@ export default function Modal(props: ModalProps) {
     <ModalOverlay>
       <ModalWrapper show={props.show}>
         <ModalHeader>
-          <a href="#" onClick={handleCloseClick}>
-            x
-          </a>
+          <CloseBtn onClick={handleCloseClick}>x</CloseBtn>
         </ModalHeader>
         {props.title && <div>{props.title}</div>}
         <ModalBody>{props.children}</ModalBody>

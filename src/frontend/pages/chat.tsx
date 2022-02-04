@@ -1,15 +1,14 @@
-import React from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
-// import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faUser, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 
-// import { getGame } from 'modules/game';
 import wrapper from 'modules/configureStore';
 // import { IState } from 'modules';
 
@@ -17,7 +16,7 @@ import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import MsgBox from 'components/atoms/MsgBox';
-import { TextStyle } from 'components/atoms/Text';
+import Modal from 'components/atoms/Modal';
 
 interface ServerToClientEvents {
   noArg: () => void;
@@ -102,7 +101,6 @@ const ChatInput = styled.textarea`
 `;
 
 const ChatButton = styled(FilledButton)``;
-
 // const Chat: NextPage<IState> = () => {
 //   const { game } = useSelector((state: IState) => state.game);
 
@@ -121,26 +119,20 @@ const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 };
 
 const Chat: NextPage = () => {
-  const chats = [1, 2, 3, 4, 5, 5, 5, 6, 7, 8, 8, 9, 1, 1, 1, 1];
+  const chats = [1, 2];
   const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n');
+  const [message, setMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
-  // const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
-  // socket.emit('send', {
-  //   name: 'user1',
-  //   msg: 'msg1',
-  // });
-
-  // socket.on('noArg', () => {
-  //   // ...
-  // });
-
-  // socket.on('basicEmit', (a, b, c) => {
-  //   // a is inferred as number, b as string and c as buffer
-  // });
-
-  // socket.on('withAck', (d, callback) => {
-  //   // d is inferred as string and callback as a function that takes a number as argument
-  // });
+  // useEffect(() => {
+  //   const ws = new WebSocket('ws://localhost:8210/library');
+  //   ws.onopen = () => {
+  //     console.log('connected!!');
+  //   };
+  //   // return () => {
+  //   //   socket.off('receive data');
+  //   // };
+  // }, []);
 
   return (
     <ChatWrapper>
@@ -153,6 +145,10 @@ const Chat: NextPage = () => {
             </ChatListBox>
           );
         })}
+        <button onClick={() => setShowModal(true)}>채팅방 생성</button>
+        <Modal onClose={() => setShowModal(false)} show={showModal}>
+          Hello from the modal!
+        </Modal>
       </ChatListSection>
       <ChatRoomSection>
         <ChatViewBox>
@@ -168,7 +164,7 @@ const Chat: NextPage = () => {
           </MsgBox>
         </ChatViewBox>
         <ChatInputBox>
-          <ChatInput onKeyPress={(e) => onKeyPress(e)}></ChatInput>
+          <ChatInput onChange={(e) => setMessage(e.target.value)} onKeyPress={(e) => onKeyPress(e)}></ChatInput>
           <ChatButton types="primary">전송</ChatButton>
         </ChatInputBox>
       </ChatRoomSection>

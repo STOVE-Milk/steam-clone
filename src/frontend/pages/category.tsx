@@ -13,6 +13,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { IState } from 'modules';
 import { getCategories, getGamesByCategory } from 'modules/game';
 import { gameInfo } from 'modules/game/types';
+import axios from 'axios';
+
 export type GameMedia = {
   main: string;
   sub: Array<string>;
@@ -39,6 +41,12 @@ const Category: NextPage<IState> = () => {
   });
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    axios.post('http://localhost:8200/auth/email', { email: 'abc' }).then((res) => {
+      console.log(res.data);
+    });
+  });
 
   useEffect(() => {
     dispatch(getCategories.request({}));
