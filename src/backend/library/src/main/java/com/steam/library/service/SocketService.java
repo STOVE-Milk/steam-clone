@@ -196,9 +196,7 @@ public class SocketService {
         for(WebSocketSession session : sessions) {
             try {
                 if(!userData.get(session.getId()).getIdx().toString().equals(myId)) {
-                    synchronized (session) {
-                        session.sendMessage(message);
-                    }
+                    session.sendMessage(message);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

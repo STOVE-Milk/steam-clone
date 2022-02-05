@@ -11,7 +11,6 @@ import lombok.Data;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Builder
 @Data
@@ -21,7 +20,7 @@ public class Room {
     @JsonIgnore
     private List<WebSocketSession> sessions;
     private List<String> userList;
-    private ConcurrentHashMap<String, UserDto> users;
+    private Map<String, UserDto> users;
     private MapDto map;
 
     public RoomCache toHash() {
@@ -38,7 +37,7 @@ public class Room {
                 .roomId(Integer.parseInt(roomCache.getRoomId()))
                 .sessions(Collections.synchronizedList(new ArrayList<>()))
                 .userList(Collections.synchronizedList(new ArrayList<>()))
-                .users(new ConcurrentHashMap<>())
+                .users(new HashMap<>())
                 .map(roomCache.getMap())
                 .build();
         room.getMap().initializeNullCollection();
@@ -46,11 +45,12 @@ public class Room {
     }
 
     public static Room withMap(String roomId, MapDto map) {
+        map.initializeNullCollection();
         return Room.builder()
                 .roomId(Integer.parseInt(roomId))
                 .sessions(Collections.synchronizedList(new ArrayList<>()))
                 .userList(Collections.synchronizedList(new ArrayList<>()))
-                .users(new ConcurrentHashMap<>())
+                .users(new HashMap<>())
                 .map(map)
                 .build();
     }
