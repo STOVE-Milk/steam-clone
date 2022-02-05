@@ -20,7 +20,17 @@ public class MapDto {
 
     public static MapDto newMap() {
         return MapDto.builder()
-                .side(5)
+                .side(20)
+                .gameList(new ArrayList<>())
+                .objectList(new ArrayList<>())
+                .games(new HashMap<>())
+                .objects(new HashMap<>())
+                .build();
+    }
+
+    public static MapDto newMap(Integer side) {
+        return MapDto.builder()
+                .side(side)
                 .gameList(new ArrayList<>())
                 .objectList(new ArrayList<>())
                 .games(new HashMap<>())

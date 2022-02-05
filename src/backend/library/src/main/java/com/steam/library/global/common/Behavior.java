@@ -7,6 +7,7 @@ public enum Behavior {
     ENTER(10),
     SYNC(11),
     RESET(12),
+    LEAVE(19),
     MOVE(20),
     BUILD(40),
     ERROR(99)
@@ -24,6 +25,8 @@ public enum Behavior {
                 return SYNC;
             case 12:
                 return RESET;
+            case 19:
+                return LEAVE;
             case 20:
                 return MOVE;
             case 40:

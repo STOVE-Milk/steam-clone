@@ -51,13 +51,7 @@ public class SocketDataService {
             return Room.of(roomCache.get());
         } else {
             MapDto mapDto = getUserMap(userId);
-            return Room.builder()
-                    .roomId(Integer.parseInt(roomId))
-                    .sessions(Collections.synchronizedList(new ArrayList<>()))
-                    .userList(Collections.synchronizedList(new ArrayList<>()))
-                    .users(new ConcurrentHashMap<>())
-                    .map(mapDto)
-                    .build();
+            return Room.withMap(roomId, mapDto);
         }
     }
 

@@ -45,6 +45,16 @@ public class Room {
         return room;
     }
 
+    public static Room withMap(String roomId, MapDto map) {
+        return Room.builder()
+                .roomId(Integer.parseInt(roomId))
+                .sessions(Collections.synchronizedList(new ArrayList<>()))
+                .userList(Collections.synchronizedList(new ArrayList<>()))
+                .users(new ConcurrentHashMap<>())
+                .map(map)
+                .build();
+    }
+
     public synchronized boolean enter(UserDetails userDetails, WebSocketSession session) {
         String userId = userDetails.getIdx().toString();
         try {

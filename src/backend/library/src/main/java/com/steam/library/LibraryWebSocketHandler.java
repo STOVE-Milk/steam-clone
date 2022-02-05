@@ -23,7 +23,7 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         Behavior behavior = Behavior.fromInteger(Integer.parseInt(payload.substring(0, 2)));
-        String jsonData = payload.substring(2);
+        String jsonData = (payload.length() > 2) ? payload.substring(2) : "";
         Boolean isSuccessed = false;
         if (session.isOpen()) {
             try {
@@ -33,6 +33,9 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
                         break;
                     case SYNC:
                         socketService.synchronizeRoom(session);
+                        break;
+                    case LEAVE:
+                        socketService.closeConnection(session);
                         break;
                     case MOVE:
                         socketService.move(session, jsonData);
@@ -59,8 +62,12 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        log.info(session + " 클라이언트 접속 해제");
-        socketService.closeConnection(session);
+        if(!status.equals(CloseStatus.NORMAL)) {
+            log.info("CloseStatus of " + session.getId() + " : " + status);
+            socketService.closeConnection(session);
+        }
+
+        log.info(session + " 클라이언트 접속 해제 완료");
     }
 
 }

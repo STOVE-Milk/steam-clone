@@ -12,6 +12,7 @@ import com.steam.library.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -143,12 +144,21 @@ public class SocketService {
 
         log.info("Close Connection : "  + sessionId + " " +userId);
 
+        sendMessageToRoom(closeRoomId, userId, Behavior.LEAVE, LeaveUserMessage.of(userId));
+
         // 떠나기
         Integer userNum = robby.get(closeRoomId).leave(userId, session);
         if(userNum.equals(0))
             robby.remove(closeRoomId);
         session_room.remove(sessionId);
         userData.remove(sessionId);
+
+        try {
+            session.close(CloseStatus.NORMAL);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
 
         return true;
     }
