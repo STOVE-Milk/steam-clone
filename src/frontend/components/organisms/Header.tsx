@@ -11,7 +11,7 @@ import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 const HeaderStyle = styled.header`
   width: 100%;
   height: 80px;
-  position: fixed;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: flex-start;
