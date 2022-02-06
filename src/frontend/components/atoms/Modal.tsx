@@ -22,11 +22,13 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalWrapper = styled.div<{ show: boolean }>`
-  background: white;
+  background: ${(props) => props.theme.colors.secondaryBg};
   width: 500px;
   height: 600px;
   border-radius: 15px;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
 
   ${(props) =>
     props.show
@@ -76,6 +78,7 @@ const CloseBtn = styled.span`
 
 const ModalBody = styled.div`
   padding-top: 10px;
+  flex: 1;
 `;
 
 export default function Modal(props: ModalProps) {

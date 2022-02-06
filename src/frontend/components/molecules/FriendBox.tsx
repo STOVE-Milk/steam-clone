@@ -8,6 +8,7 @@ export interface FriendBoxProps {
   icon: JSX.Element;
   name: string;
   open: boolean;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
 const FriendBoxWrapper = styled.div`
@@ -40,7 +41,7 @@ const FriendStatus = styled(Dot)`
 
 export default function FriendBox(props: FriendBoxProps) {
   return (
-    <FriendBoxWrapper>
+    <FriendBoxWrapper onClick={props.onClick}>
       {props.icon}
       {props.open ? <FriendName types={'small'}>{props.name}</FriendName> : null}
       <FriendStatus color={theme.colors.online} />
