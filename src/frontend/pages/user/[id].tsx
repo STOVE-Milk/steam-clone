@@ -44,17 +44,26 @@ const GuestBookList = styled.div`
   padding-top: 1rem;
 `;
 
+interface IResGuestBook {
+  id: number;
+  guest_id: number;
+  display_name: string;
+  profile: {};
+  content: string;
+  created_at: string;
+}
+
 const MyPage: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
 
-  const [guestBooks, setGuestBooks] = useState<IResReview[]>([
+  const [guestBooks, setGuestBooks] = useState<IResGuestBook[]>([
     {
       id: 1,
       guest_id: 2,
       profile: {},
-      displayName: 'user2',
+      display_name: 'user2',
       content: 'hi',
       created_at: 'time1',
     },
@@ -62,7 +71,7 @@ const MyPage: NextPage = () => {
       id: 2,
       guest_id: 3,
       profile: {},
-      displayName: 'user3',
+      display_name: 'user3',
       content: 'hihi',
       created_at: 'time2',
     },
@@ -70,7 +79,7 @@ const MyPage: NextPage = () => {
       id: 3,
       guest_id: 4,
       profile: {},
-      displayName: 'user4',
+      display_name: 'user4',
       content: 'hihihi',
       created_at: 'time3',
     },
@@ -173,7 +182,7 @@ const MyPage: NextPage = () => {
           {guestBooks.map((guest) => {
             return (
               <GuestBook
-                displayName={guest.displayName}
+                displayName={guest.display_name}
                 created_at={guest.created_at}
                 content={guest.content}
                 isMine={true} // userId랑 비교
