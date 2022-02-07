@@ -1,7 +1,10 @@
+export interface ICheckNicknameReqType {
+  nickname: string;
+}
 export interface ICheckEmailReqType {
   email: string;
 }
-export interface IDoLogInReqType {
+export interface IDoSignInReqType {
   email: string;
   password: string;
 }
@@ -19,5 +22,5 @@ export interface ICheckEmailReqtype {
 export interface IResType {
   code: number;
   message: string;
-  payload: any;
+  data: any;
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
+import Link from 'next/link';
 
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -11,7 +12,7 @@ import { countryOption, languageOption, validateEmail, validatePassWord } from '
 
 import { IState } from 'modules';
 import { doSignup } from 'modules/user';
-import { checkEmailAPI } from 'pages/api/user/api';
+import { checkEmailAPI, checkNicknameAPI } from 'pages/api/user/api';
 
 const SignUpFormWrapper = styled.div`
   width: 40rem;
@@ -40,8 +41,8 @@ const signup: NextPage<IState> = () => {
     password: '',
     username: '',
     nickname: '',
-    language: 'korean',
-    country: 'korea',
+    language: 'KR',
+    country: 'KR',
   });
 
   // [refer]: Record타입으로 errors의 타입을 지정(이전 프로젝트의 팀원의 코드를 이해하여 참고)
@@ -63,10 +64,23 @@ const signup: NextPage<IState> = () => {
         } else {
           setErrors((prev) => ({ ...prev, email: res.message }));
         }
+        return;
       }
       case 'nickname': {
-        //TO DO(지호): 아직 nickname API가 없는듯..!
-        alert('nickname zone');
+        const res = await checkNicknameAPI({ nickname: inputs.nickname });
+        alert(res.message);
+
+        if (res.code === 10000) {
+          setErrors((prev) => {
+            const state = prev;
+            delete state.email;
+            return { ...state };
+          });
+        } else {
+          setErrors((prev) => ({ ...prev, nickname: res.message }));
+          //닉네임 input 지우기
+        }
+        return;
       }
     }
   };
@@ -75,7 +89,7 @@ const signup: NextPage<IState> = () => {
     // [explain]: errors는 Record<string, string>타입을 가진 객체이고, 이 안에는 여러가지 에러에 관련된 key(email, password 등)와 에러메시지에 관련된 string이 담겨있습니다.
     // 지금까지 있던 에러에 새 에러를 업데이트 하기위해서 ...prev, 새 key:value를 넣었습니다.
     if (email.length === 0) {
-      setErrors((prev) => ({ ...prev, email: '이메일을 필수로 입력해주세요' }));
+      setErrors((prev) => ({ ...prev, email: '이메일을 필수로 입력후, 중복확인을 진행해주세요' }));
     } else if (!validateEmail(email)) {
       setErrors((prev) => ({ ...prev, email: '유효하지 않은 이메일입니다.' }));
     } else {
@@ -137,6 +151,8 @@ const signup: NextPage<IState> = () => {
           ...inputs,
         }),
       );
+      alert('가입에 성공했습니다. 로그인페이지로 이동합니다.');
+      window.location.href = '/signin';
     } else {
       alert(Object.values(errors));
     }
@@ -144,6 +160,7 @@ const signup: NextPage<IState> = () => {
 
   return (
     <SignUpFormWrapper>
+      {console.log(errors)}
       <Text types="large">회원가입</Text>
       <AuthInput
         title="EMAIL"
@@ -175,9 +192,11 @@ const signup: NextPage<IState> = () => {
         <AuthSelectBox title="Country" option={countryOption} onChange={onChangeSetInfo} />
         <AuthSelectBox title="Language" option={languageOption} onChange={onChangeSetInfo} />
       </InputAlign>
+      {/* <Link href="/signin"> */}
       <SignUpButton types="active" onClick={() => checkAllnSubmit()}>
         가입하기
       </SignUpButton>
+      {/* </Link> */}
     </SignUpFormWrapper>
   );
 };

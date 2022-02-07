@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import AuthInput from 'components/molecules/AuthInput';
-import { doLogInAPI } from 'pages/api/user/api';
+import { doSignInAPI } from 'pages/api/user/api';
 
 const SignInFormWrapper = styled.div`
   width: 40rem;
@@ -33,6 +33,7 @@ const signin = () => {
     //[explain]: 회원가입을 위한 모든 input이 채워졌을 때 true
     let nullChecker = true;
     Object.values(signInInfo).forEach((each) => {
+      console.log(each, each.length);
       each.length == 0 && (nullChecker = false);
     });
 
@@ -47,25 +48,36 @@ const signin = () => {
         delete errors.nullChecker;
         return { ...state };
       });
-      const res = await doLogInAPI(signInInfo);
-      alert('로그인 요청');
+
+      const res = await doSignInAPI(signInInfo);
+      alert(res.message);
       if (res.code === 10000) {
         //성공
-        alert(res.message);
-        //TO DO(양하) : accessToken: String, refreshToken: String 처리하기
-        // localStorage.setItem('accessToken', res.data.accessToken)
-        // localStorage.setItem('refreshToken', res.data.refreshToken)
-        window.location.href = '/';
+        localStorage.setItem('accessToken', res.data.accessToken);
+        localStorage.setItem('refreshToken', res.data.refreshToken);
+        // window.location.href = '/';\
+        //[refer]: jwt decode하는 코드 | 출처: https://archijude.tistory.com/432
+        const token = res.data.accessToken;
+        const base64Payload = token.split('.')[1]; //value 0 -> header, 1 -> payload, 2 -> VERIFY SIGNATURE
+        const payload = Buffer.from(base64Payload, 'base64');
+        const result = JSON.parse(payload.toString());
+        console.log(result);
       }
     }
+  };
+  const onChangeSetInfo = (e: any) => {
+    const { value, name } = e.target;
+    //[explain]: 객체 key, value를 할당할 떄 사용하는 javascript ES6+의 computed property names 문법입니다. 문서 참고
+    setSignInInfo({ ...signInInfo, [name]: value });
   };
 
   return (
     <SignInFormWrapper>
+      {console.log(errors)}
       <Text types="large">로그인</Text>
-      <AuthInput title="EMAIL" name="email" type="email" placeholder="EMAIL" />
-      <AuthInput title="PASSWORD" name="password" type="password" placeholder="PASSWORD" />
-      <SignInButton types="active" onClick={doSignIn}>
+      <AuthInput title="EMAIL" name="email" type="email" placeholder="EMAIL" onChange={onChangeSetInfo} />
+      <AuthInput title="PASSWORD" name="password" type="password" placeholder="PASSWORD" onChange={onChangeSetInfo} />
+      <SignInButton types="active" onClick={() => doSignIn()}>
         로그인
       </SignInButton>
     </SignInFormWrapper>

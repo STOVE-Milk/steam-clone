@@ -3,14 +3,14 @@ export interface IOption {
   code?: string;
 }
 export const countryOption: IOption[] = [
-  { name: 'KOREA', code: 'kr' },
-  { name: 'CHINA', code: 'cn' },
-  { name: 'USA', code: 'us' },
+  { name: 'KOREA', code: 'KR' },
+  { name: 'CHINA', code: 'CN' },
+  { name: 'USA', code: 'US' },
 ];
 export const languageOption: IOption[] = [
-  { name: 'Korean', code: 'kr' },
-  { name: 'Chinese', code: 'cn' },
-  { name: 'English', code: 'us' },
+  { name: 'Korean', code: 'KR' },
+  { name: 'Chinese', code: 'CN' },
+  { name: 'English', code: 'EN' },
 ];
 
 export const validateEmail = (email: string): boolean => {

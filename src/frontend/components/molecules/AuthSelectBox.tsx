@@ -29,7 +29,7 @@ const SelectStyle = styled.select`
 
 export default function AuthSelectBox({ title, option, onChange }: IOptionProp) {
   const optionArr = option.map((each, i) => {
-    return <option key={i} value={`${each.name}`}>{`${each.name}`}</option>;
+    return <option key={i} value={`${each.code}`}>{`${each.name}`}</option>;
   });
 
   return (
