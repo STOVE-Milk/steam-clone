@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { IState } from 'modules';
 import { getGiftCardList, doCharge } from 'modules/user';
 import { IGiftcard } from 'modules/user/types';
+import { useRouter } from 'next/router';
 
 const TitleStyle = styled(Text)`
   margin-bottom: 2rem;
@@ -52,6 +53,7 @@ const charge: NextPage<IState> = () => {
     return state.user;
   });
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [curCheckedPriceIdx, setCurCheckedPriceIdx] = useState(1);
   const [chargeMethod, setChargeMethod] = useState('kakaopay');
@@ -89,13 +91,18 @@ const charge: NextPage<IState> = () => {
       )} 입니다.\n충전 방식은 ${chargeMethod}입니다.
     `,
     );
+    // router.push(charge.data!.next_redirect_pc_url);
+    if (charge.data!.next_redirect_pc_url !== null) {
+      window.open(
+        `${charge.data!.next_redirect_pc_url}`,
+        'next_pc_url',
+        'location,status,scrollbars,resizable,width=600,height=600',
+      );
 
-    localStorage.setItem('tid', charge.data.tid);
-    window.open(
-      `${charge.data!.next_redirect_pc_url}`,
-      'next_pc_url',
-      'location,status,scrollbars,resizable,width=600,height=600',
-    );
+      router.push('/charge/approval/finish');
+    } else {
+      alert('null 이 나오는 오류 ㅠ.ㅠ 다시시도해주세요');
+    }
   };
 
   return (
