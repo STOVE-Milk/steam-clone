@@ -36,8 +36,8 @@ public class Room {
         Room room = Room.builder()
                 .roomId(Integer.parseInt(roomCache.getRoomId()))
                 .sessions(Collections.synchronizedList(new ArrayList<>()))
-                .userList(Collections.synchronizedList(new ArrayList<>()))
-                .users(new HashMap<>())
+                .userList(roomCache.getUserList())
+                .users(roomCache.getUsers())
                 .map(roomCache.getMap())
                 .build();
         room.getMap().initializeNullCollection();

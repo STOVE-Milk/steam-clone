@@ -26,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 @Service
 public class SocketService {
+    // userId : sessionId
+    private static Map<String, String> user_session = new ConcurrentHashMap<>();
     // sessionId : UserDetails
     private static Map<String, UserDetails> userData = new ConcurrentHashMap<>();
     // sessionId : roomId
@@ -48,6 +50,7 @@ public class SocketService {
         String sessionId = session.getId();
 
         // 등록이 되어있는지 확인하고 없으면 넣기
+        // TODO: 세션이 달라질 경우, 세션이 같을 경우 고민
         // REDIS 조회 (Room Data가 이미 있는지? 없으면 Room 생성 후 등록
         // Room 생성 시 필요한 것 : roomId, user, map
         if(session_room.containsKey(sessionId)) {
@@ -55,30 +58,33 @@ public class SocketService {
             session_room.remove(sessionId);
         }
 
+        // Room 생성
+        Room room;
         if(!robby.containsKey(roomId)) {
-            Room newRoom = socketDataService.getRoomHash(roomId, userDetails.getIdx());
-            robby.put(roomId, newRoom);
+            room = socketDataService.makeRoom(roomId);
+            robby.put(roomId, room);
+        } else {
+            room = robby.get(roomId);
         }
 
         // Room 입장
-        Room room = robby.get(roomId);
         room.enter(userDetails, session);
-
-        // Map 데이터 연결
         userData.put(sessionId, userDetails);
+        user_session.put(userId, sessionId);
         session_room.put(sessionId, roomId);
 
         logObjectJson(room);
 
         // 입장 이벤트 전파
         EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
+        // TODO: ENTER PUB/SUB
         sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
 
-        // 기존 데이터랑 SYNC 
-        SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(room);
+        // Redis 갱신 & SYNC
+        // 궁금: UserDto를 새로 만드는게 빠를까? vs 가져오는게 빠를까?
+        Room cachedRoom = socketDataService.addUser(roomId, userId, room.getUsers().get(userId));
+        SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(cachedRoom);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
-
-        socketDataService.saveRoomHash(room);
 
         return true;
     }
@@ -152,8 +158,9 @@ public class SocketService {
         Integer userNum = robby.get(closeRoomId).leave(userId, session);
         if(userNum.equals(0))
             robby.remove(closeRoomId);
-        session_room.remove(sessionId);
+        user_session.remove(userId);
         userData.remove(sessionId);
+        session_room.remove(sessionId);
 
         try {
             session.close(CloseStatus.NORMAL);

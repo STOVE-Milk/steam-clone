@@ -2,9 +2,12 @@ package com.steam.library.service;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.Room;
+import com.steam.library.dto.UserDto;
+import com.steam.library.entity.Library;
 import com.steam.library.entity.RoomCache;
 import com.steam.library.entity.User;
 import com.steam.library.global.util.JsonUtil;
+import com.steam.library.repository.LibraryRepository;
 import com.steam.library.repository.RoomCacheRepository;
 import com.steam.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,17 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class SocketDataService {
     private final UserRepository userRepository;
+    private final LibraryRepository libraryRepository;
     private final RoomCacheRepository roomCacheRepository;
 
     @Nullable
@@ -80,6 +82,19 @@ public class SocketDataService {
             userRepository.save(user.get());
             return true;
         }
+    }
+
+    public synchronized Room addUser(String roomId, String enteredUserId, UserDto enteredUser) {
+        Optional<RoomCache> opRoomCache = roomCacheRepository.findById(roomId);
+        RoomCache roomCache;
+        if(opRoomCache.isPresent()) {
+            roomCache = opRoomCache.get();
+        } else {
+            roomCache = Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash();
+        }
+        roomCache.addUser(enteredUserId, enteredUser);
+        roomCacheRepository.save(roomCache);
+        return Room.of(roomCache);
     }
 
     public boolean saveRoomHash(Room room) {

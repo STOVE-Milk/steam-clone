@@ -22,6 +22,12 @@ public class RoomCache {
     private List<String> userList = new ArrayList<>();
     private Map<String, UserDto> users;
     private MapDto map;
+
+    public void addUser(String userId, UserDto user) {
+        userList.add(userId);
+        users.put(userId, user);
+    }
+
     public void updateMap(MapDto map) {
         this.map = map;
     }
