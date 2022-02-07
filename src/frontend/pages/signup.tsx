@@ -37,10 +37,7 @@ const SignUpButton = styled(FilledButton)`
 `;
 
 const signup: NextPage<IState> = () => {
-  const { signup } = useSelector((state: IState) => {
-    console.log(state.user.signup.data);
-    return state.user;
-  });
+  const { signup } = useSelector((state: IState) => state.user);
 
   const [inputs, setInputs] = useState({
     email: '',
@@ -53,6 +50,10 @@ const signup: NextPage<IState> = () => {
 
   // [refer]: Record타입으로 errors의 타입을 지정(이전 프로젝트의 팀원의 코드를 이해하여 참고)
   const [errors, setErrors] = useState({} as Record<string, string>);
+  const [dupChecks, setDupChecks] = useState({
+    email: false,
+    nickname: false,
+  });
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -68,9 +69,11 @@ const signup: NextPage<IState> = () => {
       case 'email': {
         if (inputs.email.length === 0) {
           alert(Object.values(errors));
+        } else if (Object.keys(errors).includes('email')) {
+          alert(Object.values(errors));
         } else {
           const res = await checkEmailAPI({ email: inputs.email });
-          alert(res.data);
+          alert(res.message);
 
           if (res.code === 10000) {
             setErrors((prev) => {
@@ -78,6 +81,7 @@ const signup: NextPage<IState> = () => {
               delete state.email;
               return { ...state };
             });
+            dupChecks.email = true;
           } else {
             setErrors((prev) => ({ ...prev, email: res.message }));
           }
@@ -89,7 +93,7 @@ const signup: NextPage<IState> = () => {
           alert(Object.values(errors));
         } else {
           const res = await checkNicknameAPI({ nickname: inputs.nickname });
-          alert(res.data);
+          alert(res.message);
 
           if (res.code === 10000) {
             setErrors((prev) => {
@@ -97,6 +101,7 @@ const signup: NextPage<IState> = () => {
               delete state.email;
               return { ...state };
             });
+            dupChecks.nickname = true;
           } else {
             setErrors((prev) => ({ ...prev, nickname: res.message }));
           }
@@ -165,6 +170,18 @@ const signup: NextPage<IState> = () => {
         return { ...state };
       });
     }
+    if (!Object.values(dupChecks).includes(false)) {
+      setErrors((prev) => ({
+        ...prev,
+        dupChecks: '이메일과 닉네임 중복체크를 진행해주세요.',
+      }));
+    } else {
+      setErrors((prev) => {
+        const state = prev;
+        delete errors.dupChecks;
+        return { ...state };
+      });
+    }
 
     //[explain]: 에러 객체가 비어있고, 모든 input이 채워져있을 때 signup요청을 보냅니다.
     if (Object.keys(errors).length === 0 && nullChecker) {
@@ -185,7 +202,7 @@ const signup: NextPage<IState> = () => {
 
   return (
     <SignUpFormWrapper>
-      {/* {console.log(errors)} */}
+      {console.log(errors)}
       {/* {console.log(signup.data)} */}
       <Text types="large">회원가입</Text>
       <AuthInput
