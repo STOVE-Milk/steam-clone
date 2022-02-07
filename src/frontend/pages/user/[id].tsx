@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { IState } from 'modules';
-import { getProfileAPI } from '../api/user/api';
+import { getProfileAPI, getWithFriendAPI } from '../api/user/api';
 
 import Text from 'components/atoms/Text';
 import UserInfo from 'components/organisms/UserInfo';
@@ -58,6 +58,7 @@ const MyPage: NextPage = () => {
   useEffect(() => {
     // (스토어의 userId !== 현재 url의 userId 일 때)
     // getProfileAPI({ id: 1 });
+    // getWithFriendAPI({ id: 1 });
   });
 
   return (
