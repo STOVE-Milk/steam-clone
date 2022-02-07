@@ -3,6 +3,7 @@ package com.steam.membership.dto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.steam.membership.entity.GuestBook;
+import com.steam.membership.global.util.JsonUtil;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,7 +16,7 @@ public class GuestBookDto {
     private Integer id;
     private Integer guestId;
     private String displayedName;
-    private String proflie;
+    private ProfileDto proflie;
     private String content;
     private Date createdAt;
 
@@ -24,7 +25,7 @@ public class GuestBookDto {
                 .id(guestBook.getIdx())
                 .guestId(guestBook.getGuest().getIdx())
                 .displayedName(guestBook.getDisplayedName())
-                .proflie(guestBook.getGuest().getProfile())
+                .proflie(JsonUtil.toObject(guestBook.getGuest().getProfile(), ProfileDto.class))
                 .content(guestBook.getContent())
                 .createdAt(guestBook.getCreatedAt())
                 .build();

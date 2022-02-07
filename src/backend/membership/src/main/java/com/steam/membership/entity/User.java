@@ -5,6 +5,7 @@ import com.steam.membership.global.error.ErrorCode;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.servlet.annotation.MultipartConfig;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;

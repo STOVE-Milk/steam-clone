@@ -42,8 +42,8 @@ public class FriendService {
     public Body<Object> getFriendList() {
         final List<Friend> friends = friendRepository.findTop20ByUser(UserContext.getUser());
 
-        if(friends.isEmpty())
-            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+//        if(friends.isEmpty())
+//            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
         return Body.success(FriendsResponse.of(friends));
     }
@@ -56,7 +56,8 @@ public class FriendService {
         );
 //
         if(sameFriends.isEmpty())
-            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+            return Body.success(FriendsResponse.of(sameFriends));
+            //return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
         // 현재 하나씩 불러오게 됨
         // Id List를 뽑아 한꺼번에 SELECT 하도록 or 처음부터 join해서 가져오기
@@ -116,19 +117,20 @@ public class FriendService {
         if(type.equals(FRIEND_REQUEST_TYPE_SENDED)) {
             friendRequests = friendRequestRepository.findAllBySender(me);
 
-            if(friendRequests.isEmpty())
-                return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+//            if(friendRequests.isEmpty())
+//                return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
             return Body.success(FriendRequestResponse.receiverOf(friendRequests));
         } else if(type.equals(FRIEND_REQUEST_TYPE_RECEIVED)) {
             friendRequests = friendRequestRepository.findAllByReceiver(me);
 
-            if(friendRequests.isEmpty())
-                return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+//            if(friendRequests.isEmpty())
+//                return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
             return Body.success(FriendRequestResponse.senderOf(friendRequests));
         } else {
-            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+            return Body.success(FriendRequestResponse.builder().requests(new ArrayList<>()).build());
+            //return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
         }
     }
 
@@ -138,7 +140,8 @@ public class FriendService {
         final Optional<User> receiver = userRepository.findById(userId);
 
         if(receiver.isEmpty())
-            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+            return Body.success(new EmptyData());
+            //return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
         final Optional<FriendRequest> friendRequest = friendRequestRepository.findBySenderAndReceiver(me, receiver.get());
         if(friendRequest.isPresent())
