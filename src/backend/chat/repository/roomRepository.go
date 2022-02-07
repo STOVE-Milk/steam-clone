@@ -2,11 +2,10 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -33,10 +32,11 @@ type RoomRepository struct {
 	Db *mongo.Client
 }
 
+// 방이 존재하지 않으면 방 생성.
 func (repo *RoomRepository) AddRoom(room models.Room) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	roomsInfo := models.RoomsMongo{
-		ID:        uuid.New().String(),
+		ID:        room.GetId(),
 		Name:      room.GetName(),
 		No:        1,
 		Private:   room.GetPrivate(),
@@ -61,19 +61,21 @@ func (repo *RoomRepository) LoggingChat(chatLogData models.ChatLogData, roomId s
 }
 
 func (repo *RoomRepository) FindRoomByName(name string) models.Room {
+	var room Room
+
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	findFilter := bson.D{{"name", name}}
 	var roomB bson.M
 	chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomB)
 
 	if roomB == nil {
+		log.Println(name + "없는 방")
 		return nil
 	}
-	room := Room{
+	room = Room{
 		Id:      roomB["id"].(string),
 		Name:    roomB["name"].(string),
 		Private: roomB["private"].(bool),
 	}
-	fmt.Println(room)
 	return &room
 }

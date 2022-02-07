@@ -234,7 +234,6 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 }
 
 func (client *Client) joinRoom(roomName string, sender models.User) *Room {
-
 	room := client.wsServer.findRoomByName(roomName)
 	if room == nil {
 		room = client.wsServer.createRoom(roomName, sender != nil)
@@ -252,7 +251,7 @@ func (client *Client) joinRoom(roomName string, sender models.User) *Room {
 
 		client.notifyRoomJoined(room, sender)
 	}
-
+	fmt.Println("joinroom " + room.GetId())
 	return room
 
 }
