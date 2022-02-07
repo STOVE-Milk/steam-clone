@@ -73,6 +73,10 @@ const SectionDivider = styled.div`
   background: ${(props) => props.theme.colors.divider};
 `;
 
+const FriendModalBtn = styled.div`
+  
+`;
+
 const FriendSection = styled.div`
   padding: 20px 10px 20px 10px;
   flex: 1;

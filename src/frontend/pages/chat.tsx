@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
@@ -104,16 +104,43 @@ const Chat: NextPage = () => {
   const [message, setMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectFriends, setSelectFriends] = useState<number[]>([]);
+  // const [ws, setWebSocket] = useState<WebSocket>();
+  let ws = useRef<WebSocket>();
 
-  let ws: WebSocket;
+  const token =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHgiOjE0LCJuaWNrbmFtZSI6Im5pY2sxNCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiIsImlhdCI6MTY0NDEzNzUyOCwiZXhwIjoxNjQ0MTQxMTI4fQ.rgF0cR0dhqLOY3yhDuYPHJss4exAeTIfw2H1yAKf_78';
 
   useEffect(() => {
-    ws = new WebSocket('ws://localhost:8102/ws');
-    ws.onopen = () => {
-      console.log('connected!!');
-    };
+    if (!ws.current) {
+      ws.current = new WebSocket(`ws://localhost:8102/ws?token=${token}`);
+
+      ws.current.onmessage = (e: MessageEvent) => {
+        console.log('message', e.data);
+      };
+    }
+    // setWebSocket(new WebSocket(`ws://localhost:8102/ws?token=${token}`));
+
+    // ws &&
+    //   ws.addEventListener('open', () => {
+    //     console.log('connected');
+    //   });
+    // // ws &&
+    // //   ws.addEventListener('message', (e: MessageEvent) => {
+    // //     console.log('message', e.data);
+    // //   });
+    // ws &&
+    //   ws.addEventListener('close', (e: CloseEvent) => {
+    //     ws.send('closed');
+    //   });
+
+    // if (ws) {
+    //   ws.onmessage = (e: MessageEvent) => {
+    //     console.log('message', e.data);
+    //   };
+    // }
     // return () => {
-    //   socket.off('receive data');
+    //   console.log('clean up');
+    //   ws.current.close();
     // };
   }, []);
 
@@ -125,18 +152,18 @@ const Chat: NextPage = () => {
       // 통신
       // 어떻게 뷰를 계속 추가하지...
       console.log('enter');
+      console.log(ws);
 
-      ws &&
-        ws.send(
-          JSON.stringify({
-            action: 'send-message',
-            message: message,
-            target: {
-              id: 'd4aa5931-3c32-414c-8d07-5442d0976d02',
-              name: '2-3',
-            },
-          }),
-        );
+      ws.current?.send(
+        JSON.stringify({
+          action: 'send-message',
+          message: message,
+          target: {
+            id: '68535657-9eeb-4282-a180-6dd286ff9672',
+            name: '2-3',
+          },
+        }),
+      );
     }
   };
 
@@ -147,17 +174,12 @@ const Chat: NextPage = () => {
   };
 
   const onSubmit = () => {
-    ws &&
-      ws.send(
-        JSON.stringify({
-          action: 'room-joined',
-          message: '',
-          sender: {
-            id: '3',
-            name: 'user3',
-          },
-        }),
-      );
+    ws.current?.send(
+      JSON.stringify({
+        action: 'join-room-private',
+        message: '15',
+      }),
+    );
 
     console.log(selectFriends);
   };
