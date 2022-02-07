@@ -96,7 +96,8 @@ var app = new Vue({
     },
     handleRoomJoined(msg) {
       room = msg.target;
-      room.name = room.private ? msg.sender.name : room.name;
+      // room.name = room.private ? msg.sender.name : room.name;
+      room.name =  room.name;
       room["messages"] = [];
       this.rooms.push(room);
     },

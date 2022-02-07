@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
@@ -55,7 +54,6 @@ func (repo *UserRepository) GetAllUsers() []models.User {
 		var user User
 		rows.Scan(&user.Id, &user.Name)
 		users = append(users, &user)
-		fmt.Println(user.Id, user.Name)
 	}
 
 	return users

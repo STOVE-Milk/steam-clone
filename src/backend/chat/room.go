@@ -48,7 +48,6 @@ func (room *Room) RunRoom() {
 			room.unregisterClientInRoom(client)
 
 		case message := <-room.broadcast:
-
 			room.publishRoomMessage(message.encode())
 		}
 
@@ -102,6 +101,7 @@ func (room *Room) subscribeToRoomMessages() {
 
 	for msg := range ch {
 		room.broadcastToClientsInRoom([]byte(msg.Payload))
+
 	}
 }
 

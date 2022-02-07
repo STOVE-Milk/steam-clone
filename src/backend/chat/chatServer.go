@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
@@ -83,13 +82,10 @@ func (server *WsServer) publishClientJoined(client *Client) {
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
 		log.Println(err)
 	}
-	fmt.Println(message)
 }
 
 func (server *WsServer) publishClientLeft(client *Client) {
-	for k, _ := range server.clients {
-		fmt.Println(k)
-	}
+
 	message := &Message{
 		Action: UserLeftAction,
 		Sender: client,
@@ -119,7 +115,6 @@ func (server *WsServer) listenPubSubChannel() {
 			server.handleUserLeft(message)
 		case JoinRoomPrivateAction:
 			server.handleUserJoinPrivate(message)
-
 		}
 	}
 }
@@ -148,11 +143,11 @@ func (server *WsServer) handleUserJoined(message Message) {
 }
 
 func (server *WsServer) handleUserLeft(message Message) {
-	// Remove the user from the slice
 
 	server.broadcastToClients(message.encode())
 }
 
+//해당 클라이언트에게 접속 중인 클라이언트들의 정보를 줌.
 func (server *WsServer) listOnlineClients(client *Client) {
 	// NEW: Use the users slice instead of the client map
 	for _, user := range server.users {
@@ -164,6 +159,8 @@ func (server *WsServer) listOnlineClients(client *Client) {
 	}
 }
 
+// 서버에 등록된 클라이언트들에게 메세지를 전송.
+// 누군가 웹 소켓 연결을 할 때나 연결을 끊을 때.
 func (server *WsServer) broadcastToClients(message []byte) {
 	for client := range server.clients {
 		client.send <- message

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/config"
@@ -129,9 +130,7 @@ func (client *Client) writePump() {
 
 func (client *Client) disconnect() {
 	client.wsServer.unregister <- client
-	for room := range client.rooms {
-		room.unregister <- client
-	}
+
 	close(client.send)
 	client.conn.Close()
 }
@@ -144,8 +143,9 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var user models.User
+	loginUser, _ := models.ExtractMetadata(r)
 	for _, u := range wsServer.users {
-		if u.GetName() == "test" {
+		if u.GetName() == loginUser.Nickname {
 			user = u
 			break
 		}
@@ -156,6 +156,7 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 	go client.readPump()
 
 	wsServer.register <- client
+
 }
 
 func (client *Client) handleNewMessage(jsonMessage []byte) {
@@ -174,7 +175,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		if room := client.wsServer.findRoomByID(roomID); room != nil {
 			room.broadcast <- &message
 		}
-		fmt.Println(string(message.encode()))
 		client.wsServer.loggingChat(roomID, message.Sender.GetId(), message.Sender.GetName(), message.Message)
 
 	case JoinRoomAction:
@@ -209,7 +209,6 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 }
 
 func (client *Client) handleJoinRoomPrivateMessage(message Message) {
-
 	target := client.wsServer.findUserByID(message.Message)
 
 	if target == nil {
@@ -217,12 +216,12 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	}
 
 	// create unique room name combined to the two IDs
-	userA := message.Message
-	userB := client.ID
+	userA, _ := strconv.Atoi(message.Message)
+	userB, _ := strconv.Atoi(client.ID)
 	if userA > userB {
 		userA, userB = userB, userA
 	}
-	roomName := userA + "-" + userB
+	roomName := fmt.Sprintf("%v-%v", userA, userB)
 
 	// Join room
 	joinedRoom := client.joinRoom(roomName, target)
@@ -281,10 +280,9 @@ func (client *Client) inviteTargetUser(target models.User, room *Room) {
 
 func (client *Client) notifyRoomJoined(room *Room, sender models.User) {
 	message := Message{
-		Action:  RoomJoinedAction,
-		Target:  room,
-		Message: string((&Message{Message: "이거 나와라"}).encode()),
-		Sender:  sender,
+		Action: RoomJoinedAction,
+		Target: room,
+		Sender: sender,
 	}
 	client.send <- message.encode()
 }

@@ -49,9 +49,10 @@ func main() {
 	wsServer := NewWebsocketServer(&repository.RoomRepository{Db: mongo}, &repository.UserRepository{Db: db})
 	go wsServer.Run()
 
-	serveMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	serveMux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		ServeWs(wsServer, w, r)
 	})
-
+	fs := http.FileServer(http.Dir("./public"))
+	serveMux.Handle("/", fs)
 	log.Fatal(http.ListenAndServe(*addr, allowCORS(serveMux)))
 }
