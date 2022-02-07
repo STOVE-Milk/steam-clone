@@ -3,13 +3,15 @@ import type { NextPage } from 'next';
 import styled, { css } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestion, faUser, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faQuestion, faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { IState } from 'modules';
 
 import Text from 'components/atoms/Text';
 import FriendBox from 'components/molecules/FriendBox';
 import Profile from 'components/atoms/Profile';
+import FilledButton from 'components/atoms/FilledButton';
+import { TextTheme } from 'components/atoms/Text';
 
 const Wrapper = styled.div`
   display: flex;
@@ -68,6 +70,33 @@ const Title = styled.div<{ focus: boolean }>`
   }
 `;
 
+const SearchBox = styled.div`
+  border: 1px solid white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+`;
+
+const SearchInput = styled.input`
+  border: none;
+  padding: 0.5rem;
+  flex: 1;
+  background: transparent;
+  color: ${TextTheme.medium.color};
+  font-size: ${TextTheme.medium.size};
+`;
+
+const ResultBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 3rem;
+`;
+
+const FriendList = styled.div`
+  padding: 1rem 0;
+`;
+
 const Friend: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
   // const { user } = useSelector((state: IState) => state.user);
@@ -119,6 +148,7 @@ const Friend: NextPage = () => {
         </Title>
       </TitleSection>
       <FriendSection>
+        {/* 나중에 리팩토링 하기 */}
         {tab === 0 ? (
           friends.map((friend) => {
             return (
@@ -135,7 +165,31 @@ const Friend: NextPage = () => {
             );
           })
         ) : tab === 1 ? (
-          <div>친구검색</div>
+          <>
+            <SearchBox>
+              <SearchInput></SearchInput>
+              <FriendActionBtn icon={faSearch} inverse />
+            </SearchBox>
+            <ResultBox>
+              <Text types={'large'}>검색결과</Text>
+              <FriendList>
+                {friends.map((friend) => {
+                  return (
+                    <FriendItem>
+                      <FriendBox
+                        open={true}
+                        icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />}
+                        name={friend.nickname}
+                      />
+                      <FriendActionBox>
+                        <FriendActionBtn icon={faPlus} inverse />
+                      </FriendActionBox>
+                    </FriendItem>
+                  );
+                })}
+              </FriendList>
+            </ResultBox>
+          </>
         ) : tab === 2 ? (
           friends.map((friend) => {
             return (
