@@ -12,13 +12,20 @@ import {
   GET_GAMESBYCATEGORY,
   GET_GAMESBYCATEGORY_SUCCESS,
   GET_GAMESBYCATEGORY_FAIL,
+  ADD_CARTINFO,
+  ADD_CARTINFO_SUCCESS,
+  ADD_CARTINFO_FAIL,
+  RM_CARTINFO,
+  RM_CARTINFO_SUCCESS,
+  RM_CARTINFO_FAIL,
 } from './actions';
-import { initalCategory, initalGamesByCategory, initalGame } from './initalData';
+import { initalCategory, initalGamesByCategory, initalGame, initalCartInfo } from './initalData';
 
 const initialState: gameState = {
   categories: asyncState.initial(initalCategory),
   gamesByCategory: asyncState.initial(initalGamesByCategory),
   game: asyncState.initial(initalGame),
+  cartInfo: asyncState.initial(initalCartInfo),
 };
 
 const reducer = createReducer<gameState>(initialState, {
@@ -57,6 +64,30 @@ const reducer = createReducer<gameState>(initialState, {
   [GET_GAMESBYCATEGORY_FAIL]: (state, action) => ({
     ...state,
     gamesByCategory: asyncState.error(initalGamesByCategory, action.payload.data.game_list),
+  }),
+  [ADD_CARTINFO]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.load(initalCartInfo),
+  }),
+  [ADD_CARTINFO_SUCCESS]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.success(action.payload.data),
+  }),
+  [ADD_CARTINFO_FAIL]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.error(initalCartInfo, action.payload.data),
+  }),
+  [RM_CARTINFO]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.load(initalCartInfo),
+  }),
+  [RM_CARTINFO_SUCCESS]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.success(action.payload.data),
+  }),
+  [RM_CARTINFO_FAIL]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.error(initalCartInfo, action.payload.data),
   }),
 });
 

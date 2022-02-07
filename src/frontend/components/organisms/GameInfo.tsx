@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import sImage from 'public/game.png';
 import { gameInfo as IGameInfo } from 'modules/game/types';
 import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
+
+import { IState } from 'modules';
+import { useSelector, useDispatch } from 'react-redux';
+import { addCartInfo, rmCartInfo } from 'modules/game';
 
 const GameInfoBox = styled.section`
   width: 60rem;
@@ -160,18 +163,30 @@ const OsBox = styled.span`
 // 게임 정보가 담긴 obj {}를 props로 내려주면,
 // to do -> 1. 게임정보 타입 정하고 2. props들을 내려주고 3. 제대로 나오나 테스팅하고, 4. 혹시 정보가 없었을 떄 alt로 나오는 정보들이 제대로 나오는지 체크하고
 export default function GameInfo(props: IGameInfo) {
+  const { cartInfo } = useSelector((state: IState) => state.game);
+
   const gameData = props;
+  const cartStatus = cartInfo.data != undefined ? cartInfo.data.includes(gameData.id) : false;
+
   const [like, setLike] = useState(false);
-  const [cart, setCart] = useState(false);
+  const [cart, setCart] = useState(cartStatus);
+
+  const dispatch = useDispatch();
+
+  const cartFunc = (game_id: number, curStatus: Boolean) => {
+    curStatus ? alert('장바구니에서 빠졌습니다') : alert('장바구니에 담겼습니다.');
+
+    curStatus
+      ? dispatch(rmCartInfo.request({ prev: [...cartInfo.data], game_id }))
+      : dispatch(addCartInfo.request({ prev: [...cartInfo.data], game_id }));
+  };
 
   return (
     <GameInfoBox>
       <ImageBox>
         {/* {image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
-        {/* TO DO(yangha): 게임데이터에서 온 이미지로 변경하기 ->  이미지 url domain 고정되면 config파일도 수정해야함. */}
         <GameImage alt={'mainimage'} src={`${gameData.image.main}`} layout={'fill'}></GameImage>
       </ImageBox>
-      {/* 할인중인지 여부에 따라서 ui 가 좀 다름 */}
       <GameDetailBox>
         <section className="info">
           <span>
@@ -220,8 +235,13 @@ export default function GameInfo(props: IGameInfo) {
               <FontAwesomeIcon className={like ? '' : 'pink-highlight'} icon={faHeart} inverse />
             </span>
           </IconBox>
-          <IconBox onClick={() => setCart(!cart)}>
-            <FontAwesomeIcon className={cart ? '' : 'blue-highlight'} icon={faShoppingCart} inverse />
+          <IconBox
+            onClick={() => {
+              cartFunc(gameData.id, cart);
+              setCart(!cart);
+            }}
+          >
+            <FontAwesomeIcon className={cart ? 'blue-highlight' : ''} icon={faShoppingCart} inverse />
           </IconBox>
         </section>
       </EtcInfoBox>

@@ -63,3 +63,5 @@ export const initalGame = {
   recommend_count: 3,
   language: ['한국어', '영어'],
 };
+
+export const initalCartInfo = [111, 222, 6];
