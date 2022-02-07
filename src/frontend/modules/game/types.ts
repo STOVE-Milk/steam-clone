@@ -3,7 +3,7 @@ import { ActionType } from 'typesafe-actions';
 import { AsyncState } from 'modules/utils/reducerUtils';
 import * as actions from './actions';
 
-interface gameInfo {
+export interface gameInfo {
   category_list: string[];
   description_snippet: string;
   download_count: number;
@@ -33,7 +33,7 @@ interface gameDetail extends gameInfo {
 
 export interface gameState {
   categories: AsyncState<string[], Error>;
-  gamesByCategory: AsyncState<gameInfo[], Error>; // response 이름에 맞춤
+  gamesByCategory: AsyncState<gameInfo[], Error>;
   game: AsyncState<gameDetail, Error>; // 상세 페이지에서 쓰일 1개 게임에 대한 정보
 }
 
