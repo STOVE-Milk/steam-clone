@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class KakaoPayReady{
+public class KakaoPayReadyRequest {
     private String cid;
     private String partnerOrderId;
     private String partnerUserId;
@@ -28,8 +28,8 @@ public class KakaoPayReady{
     private String cancelUrl;
     private String failUrl;
 
-    public static KakaoPayReady of(Integer userId, GiftcardDto giftcard, Integer orderCount) {
-        return KakaoPayReady.builder()
+    public static KakaoPayReadyRequest of(Integer userId, GiftcardDto giftcard, Integer orderCount) {
+        return KakaoPayReadyRequest.builder()
                 .itemCode(giftcard.getId().toString())
                 .itemName(giftcard.getName())
                 .partnerOrderId(userId.toString() + "-" + orderCount.toString())
