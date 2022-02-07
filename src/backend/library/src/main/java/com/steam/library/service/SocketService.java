@@ -35,8 +35,7 @@ public class SocketService {
 
     private final SocketDataService socketDataService;
 
-    public synchronized Boolean enter(WebSocketSession session, String data) {
-        EnterRequestMessage enterRequestMessage = JsonUtil.toObject(data, EnterRequestMessage.class);
+    public synchronized Boolean enter(WebSocketSession session, EnterRequestMessage enterRequestMessage) throws NullPointerException{
         if(enterRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
 
@@ -84,11 +83,10 @@ public class SocketService {
         return true;
     }
 
-    public Boolean move(WebSocketSession session, String data) {
+    public Boolean move(WebSocketSession session, MoveRequestMessage moveRequestMessage) throws NullPointerException{
         String sessionId = session.getId();
         String userId = userData.get(sessionId).getIdx().toString();
         String roomId = session_room.get(sessionId);
-        MoveRequestMessage moveRequestMessage = JsonUtil.toObject(data, MoveRequestMessage.class);
         if(moveRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
 
@@ -96,14 +94,14 @@ public class SocketService {
 
         // 움직임 이벤트 전파
         MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
+        // TODO: MOVE PUB/SUB
         sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
 
         return true;
     }
 
-    public Boolean updateMap(WebSocketSession session, String data) {
+    public Boolean updateMap(WebSocketSession session, BuildRequestMessage buildRequestMessage) throws NullPointerException{
         UserDetails userDetails = userData.get(session.getId());
-        BuildRequestMessage buildRequestMessage = JsonUtil.toObject(data, BuildRequestMessage.class);
         String roomId = session_room.get(session.getId());
 
         if(userDetails == null) {
@@ -163,17 +161,18 @@ public class SocketService {
         return true;
     }
 
-    private boolean sendErrorMessage(WebSocketSession session, ErrorCode errorCode) {
-        return sendMessageToMe(session, Behavior.ERROR, errorCode.getMessage());
+    public boolean sendErrorMessage(WebSocketSession session, ErrorCode errorCode) {
+        sendMessageToMe(session, Behavior.ERROR, errorCode.getMessage());
+        return false;
     }
 
-    private <T> boolean sendMessageToMe(WebSocketSession session, Behavior behavior, T data) {
+    public <T> boolean sendMessageToMe(WebSocketSession session, Behavior behavior, T data) {
         TextMessage textMessage = new TextMessage(behavior.getValue() + JsonUtil.toJson(data));
 
         return sendMessageToMe(session, textMessage);
     }
 
-    public boolean sendMessageToMe(WebSocketSession session, TextMessage message) {
+    public boolean sendMessageToMe(WebSocketSession session, TextMessage message) throws NullPointerException{
         try {
             synchronized (session) {
                 session.sendMessage(message);
@@ -185,17 +184,38 @@ public class SocketService {
         return true;
     }
 
-    private <T> boolean sendMessageToRoom(String roomId, String myId, Behavior behavior, T data) {
+    public <T> boolean sendMessageToRoom(String roomId, String myId, Behavior behavior, T data) {
         TextMessage textMessage = new TextMessage(behavior.getValue() + JsonUtil.toJson(data));
 
         return sendMessageToRoom(roomId, myId, textMessage);
     }
 
-    public synchronized boolean sendMessageToRoom(String roomId, String myId, TextMessage message) {
+    public synchronized boolean sendMessageToRoom(String roomId, String myId, TextMessage message) throws NullPointerException{
         final List<WebSocketSession> sessions = robby.get(roomId).getSessions();
         for(WebSocketSession session : sessions) {
             try {
                 if(!userData.get(session.getId()).getIdx().toString().equals(myId)) {
+                    session.sendMessage(message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return true;
+    }
+
+    public <T> boolean sendMessageToAll(String roomId, Behavior behavior, T data) {
+        TextMessage textMessage = new TextMessage(behavior.getValue() + JsonUtil.toJson(data));
+
+        return sendMessageToAll(roomId, textMessage);
+    }
+
+    public synchronized boolean sendMessageToAll(String roomId, TextMessage message) throws NullPointerException{
+        final List<WebSocketSession> sessions = robby.get(roomId).getSessions();
+        for(WebSocketSession session : sessions) {
+            try {
+                synchronized (session) {
                     session.sendMessage(message);
                 }
             } catch (IOException e) {

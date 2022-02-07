@@ -2,6 +2,9 @@ package com.steam.library;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.global.common.Behavior;
+import com.steam.library.global.common.messages.*;
+import com.steam.library.global.error.ErrorCode;
+import com.steam.library.global.util.JsonUtil;
 import com.steam.library.service.SocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -29,20 +32,27 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
             try {
                 switch (behavior) {
                     case ENTER:
-                        socketService.enter(session, jsonData);
-                        break;
+                        EnterRequestMessage enterRequestMessage = JsonUtil.toObject(jsonData, EnterRequestMessage.class);
+                        isSuccessed = socketService.enter(session, enterRequestMessage);
                     case SYNC:
-                        socketService.synchronizeRoom(session);
+                        isSuccessed = socketService.synchronizeRoom(session);
                         break;
                     case LEAVE:
-                        socketService.closeConnection(session);
+                        isSuccessed = socketService.closeConnection(session);
                         break;
                     case MOVE:
-                        socketService.move(session, jsonData);
+                        MoveRequestMessage moveRequestMessage = JsonUtil.toObject(jsonData, MoveRequestMessage.class);
+                        isSuccessed = socketService.move(session, moveRequestMessage);
                         break;
                     case BUILD:
-                        socketService.updateMap(session, jsonData);
+                        BuildRequestMessage buildRequestMessage = JsonUtil.toObject(jsonData, BuildRequestMessage.class);
+                        isSuccessed = socketService.updateMap(session, buildRequestMessage);
                         break;
+                    default:
+                        isSuccessed = socketService.sendErrorMessage(session, ErrorCode.NOT_ALLOWED_BEHAVIOR_CODE);
+                }
+                if(!isSuccessed) {
+                    log.info(behavior + "_failed");
                 }
             } catch (NullPointerException e) {
                 e.printStackTrace();

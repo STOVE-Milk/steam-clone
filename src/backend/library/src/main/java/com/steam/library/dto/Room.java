@@ -85,8 +85,9 @@ public class Room {
     }
 
     public void resetUserLocation() {
-        for(String userId : this.userList)
-            this.users.get(userId).resetLocation();
+        users.forEach((key, user) -> {
+            user.resetLocation();
+        });
     }
 
     public void updateMap(MapDto map) {
