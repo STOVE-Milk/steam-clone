@@ -22,4 +22,13 @@ public class RoomCache {
     private List<String> userList = new ArrayList<>();
     private Map<String, UserDto> users;
     private MapDto map;
+    public void updateMap(MapDto map) {
+        this.map = map;
+    }
+
+    public void resetUserLocation() {
+        this.users.forEach((key, user) -> {
+            user.resetLocation();
+        });
+    }
 }

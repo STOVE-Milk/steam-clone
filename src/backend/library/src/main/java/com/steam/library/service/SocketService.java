@@ -113,18 +113,22 @@ public class SocketService {
         }
 
         // Map 데이터 수정
-        socketDataService.updateUserMap(Integer.parseInt(roomId), buildRequestMessage.getMap());
-        robby.get(roomId).updateMap(buildRequestMessage.getMap());
-        socketDataService.saveRoomHash(robby.get(roomId));
-
-        // 리셋 & SYNC
-        robby.get(roomId).resetUserLocation();
-        sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, robby.get(roomId));
-
-        return true;
+        Boolean isSuccessed = socketDataService.updateUserMap(Integer.parseInt(roomId), buildRequestMessage.getMap());
+        if(isSuccessed) {
+            robby.get(roomId).updateMap(buildRequestMessage.getMap());
+            // 유저 위치 리셋 & SYNC
+            robby.get(roomId).resetUserLocation();
+            // TODO: 리셋 PUB/SUB
+            socketDataService.resetUserLocationAndUpdateMap(roomId, buildRequestMessage.getMap());
+            sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, robby.get(roomId));
+            return true;
+        } else {
+            //TODO: 실패 시 오류 메세지
+            return sendErrorMessage(session, ErrorCode.SERVER_ERROR);
+        }
     }
 
-    public Boolean synchronizeRoom(WebSocketSession session) {
+    public Boolean synchronizeRoom(WebSocketSession session) throws NullPointerException{
         logObjectJson(robby.get(session_room.get(session.getId())));
 
         return sendMessageToRoom(

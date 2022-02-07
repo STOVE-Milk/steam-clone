@@ -10,7 +10,9 @@ import java.util.Map;
 
 @ToString
 @Builder
-@Data
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MapDto {
     private Integer side;
     private List<String> gameList;

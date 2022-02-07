@@ -14,6 +14,7 @@ public enum ErrorCode {
     JSON_PARSE_EXCEPTION(76802, "JSON 파싱 중 오류가 발생했습니다. 관리자에게 문의해주세요"),
     JWT_CLAIM_EXCEPTION(76803, "JWT 해석 중 오류가 발생했습니다. 관리자에게 문의해주세요"),
 
+    NOT_ALLOWED_BEHAVIOR_CODE(76900, "지원하지 않는 메세지 형식입니다."),
     NULL_POINTER_ERROR(76998, "서버에서 NULL 데이터를 참조했습니다. 관리자에게 문의해주세요"),
     SERVER_ERROR(76999, "예상하지 못한 문제가 발생했습니다. 관리자에게 문의해주세요");
 

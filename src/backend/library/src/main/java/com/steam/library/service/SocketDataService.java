@@ -45,14 +45,8 @@ public class SocketDataService {
         return JsonUtil.toMapDto(mapJson);
     }
 
-    public Room getRoomHash(String roomId, Integer userId) {
-        Optional<RoomCache> roomCache = roomCacheRepository.findById(roomId);
-        if(roomCache.isPresent()) {
-            return Room.of(roomCache.get());
-        } else {
-            MapDto mapDto = getUserMap(userId);
-            return Room.withMap(roomId, mapDto);
-        }
+    public Room makeRoom(String roomId) {
+        return Room.withMap(roomId, getUserMap(Integer.parseInt(roomId)));
     }
 
     public boolean updateUserMap(Integer userId, MapDto map) {
@@ -60,19 +54,50 @@ public class SocketDataService {
         if(user.isEmpty())
             return false;
 
-        String mapJson = JsonUtil.toJson(map);
-        if(mapJson == null)
-            return false;
+        // 일단 사이즈만 가지고 판단
+        List<Integer> gameIds = map.getGameList().stream()
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList());
+        if(gameIds.size() > 0) {
+            List<Library> libraries = libraryRepository.findAllByUserIdAndGameIdIn(userId, gameIds);
+            if (gameIds.size() == libraries.size()) {
+                String mapJson = JsonUtil.toJson(map);
+                if (mapJson == null)
+                    return false;
 
-        user.get().updateMap(mapJson);
-        userRepository.save(user.get());
+                user.get().updateMap(mapJson);
+                userRepository.save(user.get());
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            String mapJson = JsonUtil.toJson(map);
+            if (mapJson == null)
+                return false;
 
-        return true;
+            user.get().updateMap(mapJson);
+            userRepository.save(user.get());
+            return true;
+        }
     }
 
     public boolean saveRoomHash(Room room) {
         try {
             RoomCache roomCache = room.toHash();
+            roomCacheRepository.save(roomCache);
+            return true;
+        } catch (RuntimeException e) {
+            log.debug("Room data 캐싱 실패 " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean resetUserLocationAndUpdateMap(String roomId, MapDto map) {
+        try {
+            RoomCache roomCache = roomCacheRepository.findById(roomId).get();
+            roomCache.updateMap(map);
+            roomCache.resetUserLocation();
             roomCacheRepository.save(roomCache);
             return true;
         } catch (RuntimeException e) {

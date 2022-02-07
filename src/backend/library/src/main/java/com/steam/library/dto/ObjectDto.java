@@ -1,10 +1,11 @@
 package com.steam.library.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Builder
-@Data
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ObjectDto {
     private String name;
     private Integer x;
