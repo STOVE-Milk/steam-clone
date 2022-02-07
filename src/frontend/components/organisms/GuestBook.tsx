@@ -15,7 +15,7 @@ export interface IGuestBookProps {
   isMine: boolean;
   isAdd: boolean;
   guestBook?: string;
-  addGuestBook?: (id: number) => Promise<void>;
+  addGuestBook?: () => Promise<void>;
   modifyGuestBook?: (id: number) => Promise<void>;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
@@ -39,6 +39,10 @@ const Name = styled(Text)`
   margin: 0 0.7rem 0 0.3rem;
 `;
 
+const PostButton = styled(FilledButton)`
+  margin-left: auto;
+`;
+
 const Divider = styled.div`
   height: 1px;
   background-color: ${(props) => props.theme.colors.divider};
@@ -54,6 +58,7 @@ const EditBox = styled.textarea`
   ::-webkit-scrollbar {
     display: none;
   }
+  padding: 0.5rem;
 `;
 
 const TextBox = styled.div`
@@ -74,27 +79,28 @@ export default function GuestBook(props: IGuestBookProps) {
         <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
         <Name types="medium">{props.displayName}</Name>
         <CreatedAt types="tiny">{props.created_at}</CreatedAt>
+        {isEdited ? (
+          <PostButton
+            types="primary"
+            onClick={() =>
+              isEdited
+                ? props.modifyGuestBook && props.id && props.modifyGuestBook(props.id)
+                : props.addGuestBook && props.addGuestBook()
+            }
+          >
+            등록
+          </PostButton>
+        ) : null}
+        {!isEdited && props.isMine ? (
+          <PostButton types="primary" onClick={() => setEdited(true)}>
+            수정
+          </PostButton>
+        ) : null}
       </UserBox>
-      {isEdited ? (
-        <FilledButton
-          types="primary"
-          onClick={() =>
-            isEdited
-              ? props.modifyGuestBook && props.id && props.modifyGuestBook(props.id)
-              : props.addGuestBook && props.addGuestBook()
-          }
-        >
-          등록
-        </FilledButton>
-      ) : null}
-      {!isEdited && props.isMine ? (
-        <FilledButton types="primary" onClick={() => setEdited(true)}>
-          수정
-        </FilledButton>
-      ) : null}
+
       <Divider />
       {isEdited ? (
-        <EditBox value={props.guestBook?.content} onChange={(e) => props.onChange && props.onChange(e)}></EditBox>
+        <EditBox value={props.guestBook} onChange={(e) => props.onChange && props.onChange(e)}></EditBox>
       ) : (
         <TextBox>
           {props.content.split('\n').map((text, key) => (

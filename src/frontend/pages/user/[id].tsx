@@ -6,7 +6,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { IState } from 'modules';
-import { getProfileAPI, getWithFriendAPI } from '../api/user/api';
+import {
+  getProfileAPI,
+  getWithFriendAPI,
+  getGuestBooksAPI,
+  addGuestBookAPI,
+  modifyGuestBookAPI,
+} from '../api/user/api';
 
 import Text from 'components/atoms/Text';
 import UserInfo from 'components/organisms/UserInfo';
@@ -95,7 +101,7 @@ const MyPage: NextPage = () => {
   ];
 
   const getGuestBooks = async (id: number) => {
-    const res = (await getGuestBooksAPI({ id: id })).data.review_list;
+    const res = (await getGuestBooksAPI({ id: id })).payload.data.guest_book;
     console.log(res);
     setGuestBooks(res);
   };
@@ -105,15 +111,15 @@ const MyPage: NextPage = () => {
     setUserGuestBook(e.target.value);
   };
 
-  const addGuestBook = async (id: number) => {
-    // id: game.data.id
-    const res = (await addGuestBookAPI({ id: id, content: '' })).data;
+  const addGuestBook = async () => {
+    // id: userId
+    const res = await addGuestBookAPI({ userId: 1, content: '' });
     console.log(res);
   };
 
   const modifyGuestBook = async (id: number) => {
-    // id: game.data.id
-    const res = (await modifyGuestBookAPI({ id: id, content: '' })).data;
+    // id: gusetBookId
+    const res = await modifyGuestBookAPI({ id: id, userId: 1, content: '' });
     console.log(res);
   };
 
@@ -121,6 +127,7 @@ const MyPage: NextPage = () => {
     // (스토어의 userId !== 현재 url의 userId 일 때)
     // getProfileAPI({ id: 1 });
     // getWithFriendAPI({ id: 1 });
+    // getGuestBooks(1);
   });
 
   return (
@@ -172,6 +179,7 @@ const MyPage: NextPage = () => {
                 isMine={true} // userId랑 비교
                 id={guest.id}
                 isAdd={false}
+                guestBook={userGuestBook}
                 modifyGuestBook={modifyGuestBook}
                 onChange={onChange}
               ></GuestBook>
