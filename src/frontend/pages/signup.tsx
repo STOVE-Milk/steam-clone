@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -13,6 +13,7 @@ import { countryOption, languageOption, validateEmail, validatePassWord } from '
 import { IState } from 'modules';
 import { doSignup } from 'modules/user';
 import { checkEmailAPI, checkNicknameAPI } from 'pages/api/user/api';
+import { sign } from 'crypto';
 
 const SignUpFormWrapper = styled.div`
   width: 40rem;
@@ -36,6 +37,11 @@ const SignUpButton = styled(FilledButton)`
 `;
 
 const signup: NextPage<IState> = () => {
+  const { signup } = useSelector((state: IState) => {
+    console.log(state.user.signup.data);
+    return state.user;
+  });
+
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
@@ -48,37 +54,52 @@ const signup: NextPage<IState> = () => {
   // [refer]: Record타입으로 errors의 타입을 지정(이전 프로젝트의 팀원의 코드를 이해하여 참고)
   const [errors, setErrors] = useState({} as Record<string, string>);
   const dispatch = useDispatch();
+  const router = useRouter();
+
+  useEffect(() => {
+    setErrors((prev) => ({
+      ...prev,
+      nullChecker: '빈칸을 채워주세요',
+    }));
+  }, []);
 
   const duplicateCheck = async (type: string) => {
     switch (type) {
       case 'email': {
-        const res = await checkEmailAPI({ email: inputs.email });
-        alert(res.message);
-
-        if (res.code === 10000) {
-          setErrors((prev) => {
-            const state = prev;
-            delete state.email;
-            return { ...state };
-          });
+        if (inputs.email.length === 0) {
+          alert(Object.values(errors));
         } else {
-          setErrors((prev) => ({ ...prev, email: res.message }));
+          const res = await checkEmailAPI({ email: inputs.email });
+          alert(res.data);
+
+          if (res.code === 10000) {
+            setErrors((prev) => {
+              const state = prev;
+              delete state.email;
+              return { ...state };
+            });
+          } else {
+            setErrors((prev) => ({ ...prev, email: res.message }));
+          }
         }
         return;
       }
       case 'nickname': {
-        const res = await checkNicknameAPI({ nickname: inputs.nickname });
-        alert(res.message);
-
-        if (res.code === 10000) {
-          setErrors((prev) => {
-            const state = prev;
-            delete state.email;
-            return { ...state };
-          });
+        if (inputs.nickname.length === 0) {
+          alert(Object.values(errors));
         } else {
-          setErrors((prev) => ({ ...prev, nickname: res.message }));
-          //닉네임 input 지우기
+          const res = await checkNicknameAPI({ nickname: inputs.nickname });
+          alert(res.data);
+
+          if (res.code === 10000) {
+            setErrors((prev) => {
+              const state = prev;
+              delete state.email;
+              return { ...state };
+            });
+          } else {
+            setErrors((prev) => ({ ...prev, nickname: res.message }));
+          }
         }
         return;
       }
@@ -136,10 +157,11 @@ const signup: NextPage<IState> = () => {
         ...prev,
         nullChecker: '빈칸을 채워주세요',
       }));
+      alert(Object.values(errors));
     } else {
       setErrors((prev) => {
         const state = prev;
-        delete errors.password;
+        delete errors.nullChecker;
         return { ...state };
       });
     }
@@ -151,16 +173,20 @@ const signup: NextPage<IState> = () => {
           ...inputs,
         }),
       );
+      // if (signup.data.code === 10000) {
       alert('가입에 성공했습니다. 로그인페이지로 이동합니다.');
-      window.location.href = '/signin';
-    } else {
-      alert(Object.values(errors));
+      router.push('/signin');
+      //TODO(양하): 에러처리
+      // } else {
+      //   alert(signup.data.message);
+      // }
     }
   };
 
   return (
     <SignUpFormWrapper>
-      {console.log(errors)}
+      {/* {console.log(errors)} */}
+      {/* {console.log(signup.data)} */}
       <Text types="large">회원가입</Text>
       <AuthInput
         title="EMAIL"
@@ -192,11 +218,9 @@ const signup: NextPage<IState> = () => {
         <AuthSelectBox title="Country" option={countryOption} onChange={onChangeSetInfo} />
         <AuthSelectBox title="Language" option={languageOption} onChange={onChangeSetInfo} />
       </InputAlign>
-      {/* <Link href="/signin"> */}
       <SignUpButton types="active" onClick={() => checkAllnSubmit()}>
         가입하기
       </SignUpButton>
-      {/* </Link> */}
     </SignUpFormWrapper>
   );
 };

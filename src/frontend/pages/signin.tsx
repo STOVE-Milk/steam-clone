@@ -1,9 +1,18 @@
-import Reac, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import type { NextPage } from 'next';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+
 import styled from 'styled-components';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import AuthInput from 'components/molecules/AuthInput';
 import { doSignInAPI } from 'pages/api/user/api';
+
+import { IState } from 'modules';
+import { useSelector, useDispatch } from 'react-redux';
+import { saveUserInfo } from 'modules/user';
+import Router from 'next/router';
 
 const SignInFormWrapper = styled.div`
   width: 40rem;
@@ -22,12 +31,24 @@ const SignInButton = styled(FilledButton)`
   margin-top: 1rem;
 `;
 
-const signin = () => {
+const signin: NextPage<IState> = () => {
+  //[info]: userInfo.data에 accessToken에서 온 정보들이 들어가 있습니다.
+  const { userInfo } = useSelector((state: IState) => state.user);
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   const [signInInfo, setSignInInfo] = useState({
     email: '',
     password: '',
   });
   const [errors, setErrors] = useState({} as Record<any, string>);
+
+  useEffect(() => {
+    setErrors((prev) => ({
+      ...prev,
+      nullChecker: '빈칸을 채워주세요',
+    }));
+  }, []);
 
   const doSignIn = async () => {
     //[explain]: 회원가입을 위한 모든 input이 채워졌을 때 true
@@ -42,6 +63,7 @@ const signin = () => {
         ...prev,
         nullChecker: '빈칸을 채워주세요',
       }));
+      alert(Object.values(errors));
     } else {
       setErrors((prev) => {
         const state = prev;
@@ -55,13 +77,13 @@ const signin = () => {
         //성공
         localStorage.setItem('accessToken', res.data.accessToken);
         localStorage.setItem('refreshToken', res.data.refreshToken);
-        // window.location.href = '/';\
         //[refer]: jwt decode하는 코드 | 출처: https://archijude.tistory.com/432
         const token = res.data.accessToken;
         const base64Payload = token.split('.')[1]; //value 0 -> header, 1 -> payload, 2 -> VERIFY SIGNATURE
         const payload = Buffer.from(base64Payload, 'base64');
         const result = JSON.parse(payload.toString());
-        console.log(result);
+        dispatch(saveUserInfo.request(result));
+        router.push('/category'); // TO DO(양하): 메인으로 redirect 변경, 지금 메인페이지 오류나서 일단 카테고리 페이지로 redirect
       }
     }
   };
@@ -73,7 +95,6 @@ const signin = () => {
 
   return (
     <SignInFormWrapper>
-      {console.log(errors)}
       <Text types="large">로그인</Text>
       <AuthInput title="EMAIL" name="email" type="email" placeholder="EMAIL" onChange={onChangeSetInfo} />
       <AuthInput title="PASSWORD" name="password" type="password" placeholder="PASSWORD" onChange={onChangeSetInfo} />
