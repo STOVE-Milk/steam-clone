@@ -3,9 +3,11 @@ import { all } from 'redux-saga/effects';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import game, { gameSaga, gameState } from './game';
+import user, { userSaga, userState } from './user';
 
 export interface IState {
   game: gameState;
+  user: userState;
 }
 
 export const rootReducer = (state: IState, action: AnyAction): CombinedState<IState> => {
@@ -15,6 +17,7 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
     default: {
       const combinedReducers = combineReducers({
         game: game,
+        user: user,
       });
       return combinedReducers(state, action);
     }
@@ -24,5 +27,5 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
 export default rootReducer;
 
 export function* rootSaga() {
-  yield all([gameSaga()]);
+  yield all([gameSaga(), userSaga()]);
 }

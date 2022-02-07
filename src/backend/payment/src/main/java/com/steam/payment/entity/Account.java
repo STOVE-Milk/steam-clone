@@ -32,7 +32,7 @@ public class Account {
     @Column(name = "is_valid")
     private Boolean isValid;
 
-    public void addMoney(GameDto game) {
-        this.money += game.getSalePrice();
+    public void addMoney(Double salePrice) {
+        this.money += salePrice;
     }
 }
