@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
@@ -188,7 +187,6 @@ func (server *WsServer) findRoomByName(name string) *Room {
 
 func (server *WsServer) runRoomFromRepository(name string) *Room {
 	var room *Room
-	fmt.Println("여기?")
 	dbRoom := server.roomRepository.FindRoomByName(name)
 	if dbRoom != nil {
 		room = NewRoom(dbRoom.GetName(), dbRoom.GetPrivate())
@@ -227,7 +225,6 @@ func (server *WsServer) findRoomByID(ID string) *Room {
 
 func (server *WsServer) createRoom(name string, private bool) *Room {
 	room := NewRoom(name, private)
-	fmt.Println(room.GetId())
 
 	server.roomRepository.AddRoom(room)
 	go room.RunRoom()

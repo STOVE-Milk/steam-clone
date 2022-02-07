@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
@@ -69,7 +68,6 @@ func (repo *RoomRepository) FindRoomByName(name string) models.Room {
 	chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomB)
 
 	if roomB == nil {
-		log.Println(name + "없는 방")
 		return nil
 	}
 	room = Room{
