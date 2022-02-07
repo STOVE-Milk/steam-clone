@@ -14,8 +14,10 @@ export interface IGuestBookProps {
   content: string;
   isMine: boolean;
   isAdd: boolean;
-  addGuestBook?: () => Promise<void>;
+  guestBook?: string;
+  addGuestBook?: (id: number) => Promise<void>;
   modifyGuestBook?: (id: number) => Promise<void>;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 const Wrapper = styled.div`
@@ -41,6 +43,17 @@ const Divider = styled.div`
   height: 1px;
   background-color: ${(props) => props.theme.colors.divider};
   margin: 0.8rem 0;
+`;
+
+const EditBox = styled.textarea`
+  line-height: 1.3rem;
+  background: transparent;
+  border: 1px solid ${(props) => props.theme.colors.divider};
+  border-radius: 10px;
+  color: ${(props) => props.theme.colors.secondaryText};
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const TextBox = styled.div`
@@ -80,11 +93,15 @@ export default function GuestBook(props: IGuestBookProps) {
         </FilledButton>
       ) : null}
       <Divider />
-      <TextBox>
-        {props.content.split('\n').map((text, key) => (
-          <p key={key}> {text} </p>
-        ))}
-      </TextBox>
+      {isEdited ? (
+        <EditBox value={props.guestBook?.content} onChange={(e) => props.onChange && props.onChange(e)}></EditBox>
+      ) : (
+        <TextBox>
+          {props.content.split('\n').map((text, key) => (
+            <p key={key}> {text} </p>
+          ))}
+        </TextBox>
+      )}
     </Wrapper>
   );
 }

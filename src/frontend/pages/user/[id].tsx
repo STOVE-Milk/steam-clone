@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
@@ -42,31 +42,8 @@ const MyPage: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
-  const friends = [
-    {
-      id: 2,
-      nickname: 'user2',
-      profile: {
-        image: '',
-      },
-    },
-    {
-      id: 3,
-      nickname: 'user3',
-      profile: {
-        image: '',
-      },
-    },
-    {
-      id: 4,
-      nickname: 'user4',
-      profile: {
-        image: '',
-      },
-    },
-  ];
 
-  const guestbooks = [
+  const [guestBooks, setGuestBooks] = useState<IResReview[]>([
     {
       id: 1,
       guest_id: 2,
@@ -91,7 +68,54 @@ const MyPage: NextPage = () => {
       content: 'hihihi',
       created_at: 'time3',
     },
+  ]);
+
+  const friends = [
+    {
+      id: 2,
+      nickname: 'user2',
+      profile: {
+        image: '',
+      },
+    },
+    {
+      id: 3,
+      nickname: 'user3',
+      profile: {
+        image: '',
+      },
+    },
+    {
+      id: 4,
+      nickname: 'user4',
+      profile: {
+        image: '',
+      },
+    },
   ];
+
+  const getGuestBooks = async (id: number) => {
+    const res = (await getGuestBooksAPI({ id: id })).data.review_list;
+    console.log(res);
+    setGuestBooks(res);
+  };
+
+  const [userGuestBook, setUserGuestBook] = useState('');
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUserGuestBook(e.target.value);
+  };
+
+  const addGuestBook = async (id: number) => {
+    // id: game.data.id
+    const res = (await addGuestBookAPI({ id: id, content: '' })).data;
+    console.log(res);
+  };
+
+  const modifyGuestBook = async (id: number) => {
+    // id: game.data.id
+    const res = (await modifyGuestBookAPI({ id: id, content: '' })).data;
+    console.log(res);
+  };
 
   useEffect(() => {
     // (스토어의 userId !== 현재 url의 userId 일 때)
@@ -128,13 +152,28 @@ const MyPage: NextPage = () => {
       <GuestBookSection>
         <Text types={'large'}>방명록</Text>
         <GuestBookList>
-          {guestbooks.map((guest) => {
+          <GuestBook
+            displayName={'nickname'}
+            created_at={'time'}
+            content={'a'}
+            isMine={true} // userId랑 비교
+            id={1}
+            isAdd={true}
+            guestBook={userGuestBook}
+            onChange={onChange}
+            addGuestBook={addGuestBook}
+          ></GuestBook>
+          {guestBooks.map((guest) => {
             return (
               <GuestBook
                 displayName={guest.displayName}
                 created_at={guest.created_at}
                 content={guest.content}
                 isMine={true} // userId랑 비교
+                id={guest.id}
+                isAdd={false}
+                modifyGuestBook={modifyGuestBook}
+                onChange={onChange}
               ></GuestBook>
             );
           })}
