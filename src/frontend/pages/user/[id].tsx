@@ -53,7 +53,7 @@ interface IResGuestBook {
   created_at: string;
 }
 
-const MyPage: NextPage = () => {
+const UserPage: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
@@ -200,4 +200,4 @@ const MyPage: NextPage = () => {
   );
 };
 
-export default MyPage;
+export default UserPage;

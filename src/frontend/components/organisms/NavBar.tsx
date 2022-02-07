@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Image from 'next/image';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGamepad, faUser, faBars, faComments, faHeart, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faGamepad, faUser, faBars, faComments, faHeart, faBook, faCog } from '@fortawesome/free-solid-svg-icons';
 import LogoImage from 'public/steam_logo.png';
 
 import MenuBox from 'components/molecules/MenuBox';
@@ -11,6 +11,7 @@ import Profile from 'components/atoms/Profile';
 import FriendBox from 'components/molecules/FriendBox';
 
 import { theme } from 'styles/theme';
+import Link from 'next/link';
 
 interface INavBarStyledProps {
   open: boolean;
@@ -61,6 +62,7 @@ const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
 const SectionTitle = styled.div`
   color: ${(props) => props.theme.colors.secondaryText};
   padding: 30px 20px 0px 20px;
+  display: flex;
 `;
 
 const MenuSection = styled.div`
@@ -80,6 +82,11 @@ const FriendSection = styled.div`
   ::-webkit-scrollbar {
     display: none;
   }
+`;
+
+const FriendSettingBtn = styled(FontAwesomeIcon)`
+  margin-left: auto;
+  cursor: pointer;
 `;
 
 export default function NavBar() {
@@ -120,7 +127,13 @@ export default function NavBar() {
         <MenuBox open={open} page="wish" icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />} name={'Wish'} />
       </MenuSection>
       <SectionDivider />
-      <SectionTitle>Friends</SectionTitle>
+      <SectionTitle>
+        Friends
+        <Link href={'/friend'}>
+          <FriendSettingBtn icon={faCog} inverse />
+        </Link>
+      </SectionTitle>
+
       <FriendSection>
         <FriendBox
           open={open}
