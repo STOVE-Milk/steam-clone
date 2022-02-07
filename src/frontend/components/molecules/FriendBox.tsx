@@ -17,6 +17,7 @@ const FriendBoxWrapper = styled.div`
   border-radius: 10px;
   cursor: pointer;
   padding-left: 10px;
+  width: 100%;
 
   :hover {
     background: ${(props) => props.theme.colors.activeBg};
@@ -30,12 +31,11 @@ const FriendBoxWrapper = styled.div`
 const FriendName = styled(Text)`
   margin-left: 20px;
   margin-top: 5px;
-  flex: 1;
 `;
 
 const FriendStatus = styled(Dot)`
-  margin-left: 10px;
-  margin-right: 20px;
+  margin-left: 20px;
+  margin-right: 30px;
 `;
 
 export default function FriendBox(props: FriendBoxProps) {
