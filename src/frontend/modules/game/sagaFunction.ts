@@ -1,4 +1,4 @@
-import { IAddCartInfoReqType } from 'pages/api/game/type';
+import { IAddCartInfoReqType, IRmCartInfoReqType } from 'pages/api/game/type';
 
 export const addCartToStore = async ({ prev, game_id }: IAddCartInfoReqType) => {
   //중복제거 로직
@@ -10,7 +10,7 @@ export const addCartToStore = async ({ prev, game_id }: IAddCartInfoReqType) => 
     data: uniqueArr,
   };
 };
-export const rmCartToStore = async ({ prev, game_id }: IAddCartInfoReqType) => {
+export const rmCartToStore = async ({ prev, game_id }: IRmCartInfoReqType) => {
   //특정 index제거 로직
   const filtered = prev.filter((ele) => ele !== game_id);
 
