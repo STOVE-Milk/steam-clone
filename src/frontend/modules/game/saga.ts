@@ -20,7 +20,7 @@ const getCategoriesSaga = createAsyncSaga(getCategories, getCategoriesAPI);
 const getGameSaga = createAsyncSaga(getGame, getGameAPI);
 const getGamesByCategorySaga = createAsyncSaga(getGamesByCategory, getGamesByCategoryAPI);
 const addCartInfoSaga = createAsyncSaga(addCartInfo, addCartToStore);
-const rmCartInfoSaga = createAsyncSaga(addCartInfo, rmCartToStore);
+const rmCartInfoSaga = createAsyncSaga(rmCartInfo, rmCartToStore);
 
 export function* gameSaga() {
   yield takeLatest(GET_CATEGORIES, getCategoriesSaga);
