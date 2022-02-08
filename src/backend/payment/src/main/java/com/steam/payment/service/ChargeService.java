@@ -4,10 +4,12 @@ import com.steam.payment.dto.ChargeApproveRequest;
 import com.steam.payment.dto.ChargeReadyRequest;
 import com.steam.payment.dto.GiftcardDto;
 import com.steam.payment.dto.kakaopay.KakaoPayApproveResponse;
+import com.steam.payment.entity.Balance;
 import com.steam.payment.entity.Giftcard;
 import com.steam.payment.entity.User;
 import com.steam.payment.entity.mongodb.ChargeLog;
 import com.steam.payment.entity.mongodb.ChargeLogDocument;
+import com.steam.payment.global.common.Body;
 import com.steam.payment.global.common.EmptyData;
 import com.steam.payment.global.common.UserContext;
 import com.steam.payment.global.error.CustomException;
@@ -16,12 +18,14 @@ import com.steam.payment.repository.GiftcardRepository;
 import com.steam.payment.repository.UserRepository;
 import com.steam.payment.repository.mongodb.ChargeLogDocumentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ChargeService {
@@ -29,6 +33,10 @@ public class ChargeService {
     private final UserRepository userRepository;
     private final ChargeLogDocumentRepository chargeLogDocumentRepository;
     private final KakaoPay kakaoPay;
+
+    public Balance getBalance() {
+        return userRepository.findBalanceByUserId(UserContext.getUserId());
+    }
 
     public List<GiftcardDto> getGiftcardList(String nation) {
         return giftcardRepository.findTop4ByCountry(nation)
