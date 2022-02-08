@@ -3,7 +3,7 @@ package com.steam.library.dto;
 import lombok.*;
 
 @Builder
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ObjectDto {

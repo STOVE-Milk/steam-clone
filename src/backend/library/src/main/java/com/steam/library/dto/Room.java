@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.steam.library.entity.RoomCache;
 import com.steam.library.global.common.Direction;
 import com.steam.library.global.common.UserDetails;
+import com.steam.library.global.util.JsonUtil;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.socket.WebSocketSession;
@@ -28,7 +29,7 @@ public class Room {
                 .roomId(this.roomId.toString())
                 .userList(this.userList)
                 .users(this.users)
-                .map(this.map)
+                .map(JsonUtil.toJson(this.map))
                 .build();
     }
 
@@ -38,7 +39,7 @@ public class Room {
                 .sessions(Collections.synchronizedList(new ArrayList<>()))
                 .userList(roomCache.getUserList())
                 .users(roomCache.getUsers())
-                .map(roomCache.getMap())
+                .map(JsonUtil.toMapDto(roomCache.getMap()))
                 .build();
         room.getMap().initializeNullCollection();
         return room;

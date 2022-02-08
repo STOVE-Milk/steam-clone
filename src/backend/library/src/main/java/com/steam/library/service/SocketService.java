@@ -2,10 +2,8 @@ package com.steam.library.service;
 
 import com.steam.library.dto.Room;
 import com.steam.library.global.common.Behavior;
-import com.steam.library.global.common.Direction;
 import com.steam.library.global.common.UserDetails;
-import com.steam.library.global.common.messages.*;
-import com.steam.library.global.error.CustomException;
+import com.steam.library.dto.messages.*;
 import com.steam.library.global.error.ErrorCode;
 import com.steam.library.global.util.JsonUtil;
 import com.steam.library.global.util.JwtUtil;
@@ -50,7 +48,7 @@ public class SocketService {
         String sessionId = session.getId();
 
         // 등록이 되어있는지 확인하고 없으면 넣기
-        // TODO: 세션이 달라질 경우, 세션이 같을 경우 고민
+        // TODO: 세션이 달라질 경우, 세션이 같을 경우 처리 필요
         // REDIS 조회 (Room Data가 이미 있는지? 없으면 Room 생성 후 등록
         // Room 생성 시 필요한 것 : roomId, user, map
         if(session_room.containsKey(sessionId)) {
@@ -82,7 +80,7 @@ public class SocketService {
 
         // Redis 갱신 & SYNC
         // 궁금: UserDto를 새로 만드는게 빠를까? vs 가져오는게 빠를까?
-        Room cachedRoom = socketDataService.addUser(roomId, userId, room.getUsers().get(userId));
+        Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, room.getUsers().get(userId));
         SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(cachedRoom);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
 
@@ -147,20 +145,23 @@ public class SocketService {
 
     public synchronized Boolean closeConnection(WebSocketSession session) {
         String sessionId = session.getId();
-        String closeRoomId = session_room.get(sessionId);
+        String roomId = session_room.get(sessionId);
         String userId = userData.get(sessionId).getIdx().toString();
 
         log.info("Close Connection : "  + sessionId + " " +userId);
 
-        sendMessageToRoom(closeRoomId, userId, Behavior.LEAVE, LeaveUserMessage.of(userId));
+        LeaveUserMessage leaveUserMessage = LeaveUserMessage.of(userId);
+        sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
 
         // 떠나기
-        Integer userNum = robby.get(closeRoomId).leave(userId, session);
+        Integer userNum = robby.get(roomId).leave(userId, session);
         if(userNum.equals(0))
-            robby.remove(closeRoomId);
+            robby.remove(roomId);
         user_session.remove(userId);
         userData.remove(sessionId);
         session_room.remove(sessionId);
+
+        socketDataService.removeUserInRedis(roomId, userId);
 
         try {
             session.close(CloseStatus.NORMAL);
@@ -173,7 +174,7 @@ public class SocketService {
     }
 
     public boolean sendErrorMessage(WebSocketSession session, ErrorCode errorCode) {
-        sendMessageToMe(session, Behavior.ERROR, errorCode.getMessage());
+        sendMessageToMe(session, Behavior.ERROR, ErrorMessage.of(errorCode));
         return false;
     }
 

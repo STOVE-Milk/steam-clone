@@ -84,12 +84,13 @@ public class SocketDataService {
         }
     }
 
-    public synchronized Room addUser(String roomId, String enteredUserId, UserDto enteredUser) {
+    public synchronized Room addUserToRedis(String roomId, String enteredUserId, UserDto enteredUser) {
         Optional<RoomCache> opRoomCache = roomCacheRepository.findById(roomId);
         RoomCache roomCache;
         if(opRoomCache.isPresent()) {
             roomCache = opRoomCache.get();
         } else {
+            // UserMap 두번 select 하게됨
             roomCache = Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash();
         }
         roomCache.addUser(enteredUserId, enteredUser);
@@ -97,7 +98,16 @@ public class SocketDataService {
         return Room.of(roomCache);
     }
 
-    public boolean saveRoomHash(Room room) {
+    public synchronized void removeUserInRedis(String roomId, String leavedUserId) {
+        Optional<RoomCache> opRoomCache = roomCacheRepository.findById(roomId);
+        RoomCache roomCache;
+        if(opRoomCache.isPresent()) {
+            roomCache = opRoomCache.get();
+            roomCache.removeUser(leavedUserId);
+            roomCacheRepository.save(roomCache);
+        }
+    }
+    }
         try {
             RoomCache roomCache = room.toHash();
             roomCacheRepository.save(roomCache);

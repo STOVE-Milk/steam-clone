@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 
-@ToString
 @Builder
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MapDto {

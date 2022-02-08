@@ -1,4 +1,4 @@
-package com.steam.library.global.common.messages;
+package com.steam.library.dto.messages;
 
 import com.steam.library.dto.Room;
 import lombok.Builder;

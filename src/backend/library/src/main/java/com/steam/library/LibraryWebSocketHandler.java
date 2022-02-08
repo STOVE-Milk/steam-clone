@@ -1,8 +1,7 @@
 package com.steam.library;
 
-import com.steam.library.dto.MapDto;
 import com.steam.library.global.common.Behavior;
-import com.steam.library.global.common.messages.*;
+import com.steam.library.dto.messages.*;
 import com.steam.library.global.error.ErrorCode;
 import com.steam.library.global.util.JsonUtil;
 import com.steam.library.service.SocketService;
@@ -28,6 +27,8 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
         Behavior behavior = Behavior.fromInteger(Integer.parseInt(payload.substring(0, 2)));
         String jsonData = (payload.length() > 2) ? payload.substring(2) : "";
         Boolean isSuccessed = false;
+
+        //TODO: Message Field NullCheck
         if (session.isOpen()) {
             try {
                 switch (behavior) {

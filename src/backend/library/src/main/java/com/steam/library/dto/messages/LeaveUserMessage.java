@@ -1,22 +1,19 @@
-package com.steam.library.global.common.messages;
+package com.steam.library.dto.messages;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.steam.library.global.common.Direction;
 import lombok.Builder;
 import lombok.Getter;
 
 @Builder
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class MoveUserMessage {
+public class LeaveUserMessage {
     String userId;
-    Integer direction;
 
-    public static MoveUserMessage of(String userId, Direction direction) {
-        return MoveUserMessage.builder()
+    public static LeaveUserMessage of(String userId) {
+        return LeaveUserMessage.builder()
                 .userId(userId)
-                .direction(direction.getValue())
                 .build();
     }
 }
