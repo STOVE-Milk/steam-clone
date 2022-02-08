@@ -38,32 +38,45 @@ public class SocketService {
     private final SocketDataService socketDataService;
     private final PublishService publishService;
 
+    /*
+        TODO: 발행과 구독을 동시에 할 경우 메세지를 중복으로 보낼 수 있다.
+        이상적: 따라서, 라우팅을 통해 자신에게는 publish한 메세지가 도달하지 않도록 처리하거나,
+        차선책: publish 후 자체적으로 Room에 메세지를 보내는 로직을 삭제하고, subscribe한 메세지만 보내도록 해야한다.
+    */
     @RabbitListener(queues = "robby.queue")
     public void receiveMessage(final Message message) {
-        log.info("listen message");
         String messageStr = new String(message.getBody(), StandardCharsets.UTF_8);
+        messageStr = messageStr.substring(1, messageStr.length() - 1).replace("\\", "");
         String[] messages = messageStr.split("\\|");
         String roomId = messages[0];
-        Behavior behavior = Behavior.fromInteger(Integer.parseInt(messages[1]));
-        switch (behavior) {
-            case ENTER:
-                EnterUserMessage enterUserMessage = JsonUtil.toObject(messages[2], EnterUserMessage.class);
-                sendMessageToRoom(roomId, enterUserMessage.getUserId(), Behavior.ENTER, enterUserMessage);
-                break;
-            case RESET:
-                String userId = messages[2];
-                robby.get(roomId).updateMap(socketDataService.getUserMap(Integer.parseInt(userId)));
-                robby.get(roomId).resetUserLocation();
-                synchronizeRoom(roomId, userId);
-                break;
-            case LEAVE:
-                LeaveUserMessage leaveUserMessage = JsonUtil.toObject(messages[2], LeaveUserMessage.class);
-                sendMessageToRoom(roomId, leaveUserMessage.getUserId(), Behavior.LEAVE, leaveUserMessage);
-                break;
-            case MOVE:
-                MoveUserMessage moveUserMessage = JsonUtil.toObject(messages[2], MoveUserMessage.class);
-                sendMessageToRoom(roomId, moveUserMessage.getUserId(), Behavior.MOVE, moveUserMessage);
-                break;
+
+        if(robby.containsKey(roomId)) {
+            Behavior behavior = Behavior.fromInteger(Integer.parseInt(messages[1]));
+            try {
+                switch (behavior) {
+                    case ENTER:
+                        EnterUserMessage enterUserMessage = JsonUtil.toObject(messages[2], EnterUserMessage.class);
+                        sendMessageToRoom(roomId, enterUserMessage.getUserId(), Behavior.ENTER, enterUserMessage);
+                        break;
+                    case RESET:
+                        String userId = messages[2];
+                        robby.get(roomId).updateMap(socketDataService.getUserMap(Integer.parseInt(userId)));
+                        robby.get(roomId).resetUserLocation();
+                        synchronizeRoom(roomId, userId);
+                        break;
+                    case LEAVE:
+                        LeaveUserMessage leaveUserMessage = JsonUtil.toObject(messages[2], LeaveUserMessage.class);
+                        sendMessageToRoom(roomId, leaveUserMessage.getUserId(), Behavior.LEAVE, leaveUserMessage);
+                        break;
+                    case MOVE:
+                        MoveUserMessage moveUserMessage = JsonUtil.toObject(messages[2], MoveUserMessage.class);
+                        sendMessageToRoom(roomId, moveUserMessage.getUserId(), Behavior.MOVE, moveUserMessage);
+                        break;
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                log.info("subscribe failed");
+            }
         }
     }
 
@@ -109,7 +122,8 @@ public class SocketService {
         EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
         // TODO: ENTER PUB/SUB
         publishService.publishEnterUser(roomId, enterUserMessage);
-        sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
+        // 본 서버의 publish까지 subscribe하여서 주석처리
+        // sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
 
         // Redis 갱신 & SYNC
         // 궁금: UserDto를 새로 만드는게 빠를까? vs 가져오는게 빠를까?
@@ -127,13 +141,16 @@ public class SocketService {
         if(moveRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
 
-        robby.get(roomId).move(userId, moveRequestMessage.getDirection());
-
+        robby.get(roomId).moveUser(userId, moveRequestMessage.getDirection());
+        socketDataService.moveUserInRedis(roomId, userId, moveRequestMessage.getDirection());
         // 움직임 이벤트 전파
         MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
         // TODO: MOVE PUB/SUB
         publishService.publishMoveUser(roomId, moveUserMessage);
-        sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
+        /*
+          본 서버의 publish까지 subscribe하여서 주석처리
+          sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
+        */
 
         return true;
     }
@@ -141,25 +158,27 @@ public class SocketService {
     public Boolean updateMap(WebSocketSession session, BuildRequestMessage buildRequestMessage) throws NullPointerException{
         UserDetails userDetails = userData.get(session.getId());
         String roomId = session_room.get(session.getId());
+        String userId = userDetails.getIdx().toString();
 
         if(userDetails == null) {
             return sendErrorMessage(session, ErrorCode.UNAUTHORIZED);
-        } else if(!userDetails.getIdx().toString().equals(roomId)) {
+        } else if(!userId.equals(roomId)) {
             return sendErrorMessage(session, ErrorCode.NO_PERMISSION);
         } else if(buildRequestMessage == null || buildRequestMessage.getMap() == null) {
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
         }
 
         // Map 데이터 수정
-        Boolean isSuccessed = socketDataService.updateUserMap(Integer.parseInt(roomId), buildRequestMessage.getMap());
-        if(isSuccessed) {
+        Boolean isSuccess = socketDataService.updateUserMap(Integer.parseInt(roomId), buildRequestMessage.getMap());
+        if(isSuccess) {
             robby.get(roomId).updateMap(buildRequestMessage.getMap());
             // 유저 위치 리셋 & SYNC
             robby.get(roomId).resetUserLocation();
             // TODO: 리셋 PUB/SUB
-            publishService.publishResetUserLocationAndSync(roomId);
+            publishService.publishResetUserLocationAndSync(roomId, userId);
             socketDataService.resetUserLocationAndUpdateMap(roomId, buildRequestMessage.getMap());
-            sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, robby.get(roomId));
+            // 본 서버의 publish까지 subscribe하여서 주석처리
+            //sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, robby.get(roomId));
             return true;
         } else {
             //TODO: 실패 시 오류 메세지
@@ -209,7 +228,8 @@ public class SocketService {
         LeaveUserMessage leaveUserMessage = LeaveUserMessage.of(userId);
         //TODO: 떠나기 Pub/Sub
         publishService.publishLeaveUser(roomId, leaveUserMessage);
-        sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
+        // 본 서버의 publish까지 subscribe하여서 주석처리
+        // sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
 
         // 떠나기
         Integer userNum = robby.get(roomId).leave(userId, session);
@@ -265,7 +285,9 @@ public class SocketService {
         for(WebSocketSession session : sessions) {
             try {
                 if(!userData.get(session.getId()).getIdx().toString().equals(myId)) {
-                    session.sendMessage(message);
+                    synchronized (session) {
+                        session.sendMessage(message);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -2,6 +2,7 @@ package com.steam.library.entity;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.UserDto;
+import com.steam.library.global.common.Direction;
 import com.steam.library.global.util.JsonUtil;
 import lombok.*;
 import org.springframework.data.annotation.Id;

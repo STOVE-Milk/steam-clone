@@ -26,6 +26,7 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         Behavior behavior = Behavior.fromInteger(Integer.parseInt(payload.substring(0, 2)));
         String jsonData = (payload.length() > 2) ? payload.substring(2) : "";
+
         Boolean isSuccessed = false;
 
         //TODO: Message Field NullCheck

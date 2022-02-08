@@ -81,7 +81,7 @@ public class Room {
         return this.getUserList().size();
     }
 
-    public void move(String userId, Direction direction) {
+    public void moveUser(String userId, Direction direction) {
         this.getUsers().get(userId).move(direction, this.map.getSide());
     }
 

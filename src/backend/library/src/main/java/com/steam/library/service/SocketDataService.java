@@ -6,12 +6,15 @@ import com.steam.library.dto.UserDto;
 import com.steam.library.entity.Library;
 import com.steam.library.entity.RoomCache;
 import com.steam.library.entity.User;
+import com.steam.library.global.common.Direction;
 import com.steam.library.global.util.JsonUtil;
 import com.steam.library.repository.LibraryRepository;
 import com.steam.library.repository.RoomCacheRepository;
 import com.steam.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class SocketDataService {
+    private static final Integer MAX_SIDE_OF_MAP = 100000; //20;
+    private final RedisTemplate<String, Object> redisTemplate;
+
     private final UserRepository userRepository;
     private final LibraryRepository libraryRepository;
     private final RoomCacheRepository roomCacheRepository;
@@ -96,6 +102,34 @@ public class SocketDataService {
         roomCache.addUser(enteredUserId, enteredUser);
         roomCacheRepository.save(roomCache);
         return Room.of(roomCache);
+    }
+
+    public synchronized void moveUserInRedis(String roomId, String movedUserId, Direction direction) {
+        HashOperations<String, String, Integer> hash = redisTemplate.opsForHash();
+        String mainKey = "library:" + roomId;
+        String hashKey = "users.[" + movedUserId + "].";
+        switch (direction) {
+            case UP:
+                hashKey += 'y';
+                if(hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
+                    hash.increment(mainKey, hashKey, 1);
+                break;
+            case RIGHT:
+                hashKey += 'x';
+                if(hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
+                    hash.increment(mainKey, hashKey, 1);
+                break;
+            case DOWN:
+                hashKey += 'y';
+                if(hash.get(mainKey, hashKey) > 0)
+                    hash.increment(mainKey, hashKey, -1);
+                break;
+            case LEFT:
+                hashKey += 'x';
+                if(hash.get(mainKey, hashKey) > 0)
+                    hash.increment(mainKey, hashKey, -1);
+                break;
+        }
     }
 
     public synchronized void removeUserInRedis(String roomId, String leavedUserId) {
