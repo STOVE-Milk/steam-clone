@@ -239,7 +239,8 @@ export default function GameInfo(props: IGameInfo) {
             </span>
           </IconBox>
           <IconBox
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               cartFunc(gameData.id, cart);
               setCart(!cart);
             }}
