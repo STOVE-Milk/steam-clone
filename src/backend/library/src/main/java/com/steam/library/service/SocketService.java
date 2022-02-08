@@ -43,7 +43,7 @@ public class SocketService {
         이상적: 따라서, 라우팅을 통해 자신에게는 publish한 메세지가 도달하지 않도록 처리하거나,
         차선책: publish 후 자체적으로 Room에 메세지를 보내는 로직을 삭제하고, subscribe한 메세지만 보내도록 해야한다.
     */
-    @RabbitListener(queues = "robby.queue")
+    @RabbitListener(queues = "robby.queue", concurrency = "10")
     public void receiveMessage(final Message message) {
         String messageStr = new String(message.getBody(), StandardCharsets.UTF_8);
         messageStr = messageStr.substring(1, messageStr.length() - 1).replace("\\", "");
