@@ -31,7 +31,9 @@ export async function getGameAPI(param: IGetGameReqType) {
 }
 
 export async function purchaseGameAPI(param: IPurchaseGameReqType[]) {
-  const response = await axiosClient.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/cart/purchase`, param);
+  const response = await axiosClient.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/cart/purchase`, {
+    games: param,
+  });
 
   return response.data;
 }
