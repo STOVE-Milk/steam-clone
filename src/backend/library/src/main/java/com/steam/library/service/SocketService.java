@@ -116,7 +116,7 @@ public class SocketService {
         user_session.put(userId, sessionId);
         session_room.put(sessionId, roomId);
 
-        logObjectJson(room);
+        //logObjectJson(room);
 
         // 입장 이벤트 전파
         EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);

@@ -13,6 +13,8 @@ import com.steam.library.repository.RoomCacheRepository;
 import com.steam.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.lang.Nullable;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -27,12 +30,20 @@ import java.util.stream.Collectors;
 @Service
 public class SocketDataService {
     private static final Integer MAX_SIDE_OF_MAP = 100000; //20;
+
+    private static final Integer WAIT_TIME_OF_LOCK = 5;
+    private static final Integer EXPIRE_TIME_OF_LOCK = 5;
+    private static final String PREFIX_OF_LOCK = "lock_robby";
+    private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
+
     private final RedisTemplate<String, Object> redisTemplate;
+    private final RedissonClient redissonClient;
 
     private final UserRepository userRepository;
     private final LibraryRepository libraryRepository;
     private final RoomCacheRepository roomCacheRepository;
 
+    //TODO: 전체 트랜잭션 처리 Transactional or TransactionManager --> Transaction과 Lock 동시 불가, 내부 로직인 경우 불가
     @Nullable
     public MapDto getUserMap(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
@@ -90,55 +101,84 @@ public class SocketDataService {
         }
     }
 
-    public synchronized Room addUserToRedis(String roomId, String enteredUserId, UserDto enteredUser) {
-        Optional<RoomCache> opRoomCache = roomCacheRepository.findById(roomId);
+    public Room addUserToRedis(String roomId, String enteredUserId, UserDto enteredUser) {
         RoomCache roomCache;
-        if(opRoomCache.isPresent()) {
-            roomCache = opRoomCache.get();
-        } else {
-            // UserMap 두번 select 하게됨
-            roomCache = Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash();
+        RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
+        try {
+            roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+//            Boolean isLocked = roomLock.tryLock(WAIT_TIME_OF_LOCK, EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+//            if(isLocked) {
+//                 log.info("enter lock 획득 실패");
+//                 return null;
+//            }
+
+            Optional<RoomCache> opRoomCache = roomCacheRepository.findById(roomId);
+            if(opRoomCache.isPresent()) {
+                roomCache = opRoomCache.get();
+            } else {
+                // UserMap 두번 select 하게됨
+                roomCache = Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash();
+            }
+            roomCache.addUser(enteredUserId, enteredUser);
+            roomCacheRepository.save(roomCache);
+            return Room.of(roomCache);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            roomLock.unlock();
         }
-        roomCache.addUser(enteredUserId, enteredUser);
-        roomCacheRepository.save(roomCache);
-        return Room.of(roomCache);
+
+        return null;
     }
 
     public synchronized void moveUserInRedis(String roomId, String movedUserId, Direction direction) {
         HashOperations<String, String, Integer> hash = redisTemplate.opsForHash();
         String mainKey = "library:" + roomId;
         String hashKey = "users.[" + movedUserId + "].";
-        switch (direction) {
-            case UP:
-                hashKey += 'y';
-                if(hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
-                    hash.increment(mainKey, hashKey, 1);
-                break;
-            case RIGHT:
-                hashKey += 'x';
-                if(hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
-                    hash.increment(mainKey, hashKey, 1);
-                break;
-            case DOWN:
-                hashKey += 'y';
-                if(hash.get(mainKey, hashKey) > 0)
-                    hash.increment(mainKey, hashKey, -1);
-                break;
-            case LEFT:
-                hashKey += 'x';
-                if(hash.get(mainKey, hashKey) > 0)
-                    hash.increment(mainKey, hashKey, -1);
-                break;
+        if(Boolean.TRUE.equals(hash.hasKey(mainKey,hashKey + 'x'))) {
+            switch (direction) {
+                case UP:
+                    hashKey += 'y';
+                    if (hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
+                        hash.increment(mainKey, hashKey, 1);
+                    break;
+                case RIGHT:
+                    hashKey += 'x';
+                    if (hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
+                        hash.increment(mainKey, hashKey, 1);
+                    break;
+                case DOWN:
+                    hashKey += 'y';
+                    if (hash.get(mainKey, hashKey) > 0)
+                        hash.increment(mainKey, hashKey, -1);
+                    break;
+                case LEFT:
+                    hashKey += 'x';
+                    if (hash.get(mainKey, hashKey) > 0)
+                        hash.increment(mainKey, hashKey, -1);
+                    break;
+            }
         }
     }
 
-    public synchronized void removeUserInRedis(String roomId, String leavedUserId) {
-        Optional<RoomCache> opRoomCache = roomCacheRepository.findById(roomId);
-        RoomCache roomCache;
-        if(opRoomCache.isPresent()) {
-            roomCache = opRoomCache.get();
-            roomCache.removeUser(leavedUserId);
-            roomCacheRepository.save(roomCache);
+    public void removeUserInRedis(String roomId, String leavedUserId) {
+        HashOperations<String, String, Integer> hash = redisTemplate.opsForHash();
+        String mainKey = "library:" + roomId;
+        String hashKey = "users.[" + leavedUserId + "].";
+        RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
+        try {
+            roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+            Boolean isLocked = roomLock.tryLock(WAIT_TIME_OF_LOCK, EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+            if (isLocked) {
+                log.info("leave lock 획득 실패");
+            }
+            hash.increment(mainKey, "userCount", -1);
+            hash.delete(mainKey, hashKey + 'x');
+            hash.delete(mainKey, hashKey + "nickname");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            roomLock.unlock();
         }
     }
 
@@ -163,7 +203,14 @@ public class SocketDataService {
     }
 
     public boolean resetUserLocationAndUpdateMap(String roomId, MapDto map) {
+        RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
         try {
+            roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+//            Boolean isLocked = roomLock.tryLock(WAIT_TIME_OF_LOCK, EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+//            if (isLocked) {
+//                log.info("leave lock 획득 실패");
+//                return false;
+//            }
             RoomCache roomCache = roomCacheRepository.findById(roomId).get();
             roomCache.updateMap(map);
             roomCache.resetUserLocation();
@@ -172,6 +219,11 @@ public class SocketDataService {
         } catch (RuntimeException e) {
             log.debug("Room data 캐싱 실패 " + e.getMessage());
             return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            roomLock.unlock();
         }
+        return true;
     }
 }

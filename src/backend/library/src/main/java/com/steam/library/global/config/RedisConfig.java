@@ -1,5 +1,8 @@
 package com.steam.library.global.config;
 
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,5 +35,13 @@ public class RedisConfig {
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
+    }
+    @Bean public RedissonClient redissonClient() {
+        Config redisConfig = new Config();
+        redisConfig.useSingleServer()
+                .setAddress("redis://" + host + ":" + port)
+                .setConnectionPoolSize(10)
+                .setConnectionMinimumIdleSize(10);
+        return Redisson.create(redisConfig);
     }
 }
