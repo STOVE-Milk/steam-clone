@@ -62,7 +62,7 @@ export function createAsyncReducer<S, AC extends AnyAsyncActionCreator, K extend
       case failure:
         return {
           ...state,
-          [key]: asyncState.error(action.payload),
+          [key]: asyncState.error(action.payload, action.payload),
         };
       default:
         return state;
