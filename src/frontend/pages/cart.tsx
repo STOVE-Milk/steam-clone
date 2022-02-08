@@ -33,40 +33,39 @@ const cart: NextPage<IState> = (props) => {
     console.log('카드에 있는 게임 id 배열: ', state.game.cartInfo.data);
     return state.game;
   });
-  const [checkedGame, setCheckedGame] = useState([] as IPurchaseGameReqType[]);
-  const checkedGameList: IPurchaseGameReqType[] = [];
-  const allGameList: IPurchaseGameReqType[] = [];
+  const [checkedGame, setCheckedGame] = useState([] as number[]); // only 숫자배열
 
-  // const allGameList: IPurchaseGameReqType[] = [];
-  // const selectAll = (selectAll) => {
-  //   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-
-  //   checkboxes.forEach((checkbox) => {
-  //     checkbox.checked = selectAll.checked;
-  //   });
-  // };
-  // const isChecked = (arr: IPurchaseGameReqType[], curId: number) => {
-  //   arr.find((each, idx) => {
-  //     console.log(each.id, curId);
-  //     if (each.id == curId) return true;
-  //   });
-  //   return false;
-  // };
+  const handleCheckEvt = (game_id: number) => {
+    checkedGame.includes(game_id)
+      ? setCheckedGame(checkedGame.filter((checkedId) => checkedId !== game_id))
+      : setCheckedGame([...checkedGame, game_id]);
+  };
 
   const doPurchase = async () => {
+    const checkedGameList: IPurchaseGameReqType[] = [];
+    gamesByCategory.data.map((eachGame) => {
+      const purchaseGameInfo = {
+        id: eachGame.id,
+        price: eachGame.price,
+        sale: eachGame.sale,
+      };
+      //아이디가 있는것만 push
+      checkedGame.includes(eachGame.id) && checkedGameList.push({ ...purchaseGameInfo });
+    });
     const res = await purchaseGameAPI(checkedGameList);
     console.log(res);
   };
 
   return (
     <CartInfoWrapper>
+      {console.log(checkedGame)}
+
       <TitleStyle types="large">카트에 담긴 게임 리스트</TitleStyle>
       {console.log(gamesByCategory)}
-      {console.log(checkedGameList)}
 
       {/* TODO(양하): 성현님이 게임아이디 배열로 게임정보 불러오는 API 만들어주시면  cartInfo배열 활용해서 정보 뿌려주면됨*/}
-      {/* TO DO(양하): 전체선택 */}
-      <SelectAllWrapper>
+      {/* TO DO(양하): 전체선택, 이미 구매목록에 있는 게임이면 카트에 담길수가 없음. */}
+      {/* <SelectAllWrapper>
         <input
           type="checkbox"
           id="selectAll"
@@ -76,24 +75,11 @@ const cart: NextPage<IState> = (props) => {
         <label htmlFor="selectAll">
           <Text>전체선택</Text>
         </label>
-      </SelectAllWrapper>
+      </SelectAllWrapper> */}
       {gamesByCategory.data.map((eachGame, i) => {
-        const purchaseGameInfo = {
-          id: eachGame.id,
-          price: eachGame.price,
-          sale: eachGame.sale,
-        };
-        allGameList.push(purchaseGameInfo);
         return (
           <>
-            <input
-              type="checkbox"
-              id={eachGame.name}
-              name="game"
-              onClick={() => {
-                checkedGameList.push(purchaseGameInfo);
-              }}
-            />
+            <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
             <label htmlFor={eachGame.name}>
               <GameInfo key={i} {...eachGame} />
             </label>
@@ -102,8 +88,7 @@ const cart: NextPage<IState> = (props) => {
       })}
       {/* //결제버튼, 체크된 게임 모으기 전에 모든 게임에서 id, price, sale 얻어오는 방법 찾기*/}
       {/* 비어있으면 구매하기 disabled */}
-      {console.log(checkedGameList)}
-      <DefaultButton types={'primary'} onClick={doPurchase}>
+      <DefaultButton types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>
         구매하기
       </DefaultButton>
     </CartInfoWrapper>
