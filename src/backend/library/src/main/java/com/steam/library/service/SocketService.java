@@ -9,13 +9,15 @@ import com.steam.library.global.util.JsonUtil;
 import com.steam.library.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +36,36 @@ public class SocketService {
     private static Map<String, Room> robby = new ConcurrentHashMap<>();
 
     private final SocketDataService socketDataService;
+    private final PublishService publishService;
+
+    @RabbitListener(queues = "robby.queue")
+    public void receiveMessage(final Message message) {
+        log.info("listen message");
+        String messageStr = new String(message.getBody(), StandardCharsets.UTF_8);
+        String[] messages = messageStr.split("\\|");
+        String roomId = messages[0];
+        Behavior behavior = Behavior.fromInteger(Integer.parseInt(messages[1]));
+        switch (behavior) {
+            case ENTER:
+                EnterUserMessage enterUserMessage = JsonUtil.toObject(messages[2], EnterUserMessage.class);
+                sendMessageToRoom(roomId, enterUserMessage.getUserId(), Behavior.ENTER, enterUserMessage);
+                break;
+            case RESET:
+                String userId = messages[2];
+                robby.get(roomId).updateMap(socketDataService.getUserMap(Integer.parseInt(userId)));
+                robby.get(roomId).resetUserLocation();
+                synchronizeRoom(roomId, userId);
+                break;
+            case LEAVE:
+                LeaveUserMessage leaveUserMessage = JsonUtil.toObject(messages[2], LeaveUserMessage.class);
+                sendMessageToRoom(roomId, leaveUserMessage.getUserId(), Behavior.LEAVE, leaveUserMessage);
+                break;
+            case MOVE:
+                MoveUserMessage moveUserMessage = JsonUtil.toObject(messages[2], MoveUserMessage.class);
+                sendMessageToRoom(roomId, moveUserMessage.getUserId(), Behavior.MOVE, moveUserMessage);
+                break;
+        }
+    }
 
     public synchronized Boolean enter(WebSocketSession session, EnterRequestMessage enterRequestMessage) throws NullPointerException{
         if(enterRequestMessage == null)
@@ -76,6 +108,7 @@ public class SocketService {
         // 입장 이벤트 전파
         EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
         // TODO: ENTER PUB/SUB
+        publishService.publishEnterUser(roomId, enterUserMessage);
         sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
 
         // Redis 갱신 & SYNC
@@ -99,6 +132,7 @@ public class SocketService {
         // 움직임 이벤트 전파
         MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
         // TODO: MOVE PUB/SUB
+        publishService.publishMoveUser(roomId, moveUserMessage);
         sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
 
         return true;
@@ -123,6 +157,7 @@ public class SocketService {
             // 유저 위치 리셋 & SYNC
             robby.get(roomId).resetUserLocation();
             // TODO: 리셋 PUB/SUB
+            publishService.publishResetUserLocationAndSync(roomId);
             socketDataService.resetUserLocationAndUpdateMap(roomId, buildRequestMessage.getMap());
             sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, robby.get(roomId));
             return true;
@@ -132,15 +167,36 @@ public class SocketService {
         }
     }
 
-    public Boolean synchronizeRoom(WebSocketSession session) throws NullPointerException{
-        logObjectJson(robby.get(session_room.get(session.getId())));
+    public Boolean synchronizeRoom(String roomId, String userId) throws NullPointerException{
+        Room room = socketDataService.getRoomCache(roomId);
+        logObjectJson(room);
 
-        return sendMessageToRoom(
-                session_room.get(session.getId()),
-                userData.get(session.getId()).getIdx().toString(),
-                Behavior.SYNC,
-                SyncRoomMessage.of(robby.get(session.getId()))
-        );
+        if(room != null) {
+            return sendMessageToRoom(
+                    roomId,
+                    userId,
+                    Behavior.SYNC,
+                    SyncRoomMessage.of(room)
+            );
+        } else {
+            return false;
+        }
+    }
+
+    public Boolean synchronizeRoom(WebSocketSession session) throws NullPointerException{
+        Room room = socketDataService.getRoomCache(session_room.get(session.getId()));
+        logObjectJson(room);
+
+        if(room != null) {
+            return sendMessageToRoom(
+                    session_room.get(session.getId()),
+                    userData.get(session.getId()).getIdx().toString(),
+                    Behavior.SYNC,
+                    SyncRoomMessage.of(room)
+            );
+        } else {
+            return false;
+        }
     }
 
     public synchronized Boolean closeConnection(WebSocketSession session) {
@@ -151,6 +207,8 @@ public class SocketService {
         log.info("Close Connection : "  + sessionId + " " +userId);
 
         LeaveUserMessage leaveUserMessage = LeaveUserMessage.of(userId);
+        //TODO: 떠나기 Pub/Sub
+        publishService.publishLeaveUser(roomId, leaveUserMessage);
         sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
 
         // 떠나기

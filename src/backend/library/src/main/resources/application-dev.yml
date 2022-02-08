@@ -1,3 +1,4 @@
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,3 +23,10 @@ spring:
     host: 54.180.117.120
     lettuce:
       shutdown-timeout: 100ms
+logging:
+  level:
+    com.steam.library: debug
+    root: info
+  file:
+    path: /home/ubuntu/library_log/
+    name: library.log

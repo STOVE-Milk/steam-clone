@@ -107,7 +107,17 @@ public class SocketDataService {
             roomCacheRepository.save(roomCache);
         }
     }
+
+    public Room getRoomCache(String roomId) {
+        try {
+            return Room.of(roomCacheRepository.findById(roomId).get());
+        } catch (RuntimeException e) {
+            log.debug("Room data 캐싱 실패 " + e.getMessage());
+            return null;
+        }
     }
+
+    public boolean saveRoomCache(Room room) {
         try {
             RoomCache roomCache = room.toHash();
             roomCacheRepository.save(roomCache);
