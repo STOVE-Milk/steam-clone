@@ -168,10 +168,11 @@ public class SocketDataService {
         RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
         try {
             roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
-            Boolean isLocked = roomLock.tryLock(WAIT_TIME_OF_LOCK, EXPIRE_TIME_OF_LOCK, TIME_UNIT);
-            if (isLocked) {
-                log.info("leave lock 획득 실패");
-            }
+//            roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+//            Boolean isLocked = roomLock.tryLock(WAIT_TIME_OF_LOCK, EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+//            if (isLocked) {
+//                log.info("leave lock 획득 실패");
+//            }
             hash.increment(mainKey, "userCount", -1);
             hash.delete(mainKey, hashKey + 'x');
             hash.delete(mainKey, hashKey + "nickname");

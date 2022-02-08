@@ -281,16 +281,18 @@ public class SocketService {
     }
 
     public synchronized boolean sendMessageToRoom(String roomId, String myId, TextMessage message) throws NullPointerException{
-        final List<WebSocketSession> sessions = robby.get(roomId).getSessions();
-        for(WebSocketSession session : sessions) {
-            try {
-                if(!userData.get(session.getId()).getIdx().toString().equals(myId)) {
-                    synchronized (session) {
-                        session.sendMessage(message);
+        if(robby.containsKey(roomId)) {
+            final List<WebSocketSession> sessions = robby.get(roomId).getSessions();
+            for (WebSocketSession session : sessions) {
+                try {
+                    if (!userData.get(session.getId()).getIdx().toString().equals(myId)) {
+                        synchronized (session) {
+                            session.sendMessage(message);
+                        }
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
 
