@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -220,14 +221,9 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*model.GameSimple, 
 func (r *Repo) GetGameListInCart(ctx context.Context) ([]*model.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	gameIdList := ctx.Value("gameIdList")
+	gameIdList := ctx.Value("gameIdList").(string)
 	var gameSimpleList []*model.GameSimple
-	rows, err := r.db.QueryContext(ctx, `	
-	SELECT idx, name, description_snippet, price, sale, image, video, os, download_count 
-	FROM game
-	WHERE idx
-	In (?)
-	`, gameIdList)
+	rows, err := r.db.QueryContext(ctx, fmt.Sprintf("SELECT idx, name, description_snippet, price, sale, image, video, os, download_count FROM game WHERE idx In (%v)", gameIdList))
 	if err != nil {
 		return nil, err
 	}
@@ -238,6 +234,7 @@ func (r *Repo) GetGameListInCart(ctx context.Context) ([]*model.GameSimple, erro
 		if err != nil {
 			log.Fatal(err)
 		}
+		fmt.Println(gameIdList)
 		gameSimpleList = append(gameSimpleList, &game)
 	}
 	return gameSimpleList, nil
