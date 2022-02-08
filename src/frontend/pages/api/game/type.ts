@@ -24,3 +24,8 @@ export interface IRmCartInfoReqType {
   prev: number[];
   game_id: number;
 }
+export interface IPurchaseGameReqType {
+  id: number;
+  price: number;
+  sale: number;
+}
