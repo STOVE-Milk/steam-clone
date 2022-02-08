@@ -19,7 +19,8 @@ public interface FriendRepository extends JpaRepository<Friend, Map<Integer, Int
     @Query(value = "SELECT * FROM steam.friend f1 " +
             "INNER JOIN steam.friend f2 " +
             "ON (f1.friend_id = f2.friend_id AND f2.user_id = 3) " +
-            "WHERE (f1.user_id = 1)", nativeQuery = true)
+            "WHERE (f1.user_id = 1)" +
+            "LIMIT 20", nativeQuery = true)
     List<Friend> findFriendsTop20ByUserId(@Param("myId") Integer myId, @Param("userId") Integer userId, Pageable limit);
 
     Optional<Friend> findByUserAndFriend(User user, User friend);

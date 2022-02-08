@@ -26,4 +26,12 @@ public class Body<T> {
                 .data(new EmptyData())
                 .build();
     }
+
+    public static <T> Body<Object> error(ErrorCode errorCode, String message) {
+        return Body.builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage() + "\n" + message)
+                .data(new EmptyData())
+                .build();
+    }
 }

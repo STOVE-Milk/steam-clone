@@ -42,9 +42,13 @@ public class ProfileController {
     public ResponseEntity<Object> getGuestBooks(
             @NotBlank @PathVariable("userId") Integer userId,
             @RequestParam(value = "page", required = false) Integer page) {
+        if(page == null || page <= 0)
+            page = 0;
+        else
+            page--;
 
         return ResponseEntity.ok(
-                profileService.getGuestBooks(userId)
+                profileService.getGuestBooks(userId, page)
         );
     }
 
