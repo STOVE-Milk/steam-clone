@@ -40,20 +40,20 @@ public class KakaoPay {
 
     public KakaoPayReadyResponse ready(GiftcardDto giftcard, Integer orderCount) {
         //TODO: LOGGING ORDER AND PUSH DATA INTO KakaoPayReady
-        KakaoPayReady kakaoPayReady = KakaoPayReady.of(UserContext.getUserId(), giftcard, orderCount);
-        kakaoPayReady.setCid(this.cid);
-        kakaoPayReady.setApprovalUrl(this.approvalUrl);
-        kakaoPayReady.setCancelUrl(this.cancelUrl);
-        kakaoPayReady.setFailUrl(this.failUrl);
+        KakaoPayReadyRequest kakaoPayReadyRequest = KakaoPayReadyRequest.of(UserContext.getUserId(), giftcard, orderCount);
+        kakaoPayReadyRequest.setCid(this.cid);
+        kakaoPayReadyRequest.setApprovalUrl(this.approvalUrl);
+        kakaoPayReadyRequest.setCancelUrl(this.cancelUrl);
+        kakaoPayReadyRequest.setFailUrl(this.failUrl);
 
         KakaoPayReadyResponse kakaoPayReadyResponse = callKakaopayAPI(
                 "ready",
-                kakaoPayReady,
+                kakaoPayReadyRequest,
                 KakaoPayReadyResponse.class,
                 ErrorCode.KAKAOPAY_READY_FAILED
         );
 
-        KakaoPayReadyCache cache = kakaoPayReady.toHashWithTid(kakaoPayReadyResponse.getTid());
+        KakaoPayReadyCache cache = kakaoPayReadyRequest.toHashWithTid(kakaoPayReadyResponse.getTid());
         kakaoPayReadyCacheRepository.save(cache);
 
         return kakaoPayReadyResponse;
@@ -63,11 +63,11 @@ public class KakaoPay {
     public KakaoPayApproveResponse approve(String tid, String pgToken) {
         KakaoPayReadyCache cache = kakaoPayReadyCacheRepository.findById(tid)
                 .orElseThrow(() -> new CustomException(ErrorCode.KAKAOPAY_CACHE_DATA_NOT_FOUND));
-        KakaoPayApprove kakaoPayApprove = KakaoPayApprove.of(cache, pgToken);
+        KakaoPayApproveRequest kakaoPayApproveRequest = KakaoPayApproveRequest.of(cache, pgToken);
 
         return callKakaopayAPI(
                 "approve",
-                kakaoPayApprove,
+                kakaoPayApproveRequest,
                 KakaoPayApproveResponse.class,
                 ErrorCode.KAKAOPAY_APPROVAL_FAILED
         );
@@ -76,11 +76,11 @@ public class KakaoPay {
     public void cancel(String tid) {
         KakaoPayReadyCache cache = kakaoPayReadyCacheRepository.findById(tid)
                 .orElseThrow(() -> new CustomException(ErrorCode.KAKAOPAY_CACHE_DATA_NOT_FOUND));
-        KakaoPayCancel kakaoPayCancel = KakaoPayCancel.of(cache);
+        KakaoPayCancelRequest kakaoPayCancelRequest = KakaoPayCancelRequest.of(cache);
 
         callKakaopayAPI(
                 "cancel",
-                kakaoPayCancel,
+                kakaoPayCancelRequest,
                 KakaoPayCancelResponse.class,
                 ErrorCode.KAKAOPAY_CANCEL_NOT_FOUND
         );

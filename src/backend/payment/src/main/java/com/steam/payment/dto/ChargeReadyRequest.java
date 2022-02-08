@@ -3,15 +3,16 @@ package com.steam.payment.dto;
 import com.steam.payment.entity.mongodb.ChargeLog;
 import lombok.Getter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Getter
 public class ChargeReadyRequest {
-    @NotNull
+    @NotBlank(message = "결제 수단을 선택해주세요")
     private String method;
 
-    @NotNull
+    @NotNull(message = "상품권을 선택해주세요")
     private GiftcardDto giftcard;
 
     public ChargeLog toLog() {

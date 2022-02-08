@@ -29,7 +29,8 @@ public class ChargeLogDocument {
                 .build();
     }
 
-    public void plusCount() {
+    public void addLog(ChargeLog log) {
+        this.chargeLogs.add(log);
         this.count++;
     }
 

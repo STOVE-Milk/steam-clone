@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import styled from 'styled-components';
 import SearchBox from 'components/molecules/SearchBox';
 import Profile from 'components/atoms/Profile';
@@ -11,7 +12,7 @@ import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 const HeaderStyle = styled.header`
   width: 100%;
   height: 80px;
-  position: fixed;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -38,7 +39,6 @@ const AlertUserWrapper = styled.div`
     div {
       margin-right: 20px;
       position: relative;
-      right: 30px;
     }
   }
 `;
@@ -54,7 +54,12 @@ export default function Header() {
       </SearchBarWrapper>
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />
+        {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
+        <Link href={'/cart'}>
+          <div>
+            <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />
+          </div>
+        </Link>
       </AlertUserWrapper>
     </HeaderStyle>
   );
