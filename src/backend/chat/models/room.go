@@ -1,6 +1,8 @@
 package models
 
 import (
+	"encoding/json"
+	"log"
 	"time"
 )
 
@@ -14,6 +16,7 @@ type RoomRepository interface {
 	AddRoom(room Room)
 	FindRoomByName(name string) Room
 	LoggingChat(chatLogData ChatLogData, content string)
+	GetRoomViewData(roomId string) RoomViewData
 }
 type RoomsMongo struct {
 	ID        string    `bson:"id"`
@@ -26,8 +29,22 @@ type RoomsMongo struct {
 }
 
 type ChatLogData struct {
-	SenderId       string    `bson:"sender_id"`
-	SenderNickname string    `bson:"sender_nickname"`
-	Content        string    `bson:"content"`
-	SendTime       time.Time `bson:"send_time"`
+	SenderId       string    `bson:"sender_id" json:"sender_id"`
+	SenderNickname string    `bson:"sender_nickname" json:"sender_nickname"`
+	Content        string    `bson:"content" json:"content"`
+	SendTime       time.Time `bson:"send_time" json:"send_time"`
+}
+
+type RoomViewData struct {
+	Members []int32       `bson:"members" json:"members"`
+	Log     []ChatLogData `bson:"chat_log" json:"log"`
+}
+
+func (data *RoomViewData) Encode() []byte {
+	json, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return json
 }

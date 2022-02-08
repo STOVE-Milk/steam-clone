@@ -8,17 +8,16 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-const welcomeMessage = "%s joined the room"
 const goodbyeMessage = "%s leave the room"
 
 type Room struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
+	Private    bool   `json:"private"`
 	clients    map[*Client]bool
 	register   chan *Client
 	unregister chan *Client
 	broadcast  chan *Message
-	Private    bool `json:"private"`
 }
 
 // NewRoom creates a new Room
@@ -26,11 +25,11 @@ func NewRoom(name string, private bool) *Room {
 	return &Room{
 		ID:         uuid.New().String(),
 		Name:       name,
+		Private:    private,
 		clients:    make(map[*Client]bool),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		broadcast:  make(chan *Message),
-		Private:    private,
 	}
 }
 
@@ -54,10 +53,9 @@ func (room *Room) RunRoom() {
 	}
 }
 
+// 초대하는 함수에 포함되어야함.
 func (room *Room) registerClientInRoom(client *Client) {
-	if !room.Private {
-		room.notifyClientJoined(client)
-	}
+
 	room.clients[client] = true
 }
 
@@ -101,19 +99,19 @@ func (room *Room) subscribeToRoomMessages() {
 
 	for msg := range ch {
 		room.broadcastToClientsInRoom([]byte(msg.Payload))
-
 	}
 }
 
-func (room *Room) notifyClientJoined(client *Client) {
-	message := &Message{
-		Action:  SendMessageAction,
-		Target:  room,
-		Message: fmt.Sprintf(welcomeMessage, client.GetName()),
-	}
+// 한명이 초대하는 것으로 구현할 것이기 때문에 필요 없음.
+// func (room *Room) notifyClientJoined(client *Client) {
+// 	message := &Message{
+// 		Action:  SendMessageAction,
+// 		Target:  room,
+// 		Message: fmt.Sprintf(welcomeMessage, client.GetName()),
+// 	}
 
-	room.publishRoomMessage(message.encode())
-}
+// 	room.publishRoomMessage(message.encode())
+// }
 
 func (room *Room) GetId() string {
 	return room.ID

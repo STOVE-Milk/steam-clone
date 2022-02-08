@@ -49,7 +49,6 @@ func (server *WsServer) Run() {
 
 		case message := <-server.broadcast:
 			server.broadcastToClients(message)
-
 		}
 	}
 }
@@ -165,6 +164,12 @@ func (server *WsServer) broadcastToClients(message []byte) {
 	for client := range server.clients {
 		client.send <- message
 	}
+}
+
+func (server *WsServer) getRoomViewData(roomId string) models.RoomViewData {
+	roomViewData := server.roomRepository.GetRoomViewData(roomId)
+
+	return roomViewData
 }
 
 func (server *WsServer) findRoomByName(name string) *Room {

@@ -166,9 +166,9 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		log.Printf("Error on unmarshal JSON message %s", err)
 		return
 	}
+	fmt.Println("클라이언트 : " + string(message.encode()))
 
 	message.Sender = client
-
 	switch message.Action {
 	case SendMessageAction:
 		roomID := message.Target.GetId()
@@ -185,14 +185,33 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 
 	case JoinRoomPrivateAction:
 		client.handleJoinRoomPrivateMessage(message)
+
+	case RoomViewAction:
+		client.handleRoomViewMessage(message)
 	}
 
+}
+
+func (client *Client) handleRoomViewMessage(message Message) {
+	roomId := message.Target.ID
+	data := client.wsServer.getRoomViewData(roomId)
+	message = Message{
+		Action: RoomViewAction,
+		Data:   data,
+	}
+	client.send <- message.encode()
 }
 
 func (client *Client) handleJoinRoomMessage(message Message) {
 	roomName := message.Message
 
 	client.joinRoom(roomName, nil)
+
+	// strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
+	// roomName := strArr[0]
+	// groupRoom := client.joinRoom(roomName, nil)
+
+	// // 클라이언트 찾아서 넣어야함.
 }
 
 func (client *Client) handleLeaveRoomMessage(message Message) {
@@ -251,7 +270,6 @@ func (client *Client) joinRoom(roomName string, sender models.User) *Room {
 
 		client.notifyRoomJoined(room, sender)
 	}
-	fmt.Println("joinroom " + room.GetId())
 	return room
 
 }
