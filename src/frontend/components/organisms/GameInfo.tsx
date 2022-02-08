@@ -166,7 +166,10 @@ export default function GameInfo(props: IGameInfo) {
   const { cartInfo } = useSelector((state: IState) => state.game);
 
   const gameData = props;
-  const cartStatus = cartInfo.data != undefined ? cartInfo.data.includes(gameData.id) : false;
+
+  const cartStatus = cartInfo.data.filter((checkedId) => {
+    checkedId == gameData.id;
+  });
 
   const [like, setLike] = useState(false);
   const [cart, setCart] = useState(cartStatus);

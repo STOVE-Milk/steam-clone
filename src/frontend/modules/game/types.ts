@@ -36,6 +36,7 @@ export interface gameState {
   gamesByCategory: AsyncState<gameInfo[], Error>;
   game: AsyncState<gameDetail, Error>; // 상세 페이지에서 쓰일 1개 게임에 대한 정보
   cartInfo: AsyncState<number[], Error>;
+  gamesByIdList: AsyncState<gameInfo[], Error>;
 }
 
 export type gameAction = ActionType<typeof actions>;

@@ -29,3 +29,6 @@ export interface IPurchaseGameReqType {
   price: number;
   sale: number;
 }
+export interface IGetGameInfoByIdListReqType {
+  idList: number[];
+}

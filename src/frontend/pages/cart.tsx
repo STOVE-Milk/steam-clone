@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import GameInfo from 'components/organisms/GameInfo';
@@ -10,14 +11,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { IState } from 'modules';
 import { purchaseGameAPI } from 'pages/api/game/api';
 import { IPurchaseGameReqType } from 'pages/api/game/type';
-import { CheckBox } from 'components/atoms/CheckBox';
+import { getGameInfoByIdList } from 'modules/game';
 
 const CartInfoWrapper = styled.div`
   width: fit-content;
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
-  padding-top: 2rem;
+  margin: 2rem auto;
 `;
 
 const TitleStyle = styled(Text)`
@@ -29,11 +29,18 @@ const SelectAllWrapper = styled.div`
 `;
 
 const cart: NextPage<IState> = (props) => {
-  const { cartInfo, gamesByCategory } = useSelector((state: IState) => {
+  const { cartInfo, gamesByIdList } = useSelector((state: IState) => {
     console.log('카드에 있는 게임 id 배열: ', state.game.cartInfo.data);
     return state.game;
   });
   const [checkedGame, setCheckedGame] = useState([] as number[]); // only 숫자배열
+
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  useEffect(() => {
+    dispatch(getGameInfoByIdList.request({ idList: cartInfo.data }));
+  }, []);
 
   const handleCheckEvt = (game_id: number) => {
     checkedGame.includes(game_id)
@@ -43,7 +50,7 @@ const cart: NextPage<IState> = (props) => {
 
   const doPurchase = async () => {
     const checkedGameList: IPurchaseGameReqType[] = [];
-    gamesByCategory.data.map((eachGame) => {
+    gamesByIdList.data.map((eachGame) => {
       const purchaseGameInfo = {
         id: eachGame.id,
         price: eachGame.price,
@@ -53,18 +60,21 @@ const cart: NextPage<IState> = (props) => {
       checkedGame.includes(eachGame.id) && checkedGameList.push({ ...purchaseGameInfo });
     });
     const res = await purchaseGameAPI(checkedGameList);
-    console.log(res);
+
+    alert(res.message);
+    // code가 77203이면 잔액부족이므로 alert 해주고 충전페이지로 redirect
+    if (res.code === 77202) {
+      // 지금은 202인테 태현님이 수정 예정임 (계산오류 -> 잔액부족오류)
+      router.push('/charge');
+    } else {
+      router.push('/category'); //일단 있는 페이지로 라우팅시킴
+    }
   };
 
   return (
     <CartInfoWrapper>
-      {console.log(checkedGame)}
-
       <TitleStyle types="large">카트에 담긴 게임 리스트</TitleStyle>
-      {console.log(gamesByCategory)}
-
-      {/* TODO(양하): 성현님이 게임아이디 배열로 게임정보 불러오는 API 만들어주시면  cartInfo배열 활용해서 정보 뿌려주면됨*/}
-      {/* TO DO(양하): 전체선택, 이미 구매목록에 있는 게임이면 카트에 담길수가 없음. */}
+      {/* TO DO(양하): #1 전체선택, #2 이미 구매목록에 있는 게임이면 카트에 담길수가 없음. */}
       {/* <SelectAllWrapper>
         <input
           type="checkbox"
@@ -76,7 +86,7 @@ const cart: NextPage<IState> = (props) => {
           <Text>전체선택</Text>
         </label>
       </SelectAllWrapper> */}
-      {gamesByCategory.data.map((eachGame, i) => {
+      {gamesByIdList.data.map((eachGame, i) => {
         return (
           <>
             <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
@@ -86,8 +96,6 @@ const cart: NextPage<IState> = (props) => {
           </>
         );
       })}
-      {/* //결제버튼, 체크된 게임 모으기 전에 모든 게임에서 id, price, sale 얻어오는 방법 찾기*/}
-      {/* 비어있으면 구매하기 disabled */}
       <DefaultButton types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>
         구매하기
       </DefaultButton>

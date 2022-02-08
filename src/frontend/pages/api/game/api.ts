@@ -6,6 +6,7 @@ import {
   IResType,
   IGetGamesByCategoryReqType,
   IPurchaseGameReqType,
+  IGetGameInfoByIdListReqType,
 } from './type';
 
 export async function getCategoriesAPI(param: IGetCategoriesReqType) {
@@ -34,6 +35,13 @@ export async function purchaseGameAPI(param: IPurchaseGameReqType[]) {
   const response = await axiosClient.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/cart/purchase`, {
     games: param,
   });
+
+  return response.data;
+}
+
+export async function getGameInfoByIdListAPI(param: IGetGameInfoByIdListReqType) {
+  const convertedParam = param.idList.join(',');
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/cart/${convertedParam}`);
 
   return response.data;
 }

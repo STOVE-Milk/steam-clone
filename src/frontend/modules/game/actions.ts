@@ -11,6 +11,7 @@ import {
   IResType,
   IResStoreType,
   IRmCartInfoReqType,
+  IGetGameInfoByIdListReqType,
 } from 'pages/api/game/type';
 
 export const [GET_CATEGORIES, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL] = createRequestActionTypes('GET_CATEGORIES');
@@ -19,6 +20,8 @@ export const [GET_GAMESBYCATEGORY, GET_GAMESBYCATEGORY_SUCCESS, GET_GAMESBYCATEG
   createRequestActionTypes('GET_GAMESBYCATEGORY');
 export const [ADD_CARTINFO, ADD_CARTINFO_SUCCESS, ADD_CARTINFO_FAIL] = createRequestActionTypes('ADD_CARTINFO');
 export const [RM_CARTINFO, RM_CARTINFO_SUCCESS, RM_CARTINFO_FAIL] = createRequestActionTypes('RM_CARTINFO');
+export const [GET_GAMEINFOBYIDLIST, GET_GAMEINFOBYIDLIST_SUCCESS, GET_GAMEINFOBYIDLIST_FAIL] =
+  createRequestActionTypes('GET_GAMEINFOBYIDLIST');
 
 export const getCategories = createAsyncAction(GET_CATEGORIES, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL)<
   IGetCategoriesReqType,
@@ -49,3 +52,8 @@ export const rmCartInfo = createAsyncAction(RM_CARTINFO, RM_CARTINFO_SUCCESS, RM
   IResStoreType,
   AxiosError
 >();
+export const getGameInfoByIdList = createAsyncAction(
+  GET_GAMEINFOBYIDLIST,
+  GET_GAMEINFOBYIDLIST_SUCCESS,
+  GET_GAMEINFOBYIDLIST_FAIL,
+)<IGetGameInfoByIdListReqType, IResType, AxiosError>();
