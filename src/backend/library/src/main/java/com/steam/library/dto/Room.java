@@ -18,16 +18,16 @@ import java.util.*;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Room {
     private Integer roomId;
+    private Integer userCount;
     @JsonIgnore
     private List<WebSocketSession> sessions;
-    private List<String> userList;
     private Map<String, UserDto> users;
     private MapDto map;
 
     public RoomCache toHash() {
         return RoomCache.builder()
                 .roomId(this.roomId.toString())
-                .userList(this.userList)
+                .userCount(0)
                 .users(this.users)
                 .map(JsonUtil.toJson(this.map))
                 .build();
@@ -37,7 +37,7 @@ public class Room {
         Room room = Room.builder()
                 .roomId(Integer.parseInt(roomCache.getRoomId()))
                 .sessions(Collections.synchronizedList(new ArrayList<>()))
-                .userList(roomCache.getUserList())
+                .userCount(roomCache.getUserCount())
                 .users(roomCache.getUsers())
                 .map(JsonUtil.toMapDto(roomCache.getMap()))
                 .build();
@@ -50,7 +50,7 @@ public class Room {
         return Room.builder()
                 .roomId(Integer.parseInt(roomId))
                 .sessions(Collections.synchronizedList(new ArrayList<>()))
-                .userList(Collections.synchronizedList(new ArrayList<>()))
+                .userCount(0)
                 .users(new HashMap<>())
                 .map(map)
                 .build();
@@ -60,8 +60,8 @@ public class Room {
         String userId = userDetails.getIdx().toString();
         try {
             if (!this.users.containsKey(userId)) {
-                this.userList.add(userId);
                 this.users.put(userId, UserDto.of(userDetails));
+                this.userCount++;
             }
             this.sessions.add(session);
         } catch (RuntimeException e) {
@@ -72,13 +72,13 @@ public class Room {
     }
     public synchronized Integer leave(String userId, WebSocketSession session) {
         try {
-            this.getUserList().remove(userId);
+            this.userCount--;
             this.getUsers().remove(userId);
             this.sessions.remove(session);
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
-        return this.getUserList().size();
+        return this.userCount;
     }
 
     public void moveUser(String userId, Direction direction) {

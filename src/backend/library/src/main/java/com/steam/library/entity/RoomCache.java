@@ -22,18 +22,18 @@ import java.util.Map;
 public class RoomCache {
     @Id
     private String roomId;
-    private List<String> userList = new ArrayList<>();
+    private Integer userCount;
     private Map<String, UserDto> users = new HashMap<>();
     private String map;
 
     public void addUser(String userId, UserDto user) {
-        userList.add(userId);
-        users.put(userId, user);
+        this.userCount++;
+        this.users.put(userId, user);
     }
 
     public void removeUser(String userId) {
-        userList.remove(userId);
-        users.remove(userId);
+        this.userCount--;
+        this.users.remove(userId);
     }
 
     public void updateMap(MapDto map) {
