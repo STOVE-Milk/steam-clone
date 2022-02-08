@@ -156,6 +156,22 @@ func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Em
 	}, nil
 }
 
+func (store *storeServer) GetGameListInCart(ctx context.Context, req *pb.GameIdListQueryParamRequest) (*pb.GameSimpleListResponse, error) {
+	ctx = context.WithValue(ctx, "gameIdList", req.GameIdList)
+	res, err := store.gameCtr.GetGameListInCart(ctx)
+	if err != nil {
+		return &pb.GameSimpleListResponse{
+			Code:    31004,
+			Message: "장바구니 게임 목록 불러오기 에러 " + err.Error(),
+		}, nil
+	}
+	return &pb.GameSimpleListResponse{
+		Code:    31000,
+		Message: "game list by cart",
+		Data:    res,
+	}, nil
+}
+
 func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
 	userMetaData, err := model.ExtractMetadata(ctx)
 	if err != nil {

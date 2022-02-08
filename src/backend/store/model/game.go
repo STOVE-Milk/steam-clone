@@ -80,7 +80,7 @@ type GameSimple struct {
 	Id                 int           `json:"game_id"`
 	Name               string        `json:"name"`
 	DescriptionSnippet string        `json:"description_snippet"`
-	Price              int           `json:"price"`
+	Price              StringJsonMap `json:"price"`
 	Sale               int           `json:"sale"`
 	Image              StringJsonMap `json:"image"`
 	Video              StringJsonMap `json:"video"`

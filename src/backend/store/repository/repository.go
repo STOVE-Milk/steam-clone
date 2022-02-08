@@ -217,6 +217,32 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*model.GameSimple, 
 	return gameSimpleList, nil
 }
 
+func (r *Repo) GetGameListInCart(ctx context.Context) ([]*model.GameSimple, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	gameIdList := ctx.Value("gameIdList")
+	var gameSimpleList []*model.GameSimple
+	rows, err := r.db.QueryContext(ctx, `	
+	SELECT idx, name, description_snippet, price, sale, image, video, os, download_count 
+	FROM game
+	WHERE idx
+	In (?)
+	`, gameIdList)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var game model.GameSimple
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+		gameSimpleList = append(gameSimpleList, &game)
+	}
+	return gameSimpleList, nil
+}
+
 func (r *Repo) PostWishlist(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()

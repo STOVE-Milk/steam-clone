@@ -29,6 +29,11 @@ service Store {
             get: "/store/games/{game_id}/reviews"
         };
     }
+    rpc GetGameListInCart(GameIdListQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/cart/{game_id_list}"
+        };
+    }
     rpc GetUserData(google.protobuf.Empty) returns (UserDataResponse){
         option (google.api.http) = {
             get: "/store/userdata"
@@ -196,6 +201,10 @@ message ContentsPath{
 // Client 측에서 하나의 카테고리를 Request 받을 때. 
 message GameIdQueryParamRequest{
     int32 game_id = 1;
+}
+
+message GameIdListQueryParamRequest{
+    string game_id_list = 1;
 }
 
 message SortingParamRequest{

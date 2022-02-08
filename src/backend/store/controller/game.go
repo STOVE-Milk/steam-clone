@@ -64,8 +64,8 @@ func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetailResp
 	for i, category := range categoryList {
 		categoryTmp[i] = category.Name
 	}
-	var imageSub []string
-	var videoSub []string
+	imageSub := make([]string, 0)
+	videoSub := make([]string, 0)
 	for _, image := range gameDetail.Image["sub"].([]interface{}) {
 		imageSub = append(imageSub, image.(string))
 	}
@@ -81,7 +81,7 @@ func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetailResp
 			Id:                 int32(gameDetail.Id),
 			Name:               gameDetail.Name,
 			DescriptionSnippet: gameDetail.DescriptionSnippet,
-			Price:              int32(gameDetail.Price),
+			Price:              int32(gameDetail.Price["KR"].(float64)),
 			Sale:               int32(gameDetail.Sale),
 			Image: &pb.ContentsPath{
 				Main: gameDetail.Image["main"].(string),
@@ -105,9 +105,8 @@ func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetailResp
 		},
 	}, nil
 }
-
-func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
-	gameSimpleList, err := gc.r.GetSortingGameList(ctx)
+func (gc *GameController) GetGameListInCart(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+	gameSimpleList, err := gc.r.GetGameListInCart(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +134,53 @@ func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpl
 			Id:                 int32(game.Id),
 			Name:               game.Name,
 			DescriptionSnippet: game.DescriptionSnippet,
-			Price:              int32(game.Price),
+			Price:              int32(game.Price["KR"].(float64)),
+			Sale:               int32(game.Sale),
+			Image: &pb.ContentsPath{
+				Main: game.Image["main"].(string),
+				Sub:  imageSub,
+			},
+			Video: &pb.ContentsPath{
+				Main: game.Video["main"].(string),
+				Sub:  videoSub,
+			},
+			OsList:        game.Os.ToSlice(),
+			CategoryList:  categoryTmp,
+			DownloadCount: int32(game.DownloadCount),
+		}
+	}
+	return &pbGameSimpleList, nil
+}
+func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+	gameSimpleList, err := gc.r.GetSortingGameList(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
+	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
+	for i, game := range gameSimpleList {
+		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
+		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
+		if err != nil {
+			return nil, err
+		}
+		categoryTmp := make([]string, len(categoryList))
+		for i, category := range categoryList {
+			categoryTmp[i] = category.Name
+		}
+		imageSub := make([]string, 0)
+		videoSub := make([]string, 0)
+		for _, image := range game.Image["sub"].([]interface{}) {
+			imageSub = append(imageSub, image.(string))
+		}
+		for _, video := range game.Video["sub"].([]interface{}) {
+			videoSub = append(videoSub, video.(string))
+		}
+		pbGameSimpleList.GameList[i] = &pb.GameSimple{
+			Id:                 int32(game.Id),
+			Name:               game.Name,
+			DescriptionSnippet: game.DescriptionSnippet,
+			Price:              int32(game.Price["KR"].(float64)),
 			Sale:               int32(game.Sale),
 			Image: &pb.ContentsPath{
 				Main: game.Image["main"].(string),
@@ -205,7 +250,7 @@ func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSi
 			Id:                 int32(game.Id),
 			Name:               game.Name,
 			DescriptionSnippet: game.DescriptionSnippet,
-			Price:              int32(game.Price),
+			Price:              int32(game.Price["KR"].(float64)),
 			Sale:               int32(game.Sale),
 			Image: &pb.ContentsPath{
 				Main: game.Image["main"].(string),
