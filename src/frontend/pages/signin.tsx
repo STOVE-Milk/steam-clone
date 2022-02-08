@@ -12,7 +12,7 @@ import { doSignInAPI } from 'pages/api/user/api';
 import { IState } from 'modules';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveUserInfo } from 'modules/user';
-import Router from 'next/router';
+import { parseToken } from 'util/parseToken';
 
 const SignInFormWrapper = styled.div`
   width: 40rem;
@@ -77,11 +77,7 @@ const signin: NextPage<IState> = () => {
         //성공
         localStorage.setItem('accessToken', res.data.accessToken);
         localStorage.setItem('refreshToken', res.data.refreshToken);
-        //[refer]: jwt decode하는 코드 | 출처: https://archijude.tistory.com/432
-        const token = res.data.accessToken;
-        const base64Payload = token.split('.')[1]; //value 0 -> header, 1 -> payload, 2 -> VERIFY SIGNATURE
-        const payload = Buffer.from(base64Payload, 'base64');
-        const result = JSON.parse(payload.toString());
+        const result = parseToken(res.data.accessToken);
         dispatch(saveUserInfo.request(result));
         router.push('/category'); // TO DO(양하): 메인으로 redirect 변경, 지금 메인페이지 오류나서 일단 카테고리 페이지로 redirect
       }
