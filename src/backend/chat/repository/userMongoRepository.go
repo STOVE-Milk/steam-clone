@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,21 +12,20 @@ type UserMRepository struct {
 	Db *mongo.Client
 }
 
-func (repo *UserMRepository) GetAllJoinedRoom(user models.User) []models.Room {
-	var rooms []models.Room
+func (repo *UserMRepository) GetAllJoinedRoom(userId string) []models.RoomMongo {
+	var res models.UserMongo
 	chatCollection := repo.Db.Database("chat").Collection("users")
-	findFilter := bson.D{{"id", user.GetId()}}
-	chatCollection.FindOne(context.TODO(), findFilter).Decode(&rooms)
-	fmt.Println(rooms)
-	return rooms
+	findFilter := bson.D{{"id", userId}}
+	chatCollection.FindOne(context.TODO(), findFilter).Decode(&res)
+	return res.Rooms
 }
 
-func (repo *UserMRepository) DeleteRoom(room models.Room, user models.User) {
+func (repo *UserMRepository) DeleteRoom(room models.Room, userId string) {
 	chatCollection := repo.Db.Database("chat").Collection("users")
-	pullFilter := bson.D{{"id", user.GetId()}}
+	pullFilter := bson.D{{"id", userId}}
 	pullBson := bson.D{{"$pull",
 		bson.D{{
-			"rooms", room,
+			"rooms", bson.D{{"id", room.GetId()}},
 		}},
 	}}
 	chatCollection.UpdateOne(context.TODO(), pullFilter, pullBson)
@@ -35,22 +33,23 @@ func (repo *UserMRepository) DeleteRoom(room models.Room, user models.User) {
 }
 
 // 사용자가 등록이 돼 있지 않다면 document 생성
-func (repo *UserMRepository) AddUser(user models.User) {
+func (repo *UserMRepository) AddUser(userId string) {
 	chatCollection := repo.Db.Database("chat").Collection("users")
-	userInfo := User{
-		Id: user.GetId(),
+	userInfo := models.UserMongo{
+		Id:    userId,
+		Rooms: make([]models.RoomMongo, 0),
 	}
 	chatCollection.InsertOne(context.TODO(), userInfo)
 }
 
-func (repo *UserMRepository) AddRoom(room models.Room, user models.User) {
+func (repo *UserMRepository) AddRoom(room models.Room, userId string) {
 	chatCollection := repo.Db.Database("chat").Collection("users")
 	roomInfo := Room{
 		Id:      room.GetId(),
 		Name:    room.GetName(),
 		Private: room.GetPrivate(),
 	}
-	updateFilter := bson.D{{"id", user.GetId()}}
+	updateFilter := bson.D{{"id", userId}}
 	updateBson := bson.D{{"$push",
 		bson.D{{
 			"rooms", roomInfo,

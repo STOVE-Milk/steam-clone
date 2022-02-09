@@ -11,8 +11,13 @@ type UserRepository interface {
 }
 
 type UserMRepository interface {
-	GetAllJoinedRoom(user User) []Room
-	AddRoom(room Room, user User)
-	DeleteRoom(room Room, user User)
-	AddUser(user User)
+	GetAllJoinedRoom(userId string) []RoomMongo
+	AddRoom(room Room, userId string)
+	DeleteRoom(room Room, userId string)
+	AddUser(userId string)
+}
+
+type UserMongo struct {
+	Id    string      `bson:"id"`
+	Rooms []RoomMongo `bson:"rooms"`
 }

@@ -130,6 +130,8 @@ func (client *Client) writePump() {
 }
 
 func (client *Client) disconnect() {
+	//가입된 방을 가져온다.
+	//가입된 방에 client가 등록 돼 있으면 제거한다.
 	client.wsServer.unregister <- client
 
 	close(client.send)
@@ -144,9 +146,9 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var user models.User
-	loginUser, _ := models.ExtractMetadata(r)
+	// loginUser, _ := models.ExtractMetadata(r)
 	for _, u := range wsServer.users {
-		if u.GetName() == loginUser.Nickname {
+		if u.GetName() == "ive" {
 			user = u
 			break
 		}
@@ -194,6 +196,12 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 }
 
 func (client *Client) handleRoomViewMessage(message Message) {
+	room := message.Target
+	if !client.isInRoom(room) {
+
+		client.rooms[room] = true
+		room.register <- client
+	}
 	roomId := message.Target.ID
 	data := client.wsServer.getRoomViewData(roomId)
 	message = Message{
@@ -212,7 +220,7 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 	if _, ok := client.rooms[room]; ok {
 		delete(client.rooms, room)
 	}
-
+	client.wsServer.userMRepository.DeleteRoom(room, client.ID)
 	room.unregister <- client
 }
 
@@ -256,8 +264,7 @@ func (client *Client) handleJoinRoomMessage(message Message) {
 func (client *Client) joinRoom(roomName string, sender models.User, members []string) *Room {
 	room := client.wsServer.findRoomByName(roomName)
 	if room == nil {
-		room = client.wsServer.createRoom(roomName, sender != nil)
-		client.wsServer.addMembers(room, members)
+		room = client.wsServer.createRoom(roomName, sender != nil, members)
 	}
 
 	// Don't allow to join private rooms through public room message

@@ -56,28 +56,50 @@ func (server *WsServer) Run() {
 }
 
 func (server *WsServer) registerClient(client *Client) {
+	rooms := server.userMRepository.GetAllJoinedRoom(client.ID)
+	if rooms == nil {
+		server.userMRepository.AddUser(client.ID)
+	}
 	server.listOnlineClients(client)
 
 	// Publish user in PubSub
 	server.publishClientJoined(client)
 
 	server.clients[client] = true
+
 }
 
 func (server *WsServer) unregisterClient(client *Client) {
 	if _, ok := server.clients[client]; ok {
+
+		// 룸에서 클라이언트의 메모리 제거
+		for room, _ := range client.rooms {
+
+			if _, ok := server.rooms[room]; ok {
+				delete(room.clients, client)
+
+				// 클라이언트가 없는 룸은 메모리 제거
+				if len(room.clients) == 0 {
+					delete(server.rooms, room)
+				}
+
+			}
+		}
+
+		// 서버에서 클라이언트 메모리 제거
 		delete(server.clients, client)
 
-		// Publish user left in PubSub
+		// 클라이언트 웹소켓 끊어짐 알림.
 		server.publishClientLeft(client)
 	}
 }
 
 func (server *WsServer) publishClientJoined(client *Client) {
-
+	data := server.userMRepository.GetAllJoinedRoom(client.ID)
 	message := &Message{
 		Action: UserJoinedAction,
 		Sender: client,
+		Data:   data,
 	}
 
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
@@ -240,13 +262,21 @@ func (server *WsServer) findRoomByID(ID string) *Room {
 	return foundRoom
 }
 
-func (server *WsServer) createRoom(name string, private bool) *Room {
+func (server *WsServer) createRoom(name string, private bool, members []string) *Room {
 	room := NewRoom(name, private)
 	server.roomMRepository.AddRoom(room)
+	server.addMembers(room, members)
+	for _, member := range members {
+		server.userMRepository.AddRoom(room, member)
+	}
 	go room.RunRoom()
 	server.rooms[room] = true
 
 	return room
+}
+
+func (server *WsServer) addUser() {
+
 }
 
 func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content string) {

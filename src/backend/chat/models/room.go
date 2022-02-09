@@ -28,7 +28,11 @@ type RoomsMongo struct {
 	Amount    int64     `bson:"amount"`
 	CreatedAt time.Time `bson:"created_at"`
 }
-
+type RoomMongo struct {
+	ID      string `bson:"id"`
+	Name    string `bosn:"name"`
+	Private bool   `bson:"private"`
+}
 type ChatLogData struct {
 	SenderId       string    `bson:"sender_id" json:"sender_id"`
 	SenderNickname string    `bson:"sender_nickname" json:"sender_nickname"`
