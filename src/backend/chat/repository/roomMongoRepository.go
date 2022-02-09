@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"strconv"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
@@ -51,11 +50,7 @@ func (repo *RoomMRepository) AddRoom(room models.Room) {
 func (repo *RoomMRepository) LoggingChat(chatLogData models.ChatLogData, roomId string) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	updateFilter := bson.D{{"id", roomId}}
-	updateBson := bson.D{{"$push",
-		bson.D{{
-			"chat_log", chatLogData,
-		}},
-	}}
+	updateBson := bson.D{{"$push", bson.D{{"chat_log", chatLogData}}}}
 	chatCollection.UpdateOne(context.TODO(), updateFilter, updateBson)
 
 }
@@ -85,18 +80,9 @@ func (repo *RoomMRepository) FindRoomByName(name string) models.Room {
 	}
 	return &room
 }
-func (repo *RoomMRepository) AddMembers(room models.Room, users []models.User) {
-	members := make([]int32, 0)
-	for _, user := range users {
-		userId, _ := strconv.Atoi(user.GetId())
-		members = append(members, int32(userId))
-	}
+func (repo *RoomMRepository) AddMembers(room models.Room, members []string) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	updateFilter := bson.D{{"id", room.GetId()}}
-	updateBson := bson.D{{"$push",
-		bson.D{{
-			"members", members,
-		}},
-	}}
+	updateBson := bson.D{{"$push", bson.D{{"members", bson.D{{"$each", members}}}}}}
 	chatCollection.UpdateOne(context.TODO(), updateFilter, updateBson)
 }

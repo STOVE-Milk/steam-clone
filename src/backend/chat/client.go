@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/config"
@@ -203,15 +204,14 @@ func (client *Client) handleRoomViewMessage(message Message) {
 }
 
 func (client *Client) handleJoinRoomMessage(message Message) {
-	roomName := message.Message
+	// roomName := message.Message
+	// client.joinRoom(roomName, nil)
 
-	client.joinRoom(roomName, nil)
+	strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
+	roomName := strArr[0]
 
-	// strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
-	// roomName := strArr[0]
-	// groupRoom := client.joinRoom(roomName, nil)
+	client.joinRoom(roomName, nil, strArr[1:])
 
-	// // 클라이언트 찾아서 넣어야함.
 }
 
 func (client *Client) handleLeaveRoomMessage(message Message) {
@@ -243,7 +243,7 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	roomName := fmt.Sprintf("%v-%v", userA, userB)
 
 	// Join room
-	joinedRoom := client.joinRoom(roomName, target)
+	joinedRoom := client.joinRoom(roomName, target, []string{client.ID, message.Message})
 
 	// Invite target user
 	if joinedRoom != nil {
@@ -252,10 +252,11 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 
 }
 
-func (client *Client) joinRoom(roomName string, sender models.User) *Room {
+func (client *Client) joinRoom(roomName string, sender models.User, members []string) *Room {
 	room := client.wsServer.findRoomByName(roomName)
 	if room == nil {
 		room = client.wsServer.createRoom(roomName, sender != nil)
+		client.wsServer.addMembers(room, members)
 	}
 
 	// Don't allow to join private rooms through public room message

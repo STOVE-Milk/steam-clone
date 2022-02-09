@@ -124,7 +124,7 @@ func (server *WsServer) handleUserJoinPrivate(message Message) {
 	// Find client for given user, if found add the user to the room.
 	targetClient := server.findClientByID(message.Message)
 	if targetClient != nil {
-		targetClient.joinRoom(message.Target.GetName(), message.Sender)
+		targetClient.joinRoom(message.Target.GetName(), message.Sender, nil)
 	}
 }
 func (server *WsServer) findUserByID(ID string) models.User {
@@ -232,7 +232,6 @@ func (server *WsServer) findRoomByID(ID string) *Room {
 
 func (server *WsServer) createRoom(name string, private bool) *Room {
 	room := NewRoom(name, private)
-
 	server.roomMRepository.AddRoom(room)
 	go room.RunRoom()
 	server.rooms[room] = true
@@ -248,4 +247,8 @@ func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content st
 		SendTime:       time.Now(),
 	}
 	server.roomMRepository.LoggingChat(chatLogData, roomId)
+}
+
+func (server *WsServer) addMembers(room models.Room, members []string) {
+	server.roomMRepository.AddMembers(room, members)
 }
