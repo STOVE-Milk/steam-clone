@@ -28,8 +28,6 @@ public class FriendRequest {
     @JoinColumn(name = "requester_id")
     private User receiver;
 
-
-
     @Column(name = "created_at")
     @CreationTimestamp
     private java.sql.Timestamp createdAt;

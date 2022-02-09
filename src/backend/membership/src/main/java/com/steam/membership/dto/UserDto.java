@@ -36,7 +36,7 @@ public class UserDto {
         return UserDto.builder()
                 .id(user.getIdx())
                 .nickname(user.getNickname())
-                .isFriend(user.getFriend())
+                .isFriend(user.getFriends())
                 .profile(JsonUtil.toObject(user.getProfile(), ProfileDto.class))
                 .accessedAt(user.getAccessedAt())
                 .createdAt(user.getCreatedAt())

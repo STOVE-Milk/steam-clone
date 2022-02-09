@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    @Query(value = "SELECT u.idx, u.nickname, f.idx IS NOT NULL as 'friend', u.`profile`, u.country, u.accessed_at as accessedAt, u.created_at as createdAt FROM user u " +
+    @Query(value = "SELECT u.idx, u.nickname, f.idx IS NOT NULL as 'friends', u.`profile`, u.accessed_at as accessedAt, u.created_at as createdAt FROM user u " +
             "LEFT JOIN friend f " +
             "ON (f.user_id = :userId AND u.idx = f.friend_id) " +
             "WHERE u.deleted_at IS NULL AND u.nickname LIKE CONCAT(:nickname ,'%') " +

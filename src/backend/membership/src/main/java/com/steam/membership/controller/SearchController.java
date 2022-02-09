@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class SearchController {
     private final SearchService searchService;
 
-    @GetMapping
+    @GetMapping("/users")
     @ResponseBody
     public ResponseEntity<Body> searchUsers(
             @RequestParam(value = "nickname", required = false) String nickname,

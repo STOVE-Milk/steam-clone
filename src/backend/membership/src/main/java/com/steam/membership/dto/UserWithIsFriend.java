@@ -5,7 +5,7 @@ import java.util.Date;
 public interface UserWithIsFriend {
     Integer getIdx();
     String getNickname();
-    Integer getFriend();
+    Integer getFriends();
     String getProfile();
     Date getAccessedAt();
     Date getCreatedAt();

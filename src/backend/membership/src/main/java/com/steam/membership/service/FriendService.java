@@ -17,6 +17,7 @@ import com.steam.membership.repository.FriendRepository;
 import com.steam.membership.repository.FriendRequestRepository;
 import com.steam.membership.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FriendService {
@@ -51,8 +53,7 @@ public class FriendService {
     public Body<Object> getFriendListRelatedMe(Integer userId) {
         final List<Friend> sameFriends = friendRepository.findFriendsTop20ByUserId(
                 UserContext.getUserId(),
-                userId,
-                PageRequest.ofSize(20)
+                userId
         );
 //
         if(sameFriends.isEmpty())
@@ -101,7 +102,7 @@ public class FriendService {
         // TODO 한쪽만 친구를 끊을 것인가?
         final Integer userId = UserContext.getUserId();
         final List<Friend> friend = friendRepository.findFriendsByUserIdAndFriendId(userId, friendId);
-
+        log.info("size: " + friend.size());
         if(friend.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
@@ -157,9 +158,8 @@ public class FriendService {
     }
 
     @Transactional
-    public Body<Object> rejectFriendRequest(Integer requestId) {
-        final User me = UserContext.getUser();
-        final Optional<FriendRequest> friendRequest = friendRequestRepository.findByIdAndUser(requestId, me);
+    public Body<Object> rejectFriendRequest(Integer userId) {
+        final Optional<FriendRequest> friendRequest = friendRequestRepository.findByUserIdAndMyId(userId, UserContext.getUserId());
 
         if(friendRequest.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);

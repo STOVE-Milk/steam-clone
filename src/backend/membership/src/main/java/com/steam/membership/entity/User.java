@@ -59,5 +59,8 @@ public class User {
     private Timestamp deletedAt;
 
     @OneToMany(mappedBy = "user")
+    List<Friend> friends = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
     List<GuestBook> guestBooks = new ArrayList<>();
 }

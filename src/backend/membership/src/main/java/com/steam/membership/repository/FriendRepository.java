@@ -14,14 +14,14 @@ import java.util.Optional;
 
 @Repository
 public interface FriendRepository extends JpaRepository<Friend, Map<Integer, Integer>> {
-    @Query("SELECT f FROM Friend f WHERE (f.user.idx = :userId AND f.friend.idx = :friendId) OR (f.user.idx = :friendId AND f.user.idx = :userId)")
+    @Query("SELECT f FROM Friend f WHERE (f.user.idx = :userId AND f.friend.idx = :friendId) OR (f.user.idx = :friendId AND f.friend.idx = :userId)")
     List<Friend> findFriendsByUserIdAndFriendId(@Param("userId") Integer userId, @Param("friendId") Integer friendId);
     @Query(value = "SELECT * FROM steam.friend f1 " +
             "INNER JOIN steam.friend f2 " +
-            "ON (f1.friend_id = f2.friend_id AND f2.user_id = 3) " +
-            "WHERE (f1.user_id = 1)" +
+            "ON (f1.friend_id = f2.friend_id AND f2.user_id = :userId ) " +
+            "WHERE (f1.user_id = :myId ) " +
             "LIMIT 20", nativeQuery = true)
-    List<Friend> findFriendsTop20ByUserId(@Param("myId") Integer myId, @Param("userId") Integer userId, Pageable limit);
+    List<Friend> findFriendsTop20ByUserId(@Param("myId") Integer myId, @Param("userId") Integer userId);
 
     Optional<Friend> findByUserAndFriend(User user, User friend);
     List<Friend> findTop20ByUser(User user);
