@@ -12,24 +12,26 @@ import (
 const PubSubGeneralChannel = "general"
 
 type WsServer struct {
-	clients        map[*Client]bool // 클라이언트 저장
-	register       chan *Client     // 클라이언트 등록
-	unregister     chan *Client     // 클라이언트 제거
-	rooms          map[*Room]bool   // 룸 기록
-	broadcast      chan []byte      // 대화
-	users          []models.User    // db에 등록된 유저 읽어 오기
-	roomRepository models.RoomRepository
-	userRepository models.UserRepository
+	clients         map[*Client]bool // 클라이언트 저장
+	register        chan *Client     // 클라이언트 등록
+	unregister      chan *Client     // 클라이언트 제거
+	rooms           map[*Room]bool   // 룸 기록
+	broadcast       chan []byte      // 대화
+	users           []models.User    // db에 등록된 유저 읽어 오기
+	roomMRepository models.RoomRepository
+	userMRepository models.UserMRepository
+	userRepository  models.UserRepository
 }
 
-func NewWebsocketServer(roomRepository models.RoomRepository, userRepository models.UserRepository) *WsServer {
+func NewWebsocketServer(roomMRepository models.RoomRepository, userMRepository models.UserMRepository, userRepository models.UserRepository) *WsServer {
 	wsServer := &WsServer{
-		clients:        make(map[*Client]bool),
-		register:       make(chan *Client),
-		unregister:     make(chan *Client),
-		rooms:          make(map[*Room]bool),
-		roomRepository: roomRepository,
-		userRepository: userRepository,
+		clients:         make(map[*Client]bool),
+		register:        make(chan *Client),
+		unregister:      make(chan *Client),
+		rooms:           make(map[*Room]bool),
+		roomMRepository: roomMRepository,
+		userMRepository: userMRepository,
+		userRepository:  userRepository,
 	}
 
 	// Add users from database to server
@@ -167,7 +169,7 @@ func (server *WsServer) broadcastToClients(message []byte) {
 }
 
 func (server *WsServer) getRoomViewData(roomId string) models.RoomViewData {
-	roomViewData := server.roomRepository.GetRoomViewData(roomId)
+	roomViewData := server.roomMRepository.GetRoomViewData(roomId)
 
 	return roomViewData
 }
@@ -192,7 +194,7 @@ func (server *WsServer) findRoomByName(name string) *Room {
 
 func (server *WsServer) runRoomFromRepository(name string) *Room {
 	var room *Room
-	dbRoom := server.roomRepository.FindRoomByName(name)
+	dbRoom := server.roomMRepository.FindRoomByName(name)
 	if dbRoom != nil {
 		room = NewRoom(dbRoom.GetName(), dbRoom.GetPrivate())
 		room.ID = dbRoom.GetId()
@@ -231,7 +233,7 @@ func (server *WsServer) findRoomByID(ID string) *Room {
 func (server *WsServer) createRoom(name string, private bool) *Room {
 	room := NewRoom(name, private)
 
-	server.roomRepository.AddRoom(room)
+	server.roomMRepository.AddRoom(room)
 	go room.RunRoom()
 	server.rooms[room] = true
 
@@ -245,5 +247,5 @@ func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content st
 		Content:        content,
 		SendTime:       time.Now(),
 	}
-	server.roomRepository.LoggingChat(chatLogData, roomId)
+	server.roomMRepository.LoggingChat(chatLogData, roomId)
 }

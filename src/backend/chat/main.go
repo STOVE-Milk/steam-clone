@@ -46,7 +46,7 @@ func main() {
 
 	serveMux := http.NewServeMux()
 
-	wsServer := NewWebsocketServer(&repository.RoomRepository{Db: mongo}, &repository.UserRepository{Db: db})
+	wsServer := NewWebsocketServer(&repository.RoomMRepository{Db: mongo}, &repository.UserMRepository{Db: mongo}, &repository.UserRepository{Db: db})
 	go wsServer.Run()
 
 	serveMux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {

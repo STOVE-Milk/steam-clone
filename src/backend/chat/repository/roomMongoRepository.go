@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
@@ -28,12 +28,12 @@ func (room *Room) GetPrivate() bool {
 	return room.Private
 }
 
-type RoomRepository struct {
+type RoomMRepository struct {
 	Db *mongo.Client
 }
 
 // 방이 존재하지 않으면 방 생성.
-func (repo *RoomRepository) AddRoom(room models.Room) {
+func (repo *RoomMRepository) AddRoom(room models.Room) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	roomsInfo := models.RoomsMongo{
 		ID:        room.GetId(),
@@ -48,7 +48,7 @@ func (repo *RoomRepository) AddRoom(room models.Room) {
 	chatCollection.InsertOne(context.TODO(), roomsInfo)
 }
 
-func (repo *RoomRepository) LoggingChat(chatLogData models.ChatLogData, roomId string) {
+func (repo *RoomMRepository) LoggingChat(chatLogData models.ChatLogData, roomId string) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	updateFilter := bson.D{{"id", roomId}}
 	updateBson := bson.D{{"$push",
@@ -60,16 +60,15 @@ func (repo *RoomRepository) LoggingChat(chatLogData models.ChatLogData, roomId s
 
 }
 
-func (repo *RoomRepository) GetRoomViewData(roomId string) models.RoomViewData {
+func (repo *RoomMRepository) GetRoomViewData(roomId string) models.RoomViewData {
 	var roomViewData models.RoomViewData
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	findFilter := bson.D{{"id", roomId}}
 	chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomViewData)
-	fmt.Println("room : " + string(roomViewData.Encode()))
 	return roomViewData
 }
 
-func (repo *RoomRepository) FindRoomByName(name string) models.Room {
+func (repo *RoomMRepository) FindRoomByName(name string) models.Room {
 	var room Room
 	// var logList []models.ChatLogData
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
@@ -85,4 +84,19 @@ func (repo *RoomRepository) FindRoomByName(name string) models.Room {
 		Private: roomB["private"].(bool),
 	}
 	return &room
+}
+func (repo *RoomMRepository) AddMembers(room models.Room, users []models.User) {
+	members := make([]int32, 0)
+	for _, user := range users {
+		userId, _ := strconv.Atoi(user.GetId())
+		members = append(members, int32(userId))
+	}
+	chatCollection := repo.Db.Database("chat").Collection("rooms")
+	updateFilter := bson.D{{"id", room.GetId()}}
+	updateBson := bson.D{{"$push",
+		bson.D{{
+			"members", members,
+		}},
+	}}
+	chatCollection.UpdateOne(context.TODO(), updateFilter, updateBson)
 }
