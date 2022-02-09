@@ -7,6 +7,7 @@ import com.steam.library.entity.Library;
 import com.steam.library.entity.RoomCache;
 import com.steam.library.entity.User;
 import com.steam.library.global.common.Direction;
+import com.steam.library.global.common.UserDetails;
 import com.steam.library.global.util.JsonUtil;
 import com.steam.library.repository.LibraryRepository;
 import com.steam.library.repository.RoomCacheRepository;
@@ -101,7 +102,7 @@ public class SocketDataService {
         }
     }
 
-    public Room addUserToRedis(String roomId, String enteredUserId, UserDto enteredUser) {
+    public Room addUserToRedis(String roomId, String enteredUserId, UserDetails enteredUser) {
         RoomCache roomCache;
         RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
         try {
@@ -119,7 +120,7 @@ public class SocketDataService {
                 // UserMap 두번 select 하게됨
                 roomCache = Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash();
             }
-            roomCache.addUser(enteredUserId, enteredUser);
+            roomCache.addUser(enteredUserId, UserDto.of(enteredUser));
             roomCacheRepository.save(roomCache);
             return Room.of(roomCache);
         } catch (InterruptedException e) {
@@ -135,29 +136,34 @@ public class SocketDataService {
         HashOperations<String, String, Integer> hash = redisTemplate.opsForHash();
         String mainKey = "library:" + roomId;
         String hashKey = "users.[" + movedUserId + "].";
-        if(Boolean.TRUE.equals(hash.hasKey(mainKey,hashKey + 'x'))) {
-            switch (direction) {
-                case UP:
-                    hashKey += 'y';
-                    if (hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
-                        hash.increment(mainKey, hashKey, 1);
-                    break;
-                case RIGHT:
-                    hashKey += 'x';
-                    if (hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
-                        hash.increment(mainKey, hashKey, 1);
-                    break;
-                case DOWN:
-                    hashKey += 'y';
-                    if (hash.get(mainKey, hashKey) > 0)
-                        hash.increment(mainKey, hashKey, -1);
-                    break;
-                case LEFT:
-                    hashKey += 'x';
-                    if (hash.get(mainKey, hashKey) > 0)
-                        hash.increment(mainKey, hashKey, -1);
-                    break;
+        try {
+            if (Boolean.TRUE.equals(hash.hasKey(mainKey, hashKey + 'x'))) {
+                switch (direction) {
+                    case UP:
+                        hashKey += 'y';
+                        if (hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
+                            hash.increment(mainKey, hashKey, 1);
+                        break;
+                    case RIGHT:
+                        hashKey += 'x';
+                        if (hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
+                            hash.increment(mainKey, hashKey, 1);
+                        break;
+                    case DOWN:
+                        hashKey += 'y';
+                        if (hash.get(mainKey, hashKey) > 0)
+                            hash.increment(mainKey, hashKey, -1);
+                        break;
+                    case LEFT:
+                        hashKey += 'x';
+                        if (hash.get(mainKey, hashKey) > 0)
+                            hash.increment(mainKey, hashKey, -1);
+                        break;
+                }
             }
+        } catch (NullPointerException e) {
+            log.info(mainKey + "." + hashKey);
+            log.info(hash.get(mainKey, hashKey).toString());
         }
     }
 
@@ -165,16 +171,14 @@ public class SocketDataService {
         HashOperations<String, String, Integer> hash = redisTemplate.opsForHash();
         String mainKey = "library:" + roomId;
         String hashKey = "users.[" + leavedUserId + "].";
+
         RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
         try {
             roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
-//            roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
-//            Boolean isLocked = roomLock.tryLock(WAIT_TIME_OF_LOCK, EXPIRE_TIME_OF_LOCK, TIME_UNIT);
-//            if (isLocked) {
-//                log.info("leave lock 획득 실패");
-//            }
+
             hash.increment(mainKey, "userCount", -1);
             hash.delete(mainKey, hashKey + 'x');
+            hash.delete(mainKey, hashKey + 'y');
             hash.delete(mainKey, hashKey + "nickname");
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     private static final String EXCHANGE_NAME = "steam.robby";
-    private static final String QUEUE_NAME = "steam.queue";
-    private static final String ROUTING_KEY = "steam.normal";
+    private static final String QUEUE_NAME = "robby.queue";
+    private static final String ROUTING_KEY = "robby.normal";
 
     @Bean
     TopicExchange exchange() {

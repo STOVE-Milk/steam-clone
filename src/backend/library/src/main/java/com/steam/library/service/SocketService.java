@@ -43,7 +43,7 @@ public class SocketService {
         이상적: 따라서, 라우팅을 통해 자신에게는 publish한 메세지가 도달하지 않도록 처리하거나,
         차선책: publish 후 자체적으로 Room에 메세지를 보내는 로직을 삭제하고, subscribe한 메세지만 보내도록 해야한다.
     */
-    @RabbitListener(queues = "robby.queue", concurrency = "10")
+    @RabbitListener(queues = "robby.queue", concurrency = "1")
     public void receiveMessage(final Message message) {
         String messageStr = new String(message.getBody(), StandardCharsets.UTF_8);
         messageStr = messageStr.substring(1, messageStr.length() - 1).replace("\\", "");
@@ -127,7 +127,7 @@ public class SocketService {
 
         // Redis 갱신 & SYNC
         // 궁금: UserDto를 새로 만드는게 빠를까? vs 가져오는게 빠를까?
-        Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, room.getUsers().get(userId));
+        Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, userDetails);
         SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(cachedRoom);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
 

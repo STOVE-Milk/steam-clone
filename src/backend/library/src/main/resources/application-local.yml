@@ -23,9 +23,15 @@ spring:
     lettuce:
       shutdown-timeout: 100ms
   rabbitmq:
-    host: localhost
+    host: 3.35.0.63
     port: 5672
+    username: fortice
+    password: rhksflwk123@
+    virtual-host: /robby
     stream:
-      username: guest
-      password: guest
+      host: 3.35.0.63
+      port: 5672
+      username: fortice
+      password: rhksflwk123@
+
 

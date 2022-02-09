@@ -6,7 +6,7 @@ spring:
     username: milk
     password: milk
   jpa:
-    show-sql: true
+    show-sql: false
     database: mysql
     generate-ddl: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -23,6 +23,14 @@ spring:
     host: 54.180.117.120
     lettuce:
       shutdown-timeout: 100ms
+  rabbitmq:
+    host: localhost
+    port: 5672
+    virtual-host: /robby
+    password: rhksflwk123@
+    username: fortice
+
+
 logging:
   level:
     com.steam.library: debug
