@@ -9,6 +9,7 @@ import {
   IGetUserDataReqType,
   IGetWishListReqType,
   IDoUnWishReqType,
+  IGetGameInfoByIdListReqType,
 } from './type';
 
 export async function getCategoriesAPI(param: IGetCategoriesReqType) {
@@ -55,6 +56,12 @@ export async function doUnWishAPI(param: IDoUnWishReqType) {
 ///store/userdata
 export async function getUserDataAPI(param: IGetUserDataReqType) {
   const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/userdata`);
+
+  return response.data;
+}
+export async function getGameInfoByIdListAPI(param: IGetGameInfoByIdListReqType) {
+  const convertedParam = param.idList.join(',');
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/cart/${convertedParam}`);
 
   return response.data;
 }

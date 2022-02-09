@@ -10,6 +10,7 @@ import {
   getUserDataAPI,
   doUnWishAPI,
   getWishListAPI,
+  getGameInfoByIdListAPI,
 } from 'pages/api/game/api';
 import {
   getCategories,
@@ -26,6 +27,8 @@ import {
   DO_UNWISH,
   getUserData,
   GET_USERDATA,
+  getGameInfoByIdList,
+  GET_GAMEINFOBYIDLIST,
 } from 'modules/game/actions';
 
 const getCategoriesSaga = createAsyncSaga(getCategories, getCategoriesAPI);
@@ -35,6 +38,7 @@ const getWishListSaga = createAsyncSaga(getWishList, getWishListAPI);
 const doWishSaga = createAsyncSaga(doWish, doWishAPI);
 const doUnWishSaga = createAsyncSaga(doUnWish, doUnWishAPI);
 const getUserDataSaga = createAsyncSaga(getUserData, getUserDataAPI);
+const getGameInfoByIdListSaga = createAsyncSaga(getGameInfoByIdList, getGameInfoByIdListAPI);
 
 export function* gameSaga() {
   yield takeLatest(GET_CATEGORIES, getCategoriesSaga);
@@ -44,6 +48,7 @@ export function* gameSaga() {
   yield takeLatest(DO_WISH, doWishSaga);
   yield takeLatest(DO_UNWISH, doUnWishSaga);
   yield takeLatest(GET_USERDATA, getUserDataSaga);
+  yield takeLatest(GET_GAMEINFOBYIDLIST, getGameInfoByIdListSaga);
 }
 
 export { gameSaga as default };

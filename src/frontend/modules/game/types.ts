@@ -46,6 +46,7 @@ export interface gameState {
   unWish: AsyncState<IWish, Error>;
   userData: AsyncState<IUserData, Error>;
   wishList: AsyncState<gameInfo[], Error>;
+  gamesByIdList: AsyncState<gameInfo[], Error>;
 }
 
 export type gameAction = ActionType<typeof actions>;

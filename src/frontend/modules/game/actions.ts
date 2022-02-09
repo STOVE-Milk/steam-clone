@@ -12,6 +12,7 @@ import {
   IGetUserDataReqType,
   IDoUnWishReqType,
   IResType,
+  IGetGameInfoByIdListReqType,
 } from 'pages/api/game/type';
 
 export const [GET_CATEGORIES, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL] = createRequestActionTypes('GET_CATEGORIES');
@@ -22,6 +23,8 @@ export const [DO_WISH, DO_WISH_SUCCESS, DO_WISH_FAIL] = createRequestActionTypes
 export const [DO_UNWISH, DO_UNWISH_SUCCESS, DO_UNWISH_FAIL] = createRequestActionTypes('DO_UNWISH');
 export const [GET_USERDATA, GET_USERDATA_SUCCESS, GET_USERDATA_FAIL] = createRequestActionTypes('GET_USERDATA');
 export const [GET_WISHLIST, GET_WISHLIST_SUCCESS, GET_WISHLIST_FAIL] = createRequestActionTypes('GET_WISHLIST');
+export const [GET_GAMEINFOBYIDLIST, GET_GAMEINFOBYIDLIST_SUCCESS, GET_GAMEINFOBYIDLIST_FAIL] =
+  createRequestActionTypes('GET_GAMEINFOBYIDLIST');
 
 export const getCategories = createAsyncAction(GET_CATEGORIES, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL)<
   IGetCategoriesReqType,
@@ -60,3 +63,8 @@ export const getUserData = createAsyncAction(GET_USERDATA, GET_USERDATA_SUCCESS,
   IResType,
   AxiosError
 >();
+export const getGameInfoByIdList = createAsyncAction(
+  GET_GAMEINFOBYIDLIST,
+  GET_GAMEINFOBYIDLIST_SUCCESS,
+  GET_GAMEINFOBYIDLIST_FAIL,
+)<IGetGameInfoByIdListReqType, IResType, AxiosError>();

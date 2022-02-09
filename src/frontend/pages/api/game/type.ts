@@ -22,3 +22,6 @@ export interface IDoUnWishReqType {
 }
 
 export interface IGetUserDataReqType {}
+export interface IGetGameInfoByIdListReqType {
+  idList: number[];
+}
