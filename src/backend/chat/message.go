@@ -16,6 +16,7 @@ const LeaveRoomAction = "leave-room"
 const RoomJoinedAction = "room-joined"
 const RoomViewAction = "room-view"
 const GetRoomListAction = "get-room-list"
+const JoinRoomPublicAction = "join-room-public"
 
 type Message struct {
 	Action  string      `json:"action"`

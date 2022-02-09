@@ -178,7 +178,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		}
 		client.wsServer.loggingChat(roomID, message.Sender.GetId(), message.Sender.GetName(), message.Message)
 
-	case JoinRoomAction:
+	case JoinRoomPublicAction:
 		client.handleJoinRoomMessage(message)
 
 	case LeaveRoomAction:
@@ -201,17 +201,6 @@ func (client *Client) handleRoomViewMessage(message Message) {
 		Data:   data,
 	}
 	client.send <- message.encode()
-}
-
-func (client *Client) handleJoinRoomMessage(message Message) {
-	// roomName := message.Message
-	// client.joinRoom(roomName, nil)
-
-	strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
-	roomName := strArr[0]
-
-	client.joinRoom(roomName, nil, strArr[1:])
-
 }
 
 func (client *Client) handleLeaveRoomMessage(message Message) {
@@ -244,10 +233,22 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 
 	// Join room
 	joinedRoom := client.joinRoom(roomName, target, []string{client.ID, message.Message})
-
 	// Invite target user
 	if joinedRoom != nil {
-		client.inviteTargetUser(target, joinedRoom)
+		client.invitePrivateRoom(target, joinedRoom)
+	}
+
+}
+
+func (client *Client) handleJoinRoomMessage(message Message) {
+
+	strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
+	roomName := strArr[0]
+	members := strArr[1:]
+	fmt.Println(members)
+	joinedRoom := client.joinRoom(roomName, nil, members)
+	if joinedRoom != nil {
+		client.invitePublicRoom(members, joinedRoom)
 	}
 
 }
@@ -263,7 +264,6 @@ func (client *Client) joinRoom(roomName string, sender models.User, members []st
 	if sender == nil && room.Private {
 		return nil
 	}
-
 	if !client.isInRoom(room) {
 
 		client.rooms[room] = true
@@ -283,17 +283,32 @@ func (client *Client) isInRoom(room *Room) bool {
 	return false
 }
 
-func (client *Client) inviteTargetUser(target models.User, room *Room) {
+func (client *Client) invitePrivateRoom(target models.User, room *Room) {
 	inviteMessage := &Message{
 		Action:  JoinRoomPrivateAction,
 		Message: string(target.GetId()),
 		Target:  room,
 		Sender:  client,
 	}
-
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, inviteMessage.encode()).Err(); err != nil {
 		log.Println(err)
 	}
+}
+
+func (client *Client) invitePublicRoom(members []string, room *Room) {
+	for _, member := range members {
+		inviteMessage := &Message{
+			Action:  JoinRoomPublicAction,
+			Message: member,
+			Target:  room,
+			Sender:  client,
+		}
+
+		if err := config.Redis.Publish(ctx, PubSubGeneralChannel, inviteMessage.encode()).Err(); err != nil {
+			log.Println(err)
+		}
+	}
+
 }
 
 func (client *Client) notifyRoomJoined(room *Room, sender models.User) {

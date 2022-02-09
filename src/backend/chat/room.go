@@ -55,7 +55,6 @@ func (room *Room) RunRoom() {
 
 // 초대하는 함수에 포함되어야함.
 func (room *Room) registerClientInRoom(client *Client) {
-
 	room.clients[client] = true
 }
 

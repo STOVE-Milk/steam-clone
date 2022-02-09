@@ -116,7 +116,17 @@ func (server *WsServer) listenPubSubChannel() {
 			server.handleUserLeft(message)
 		case JoinRoomPrivateAction:
 			server.handleUserJoinPrivate(message)
+		case JoinRoomPublicAction:
+			server.handleUserJoinPublic(message)
 		}
+
+	}
+}
+func (server *WsServer) handleUserJoinPublic(message Message) {
+	// Find client for given user, if found add the user to the room.
+	targetClient := server.findClientByID(message.Message)
+	if targetClient != nil {
+		targetClient.joinRoom(message.Target.GetName(), message.Sender, nil)
 	}
 }
 
