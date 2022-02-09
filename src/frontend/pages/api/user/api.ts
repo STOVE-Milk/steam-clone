@@ -5,6 +5,7 @@ import {
   IGetGuestBooksReqType,
   IAddGuestBookReqType,
   IModifyGuestBookReqType,
+  IFriendReqType,
   IResType,
 } from './type';
 
@@ -52,6 +53,62 @@ export async function modifyGuestBookAPI(param: IModifyGuestBookReqType) {
       },
     },
   );
+
+  return response.data;
+}
+
+export async function getFriendsAPI(param: IModifyGuestBookReqType) {
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/membership/friends`);
+
+  return response.data;
+}
+
+export async function acceptFriendAPI(param: IFriendReqType) {
+  const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/membership/friends`, {
+    params: {
+      request_id: param.id,
+    },
+  });
+
+  return response.data;
+}
+
+export async function deleteFriendAPI(param: IFriendReqType) {
+  const response = await axios.delete<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/membership/friends/${param.id}`);
+
+  return response.data;
+}
+
+export async function getReceivedFriendsAPI(param: IFriendReqType) {
+  const response = await axios.get<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/membership/friend-requests?type=received`,
+  );
+
+  return response.data;
+}
+
+export async function getSendedFriendAPI(param: IFriendReqType) {
+  const response = await axios.get<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/membership/friend-requests?type=sended`,
+  );
+
+  return response.data;
+}
+
+export async function deleteFriendRequestAPI(param: IFriendReqType) {
+  const response = await axios.delete<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/membership/friend-requests/${param.id}`,
+  );
+
+  return response.data;
+}
+
+export async function sendFriendRequestAPI(param: IFriendReqType) {
+  const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/membership/friend-requests`, {
+    params: {
+      user_id: param.id,
+    },
+  });
 
   return response.data;
 }

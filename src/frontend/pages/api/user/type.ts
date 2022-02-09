@@ -21,6 +21,11 @@ export interface IModifyGuestBookReqType {
   content: string;
 }
 
+export interface IFriendReqType {
+  id: number;
+}
+
+
 export interface IResType {
   code: number;
   message: string;
