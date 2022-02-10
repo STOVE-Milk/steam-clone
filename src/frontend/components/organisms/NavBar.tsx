@@ -117,7 +117,12 @@ export default function NavBar() {
           name={'Category'}
         />
         <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} size="2x" inverse />} name={'Chat'} />
-        <MenuBox open={open} page="wish" icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />} name={'Wish'} />
+        <MenuBox
+          open={open}
+          page="wishlist"
+          icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />}
+          name={'Wish'}
+        />
       </MenuSection>
       <SectionDivider />
       <SectionTitle>Friends</SectionTitle>

@@ -3,11 +3,11 @@ import { all } from 'redux-saga/effects';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import game, { gameSaga, gameState } from './game';
-import user, { userSaga, userState } from './user';
+import user, { userSaga, IUserState } from './user';
 
 export interface IState {
   game: gameState;
-  user: userState;
+  user: IUserState;
 }
 
 export const rootReducer = (state: IState, action: AnyAction): CombinedState<IState> => {

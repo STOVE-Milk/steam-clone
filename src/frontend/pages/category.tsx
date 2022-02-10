@@ -37,6 +37,7 @@ const Category: NextPage<IState> = () => {
     // console.log('state:', state);
     return state.game;
   });
+  const { userInfo } = useSelector((state: IState) => state.user);
 
   const dispatch = useDispatch();
 
@@ -50,6 +51,7 @@ const Category: NextPage<IState> = () => {
 
   return (
     <GameInfoWrapper>
+      {console.log(userInfo.data)}
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
         {categories.data && (
