@@ -6,6 +6,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion, faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { IState } from 'modules';
+import {
+  getFriendsAPI,
+  acceptFriendAPI,
+  deleteFriendAPI,
+  getReceivedFriendsAPI,
+  getSendedFriendAPI,
+  deleteFriendRequestAPI,
+  sendFriendRequestAPI,
+  searchFriendAPI,
+} from 'pages/api/user/api';
 
 import Text from 'components/atoms/Text';
 import FriendBox from 'components/molecules/FriendBox';
@@ -128,7 +138,56 @@ const Friend: NextPage = () => {
     },
   ];
 
-  useEffect(() => {});
+  const searchFriend = async () => {
+    const res = await searchFriendAPI({ nickname: 'nick' });
+    console.log('searchFriend', res);
+  };
+
+  const getFriends = async () => {
+    const res = await getFriendsAPI();
+    console.log('getFriends', res);
+  };
+
+  const acceptFriend = async () => {
+    const res = await acceptFriendAPI({ id: 30 });
+    console.log('acceptFriend', res);
+  };
+
+  const deleteFriend = async () => {
+    const res = await deleteFriendAPI({ id: 4 });
+    console.log('deleteFriend', res);
+  };
+
+  const receivedFriend = async () => {
+    const res = await getReceivedFriendsAPI();
+    console.log('receivedFriend', res);
+  };
+
+  const sendedFriend = async () => {
+    const res = await getSendedFriendAPI();
+    console.log('sendedFriend', res);
+  };
+
+  const deleteFriendRequest = async () => {
+    const res = await deleteFriendRequestAPI({ id: 10 });
+    console.log('deleteFriendRequest', res);
+  };
+
+  const sendFriendRequest = async () => {
+    const res = await sendFriendRequestAPI({ id: 20 });
+    console.log('sendFriendRequest', res);
+  };
+
+  useEffect(() => {
+    searchFriend();
+    // getFriends(); // user1
+    // sendFriendRequest(); // 1 -> 2
+    // sendedFriend(); // 1
+    // deleteFriendRequest(); // 1, sendFriendRequest.id
+    // receivedFriend(); // 2
+    // acceptFriend(); // 2, receivedFriend.id
+    deleteFriend(); // 1
+  });
 
   return (
     <Wrapper>

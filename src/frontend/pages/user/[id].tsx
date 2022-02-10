@@ -15,10 +15,10 @@ import {
 } from '../api/user/api';
 
 import Text from 'components/atoms/Text';
-import UserInfo from 'components/organisms/UserInfo';
+import UserInfo, { IUserInfo } from 'components/organisms/UserInfo';
 import FriendBox from 'components/molecules/FriendBox';
 import Profile from 'components/atoms/Profile';
-import GuestBook from 'components/organisms/GuestBook';
+import GuestBook, { IGuestBook } from 'components/organisms/GuestBook';
 
 const Wrapper = styled.div`
   padding: 3rem;
@@ -44,153 +44,113 @@ const GuestBookList = styled.div`
   padding-top: 1rem;
 `;
 
-interface IResGuestBook {
-  id: number;
-  guest_id: number;
-  display_name: string;
-  profile: {};
-  content: string;
-  created_at: string;
-}
-
 const UserPage: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
 
-  const [guestBooks, setGuestBooks] = useState<IResGuestBook[]>([
-    {
-      id: 1,
-      guest_id: 2,
-      profile: {},
-      display_name: 'user2',
-      content: 'hi',
-      created_at: 'time1',
-    },
-    {
-      id: 2,
-      guest_id: 3,
-      profile: {},
-      display_name: 'user3',
-      content: 'hihi',
-      created_at: 'time2',
-    },
-    {
-      id: 3,
-      guest_id: 4,
-      profile: {},
-      display_name: 'user4',
-      content: 'hihihi',
-      created_at: 'time3',
-    },
-  ]);
+  const [guestBooks, setGuestBooks] = useState<IGuestBook[]>([]);
 
-  const friends = [
-    {
-      id: 2,
-      nickname: 'user2',
-      profile: {
-        image: '',
-      },
+  const [userGuestBook, setUserGuestBook] = useState<IGuestBook>({
+    id: 1,
+    guest_id: 1,
+    is_friend: 1,
+    profile: {
+      description: '',
+      image: '',
     },
-    {
-      id: 3,
-      nickname: 'user3',
-      profile: {
-        image: '',
-      },
-    },
-    {
-      id: 4,
-      nickname: 'user4',
-      profile: {
-        image: '',
-      },
-    },
-  ];
+    displayed_name: '',
+    content: '',
+    created_at: '',
+  });
 
-  const getGuestBooks = async (id: number) => {
-    const res = (await getGuestBooksAPI({ id: id })).payload.data.guest_book;
-    console.log(res);
+  const [profile, setProfile] = useState<IUserInfo>({
+    id: 1,
+    nickname: '',
+    is_friend: 1,
+    profile: {
+      description: '',
+      image: '',
+    },
+    accessed_at: '',
+    createad_at: '',
+  });
+
+  // default: query.userId
+  const userId = 1;
+  // query.userId === store.userId ? mypage : userpage
+  // 내가 지금 보고 있는 유저 페이지가 나의 페이지인가, 다른 유저의 유저 페이지인가
+  const [isMypage, setIsMypage] = useState(false);
+
+  const getProfile = async () => {
+    const res = (await getProfileAPI(userId)).data;
+    setProfile(res);
+    setUserGuestBook((prev) => ({
+      ...prev,
+      displayed_name: res.nickname,
+      profile: res.profile,
+    }));
+  };
+
+  const getWithFriend = async () => {
+    const res = await getWithFriendAPI({ id: 4 });
+    console.log('getWithFriend', res);
+  };
+
+  const getGuestBooks = async () => {
+    const res = (await getGuestBooksAPI(userId)).data.guest_books;
     setGuestBooks(res);
   };
 
-  const [userGuestBook, setUserGuestBook] = useState('');
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUserGuestBook(e.target.value);
-  };
-
   const addGuestBook = async () => {
-    // id: userId
-    const res = await addGuestBookAPI({ userId: 1, content: '' });
-    console.log(res);
+    await addGuestBookAPI(userId, { content: userGuestBook.content });
   };
 
-  const modifyGuestBook = async (id: number) => {
+  const modifyGuestBook = async (bookId: number, content: string) => {
     // id: gusetBookId
-    const res = await modifyGuestBookAPI({ id: id, userId: 1, content: '' });
-    console.log(res);
+    await modifyGuestBookAPI(userId, bookId, { content: content });
   };
 
   useEffect(() => {
     // (스토어의 userId !== 현재 url의 userId 일 때)
-    // getProfileAPI({ id: 1 });
-    // getWithFriendAPI({ id: 1 });
-    // getGuestBooks(1);
-  });
+    getProfile();
+    getGuestBooks();
+    // getWithFriend(); // 2
+  }, []);
 
   return (
     <Wrapper>
-      <Text types={'title'}>마이페이지</Text>
-      <UserInfo
-        id={1}
-        nickname={'user1'}
-        isFriend={false}
-        profile={{
-          description: 'desc',
-          image: '',
-        }}
-      ></UserInfo>
+      <Text types={'title'}>유저페이지</Text>
+      <UserInfo {...profile}></UserInfo>
       <FriendSection>
         <Text types={'large'}>함께 아는 친구</Text>
-        <FriendList>
-          {friends.map((friend) => {
-            return (
-              <FriendBox
-                icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />}></Profile>}
-                name={friend.nickname}
-                open={true}
-              ></FriendBox>
-            );
-          })}
-        </FriendList>
+        {/* {isMypage ? null : (
+          <FriendList>
+            {friends.map((friend) => {
+              return (
+                <FriendBox
+                  key={friend.id}
+                  icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />}></Profile>}
+                  name={friend.nickname}
+                  open={true}
+                ></FriendBox>
+              );
+            })}
+          </FriendList>
+        )} */}
       </FriendSection>
       <GuestBookSection>
         <Text types={'large'}>방명록</Text>
         <GuestBookList>
-          <GuestBook
-            displayName={'nickname'}
-            created_at={'time'}
-            content={'a'}
-            isMine={true} // userId랑 비교
-            id={1}
-            isAdd={true}
-            guestBook={userGuestBook}
-            onChange={onChange}
-            addGuestBook={addGuestBook}
-          ></GuestBook>
-          {guestBooks.map((guest) => {
+          <GuestBook guestBook={userGuestBook} isAdd={true} addGuestBook={addGuestBook}></GuestBook>
+          {guestBooks.map((guestBook) => {
             return (
               <GuestBook
-                displayName={guest.display_name}
-                created_at={guest.created_at}
-                content={guest.content}
-                isMine={true} // userId랑 비교
-                id={guest.id}
+                key={guestBook.id}
+                guestBook={guestBook}
+                isMine={userId === guestBook.id}
                 isAdd={false}
-                guestBook={userGuestBook}
                 modifyGuestBook={modifyGuestBook}
-                onChange={onChange}
               ></GuestBook>
             );
           })}

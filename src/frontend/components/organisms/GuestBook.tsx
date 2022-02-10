@@ -7,17 +7,25 @@ import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 
-export interface IGuestBookProps {
+export interface IGuestBook {
   id: number;
-  displayName: string;
-  created_at: string;
+  guest_id: number;
+  is_friend: number;
+  profile: {
+    description: string;
+    image: string;
+  };
+  displayed_name: string;
   content: string;
-  isMine: boolean;
+  created_at: string;
+}
+
+export interface IGuestBookProps {
+  guestBook: IGuestBook;
+  isMine?: boolean;
   isAdd: boolean;
-  guestBook?: string;
   addGuestBook?: () => Promise<void>;
-  modifyGuestBook?: (id: number) => Promise<void>;
-  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  modifyGuestBook?: (id: number, content: string) => Promise<void>;
 }
 
 const Wrapper = styled.div`
@@ -73,20 +81,28 @@ const CreatedAt = styled(Text)`
 export default function GuestBook(props: IGuestBookProps) {
   const [isEdited, setEdited] = useState(props.isAdd ? true : false);
 
+  const [content, setContent] = useState('');
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+  };
+
   return (
     <Wrapper>
       <UserBox>
         <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-        <Name types="medium">{props.displayName}</Name>
-        <CreatedAt types="tiny">{props.created_at}</CreatedAt>
+        <Name types="medium">{props.guestBook.displayed_name}</Name>
+        <CreatedAt types="tiny">{props.guestBook.created_at}</CreatedAt>
         {isEdited ? (
           <PostButton
             types="primary"
-            onClick={() =>
-              isEdited
-                ? props.modifyGuestBook && props.id && props.modifyGuestBook(props.id)
-                : props.addGuestBook && props.addGuestBook()
-            }
+            onClick={() => {
+              if (props.isAdd) {
+                props.addGuestBook && props.addGuestBook();
+                setContent('');
+              } else {
+                props.modifyGuestBook && props.modifyGuestBook(props.guestBook.id, content);
+              }
+            }}
           >
             등록
           </PostButton>
@@ -100,10 +116,10 @@ export default function GuestBook(props: IGuestBookProps) {
 
       <Divider />
       {isEdited ? (
-        <EditBox value={props.guestBook} onChange={(e) => props.onChange && props.onChange(e)}></EditBox>
+        <EditBox value={content} onChange={(e) => onChange(e)}></EditBox>
       ) : (
         <TextBox>
-          {props.content.split('\n').map((text, key) => (
+          {props.guestBook.content.split('\n').map((text, key) => (
             <p key={key}> {text} </p>
           ))}
         </TextBox>

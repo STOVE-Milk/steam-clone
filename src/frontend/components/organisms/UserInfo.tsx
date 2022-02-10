@@ -5,14 +5,16 @@ import Image from 'next/image';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 
-interface IUserInfoProps {
+export interface IUserInfo {
   id: number;
   nickname: string;
-  isFriend: boolean;
+  is_friend: number;
   profile: {
     description: string;
     image: string;
   };
+  accessed_at?: string;
+  createad_at?: string;
 }
 
 const Wrapper = styled.div`
@@ -52,15 +54,15 @@ const Desc = styled.div`
   padding: 1rem;
 `;
 
-export default function UserInfo(props: IUserInfoProps) {
+export default function UserInfo(props: IUserInfo) {
   return (
     <Wrapper>
       <UserSection>
         <Text types="large">{`${props.nickname} 님`}</Text>
-        {props.isFriend ? null : <AddFriendBtn types="primary">친구 추가</AddFriendBtn>}
+        {props.is_friend === 1 ? null : <AddFriendBtn types="primary">친구 추가</AddFriendBtn>}
       </UserSection>
       <ProfileSection>
-        <ProfileImage>{props.profile.image ? <Image src={props.profile.image}></Image> : null}</ProfileImage>
+        <ProfileImage>{props.profile.image !== '' ? <Image src={props.profile.image}></Image> : null}</ProfileImage>
         <Desc>{props.profile.description}</Desc>
       </ProfileSection>
     </Wrapper>
