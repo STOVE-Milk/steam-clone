@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
 import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
-import styled from 'styled-components';
+import styled, { StyledInterface } from 'styled-components';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import { io } from 'socket.io-client';
@@ -98,13 +98,54 @@ const ChatButton = styled(FilledButton)``;
 //   return <div></div>;
 // };
 
+interface IServerMessage {
+  action: string;
+  message: string;
+  target: null | IRoom;
+  sender: null | IUser;
+  data: null | IRoom | IRoomIn;
+}
+
+interface IUser {
+  id: string;
+  name: string;
+}
+
+interface IRoom {
+  id: string;
+  name: string;
+  private: boolean;
+}
+
+interface IRoomIn {
+  members: string[];
+  log: Log[];
+}
+
+interface Log {
+  sender_id: string;
+  sender_nickname: string[];
+  content: string;
+  send_time: string;
+}
+
+// interface Message {
+//   id: string;
+//   name: string;
+//   message: string;
+// }
+
 const Chat: NextPage = () => {
   const chats = [1, 2];
   const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n');
-  const [message, setMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectFriends, setSelectFriends] = useState<number[]>([]);
-  // const [ws, setWebSocket] = useState<WebSocket>();
+  const [rooms, setRooms] = useState<IRoom[]>([]);
+  // ChatRoom 으로 빼기
+  const [members, setMembers] = useState<string[]>();
+  const [logs, setLogs] = useState<Log[]>();
+  const [message, setMessage] = useState<Log>(); //현재 보낼 메세지, 받을 메세지
+
   let ws = useRef<WebSocket>();
 
   const token =
@@ -115,33 +156,46 @@ const Chat: NextPage = () => {
       ws.current = new WebSocket(`ws://localhost:8102/ws?token=${token}`);
 
       ws.current.onmessage = (e: MessageEvent) => {
-        console.log('message', e.data);
+        const serverMessage = e.data;
+
+        switch (serverMessage.action) {
+          case 'user-join':
+            console.log('user-join', serverMessage.data);
+            break;
+          case 'room-get':
+            console.log('room-get', serverMessage.data);
+            setRooms(serverMessage.data);
+            break;
+          case 'room-joined':
+            console.log('room-joined', serverMessage.target);
+            if (serverMessage.target.private) {
+              //나눠야할까?
+            }
+            let array = rooms;
+            array.push(serverMessage.target);
+            setRooms(array);
+            break;
+          case 'room-view':
+            console.log('room-view', serverMessage.data);
+            setMembers(serverMessage.data.members);
+            setLogs(serverMessage.data.log);
+            break;
+          case 'send-message':
+            console.log('send-message', serverMessage);
+            setMessage({
+              sender_id: serverMessage.sender.id,
+              sender_nickname: serverMessage.sender.name,
+              send_time: '1시',
+              content: serverMessage.message,
+            });
+            setMembers(serverMessage.data.members);
+            let array2 = logs;
+            message && array2?.push(message);
+            setLogs(array2);
+            break;
+        }
       };
     }
-    // setWebSocket(new WebSocket(`ws://localhost:8102/ws?token=${token}`));
-
-    // ws &&
-    //   ws.addEventListener('open', () => {
-    //     console.log('connected');
-    //   });
-    // // ws &&
-    // //   ws.addEventListener('message', (e: MessageEvent) => {
-    // //     console.log('message', e.data);
-    // //   });
-    // ws &&
-    //   ws.addEventListener('close', (e: CloseEvent) => {
-    //     ws.send('closed');
-    //   });
-
-    // if (ws) {
-    //   ws.onmessage = (e: MessageEvent) => {
-    //     console.log('message', e.data);
-    //   };
-    // }
-    // return () => {
-    //   console.log('clean up');
-    //   ws.current.close();
-    // };
   }, []);
 
   const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
