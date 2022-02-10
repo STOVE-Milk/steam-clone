@@ -39,22 +39,3 @@ spring:
               - name: AuthorizationCheckFilter
                 args:
                   baseMessage: Membership AuthorizationCheckFilter
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:3000"
-            allow-credentials: true
-            allowedHeaders:
-              - x-requested-with
-              - authorization
-              - content-type
-              - credential
-              - X-AUTH-TOKEN
-              - X-CSRF-TOKEN
-            allowedMethods:
-              - POST
-              - GET
-              - PUT
-              - OPTIONS
-              - DELETE
-              - PATCH

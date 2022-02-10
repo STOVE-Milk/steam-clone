@@ -5,6 +5,13 @@ logging:
 server:
   port: 8080
 
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defalutZone: http://localhost:8761/eureka
+
 spring:
   cloud:
     gateway:
@@ -16,23 +23,23 @@ spring:
             postLogger: true
       routes:
         - id: auth-svc
-          uri: http://localhost:8081/
+          uri: lb://AUTH-SERVICE
           predicates:
             - Path=/auth/**
-        - id: grpc-svc
-          uri: http://localhost:8100/
+        - id: grpc-gateway
+          uri: lb://GRPC-GATEWAY
           predicates:
             - Path=/store/**
         - id: chat-ws-svc
-          uri: ws://localhost:8102/
+          uri: lb://CHAT-SERVICE
           predicates:
             - Path=/chat/**
         - id: chat-http-svc
-          uri: http://localhost:8102/
+          uri: lb://CHAT-SERVICE
           predicates:
             - Path=/chat/info/**
         - id: payment-svc
-          uri: http://localhost:8200/
+          uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/payment/**
           filters:
@@ -40,7 +47,7 @@ spring:
               args:
                 baseMessage: Spring Cloud Gateway AuthorizationCheckFilter
         - id: membership-svc
-          uri: http://localhost:8201/
+          uri: lb://MEMBERSHIP-SERVICE
           predicates:
             - Path=/membership/**
           filters:
@@ -48,10 +55,10 @@ spring:
               args:
                 baseMessage: Membership AuthorizationCheckFilter
         - id: robby-http-svc
-          uri: http://localhost:8210/
+          uri: lb://ROBBY-SERVICE
           predicates:
             - Path=/library/info/**
         - id: robby-ws-svc
-          uri: ws://localhost:8210/
+          uri: lb://ROBBY-SERVICE
           predicates:
             - Path=/library/**
