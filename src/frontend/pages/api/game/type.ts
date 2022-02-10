@@ -32,3 +32,12 @@ export interface IPurchaseGameReqType {
 export interface IGetGameInfoByIdListReqType {
   idList: number[];
 }
+export interface IGetWishListReqType {}
+export interface IDoWishReqType {
+  game_id: number;
+}
+export interface IDoUnWishReqType {
+  game_id: number;
+}
+
+export interface IGetUserDataReqType {}
