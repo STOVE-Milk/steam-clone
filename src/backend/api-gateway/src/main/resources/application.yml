@@ -6,7 +6,7 @@ spring:
   application:
     name: gateway
   profiles:
-    active: local
+    active: deploy
   cloud:
     gateway:
       globalcors:
