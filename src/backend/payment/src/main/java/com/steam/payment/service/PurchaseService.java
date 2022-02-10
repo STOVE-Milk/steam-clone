@@ -17,11 +17,10 @@ import com.steam.payment.repository.LibraryRepository;
 import com.steam.payment.repository.UserRepository;
 import com.steam.payment.repository.mongodb.PurchaseLogDocumentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +33,8 @@ public class PurchaseService {
     private final AccountRepository accountRepository;
     private final PurchaseLogDocumentRepository purchaseLogDocumentRepository;
 
-    @Transactional
+    private final PurchaseService self;
+
     public Object purchaseGames(PurchaseGamesRequest request) {
         String userCountry = UserContext.getUserCountry();
         List<GameDto> gameDatas = gameRepository.findAllById(request.getGamesId()).stream()
@@ -46,7 +46,6 @@ public class PurchaseService {
         User user = userRepository.findById(UserContext.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 검증
         Validator.validGamePrice(gameDatas, request.getGames());
         Validator.validUserMoney(user, totalPrice);
         List<Integer> gameIds = gameDatas.stream()
@@ -61,7 +60,7 @@ public class PurchaseService {
         purchaseLogDocument.addLog(PurchaseLog.of(user.getMoney(), gameDatas, totalPrice));
         purchaseLogDocumentRepository.save(purchaseLogDocument);
 
-        purchase(user, gameDatas, totalPrice, userCountry);
+        self.purchase(user, gameDatas, totalPrice, userCountry);
 
         purchaseLogDocument.getLastPurchaseLog().success(totalPrice);
         purchaseLogDocumentRepository.save(purchaseLogDocument);
@@ -69,7 +68,8 @@ public class PurchaseService {
         return gameDatas;
     }
 
-    protected void purchase(User user, List<GameDto> games, Double totalPrice, String userCountry) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void purchase(User user, List<GameDto> games, Double totalPrice, String userCountry) {
         List<Library> libraries = games.stream()
                 .map(game -> game.toLibraryEntity(user))
                 .collect(Collectors.toList());
