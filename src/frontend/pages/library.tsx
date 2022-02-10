@@ -33,6 +33,13 @@ const library: NextPage<IState> = () => {
     setInstalledGame(null);
   };
 
+  useEffect(() => {
+    const webSocket = new WebSocket('ws://localhost:8210/library');
+    webSocket.onopen = function () {
+      console.log('서버와 웹 소켓 연결됨');
+    };
+  }, []);
+
   return (
     <LibraryWrapper>
       <TitleStyle types="large">라이브러리(구매 게임 목록)</TitleStyle>
