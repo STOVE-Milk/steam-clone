@@ -20,14 +20,14 @@ public class Body<T> {
                 .build();
     }
 
-    public static <T> Body<Object> error(ErrorCode errorCode) {
+    public static Body<Object> error(ErrorCode errorCode) {
         return Body.builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .data(new EmptyData())
                 .build();
     }
-    public static <T> Body<Object> error(ErrorCode errorCode, String message) {
+    public static Body<Object> error(ErrorCode errorCode, String message) {
         return Body.builder()
                 .code(errorCode.getCode())
                 .message(message)

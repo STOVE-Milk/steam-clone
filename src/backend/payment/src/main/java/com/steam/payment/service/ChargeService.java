@@ -63,20 +63,20 @@ public class ChargeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         ChargeLogDocument chargeLogDoc = chargeLogDocumentRepository.findById(user.getIdx().toString())
                 .orElseThrow(() -> new CustomException(ErrorCode.LOGGING_FAILED));
-        ChargeLog chargeDoc = chargeLogDoc.getLastChargeLog();
+        ChargeLog chargeLog = chargeLogDoc.getLastChargeLog();
 
         KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
 
-        chargeDoc.successApproval(user.getMoney());
+        chargeLog.successApproval(user.getMoney());
         chargeLogDocumentRepository.save(chargeLogDoc);
 
         try {
             addUserMoney(user, response.getAmount().getTotal());
-            chargeDoc.successAll(user.getMoney());
+            chargeLog.successAll(user.getMoney());
             chargeLogDocumentRepository.save(chargeLogDoc);
         } catch (RuntimeException e) {
             kakaoPay.cancel(request.getTid());
-            chargeDoc.cancel();
+            chargeLog.cancel();
             chargeLogDocumentRepository.save(chargeLogDoc);
             throw new CustomException(ErrorCode.USER_CHARGE_CANCLED);
         }

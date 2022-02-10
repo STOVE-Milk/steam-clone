@@ -74,7 +74,6 @@ public class PurchaseService {
                 .map(game -> game.toLibraryEntity(user))
                 .collect(Collectors.toList());
         for(GameDto game : games) {
-            // 무조건 있다고 판단
             Account account = accountRepository.findByPublisherIdAndCountry(game.getPublisherId(), userCountry).get();
             account.addMoney(game.getSalePrice());
             accountRepository.save(account);
