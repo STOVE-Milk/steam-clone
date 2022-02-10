@@ -4,4 +4,4 @@ spring:
   profiles:
     active: local
   application:
-    name: robby
+    name: robby-service
