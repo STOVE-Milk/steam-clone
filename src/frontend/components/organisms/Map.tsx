@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Circle } from 'react-konva';
 import styled from 'styled-components';
 
+import useWindowSize from 'util/Hooks/useWindowDimensions';
+
+import EachGame from 'components/organisms/EachGame';
+
 const absoluteVal = 500;
 
 const StageStyled = styled.div`
@@ -14,11 +18,28 @@ const StageStyled = styled.div`
   background-position: 0 0, 50px 50px;
   margin: auto;
 `;
+{
+  /* <img alt="lion" src="https://konvajs.org/assets/lion.png" draggable="true" /> */
+}
+interface IMapProps {
+  installedGame: any;
+  resetSelect: () => void;
+}
 
-const Map = () => {
-  const [x, setX] = useState(250); //지금은 항상 가운데 나오게 설정된듯
-  const [y, setY] = useState(250);
+const Map = (props: IMapProps) => {
+  const { installedGame, resetSelect } = props;
+
+  const windowSize = useWindowSize();
+  const width = windowSize.width;
+  const height = windowSize.height;
+
+  const [userX, setUserX] = useState(250); //지금은 항상 가운데 나오게 설정된듯
+  const [userY, setUserY] = useState(250);
   //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
+
+  console.log(height);
+  const [game1X, setGame1X] = useState(20);
+  const [game1Y, setGame1Y] = useState(height - (height - 400));
 
   const shapeRef = React.useRef(null);
 
@@ -30,26 +51,26 @@ const Map = () => {
   const handleKeyDown = (event: KeyboardEvent) => {
     console.log('A key was pressed', event.key);
     if (event.key === 'ArrowLeft') {
-      setX((prev) => {
+      setUserX((prev) => {
         prev = prev - delta;
         prev < 50 ? (prev = 50) : prev;
         return prev;
       });
     } else if (event.key === 'ArrowDown') {
-      setY((prev) => {
+      setUserY((prev) => {
         prev = prev + delta;
         prev > 450 ? (prev = 450) : prev;
         return prev;
       });
     } else if (event.key === 'ArrowUp') {
-      setY((prev) => {
+      setUserY((prev) => {
         prev = prev - delta;
         prev < 50 ? (prev = 50) : prev;
 
         return prev;
       });
     } else if (event.key === 'ArrowRight') {
-      setX((prev) => {
+      setUserX((prev) => {
         prev = prev + delta;
         prev > 450 ? (prev = 450) : prev;
         return prev;
@@ -69,7 +90,7 @@ const Map = () => {
 
   return (
     <StageStyled>
-      {console.log(x, y)}
+      {console.log(userX, userY)}
       <Stage
         width={absoluteVal}
         height={absoluteVal}
@@ -78,7 +99,10 @@ const Map = () => {
         onClick={focusRef}
       >
         <Layer>
-          <Circle x={x} y={y} radius={50} width={absoluteVal / 5} fill="#989899" />
+          <Circle x={userX} y={userY} radius={50} width={absoluteVal / 5} fill="#989899" />
+          {installedGame ? (
+            <EachGame resetSelect={resetSelect} installedGame={installedGame} position={{ x: game1X, y: game1Y }} />
+          ) : null}
         </Layer>
       </Stage>
     </StageStyled>

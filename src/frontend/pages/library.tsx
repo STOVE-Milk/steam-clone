@@ -24,12 +24,21 @@ const LibraryContentWrapper = styled.section`
 `;
 
 const library: NextPage<IState> = () => {
+  const [installedGame, setInstalledGame] = useState(null);
+
+  const onSelect = (installedGame: any) => {
+    setInstalledGame(installedGame);
+  };
+  const resetSelect = () => {
+    setInstalledGame(null);
+  };
+
   return (
     <LibraryWrapper>
       <TitleStyle types="large">라이브러리(구매 게임 목록)</TitleStyle>
       <LibraryContentWrapper>
-        <NoSSRMap />
-        <GameListLibrary />
+        <NoSSRMap installedGame={installedGame} resetSelect={resetSelect} />
+        <GameListLibrary onSelect={onSelect} />
       </LibraryContentWrapper>
     </LibraryWrapper>
   );
