@@ -24,13 +24,13 @@ const TitleStyle = styled(Text)`
   margin-bottom: 2rem;
 `;
 
-const SelectAllWrapper = styled.div`
+const ChenknGameInfoWrapper = styled.div`
   display: flex;
 `;
 
 const cart: NextPage<IState> = (props) => {
   const { cartInfo, gamesByIdList } = useSelector((state: IState) => {
-    console.log('카드에 있는 게임 id 배열: ', state.game.cartInfo.data);
+    console.log('카트에 있는 게임 id 배열: ', state.game.cartInfo.data);
     return state.game;
   });
   const [checkedGame, setCheckedGame] = useState([] as number[]); // only 숫자배열
@@ -88,12 +88,12 @@ const cart: NextPage<IState> = (props) => {
       </SelectAllWrapper> */}
       {gamesByIdList.data.map((eachGame, i) => {
         return (
-          <>
+          <ChenknGameInfoWrapper>
             <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
             <label htmlFor={eachGame.name}>
-              <GameInfo key={i} {...eachGame} />
+              <GameInfo key={i} type={'cart'} {...eachGame} />
             </label>
-          </>
+          </ChenknGameInfoWrapper>
         );
       })}
       <DefaultButton types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>

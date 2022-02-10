@@ -14,10 +14,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addCartInfo, rmCartInfo } from 'modules/game';
 
 interface IGameInfo extends gameInfo {
-  wishFunc?: (game_id: number, curStatus: Boolean) => void;
+  type?: string;
 }
 
-const GameInfoBox = styled.section`
+const GameInfoBox = styled.section<IGameInfo>`
+  margin-top: ${(props) => props.type === 'cart' && 0} !important;
   width: 60rem;
   height: 10rem;
   display: grid;
@@ -177,12 +178,16 @@ export default function GameInfo(props: IGameInfo) {
   useEffect(() => {
     dispatch(getUserData.request({}));
   }, []);
-  const cartStatus = cartInfo.data.filter((checkedId) => {
-    checkedId == gameData.id;
-  });
+
   const likeStatus = userData.data.wish_list != undefined ? userData.data.wish_list.includes(gameData.id) : false;
+
   const [like, setLike] = useState(likeStatus);
-  const [cart, setCart] = useState(cartStatus);
+  const [cart, setCart] = useState(false);
+
+  useEffect(() => {
+    setCart(cartInfo.data.includes(gameData.id));
+  }, []);
+
   const cartFunc = (game_id: number, curStatus: Boolean) => {
     curStatus ? alert('장바구니에서 빠졌습니다') : alert('장바구니에 담겼습니다.');
 
@@ -207,7 +212,7 @@ export default function GameInfo(props: IGameInfo) {
   };
 
   return (
-    <GameInfoBox>
+    <GameInfoBox type={gameData.type}>
       <ImageBox>
         {/* {image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
         <GameImage
@@ -243,7 +248,7 @@ export default function GameInfo(props: IGameInfo) {
       </GameDetailBox>
       <EtcInfoBox>
         <section>
-          {gameData.sale && <SaleBadge>-{gameData.sale}%</SaleBadge>}
+          {gameData.sale != 0 && <SaleBadge>-{gameData.sale}%</SaleBadge>}
           <div>
             {gameData.sale ? (
               <>
@@ -271,6 +276,7 @@ export default function GameInfo(props: IGameInfo) {
           <IconBox
             onClick={(e) => {
               e.preventDefault();
+              console.log(gameData.id, cart);
               cartFunc(gameData.id, cart);
               setCart(!cart);
             }}
