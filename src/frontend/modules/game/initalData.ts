@@ -98,7 +98,7 @@ export const initialUserData = {
   wish_list: [1, 3],
   purchase_list: [6],
 };
-export const initalGamesByIdList = [
+export const initialGamesByIdList = [
   {
     id: 2,
     name: '[TEST]Red Dead Redemption 2',

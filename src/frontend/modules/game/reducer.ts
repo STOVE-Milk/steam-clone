@@ -36,7 +36,7 @@ import {
   initialUserData,
   initialWishList,
   initialUnWish,
-  initalGamesByIdList,
+  initialGamesByIdList,
 } from './initalData';
 
 const initialState: gameState = {
@@ -47,7 +47,7 @@ const initialState: gameState = {
   unWish: asyncState.initial(initialUnWish),
   wishList: asyncState.initial(initialWishList), //임시로 inital data 넣어놓음
   userData: asyncState.initial(initialUserData),
-  gamesByIdList: asyncState.initial(initalGamesByIdList),
+  gamesByIdList: asyncState.initial(initialGamesByIdList),
 };
 
 const reducer = createReducer<gameState>(initialState, {
@@ -137,7 +137,7 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_GAMEINFOBYIDLIST]: (state, action) => ({
     ...state,
-    gamesByIdList: asyncState.load(initalGamesByIdList),
+    gamesByIdList: asyncState.load(initialGamesByIdList),
   }),
   [GET_GAMEINFOBYIDLIST_SUCCESS]: (state, action) => ({
     ...state,
@@ -145,7 +145,7 @@ const reducer = createReducer<gameState>(initialState, {
   }),
   [GET_GAMEINFOBYIDLIST_FAIL]: (state, action) => ({
     ...state,
-    gamesByIdList: asyncState.error(initalGamesByIdList, action.payload.data.game_list),
+    gamesByIdList: asyncState.error(initialGamesByIdList, action.payload.data.game_list),
   }),
 });
 
