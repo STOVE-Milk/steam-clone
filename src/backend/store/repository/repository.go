@@ -10,14 +10,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/STOVE-Milk/steam-clone/store/model"
+	"github.com/STOVE-Milk/steam-clone/store/models"
 )
 
 type Repo struct {
 	db *sql.DB
 }
 
-func (r *Repo) GetReviewList(ctx context.Context) ([]*model.Review, error) {
+func (r *Repo) GetReviewList(ctx context.Context) ([]*models.Review, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	gameId := ctx.Value("gameId").(int32)
@@ -31,10 +31,10 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*model.Review, error) {
 	}
 	defer rows.Close()
 
-	var reviewList []*model.Review
+	var reviewList []*models.Review
 
 	for rows.Next() {
-		var review model.Review
+		var review models.Review
 		err := rows.Scan(&review.Id, &review.UserId, &review.DisplayedName, &review.Content, &review.Recommendation, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
 			return nil, err
@@ -44,11 +44,11 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*model.Review, error) {
 	return reviewList, nil
 }
 
-func (r *Repo) GetPublisher(ctx context.Context, publisherId int) (*model.Publisher, error) {
+func (r *Repo) GetPublisher(ctx context.Context, publisherId int) (*models.Publisher, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
-	var publisher model.Publisher
+	var publisher models.Publisher
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT idx, name
 	FROM publisher
@@ -64,11 +64,11 @@ func (r *Repo) GetPublisher(ctx context.Context, publisherId int) (*model.Publis
 	return &publisher, nil
 }
 
-func (r *Repo) GetGameDetail(ctx context.Context) (*model.GameDetail, error) {
+func (r *Repo) GetGameDetail(ctx context.Context) (*models.GameDetail, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	gameId := ctx.Value("gameId").(int32)
-	var gd model.GameDetail
+	var gd models.GameDetail
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT game_id, name, description_snippet, price, sale, image, video, description, publisher_id, review_count, recommend_count, os, language, download_count
 	FROM steam.game_category AS gc 
@@ -84,7 +84,7 @@ func (r *Repo) GetGameDetail(ctx context.Context) (*model.GameDetail, error) {
 	return &gd, nil
 }
 
-func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, error) {
+func (r *Repo) GetSortingGameList(ctx context.Context) ([]*models.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	category_name := ctx.Value("category").(string)
@@ -104,7 +104,7 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, err
 	if sort == "" {
 		sort = "idx,desc"
 	}
-	var gameSimpleList []*model.GameSimple
+	var gameSimpleList []*models.GameSimple
 
 	var queryBytes bytes.Buffer
 	if category_name == "ALL" {
@@ -139,7 +139,7 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var game model.GameSimple
+		var game models.GameSimple
 		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
 			return nil, err
@@ -150,28 +150,28 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*model.GameSimple, err
 }
 
 // category table의 모든 값들을 가져옴.
-func (r *Repo) GetAllCategoryList(ctx context.Context) ([]*model.Category, error) {
+func (r *Repo) GetAllCategoryList(ctx context.Context) ([]*models.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	var categoryList []*model.Category
+	var categoryList []*models.Category
 	rows, err := r.db.QueryContext(ctx, "SELECT idx, parent_id, name FROM category")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var category model.Category
+		var category models.Category
 		rows.Scan(&category.Id, &category.ParentIdx, &category.Name)
 		categoryList = append(categoryList, &category)
 	}
 	return categoryList, nil
 }
 
-func (r *Repo) GetCategoryListByGameId(ctx context.Context) ([]*model.Category, error) {
+func (r *Repo) GetCategoryListByGameId(ctx context.Context) ([]*models.Category, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	gameId := ctx.Value("gameId").(int32)
-	var categoryList []*model.Category
+	var categoryList []*models.Category
 	rows, err := r.db.QueryContext(ctx, `
 	SELECT name 
 	FROM game_category AS gc
@@ -184,18 +184,18 @@ func (r *Repo) GetCategoryListByGameId(ctx context.Context) ([]*model.Category, 
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var category model.Category
+		var category models.Category
 		rows.Scan(&category.Name)
 		categoryList = append(categoryList, &category)
 	}
 	return categoryList, nil
 }
 
-func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*model.GameSimple, error) {
+func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*models.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	userId := ctx.Value("userId")
-	var gameSimpleList []*model.GameSimple
+	var gameSimpleList []*models.GameSimple
 	rows, err := r.db.QueryContext(ctx, `	
 	SELECT g.idx, g.name, g.description_snippet, g.price, g.sale, g.image, g.video, g.os, g.download_count
 	FROM wishlist AS w
@@ -208,7 +208,7 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*model.GameSimple, 
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var game model.GameSimple
+		var game models.GameSimple
 		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
 			log.Fatal(err)
@@ -218,18 +218,18 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*model.GameSimple, 
 	return gameSimpleList, nil
 }
 
-func (r *Repo) GetGameListInCart(ctx context.Context) ([]*model.GameSimple, error) {
+func (r *Repo) GetGameListInCart(ctx context.Context) ([]*models.GameSimple, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	gameIdList := ctx.Value("gameIdList").(string)
-	var gameSimpleList []*model.GameSimple
+	var gameSimpleList []*models.GameSimple
 	rows, err := r.db.QueryContext(ctx, fmt.Sprintf("SELECT idx, name, description_snippet, price, sale, image, video, os, download_count FROM game WHERE idx In (%v)", gameIdList))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var game model.GameSimple
+		var game models.GameSimple
 		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
 			log.Fatal(err)

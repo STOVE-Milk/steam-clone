@@ -7,7 +7,7 @@ import (
 
 	"github.com/STOVE-Milk/steam-clone/store/config"
 	"github.com/STOVE-Milk/steam-clone/store/controller"
-	"github.com/STOVE-Milk/steam-clone/store/model"
+	"github.com/STOVE-Milk/steam-clone/store/models"
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
@@ -115,7 +115,7 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 }
 
 func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.UserDataResponse, error) {
-	userMetaData, err := model.ExtractMetadata(ctx)
+	userMetaData, err := models.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.
 }
 
 func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Empty) (*pb.GameSimpleListResponse, error) {
-	userMetaData, err := model.ExtractMetadata(ctx)
+	userMetaData, err := models.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +173,7 @@ func (store *storeServer) GetGameListInCart(ctx context.Context, req *pb.GameIdL
 }
 
 func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := model.ExtractMetadata(ctx)
+	userMetaData, err := models.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -195,7 +195,7 @@ func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryP
 }
 
 func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := model.ExtractMetadata(ctx)
+	userMetaData, err := models.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -217,7 +217,7 @@ func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQuer
 }
 
 func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := model.ExtractMetadata(ctx)
+	userMetaData, err := models.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +241,7 @@ func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryReq
 }
 
 func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := model.ExtractMetadata(ctx)
+	userMetaData, err := models.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +265,7 @@ func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRe
 	}, nil
 }
 func (store *storeServer) DeleteReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := model.ExtractMetadata(ctx)
+	userMetaData, err := models.ExtractMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
