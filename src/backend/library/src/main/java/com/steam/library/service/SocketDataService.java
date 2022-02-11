@@ -22,7 +22,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ public class SocketDataService {
             스레드간의 동시성 처리는 가능했지만 여러 서버가 Redis에 접근할 경우에 문제가 발생했습니다.
             따로 Redis 접근에 대한 동시성 처리를 해주는 서버가 없었고 해당 로직 내애서 처리하기로 했습니다.
             Redisson을 이용해 분산 락 방식을 적용하여 Redisson 접근에 대한 동시성 처리를 진행했습니다.
-                스핀 락과 대비해 pub/sub을 이용해 락이 풀리는 것을 알려줘 지속적인 락 확인이 필요 없어서 자원상에도 유리하다 하여 Redisson을 선택했습니다.
+                스핀 락과 대비해 pub/sub을 이용해 락이 풀리는 것을 알려줘 지속적인 락 확인이 필요 없어서 자원상에 유리하다 하여 Redisson을 선택했습니다.
 
         아래는 락에 필요한 정보들 입니다.
     */
@@ -58,21 +57,24 @@ public class SocketDataService {
     private final LibraryRepository libraryRepository;
     private final RoomCacheRepository roomCacheRepository;
 
-    //TODO: 전체 트랜잭션 처리 Transactional or TransactionManager --> Transaction과 Lock 동시 불가, 내부 로직인 경우 불가
-    @Nullable
+    /*
+        TODO: 전체 트랜잭션 처리 RedisTemplate.execute() or Transactional or TransactionManager
+        --> try{}catch: Transaction과 Lock 동시 불가, 내부 로직인 경우 불가
+    */
     /*
         MySQL에서 영구적으로 저장하는 유저의 맵 데이터를 가져옵니다.
         맵 데이터는 json 형식으로 String으로 받아와서 Deserialize합니다.
     */
+    @Nullable
     public MapDto getUserMap(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             log.info("유저 없음");
             return null;
         }
 
         String mapJson = user.get().getMap();
-        if(mapJson == null || "".equals(mapJson) || "{}".equals(mapJson)) {
+        if (mapJson == null || "".equals(mapJson) || "{}".equals(mapJson)) {
             log.info("map 데이터 없음");
             MapDto newMap = MapDto.newMap();
             user.get().updateMap(JsonUtil.toJson(newMap));
@@ -83,13 +85,24 @@ public class SocketDataService {
         return JsonUtil.toMapDto(mapJson);
     }
 
+    public Room makeRoom(String roomId, String userId) {
+        Optional<RoomCache> roomCache = roomCacheRepository.findById(roomId);
+        if(roomCache.isEmpty()) {
+            Room newRoom = Room.withMap(roomId, getUserMap(Integer.parseInt(userId)));
+            roomCacheRepository.save(newRoom.toHash());
+            return newRoom;
+        } else {
+            return Room.of(roomCache.get());
+        }
+    }
+
     public boolean updateUserMap(Integer userId, MapDto mapForUpdate) {
         Optional<User> user = userRepository.findById(userId);
-        if(user.isEmpty())
+        if (user.isEmpty())
             return false;
 
         // 소유하고 있는 게임인지 확인하고 업데이트 하는 과정
-        if(isOwnedGames(userId, mapForUpdate.getGameList())) {
+        if (isOwnedGames(userId, mapForUpdate.getGameList())) {
             String mapJson = JsonUtil.toJson(mapForUpdate);
             if (mapJson == null)
                 return false;
@@ -184,19 +197,20 @@ public class SocketDataService {
         }
     }
 
+    //TODO: RedisTemplate execute가 필요
     public void removeUserInRedis(String roomId, String leavedUserId) {
         HashOperations<String, String, Integer> hash = redisTemplate.opsForHash();
         String mainKey = "library:" + roomId;
         String hashKey = "users.[" + leavedUserId + "].";
-
         RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
         try {
             roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
-
-            hash.increment(mainKey, "userCount", -1);
-            hash.delete(mainKey, hashKey + 'x');
-            hash.delete(mainKey, hashKey + 'y');
-            hash.delete(mainKey, hashKey + "nickname");
+            if(!hash.keys(mainKey).isEmpty()) {
+                hash.increment(mainKey, "userCount", -1);
+                hash.delete(mainKey, hashKey + 'x');
+                hash.delete(mainKey, hashKey + 'y');
+                hash.delete(mainKey, hashKey + "nickname");
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {

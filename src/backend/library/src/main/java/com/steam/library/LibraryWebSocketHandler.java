@@ -21,6 +21,11 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
         this.socketService = socketService;
     }
 
+    /*
+        유저 행위를 Behavior Enum으로 판단합니다. global.common.Behavior
+        이에 따라 메세지를 해석하고 적절한 서비스로 연결시켜줍니다.
+        Behavior 코드는 2자리로 제한되어 있습니다.
+     */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
@@ -29,7 +34,6 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
 
         Boolean isSuccessed = false;
 
-        //TODO: Message Field NullCheck
         if (session.isOpen()) {
             try {
                 switch (behavior) {
@@ -71,9 +75,12 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
     }
 
     /* Client가 접속 해제 시 호출되는 메서드드 */
-
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        /*
+            오류에 의한 비정상 종료의 경우 유저 세션에 대한 정보가 남아있는 문제가 있습니다.
+            이를 해결하기 위해 종료 상태에 따라 정보를 삭제할 수 있도록 분기 처리를 해주었습니다.
+        */
         if(!status.equals(CloseStatus.NORMAL)) {
             log.info("CloseStatus of " + session.getId() + " : " + status);
             socketService.closeConnection(session);

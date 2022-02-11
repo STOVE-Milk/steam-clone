@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
     MESSAGE_PARSE_UNAVAILABLE(76100, "메시지 형식이 옳지 않습니다. 해석할 수 없습니다."),
+    CONNECT_TO_OTHER_ROOM(76101, "다른 방에 접속하여, 해당 세션을 종료합니다."),
 
     UNAUTHORIZED(76401, "유저 인증에 실패했습니다. 재접속 해주세요"),
     NO_PERMISSION(76403, "권한이 없습니다."),

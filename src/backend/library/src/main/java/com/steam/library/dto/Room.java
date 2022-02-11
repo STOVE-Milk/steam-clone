@@ -13,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Builder
 @Data
@@ -21,8 +22,8 @@ public class Room {
     private Integer roomId;
     private Integer userCount;
     @JsonIgnore
-    private List<WebSocketSession> sessions;
-    private Map<String, UserDto> users = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, WebSocketSession> sessions;
+    private Map<String, UserDto> users;
     private MapDto map;
 
     public RoomCache toHash() {
@@ -37,7 +38,7 @@ public class Room {
     public static Room of(RoomCache roomCache) {
         Room room = Room.builder()
                 .roomId(Integer.parseInt(roomCache.getRoomId()))
-                .sessions(Collections.synchronizedList(new ArrayList<>()))
+                .sessions(new ConcurrentHashMap<>())
                 .userCount(roomCache.getUserCount())
                 .users(roomCache.getUsers())
                 .map(JsonUtil.toMapDto(roomCache.getMap()))
@@ -50,7 +51,7 @@ public class Room {
         map.initializeNullCollection();
         return Room.builder()
                 .roomId(Integer.parseInt(roomId))
-                .sessions(Collections.synchronizedList(new ArrayList<>()))
+                .sessions(new ConcurrentHashMap<>())
                 .userCount(0)
                 .users(new HashMap<>())
                 .map(map)
@@ -64,7 +65,7 @@ public class Room {
                 this.users.put(userId, UserDto.of(userDetails));
                 this.userCount++;
             }
-            this.sessions.add(session);
+            this.sessions.put(userId, session);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
@@ -75,7 +76,7 @@ public class Room {
         try {
             this.userCount--;
             this.getUsers().remove(userId);
-            this.sessions.remove(session);
+            this.sessions.remove(userId);
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
@@ -94,5 +95,9 @@ public class Room {
 
     public void updateMap(MapDto map) {
         this.map = map;
+    }
+
+    public WebSocketSession getSessionBySessionId(String userId) {
+        return sessions.get(userId);
     }
 }
