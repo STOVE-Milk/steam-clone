@@ -4,7 +4,10 @@ import {
   IAcceptFriendReqType,
   IModifyGuestBookReqType,
   ISendFriendReqType,
-  IDoSignupReqType, ICheckEmailReqType, IDoSignInReqType, ICheckNicknameReqType,
+  IDoSignupReqType,
+  ICheckEmailReqType,
+  IDoSignInReqType,
+  ICheckNicknameReqType,
   IResType,
 } from './type';
 import { axiosClient } from 'pages/api/axiosClient';
@@ -111,9 +114,7 @@ export async function sendFriendRequestAPI(param: ISendFriendReqType) {
     `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friend-requests`,
     param,
   );
-
-import { axiosClient } from '../axiosClient';
-import {  } from './type';
+}
 
 export async function doSignupAPI(param: IDoSignupReqType) {
   const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_AUTH}/auth/signup`, param);

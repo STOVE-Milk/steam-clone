@@ -211,7 +211,7 @@ const Friend: NextPage = () => {
         TODO: FriendList로 컴포넌트화 하기 -> 고려해야할 것: 버튼 아이콘, 버튼별 함수, 버튼 개수
       */}
       <FriendSection>
-        {tab === 0 ? (
+        {/* {tab === 0 ? (
           friends.map((friend) => {
             return (
               <FriendItem>
@@ -272,7 +272,7 @@ const Friend: NextPage = () => {
               </FriendItem>
             );
           })
-        ) : null}
+        ) : null} */}
       </FriendSection>
     </Wrapper>
   );
