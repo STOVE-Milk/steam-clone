@@ -4,11 +4,23 @@ import Image from 'next/image';
 import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
 
-interface SlideProps {
-  image: JSX.Element | typeof Image;
-  info: {
-    name: string;
-    price: number;
+// 이거 다 안써도 되나?
+export interface gameInfo {
+  category_list: string[];
+  description_snippet: string;
+  download_count: number;
+  id: number;
+  image: {
+    main: string;
+    sub: string[];
+  };
+  name: string;
+  os_list: string[];
+  price: number;
+  sale: number;
+  video?: {
+    main: string;
+    sub: string[];
   };
 }
 
@@ -40,13 +52,15 @@ const InfoSection = styled.div`
   border-radius: 0 0 10px 10px;
 `;
 
-export default function GameSlide(props: SlideProps) {
+export default function GameSlide(props: gameInfo) {
   return (
     <SlideWrapper>
-      <ImageSection>{props.image}</ImageSection>
+      <ImageSection>
+        <Image src={props.image.main}></Image>
+      </ImageSection>
       <InfoSection>
-        <Text types="small">{props.info.name}</Text>
-        <Text types="tiny">{`${localePrice(props.info.price, 'KR')}`}</Text>
+        <Text types="small">{props.name}</Text>
+        <Text types="tiny">{`${localePrice(props.price, 'KR')}`}</Text>
       </InfoSection>
     </SlideWrapper>
   );

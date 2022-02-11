@@ -35,6 +35,12 @@ export async function getGameAPI(param: IGetGameReqType) {
   return response.data;
 }
 
+export async function getGameListAPI(query: string) {
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/games/?${query}`);
+
+  return response.data;
+}
+
 export async function purchaseGameAPI(param: IPurchaseGameReqType[]) {
   const response = await axiosClient.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/payment/cart/purchase`, {
     games: param,
