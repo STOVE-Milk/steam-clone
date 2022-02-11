@@ -14,6 +14,7 @@ export interface IFriend {
     image: string | JSX.Element;
     description: string;
   };
+  isFriend?: number;
 }
 
 export interface FriendBoxProps {

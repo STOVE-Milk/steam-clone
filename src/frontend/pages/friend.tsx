@@ -22,6 +22,7 @@ import FriendBox from 'components/molecules/FriendBox';
 import Profile from 'components/atoms/Profile';
 import FilledButton from 'components/atoms/FilledButton';
 import { TextTheme } from 'components/atoms/Text';
+import { IFriend } from 'components/molecules/FriendBox';
 
 const Wrapper = styled.div`
   display: flex;
@@ -113,112 +114,110 @@ const Friend: NextPage = () => {
   // const dispatch = useDispatch();
 
   const [tab, setTab] = useState(0);
+  const [friends, setFriends] = useState([] as IFriend[]);
+  const [searchInput, setSearchInput] = useState('');
 
-  const friends = [
-    {
-      id: 2,
-      nickname: 'user2',
-      profile: {
-        image: '',
-      },
-    },
-    {
-      id: 3,
-      nickname: 'user3',
-      profile: {
-        image: '',
-      },
-    },
-    {
-      id: 4,
-      nickname: 'user4',
-      profile: {
-        image: '',
-      },
-    },
-  ];
+  const changeTab = (tabNumber: number) => {
+    setTab(tabNumber);
 
-  const searchFriend = async () => {
-    const res = await searchFriendAPI({ nickname: 'nick' });
-    console.log('searchFriend', res);
+    setFriends([]);
+
+    switch (tabNumber) {
+      case 0:
+        getFriends();
+        break;
+      case 2:
+        sendedFriend();
+      case 3:
+        receivedFriend();
+    }
   };
 
+  // 친구 목록
   const getFriends = async () => {
-    const res = await getFriendsAPI();
-    console.log('getFriends', res);
+    const res = (await getFriendsAPI()).data.friends;
+    setFriends(res);
   };
 
-  const acceptFriend = async () => {
-    const res = await acceptFriendAPI({ id: 30 });
-    console.log('acceptFriend', res);
+  // 친구 삭제
+  const deleteFriend = async (id: number) => {
+    await deleteFriendAPI(id);
+    getFriends();
   };
 
-  const deleteFriend = async () => {
-    const res = await deleteFriendAPI({ id: 4 });
-    console.log('deleteFriend', res);
+  // 친구 신청을  위해 유저 검색
+  const searchFriend = async () => {
+    const res = (await searchFriendAPI(searchInput)).data;
+    setFriends(res);
   };
 
-  const receivedFriend = async () => {
-    const res = await getReceivedFriendsAPI();
-    console.log('receivedFriend', res);
+  // 친구 신청
+  const sendFriendRequest = async (id: number) => {
+    await sendFriendRequestAPI({ user_id: id });
   };
 
+  // 내가 보낸 친구 신청 목록
   const sendedFriend = async () => {
-    const res = await getSendedFriendAPI();
-    console.log('sendedFriend', res);
+    const res = (await getSendedFriendAPI()).data.requests;
+    setFriends(res);
   };
 
-  const deleteFriendRequest = async () => {
-    const res = await deleteFriendRequestAPI({ id: 10 });
-    console.log('deleteFriendRequest', res);
+  // 내가 보낸 친구 신청 취소, 내가 받은 친구 신청 거절
+  const deleteFriendRequest = async (id: number) => {
+    await deleteFriendRequestAPI(id);
+
+    if (tab === 2) {
+      sendedFriend();
+    } else if (tab === 3) {
+      receivedFriend();
+    }
   };
 
-  const sendFriendRequest = async () => {
-    const res = await sendFriendRequestAPI({ id: 20 });
-    console.log('sendFriendRequest', res);
+  // 내가 받은 친구 신청 목록
+  const receivedFriend = async () => {
+    const res = (await getReceivedFriendsAPI()).data.requests;
+    setFriends(res);
+  };
+
+  // 친구 신청 수락
+  const acceptFriend = async (id: number) => {
+    await acceptFriendAPI({ request_id: id });
+    receivedFriend();
   };
 
   useEffect(() => {
-    searchFriend();
-    // getFriends(); // user1
-    // sendFriendRequest(); // 1 -> 2
-    // sendedFriend(); // 1
-    // deleteFriendRequest(); // 1, sendFriendRequest.id
-    // receivedFriend(); // 2
-    // acceptFriend(); // 2, receivedFriend.id
-    deleteFriend(); // 1
-  });
+    getFriends();
+  }, []);
 
   return (
     <Wrapper>
       <Text types={'title'}>친구 관리</Text>
       <TitleSection>
-        <Title onClick={() => setTab(0)} focus={tab === 0}>
+        <Title onClick={() => changeTab(0)} focus={tab === 0}>
           <Text types="large">친구 목록</Text>
         </Title>
-        <Title onClick={() => setTab(1)} focus={tab === 1}>
+        <Title onClick={() => changeTab(1)} focus={tab === 1}>
           <Text types="large">친구 추가</Text>
         </Title>
-        <Title onClick={() => setTab(2)} focus={tab === 2}>
+        <Title onClick={() => changeTab(2)} focus={tab === 2}>
           <Text types="large">내가 신청한 친구 목록</Text>
         </Title>
-        <Title onClick={() => setTab(3)} focus={tab === 3}>
+        <Title onClick={() => changeTab(3)} focus={tab === 3}>
           <Text types="large">내가 신청 받은 친구 목록</Text>
         </Title>
       </TitleSection>
+      {/* 나중에 리팩토링 하기 
+        TODO: tab 부분을 삼항연산자가 아니라 함수화? 위에 부분도 map으로 만들 수 있을듯! 
+        TODO: FriendList로 컴포넌트화 하기 -> 고려해야할 것: 버튼 아이콘, 버튼별 함수, 버튼 개수
+      */}
       <FriendSection>
-        {/* 나중에 리팩토링 하기 */}
         {tab === 0 ? (
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox
-                  open={true}
-                  icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />}
-                  name={friend.nickname}
-                />
+                <FriendBox open={true} friendInfo={friend} />;
                 <FriendActionBox>
-                  <FriendActionBtn icon={faTimes} inverse />
+                  <FriendActionBtn onClick={() => deleteFriend(friend.id)} icon={faTimes} inverse />
                 </FriendActionBox>
               </FriendItem>
             );
@@ -226,22 +225,23 @@ const Friend: NextPage = () => {
         ) : tab === 1 ? (
           <>
             <SearchBox>
-              <SearchInput></SearchInput>
-              <FriendActionBtn icon={faSearch} inverse />
+              <SearchInput
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value);
+                }}
+              ></SearchInput>
+              <FriendActionBtn onClick={searchFriend} icon={faSearch} inverse />
             </SearchBox>
             <ResultBox>
               <Text types={'large'}>검색결과</Text>
               <FriendList>
                 {friends.map((friend) => {
                   return (
-                    <FriendItem>
-                      <FriendBox
-                        open={true}
-                        icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />}
-                        name={friend.nickname}
-                      />
+                    <FriendItem key={friend.id}>
+                      <FriendBox open={true} friendInfo={friend} />;
                       <FriendActionBox>
-                        <FriendActionBtn icon={faPlus} inverse />
+                        <FriendActionBtn onClick={() => sendFriendRequest(friend.id)} icon={faPlus} inverse />
                       </FriendActionBox>
                     </FriendItem>
                   );
@@ -253,13 +253,9 @@ const Friend: NextPage = () => {
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox
-                  open={true}
-                  icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />}
-                  name={friend.nickname}
-                />
+                <FriendBox open={true} friendInfo={friend} />;
                 <FriendActionBox>
-                  <FriendActionBtn icon={faTimes} inverse />
+                  <FriendActionBtn onClick={() => deleteFriendRequest(friend.id)} icon={faTimes} inverse />
                 </FriendActionBox>
               </FriendItem>
             );
@@ -268,14 +264,10 @@ const Friend: NextPage = () => {
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox
-                  open={true}
-                  icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />}
-                  name={friend.nickname}
-                />
+                <FriendBox open={true} friendInfo={friend} />;
                 <FriendActionBox>
-                  <FriendActionBtn icon={faCheck} inverse />
-                  <FriendActionBtn icon={faTimes} inverse />
+                  <FriendActionBtn onClick={() => acceptFriend(friend.id)} icon={faCheck} inverse />
+                  <FriendActionBtn onClick={() => deleteFriendRequest(friend.id)} icon={faTimes} inverse />
                 </FriendActionBox>
               </FriendItem>
             );

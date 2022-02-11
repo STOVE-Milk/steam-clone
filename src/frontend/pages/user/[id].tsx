@@ -16,7 +16,7 @@ import {
 
 import Text from 'components/atoms/Text';
 import UserInfo, { IUserInfo } from 'components/organisms/UserInfo';
-import FriendBox from 'components/molecules/FriendBox';
+import FriendBox, { IFriend } from 'components/molecules/FriendBox';
 import Profile from 'components/atoms/Profile';
 import GuestBook, { IGuestBook } from 'components/organisms/GuestBook';
 
@@ -61,7 +61,7 @@ const UserPage: NextPage = () => {
 
   const [profile, setProfile] = useState({} as IUserInfo);
 
-  const [withFriend, setWithFriend] = useState([] as IUserInfo[]);
+  const [withFriend, setWithFriend] = useState([] as IFriend[]);
 
   const getProfile = async () => {
     const res = (await getProfileAPI(userId)).data;

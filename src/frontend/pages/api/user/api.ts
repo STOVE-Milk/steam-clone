@@ -3,8 +3,9 @@ import {
   IGetWithFriendReqType,
   IAddGuestBookReqType,
   ISearchReqType,
+  IAcceptFriendReqType,
   IModifyGuestBookReqType,
-  IFriendReqType,
+  ISendFriendReqType,
   IResType,
 } from './type';
 import { axiosClient } from 'pages/api/axiosClient';
@@ -51,9 +52,9 @@ export async function modifyGuestBookAPI(userId: number, bookId: number, param: 
   return response.data;
 }
 
-export async function searchFriendAPI(param: ISearchReqType) {
+export async function searchFriendAPI(nickname: string) {
   const response = await axiosClient.get<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/search/users?nickname=${param.nickname}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/search/users?nickname=${nickname}`,
   );
 
   return response.data;
@@ -65,20 +66,18 @@ export async function getFriendsAPI() {
   return response.data;
 }
 
-export async function acceptFriendAPI(param: IFriendReqType) {
+export async function acceptFriendAPI(param: IAcceptFriendReqType) {
   const response = await axiosClient.post<IResType>(
     `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends`,
-    {
-      request_id: param.id,
-    },
+    param,
   );
 
   return response.data;
 }
 
-export async function deleteFriendAPI(param: IFriendReqType) {
+export async function deleteFriendAPI(id: number) {
   const response = await axiosClient.delete<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends/${param.id}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends/${id}`,
   );
 
   return response.data;
@@ -100,20 +99,18 @@ export async function getSendedFriendAPI() {
   return response.data;
 }
 
-export async function deleteFriendRequestAPI(param: IFriendReqType) {
+export async function deleteFriendRequestAPI(id: number) {
   const response = await axiosClient.delete<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friend-requests/${param.id}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friend-requests/${id}`,
   );
 
   return response.data;
 }
 
-export async function sendFriendRequestAPI(param: IFriendReqType) {
+export async function sendFriendRequestAPI(param: ISendFriendReqType) {
   const response = await axiosClient.post<IResType>(
     `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friend-requests`,
-    {
-      user_id: param.id,
-    },
+    param,
   );
 
   return response.data;

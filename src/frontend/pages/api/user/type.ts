@@ -14,8 +14,12 @@ export interface IModifyGuestBookReqType {
   content: string;
 }
 
-export interface IFriendReqType {
-  id: number;
+export interface IAcceptFriendReqType {
+  request_id: number;
+}
+
+export interface ISendFriendReqType {
+  user_id: number;
 }
 
 export interface IResType {

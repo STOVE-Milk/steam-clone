@@ -138,7 +138,6 @@ export default function NavBar() {
           </FriendSettingBtn>
         </Link>
       </SectionTitle>
-
       <FriendSection>
         {friends.map((friend) => {
           <FriendBox open={open} friendInfo={friend} />;
