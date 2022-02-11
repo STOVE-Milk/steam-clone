@@ -46,24 +46,22 @@ const GuestBookList = styled.div`
 
 const UserPage: NextPage = () => {
   /* 로그인 이후 뷰 처리
+  
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
 
   // TODO: url의 Id 가져와서 스토어의 Id와 비교하기
-  // query.userId === store.userId ? mypage : userpage
-
-  // default: query.userId
   */
-  const userId = 1;
-  const [isMypage, setIsMypage] = useState(false);
+  const userId = 1; // default: query.userId
+  const [isMypage, setIsMypage] = useState(false); // query.userId === store.userId
 
   const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]);
   const [userGuestBook, setUserGuestBook] = useState({} as IGuestBook);
 
   const [profile, setProfile] = useState({} as IUserInfo);
 
-  const [withFriend, setWithFriend] = useState({} as IUserInfo);
+  const [withFriend, setWithFriend] = useState([] as IUserInfo[]);
 
   const getProfile = async () => {
     const res = (await getProfileAPI(userId)).data;
@@ -76,7 +74,8 @@ const UserPage: NextPage = () => {
   };
 
   const getWithFriend = async () => {
-    const res = await getWithFriendAPI({ id: 4 });
+    const res = (await getWithFriendAPI(userId)).data.friends;
+    setWithFriend(res);
   };
 
   const getGuestBooks = async () => {
@@ -98,6 +97,7 @@ const UserPage: NextPage = () => {
     // (스토어의 userId !== 현재 url의 userId 일 때)
     getProfile();
     getGuestBooks();
+    !isMypage && getWithFriend();
   }, []);
 
   return (
@@ -106,22 +106,13 @@ const UserPage: NextPage = () => {
       <UserInfo {...profile}></UserInfo>
       <FriendSection>
         <Text types={'large'}>함께 아는 친구</Text>
-        {/* 
-        TODO: 마이페이지가 아닐 때만 함께 아는 친구 보여주기
         {isMypage ? null : (
           <FriendList>
-            {friends.map((friend) => {
-              return (
-                <FriendBox
-                  key={friend.id}
-                  icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />}></Profile>}
-                  name={friend.nickname}
-                  open={true}
-                ></FriendBox>
-              );
+            {withFriend.map((friend) => {
+              <FriendBox open={true} friendInfo={friend} />;
             })}
           </FriendList>
-        )} */}
+        )}
       </FriendSection>
       <GuestBookSection>
         <Text types={'large'}>방명록</Text>

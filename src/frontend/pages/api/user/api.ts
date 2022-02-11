@@ -17,9 +17,9 @@ export async function getProfileAPI(userId: number) {
   return response.data;
 }
 
-export async function getWithFriendAPI(param: IGetWithFriendReqType) {
+export async function getWithFriendAPI(userId: number) {
   const response = await axiosClient.get<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/profile/${param.id}/friends`,
+    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/profile/${userId}/friends`,
   );
 
   return response.data;
