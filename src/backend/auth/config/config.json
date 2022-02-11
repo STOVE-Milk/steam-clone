@@ -1,0 +1,23 @@
+{
+    "development": {
+        "username": "milk",
+        "password": "milk",
+        "database": "steam",
+        "host": "54.180.117.120",
+        "dialect": "mysql"
+    },
+    "test": {
+        "username": "root",
+        "password": null,
+        "database": "auth",
+        "host": "127.0.0.1",
+        "dialect": "mysql"
+    },
+    "production": {
+        "username": "root",
+        "password": null,
+        "database": "auth",
+        "host": "127.0.0.1",
+        "dialect": "mysql"
+    }
+}
