@@ -27,6 +27,7 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*models.Review, error) {
 	WHERE game_id=?
 	`, gameId)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -37,6 +38,7 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*models.Review, error) {
 		var review models.Review
 		err := rows.Scan(&review.Id, &review.UserId, &review.DisplayedName, &review.Content, &review.Recommendation, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
+			log.Println(err)
 			return nil, err
 		}
 		reviewList = append(reviewList, &review)
@@ -56,6 +58,7 @@ func (r *Repo) GetPublisher(ctx context.Context, publisherId int) (*models.Publi
 	LIMIT 1
 	`, publisherId)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	for rows.Next() {
@@ -76,6 +79,7 @@ func (r *Repo) GetGameDetail(ctx context.Context) (*models.GameDetail, error) {
 	on gc.game_id=g.idx where g.idx = ?
 	`, gameId)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	for rows.Next() {
@@ -135,6 +139,7 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*models.GameSimple, er
 		rows, err = r.db.QueryContext(ctx, queryBytes.String(), category_name, page*size, size)
 	}
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -142,6 +147,7 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*models.GameSimple, er
 		var game models.GameSimple
 		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
+			log.Println(err)
 			return nil, err
 		}
 		gameSimpleList = append(gameSimpleList, &game)
@@ -156,6 +162,7 @@ func (r *Repo) GetAllCategoryList(ctx context.Context) ([]*models.Category, erro
 	var categoryList []*models.Category
 	rows, err := r.db.QueryContext(ctx, "SELECT idx, parent_id, name FROM category")
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -180,6 +187,7 @@ func (r *Repo) GetCategoryListByGameId(ctx context.Context) ([]*models.Category,
 	WHERE gc.game_id=?
 	`, gameId)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -204,6 +212,7 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*models.GameSimple,
 	WHERE w.user_id=?
 	`, userId)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -211,6 +220,7 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*models.GameSimple,
 		var game models.GameSimple
 		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
+			log.Println(err)
 			log.Fatal(err)
 		}
 		gameSimpleList = append(gameSimpleList, &game)
@@ -225,6 +235,7 @@ func (r *Repo) GetGameListInCart(ctx context.Context) ([]*models.GameSimple, err
 	var gameSimpleList []*models.GameSimple
 	rows, err := r.db.QueryContext(ctx, fmt.Sprintf("SELECT idx, name, description_snippet, price, sale, image, video, os, download_count FROM game WHERE idx In (%v)", gameIdList))
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -232,6 +243,7 @@ func (r *Repo) GetGameListInCart(ctx context.Context) ([]*models.GameSimple, err
 		var game models.GameSimple
 		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
+			log.Println(err)
 			log.Fatal(err)
 		}
 		fmt.Println(gameIdList)
@@ -247,6 +259,7 @@ func (r *Repo) PostWishlist(ctx context.Context) (bool, error) {
 	gameId := ctx.Value("gameId").(int32)
 	res, err := r.db.Exec("INSERT INTO wishlist(user_id, game_id) VALUES(?,?)", userId, gameId)
 	if err != nil {
+		log.Println(err)
 		return false, err
 	}
 	if n, _ := res.RowsAffected(); n != 1 {
@@ -262,6 +275,7 @@ func (r *Repo) DeleteWishlist(ctx context.Context) (bool, error) {
 	gameId := ctx.Value("gameId").(int32)
 	_, err := r.db.Exec("DELETE FROM wishlist WHERE user_id=? AND game_id=?", userId, gameId)
 	if err != nil {
+		log.Println(err)
 		return false, err
 	}
 	return true, nil
@@ -278,6 +292,7 @@ func (r *Repo) GetWishlist(ctx context.Context) ([]int32, error) {
 	WHERE user_id=?
 	`, userId)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -285,6 +300,7 @@ func (r *Repo) GetWishlist(ctx context.Context) ([]int32, error) {
 		var gameId int32
 		err := rows.Scan(&gameId)
 		if err != nil {
+			log.Println(err)
 			return nil, err
 		}
 		wishlist = append(wishlist, gameId)
@@ -303,6 +319,7 @@ func (r *Repo) GetPurchaseList(ctx context.Context) ([]int32, error) {
 	WHERE user_id=?
 	`, userId)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -310,6 +327,7 @@ func (r *Repo) GetPurchaseList(ctx context.Context) ([]int32, error) {
 		var gameId int32
 		err := rows.Scan(&gameId)
 		if err != nil {
+			log.Println(err)
 			return nil, err
 		}
 		purchaseList = append(purchaseList, gameId)
@@ -328,6 +346,7 @@ func (r *Repo) PostReview(ctx context.Context) (bool, error) {
 
 	_, err := r.db.Exec("INSERT INTO review(user_id, game_id, displayed_name, content, recommendation) VALUES(?,?,?,?,?)", userId, gameId, displayedName, reviewContent, reviewRecommendation)
 	if err != nil {
+		log.Println(err)
 		return false, err
 	}
 	return true, nil
@@ -342,6 +361,7 @@ func (r *Repo) PatchReview(ctx context.Context) (bool, error) {
 	reviewRecommendation := ctx.Value("reviewRecommendation").(int32)
 	_, err := r.db.Exec("UPDATE review SET content=?, recommendation=? WHERE idx=? AND user_id=?", reviewContent, reviewRecommendation, reviewId, userId)
 	if err != nil {
+		log.Println(err)
 		return false, err
 	}
 	return true, nil
@@ -354,6 +374,7 @@ func (r *Repo) DeleteReview(ctx context.Context) (bool, error) {
 	reviewId := ctx.Value("reviewId").(int32)
 	_, err := r.db.Exec("DELETE FROM review WHERE idx=? AND user_id=?", reviewId, userId)
 	if err != nil {
+		log.Println(err)
 		return false, err
 	}
 	return true, nil

@@ -1,9 +1,15 @@
 package main
 
-func main() {
+import (
+	"fmt"
 
-	err := Server().Run()
-	if err != nil {
-		panic(err)
-	}
+	"github.com/STOVE-Milk/steam-clone/store/config"
+)
+
+func main() {
+	fmt.Println(config.InitError())
+	// err := Server().Run()
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
