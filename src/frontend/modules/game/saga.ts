@@ -10,6 +10,7 @@ import {
   getUserDataAPI,
   doUnWishAPI,
   getWishListAPI,
+  getGameInfoByIdListAPI,
 } from 'pages/api/game/api';
 import {
   getCategories,
@@ -18,6 +19,12 @@ import {
   GET_GAME,
   getGamesByCategory,
   GET_GAMESBYCATEGORY,
+  addCartInfo,
+  ADD_CARTINFO,
+  rmCartInfo,
+  RM_CARTINFO,
+  getGameInfoByIdList,
+  GET_GAMEINFOBYIDLIST,
   getWishList,
   GET_WISHLIST,
   doWish,
@@ -27,10 +34,14 @@ import {
   getUserData,
   GET_USERDATA,
 } from 'modules/game/actions';
+import { addCartToStore, rmCartToStore } from 'modules/game/sagaFunction';
 
 const getCategoriesSaga = createAsyncSaga(getCategories, getCategoriesAPI);
 const getGameSaga = createAsyncSaga(getGame, getGameAPI);
 const getGamesByCategorySaga = createAsyncSaga(getGamesByCategory, getGamesByCategoryAPI);
+const addCartInfoSaga = createAsyncSaga(addCartInfo, addCartToStore);
+const rmCartInfoSaga = createAsyncSaga(rmCartInfo, rmCartToStore);
+const getGameInfoByIdListSaga = createAsyncSaga(getGameInfoByIdList, getGameInfoByIdListAPI);
 const getWishListSaga = createAsyncSaga(getWishList, getWishListAPI);
 const doWishSaga = createAsyncSaga(doWish, doWishAPI);
 const doUnWishSaga = createAsyncSaga(doUnWish, doUnWishAPI);
@@ -40,6 +51,9 @@ export function* gameSaga() {
   yield takeLatest(GET_CATEGORIES, getCategoriesSaga);
   yield takeLatest(GET_GAME, getGameSaga);
   yield takeLatest(GET_GAMESBYCATEGORY, getGamesByCategorySaga);
+  yield takeLatest(ADD_CARTINFO, addCartInfoSaga);
+  yield takeLatest(RM_CARTINFO, rmCartInfoSaga);
+  yield takeLatest(GET_GAMEINFOBYIDLIST, getGameInfoByIdListSaga);
   yield takeLatest(GET_WISHLIST, getWishListSaga);
   yield takeLatest(DO_WISH, doWishSaga);
   yield takeLatest(DO_UNWISH, doUnWishSaga);

@@ -12,6 +12,15 @@ import {
   GET_GAMESBYCATEGORY,
   GET_GAMESBYCATEGORY_SUCCESS,
   GET_GAMESBYCATEGORY_FAIL,
+  ADD_CARTINFO,
+  ADD_CARTINFO_SUCCESS,
+  ADD_CARTINFO_FAIL,
+  RM_CARTINFO,
+  RM_CARTINFO_SUCCESS,
+  RM_CARTINFO_FAIL,
+  GET_GAMEINFOBYIDLIST,
+  GET_GAMEINFOBYIDLIST_SUCCESS,
+  GET_GAMEINFOBYIDLIST_FAIL,
   GET_WISHLIST,
   GET_WISHLIST_SUCCESS,
   GET_WISHLIST_FAIL,
@@ -29,6 +38,8 @@ import {
   initalCategory,
   initalGamesByCategory,
   initalGame,
+  initalCartInfo,
+  initalGamesByIdList,
   initialWish,
   initialUserData,
   initialWishList,
@@ -39,6 +50,8 @@ const initialState: gameState = {
   categories: asyncState.initial(initalCategory),
   gamesByCategory: asyncState.initial(initalGamesByCategory),
   game: asyncState.initial(initalGame),
+  cartInfo: asyncState.initial(initalCartInfo),
+  gamesByIdList: asyncState.initial(initalGamesByIdList),
   wish: asyncState.initial(initialWish),
   unWish: asyncState.initial(initialUnWish),
   wishList: asyncState.initial(initialWishList), //임시로 inital data 넣어놓음
@@ -129,6 +142,42 @@ const reducer = createReducer<gameState>(initialState, {
   [GET_USERDATA_FAIL]: (state, action) => ({
     ...state,
     userData: asyncState.error(initialUserData, action.payload),
+  }),
+  [ADD_CARTINFO]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.load(initalCartInfo),
+  }),
+  [ADD_CARTINFO_SUCCESS]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.success(action.payload.data),
+  }),
+  [ADD_CARTINFO_FAIL]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.error(initalCartInfo, action.payload.data),
+  }),
+  [RM_CARTINFO]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.load(initalCartInfo),
+  }),
+  [RM_CARTINFO_SUCCESS]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.success(action.payload.data),
+  }),
+  [RM_CARTINFO_FAIL]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.error(initalCartInfo, action.payload.data),
+  }),
+  [GET_GAMEINFOBYIDLIST]: (state, action) => ({
+    ...state,
+    gamesByIdList: asyncState.load(initalGamesByIdList),
+  }),
+  [GET_GAMEINFOBYIDLIST_SUCCESS]: (state, action) => ({
+    ...state,
+    gamesByIdList: asyncState.success(action.payload.data.game_list),
+  }),
+  [GET_GAMEINFOBYIDLIST_FAIL]: (state, action) => ({
+    ...state,
+    gamesByIdList: asyncState.error(initalGamesByIdList, action.payload.data.game_list),
   }),
 });
 

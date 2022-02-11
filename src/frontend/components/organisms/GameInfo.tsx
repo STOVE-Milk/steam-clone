@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
-import { useSelector, useDispatch } from 'react-redux';
+import { IState } from 'modules';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
@@ -10,13 +10,15 @@ import { localePrice } from 'util/localeString';
 
 import { gameInfo } from 'modules/game/types';
 import { doWish, doUnWish, getUserData } from 'modules/game';
-import { IState } from 'modules';
+import { useSelector, useDispatch } from 'react-redux';
+import { addCartInfo, rmCartInfo } from 'modules/game';
 
 interface IGameInfo extends gameInfo {
-  wishFunc?: (game_id: number, curStatus: Boolean) => void;
+  type?: string;
 }
 
-const GameInfoBox = styled.section`
+const GameInfoBox = styled.section<IGameInfo>`
+  margin-top: ${(props) => props.type === 'cart' && 0} !important;
   width: 60rem;
   height: 10rem;
   display: grid;
@@ -168,13 +170,31 @@ const OsBox = styled.span`
 // 게임 정보가 담긴 obj {}를 props로 내려주면,
 // to do -> 1. 게임정보 타입 정하고 2. props들을 내려주고 3. 제대로 나오나 테스팅하고, 4. 혹시 정보가 없었을 떄 alt로 나오는 정보들이 제대로 나오는지 체크하고
 export default function GameInfo(props: IGameInfo) {
-  const { userData } = useSelector((state: IState) => state.game);
+  const gameData = props;
+  const { cartInfo, userData } = useSelector((state: IState) => state.game);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getUserData.request({}));
   }, []);
+
+  const likeStatus = userData.data.wish_list != undefined ? userData.data.wish_list.includes(gameData.id) : false;
+
+  const [like, setLike] = useState(likeStatus);
+  const [cart, setCart] = useState(false);
+
+  useEffect(() => {
+    setCart(cartInfo.data.includes(gameData.id));
+  }, []);
+
+  const cartFunc = (game_id: number, curStatus: Boolean) => {
+    curStatus ? alert('장바구니에서 빠졌습니다') : alert('장바구니에 담겼습니다.');
+
+    curStatus
+      ? dispatch(rmCartInfo.request({ prev: [...cartInfo.data], game_id }))
+      : dispatch(addCartInfo.request({ prev: [...cartInfo.data], game_id }));
+  };
 
   const wishFunc = (game_id: number, curStatus: Boolean) => {
     curStatus
@@ -191,13 +211,8 @@ export default function GameInfo(props: IGameInfo) {
     curStatus ? console.log('un wish') : console.log('wish');
   };
 
-  const gameData = props;
-  const likeStatus = userData.data.wish_list != undefined ? userData.data.wish_list.includes(gameData.id) : false;
-  const [like, setLike] = useState(likeStatus);
-  const [cart, setCart] = useState(false);
-
   return (
-    <GameInfoBox>
+    <GameInfoBox type={gameData.type}>
       <ImageBox>
         {/* {image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
         <GameImage
@@ -233,7 +248,7 @@ export default function GameInfo(props: IGameInfo) {
       </GameDetailBox>
       <EtcInfoBox>
         <section>
-          {gameData.sale && <SaleBadge>-{gameData.sale}%</SaleBadge>}
+          {gameData.sale != 0 && <SaleBadge>-{gameData.sale}%</SaleBadge>}
           <div>
             {gameData.sale ? (
               <>
@@ -248,7 +263,8 @@ export default function GameInfo(props: IGameInfo) {
         </section>
         <section>
           <IconBox
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               wishFunc(gameData.id, like);
               setLike(!like);
             }}
@@ -257,7 +273,14 @@ export default function GameInfo(props: IGameInfo) {
               <FontAwesomeIcon className={like ? 'pink-highlight' : ''} icon={faHeart} inverse />
             </span>
           </IconBox>
-          <IconBox onClick={() => setCart(!cart)}>
+          <IconBox
+            onClick={(e) => {
+              e.preventDefault();
+              console.log(gameData.id, cart);
+              cartFunc(gameData.id, cart);
+              setCart(!cart);
+            }}
+          >
             <FontAwesomeIcon className={cart ? 'blue-highlight' : ''} icon={faShoppingCart} inverse />
           </IconBox>
         </section>
