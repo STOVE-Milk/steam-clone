@@ -36,7 +36,7 @@ export async function getGameAPI(param: IGetGameReqType) {
 }
 
 export async function getGameListAPI(query: string) {
-  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/games/?${query}`);
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/games?${query}`);
 
   return response.data;
 }

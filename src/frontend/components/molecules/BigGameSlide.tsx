@@ -5,7 +5,7 @@ import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
 
 // 이거 다 안써도 되나?
-export interface gameInfo {
+export interface IGameInfo {
   category_list: string[];
   description_snippet: string;
   download_count: number;
@@ -26,15 +26,16 @@ export interface gameInfo {
 
 const SlideWrapper = styled.div`
   display: block;
-  overflow: hidden;
   height: calc(100vw / 3);
   border-radius: 10px;
+  position: relative;
+  overflow: hidden;
 `;
 
-export default function BigGameSlide(props: gameInfo) {
+export default function BigGameSlide(props: IGameInfo) {
   return (
     <SlideWrapper>
-      <Image src={props.image.main}></Image>
+      <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
     </SlideWrapper>
   );
 }
