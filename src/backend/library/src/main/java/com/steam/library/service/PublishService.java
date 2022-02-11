@@ -19,6 +19,12 @@ public class PublishService {
 
     private final RabbitTemplate rabbitTemplate;
 
+    /*
+        데이터 형식: roomId|BehaviorCode|Message
+        데이터 형식에 따른 메세지를 발행합니다.
+        형식이 비슷하여 제네릭을 이용해 메소드를 통일할까 고민중인 상태입니다.
+        요청에 따라 형식이 변경될 여지가 있다고 판단하여 나누어둔 상태입니다.
+    */
     public boolean publishEnterUser(String roomId, EnterUserMessage enterUserMessage) {
         rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, roomId + "|" + Behavior.ENTER.getValue() + "|" + JsonUtil.toJson(enterUserMessage));
         return true;

@@ -1,5 +1,6 @@
 package com.steam.library.service;
 
+import com.steam.library.dto.MapDto;
 import com.steam.library.dto.Room;
 import com.steam.library.global.common.Behavior;
 import com.steam.library.global.common.UserDetails;
@@ -26,22 +27,34 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 @Service
 public class SocketService {
-    // userId : sessionId
-    private static Map<String, String> user_session = new ConcurrentHashMap<>();
+    /*
+        서버 내에서 유저의 상태 정보를 담고있는 Collection들 입니다.
+        여러 스레드에서 동시에 객체에 접근하다보니 동시성 문제가 발생했고,
+        이에 따라 Concurrent 패키지를 이용해 동시성 처리를 했습니다.
+    */
     // sessionId : UserDetails
-    private static Map<String, UserDetails> userData = new ConcurrentHashMap<>();
+    private static final Map<String, UserDetails> userData = new ConcurrentHashMap<>();
     // sessionId : roomId
-    private static Map<String, String> session_room = new ConcurrentHashMap<>();
+    private static final Map<String, String> session_room = new ConcurrentHashMap<>();
     // roomId : room
-    private static Map<String, Room> robby = new ConcurrentHashMap<>();
+    private static final Map<String, Room> robby = new ConcurrentHashMap<>();
 
     private final SocketDataService socketDataService;
     private final PublishService publishService;
 
     /*
-        TODO: 발행과 구독을 동시에 할 경우 메세지를 중복으로 보낼 수 있다.
-        이상적: 따라서, 라우팅을 통해 자신에게는 publish한 메세지가 도달하지 않도록 처리하거나,
-        차선책: publish 후 자체적으로 Room에 메세지를 보내는 로직을 삭제하고, subscribe한 메세지만 보내도록 해야한다.
+        TODO: 로직 정하기
+        발행과 구독을 같은 서버에서 할 경우 각 세션에 메세지를 중복으로 보낼 수 있다.
+        따라서, 라우팅을 통해 자신이 발행한 메세지는 소비하지 않도록 처리하거나,
+        발행 후 자체적으로 방의 세션들에 메세지를 보내는 로직을 삭제하고, 소비한 메세지만 보내도록 해야한다.
+    */
+
+    /*
+        메세지 큐의 메세지를 소비하고, 메세지 내용에 따라 각 세션에 메세지를 전송하는 역할만 합니다.
+
+        많은 요청이 들어올 경우 메세지를 발행하는 속도가 소비하는 속도보다 빠를 수 있어
+        concurrency 옵션을 통해 소비하는 속도를 높여보려 했지만 concurrency 수 만큼 메세지를 중복으로 소비해서 방법을 찾고있습니다.
+        동일한 채널에서 concurrency 수 만큼 구독하게 되는데, 채널이 같아서 구독한 목록 중 배분해서 소비할 줄 알았지만, 전체가 함께 소비합니다.
     */
     @RabbitListener(queues = "robby.queue", concurrency = "1")
     public void receiveMessage(final Message message) {
@@ -51,8 +64,8 @@ public class SocketService {
         String roomId = messages[0];
 
         if(robby.containsKey(roomId)) {
-            Behavior behavior = Behavior.fromInteger(Integer.parseInt(messages[1]));
             try {
+                Behavior behavior = Behavior.fromInteger(Integer.parseInt(messages[1]));
                 switch (behavior) {
                     case ENTER:
                         EnterUserMessage enterUserMessage = JsonUtil.toObject(messages[2], EnterUserMessage.class);
@@ -92,41 +105,39 @@ public class SocketService {
         String userId = userDetails.getIdx().toString();
         String sessionId = session.getId();
 
-        // 등록이 되어있는지 확인하고 없으면 넣기
-        // TODO: 세션이 달라질 경우, 세션이 같을 경우 처리 필요
-        // REDIS 조회 (Room Data가 이미 있는지? 없으면 Room 생성 후 등록
-        // Room 생성 시 필요한 것 : roomId, user, map
+        /*
+           TODO: 세션이 달라졌지만(재접속, 다른방 입장) 오류에 따라 유저 데이터가 남아있는 경우 처리 필요
+
+           유저가 등록이 되어있는지 확인하고 없으면 넣기
+           REDIS 조회 (방 정보가 이미 있는지 확인 후 없으면 방 생성 후 등록
+        */
         if(session_room.containsKey(sessionId)) {
             robby.get(session_room.get(sessionId)).leave(userId, session);
             session_room.remove(sessionId);
         }
 
-        // Room 생성
+        // 방 생성
         Room room;
         if(!robby.containsKey(roomId)) {
-            room = socketDataService.makeRoom(roomId);
+            MapDto map = socketDataService.getUserMap(Integer.parseInt(roomId));
+            room = Room.withMap(roomId, map);
             robby.put(roomId, room);
         } else {
             room = robby.get(roomId);
         }
 
-        // Room 입장
+        // 방 입장
         room.enter(userDetails, session);
         userData.put(sessionId, userDetails);
-        user_session.put(userId, sessionId);
         session_room.put(sessionId, roomId);
 
-        //logObjectJson(room);
-
-        // 입장 이벤트 전파
+        // 입장 메세지 발행
         EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
-        // TODO: ENTER PUB/SUB
         publishService.publishEnterUser(roomId, enterUserMessage);
-        // 본 서버의 publish까지 subscribe하여서 주석처리
+        // 본인이 발행한 메세지까지 소비해서 주석처리
         // sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
 
-        // Redis 갱신 & SYNC
-        // 궁금: UserDto를 새로 만드는게 빠를까? vs 가져오는게 빠를까?
+        // Redis 갱신 & 데이터 동기화
         Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, userDetails);
         SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(cachedRoom);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
@@ -143,18 +154,22 @@ public class SocketService {
 
         robby.get(roomId).moveUser(userId, moveRequestMessage.getDirection());
         socketDataService.moveUserInRedis(roomId, userId, moveRequestMessage.getDirection());
-        // 움직임 이벤트 전파
+
+        // 이동 메세지 발행
         MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
-        // TODO: MOVE PUB/SUB
         publishService.publishMoveUser(roomId, moveUserMessage);
-        /*
-          본 서버의 publish까지 subscribe하여서 주석처리
-          sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
-        */
+
+        // 본인이 발행한 메세지까지 소비해서 주석처리
+        // sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
 
         return true;
     }
 
+    /*
+        유저가 소유한 맵 정보를 수정하는 기능입니다.
+        맵 수정(게임 오브젝트 설치) 시 유저가 오브젝트에 막혀 움직일 수 없는 상황을 대비해
+        맵이 수정된다면 모든 접속한 유저의 위치를 초기 위치로 리셋시키고, 리셋 + 데이터 동기화 메세지를 발행합니다.
+    */
     public Boolean updateMap(WebSocketSession session, BuildRequestMessage buildRequestMessage) throws NullPointerException{
         UserDetails userDetails = userData.get(session.getId());
         String roomId = session_room.get(session.getId());
@@ -172,16 +187,14 @@ public class SocketService {
         Boolean isSuccess = socketDataService.updateUserMap(Integer.parseInt(roomId), buildRequestMessage.getMap());
         if(isSuccess) {
             robby.get(roomId).updateMap(buildRequestMessage.getMap());
-            // 유저 위치 리셋 & SYNC
+            // 유저 위치 리셋 & 데이터 동기화
             robby.get(roomId).resetUserLocation();
-            // TODO: 리셋 PUB/SUB
             publishService.publishResetUserLocationAndSync(roomId, userId);
             socketDataService.resetUserLocationAndUpdateMap(roomId, buildRequestMessage.getMap());
-            // 본 서버의 publish까지 subscribe하여서 주석처리
+            // 본인이 발행한 메세지까지 소비해서 주석처리
             //sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, robby.get(roomId));
             return true;
         } else {
-            //TODO: 실패 시 오류 메세지
             return sendErrorMessage(session, ErrorCode.SERVER_ERROR);
         }
     }
@@ -226,16 +239,15 @@ public class SocketService {
         log.info("Close Connection : "  + sessionId + " " +userId);
 
         LeaveUserMessage leaveUserMessage = LeaveUserMessage.of(userId);
-        //TODO: 떠나기 Pub/Sub
         publishService.publishLeaveUser(roomId, leaveUserMessage);
-        // 본 서버의 publish까지 subscribe하여서 주석처리
+
+        // 본인이 발행한 메세지까지 소비해서 주석처리
         // sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
 
         // 떠나기
         Integer userNum = robby.get(roomId).leave(userId, session);
         if(userNum.equals(0))
             robby.remove(roomId);
-        user_session.remove(userId);
         userData.remove(sessionId);
         session_room.remove(sessionId);
 
@@ -251,11 +263,25 @@ public class SocketService {
         return true;
     }
 
+    /*
+        HTTP 통신 API처럼 에러 Response를 따로 줄 수 없다고 생각해서
+        웹 소켓에 대한 에러 처리를 어떻게 할까 고민하던 중 에러 메세지를 소켓으로 보내기로 했습니다.
+        에러 상황의 경우 본인에게만 적용된다고 판단하여 본인에게만 전송합니다.
+    */
     public boolean sendErrorMessage(WebSocketSession session, ErrorCode errorCode) {
         sendMessageToMe(session, Behavior.ERROR, ErrorMessage.of(errorCode));
         return false;
     }
 
+    /*
+        이 아래로는 세션에 메세지를 전송하는 메소드들입니다.
+        본인, 방에 접속되어 있는 본인을 제외한 모두, 모두 에게 전송하는 메소드가 있습니다.
+
+        session 객체에 대한 동기화 처리
+            Jmeter를 이용한 동시 요청의 경우 session의 정보가 삭제되거나 없을 경우 NullPointerException이 발생했고,
+            Session에 동시에 메세지를 보낼 수 없다는 오류가 발생했습니다.
+            따라서 동기화 처리를 해주었습니다.
+    */
     public <T> boolean sendMessageToMe(WebSocketSession session, Behavior behavior, T data) {
         TextMessage textMessage = new TextMessage(behavior.getValue() + JsonUtil.toJson(data));
 
