@@ -136,15 +136,15 @@ interface Log {
 // }
 
 const Chat: NextPage = () => {
-  const chats = [1, 2];
   const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n');
   const [showModal, setShowModal] = useState(false);
   const [selectFriends, setSelectFriends] = useState<number[]>([]);
   const [rooms, setRooms] = useState<IRoom[]>([]);
-  // ChatRoom 으로 빼기
+  // 채팅 컴포넌트 organism에 들어갈 것들
+  const [curRoom, setCurRoom] = useState('');
   const [members, setMembers] = useState<string[]>();
   const [logs, setLogs] = useState<Log[]>();
-  const [message, setMessage] = useState<Log>(); //현재 보낼 메세지, 받을 메세지
+  const [message, setMessage] = useState({} as Log); //현재 보낼 메세지, 받을 메세지
 
   let ws = useRef<WebSocket>();
 
@@ -198,26 +198,34 @@ const Chat: NextPage = () => {
     }
   }, []);
 
+  const inRoom = (roomId: string) => {
+    ws.current?.send(
+      JSON.stringify({
+        action: 'room-view',
+        target: { id: roomId },
+      }),
+    );
+    setCurRoom(roomId);
+  };
+
+  const sendMessage = () => {
+    ws.current?.send(
+      JSON.stringify({
+        action: 'send-message',
+        message: message.content,
+        target: {
+          id: curRoom,
+        },
+      }),
+    );
+  };
+
   const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.shiftKey) {
       return;
     }
     if (e.key === 'Enter') {
-      // 통신
-      // 어떻게 뷰를 계속 추가하지...
-      console.log('enter');
-      console.log(ws);
-
-      ws.current?.send(
-        JSON.stringify({
-          action: 'send-message',
-          message: message,
-          target: {
-            id: '68535657-9eeb-4282-a180-6dd286ff9672',
-            name: '2-3',
-          },
-        }),
-      );
+      sendMessage();
     }
   };
 
@@ -228,29 +236,40 @@ const Chat: NextPage = () => {
   };
 
   const onSubmit = () => {
+    // TODO: 개인채팅인지 단체채팅인지 선택하는 뷰랑 로직 추가
+    // TODO: 단체채팅일 경우 채팅방 이름 입력 받기
+
     ws.current?.send(
       JSON.stringify({
         action: 'join-room-private',
-        message: '15',
+        message: selectFriends[0].toString(),
       }),
     );
 
-    console.log(selectFriends);
+    ws.current?.send(
+      JSON.stringify({
+        action: 'join-room-public',
+        message: `publicRoom${selectFriends.map((friend) => {
+          return `-${friend}`;
+        })}`.toString(),
+      }),
+    );
   };
 
   return (
     <ChatWrapper>
       <ChatListSection>
-        {chats.map((chat) => {
+        {rooms.map((room) => {
           return (
-            <ChatListBox key={chat}>
+            <ChatListBox key={room.id} onClick={() => inRoom(room.id)}>
               <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-              <ChatListName types={'medium'}>이름</ChatListName>
+              <ChatListName types={'medium'}>{room.name}</ChatListName>
             </ChatListBox>
           );
         })}
         <button onClick={() => setShowModal(true)}>채팅방 생성</button>
         <Modal onClose={() => setShowModal(false)} show={showModal}>
+          {/* TODO: 실제 친구 불러오기 */}
           <JoinChat
             friends={[
               { name: 'user1', id: 1 },
@@ -264,6 +283,7 @@ const Chat: NextPage = () => {
       </ChatListSection>
       <ChatRoomSection>
         <ChatViewBox>
+          {/* TODO: 채팅 컴포넌트 oragnism 만들어서 빼기. msg가 Logs로 대체될 예정 */}
           <MsgBox isMine={true}>
             {msg.map((text, key) => (
               <p key={key}> {text} </p>
@@ -277,11 +297,13 @@ const Chat: NextPage = () => {
         </ChatViewBox>
         <ChatInputBox>
           <ChatInput
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={message?.content}
+            onChange={(e) => setMessage((prev) => ({ ...prev, content: e.target.value }))}
             onKeyPress={(e) => onKeyPress(e)}
           ></ChatInput>
-          <ChatButton types="primary">전송</ChatButton>
+          <ChatButton types="primary" onClick={sendMessage}>
+            전송
+          </ChatButton>
         </ChatInputBox>
       </ChatRoomSection>
     </ChatWrapper>
