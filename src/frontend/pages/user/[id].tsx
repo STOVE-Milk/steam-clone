@@ -84,20 +84,20 @@ const UserPage: NextPage = () => {
     setGuestBooks(res);
   };
 
-  const addGuestBook = async () => {
-    await addGuestBookAPI(userId, { content: userGuestBook.content });
+  const addGuestBook = async (content: string) => {
+    await addGuestBookAPI(userId, { content: content });
+    await getGuestBooks();
   };
 
   const modifyGuestBook = async (bookId: number, content: string) => {
-    // id: gusetBookId
     await modifyGuestBookAPI(userId, bookId, { content: content });
+    await getGuestBooks();
   };
 
   useEffect(() => {
     // (스토어의 userId !== 현재 url의 userId 일 때)
     getProfile();
     getGuestBooks();
-    // getWithFriend(); // 2
   }, []);
 
   return (
@@ -132,7 +132,7 @@ const UserPage: NextPage = () => {
               <GuestBook
                 key={guestBook.id}
                 guestBook={guestBook}
-                isMine={userId === guestBook.id}
+                isMine={userId === guestBook.guest_id}
                 isAdd={false}
                 modifyGuestBook={modifyGuestBook}
               ></GuestBook>

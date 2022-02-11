@@ -62,8 +62,10 @@ export default function UserInfo(props: IUserInfo) {
         {props.is_friend === 1 ? null : <AddFriendBtn types="primary">친구 추가</AddFriendBtn>}
       </UserSection>
       <ProfileSection>
-        <ProfileImage>{props.profile.image !== '' ? <Image src={props.profile.image}></Image> : null}</ProfileImage>
-        <Desc>{props.profile.description}</Desc>
+        <ProfileImage>
+          {props.profile && props.profile.image !== '' ? <Image src={props.profile.image}></Image> : null}
+        </ProfileImage>
+        <Desc>{props.profile && props.profile.description}</Desc>
       </ProfileSection>
     </Wrapper>
   );

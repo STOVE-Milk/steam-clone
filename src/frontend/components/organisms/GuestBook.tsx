@@ -18,13 +18,14 @@ export interface IGuestBook {
   displayed_name: string;
   content: string;
   created_at: string;
+  updated_at: string;
 }
 
 export interface IGuestBookProps {
   guestBook: IGuestBook;
   isMine?: boolean;
   isAdd: boolean;
-  addGuestBook?: () => Promise<void>;
+  addGuestBook?: (content: string) => Promise<void>;
   modifyGuestBook?: (id: number, content: string) => Promise<void>;
 }
 
@@ -81,7 +82,7 @@ const CreatedAt = styled(Text)`
 export default function GuestBook(props: IGuestBookProps) {
   const [isEdited, setEdited] = useState(props.isAdd ? true : false);
 
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(props.isAdd ? '' : props.guestBook.content);
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
   };
@@ -91,16 +92,22 @@ export default function GuestBook(props: IGuestBookProps) {
       <UserBox>
         <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
         <Name types="medium">{props.guestBook.displayed_name}</Name>
-        <CreatedAt types="tiny">{props.guestBook.created_at}</CreatedAt>
+        <CreatedAt types="tiny">
+          {props.guestBook.updated_at === props.guestBook.created_at
+            ? props.guestBook.created_at
+            : `${props.guestBook.updated_at} (수정됨)`}
+        </CreatedAt>
         {isEdited ? (
           <PostButton
             types="primary"
             onClick={() => {
               if (props.isAdd) {
-                props.addGuestBook && props.addGuestBook();
+                props.addGuestBook && props.addGuestBook(content);
                 setContent('');
               } else {
                 props.modifyGuestBook && props.modifyGuestBook(props.guestBook.id, content);
+                setContent(content);
+                setEdited(false);
               }
             }}
           >
