@@ -41,7 +41,7 @@ type ChatLogData struct {
 }
 
 type RoomViewData struct {
-	Members []int32       `bson:"members" json:"members"`
+	Members []string      `bson:"members" json:"members"`
 	Log     []ChatLogData `bson:"chat_log" json:"log"`
 }
 

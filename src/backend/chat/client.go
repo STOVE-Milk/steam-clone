@@ -15,22 +15,21 @@ import (
 )
 
 const (
-	// Max wait time when writing message to peer
+	//
 	writeWait = 10 * time.Second
 
-	// Max time till next pong from peer
+	// 응답 대기 시간
 	pongWait = 60 * time.Second
 
-	// Send ping interval, must be less then pong wait time
+	// 웹 소켓 연결을 유지시킬 핑 메세지, 응답 대기시간보다 짧아야함.
 	pingPeriod = (pongWait * 9) / 10
 
-	// Maximum message size allowed from peer.
+	// 웹 소켓 사이의 전송 메세지 최댓 값.
 	maxMessageSize = 10000
 )
 
 var (
 	newline = []byte{'\n'}
-	space   = []byte{' '}
 )
 
 var upgrader = websocket.Upgrader{
@@ -41,9 +40,8 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// Client represents the websocket client at the server
+// 웹 소켓 서버에 등록 될 클라이언트
 type Client struct {
-	// The actual websocket connection.
 	conn     *websocket.Conn
 	wsServer *WsServer
 	send     chan []byte
@@ -52,6 +50,7 @@ type Client struct {
 	rooms    map[*Room]bool
 }
 
+// 존재하는 룸을 웹 서버에 등록
 func newClient(conn *websocket.Conn, wsServer *WsServer, user models.User) *Client {
 	return &Client{
 		ID:       user.GetId(),
@@ -73,7 +72,7 @@ func (client *Client) readPump() {
 	client.conn.SetReadDeadline(time.Now().Add(pongWait))
 	client.conn.SetPongHandler(func(string) error { client.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
-	// Start endless read loop, waiting for messages from client
+	// 클라이언트의 메세지를 클라이언트의 접속이 끊길 때 까지 확인.
 	for {
 		_, jsonMessage, err := client.conn.ReadMessage()
 		if err != nil {
@@ -82,7 +81,6 @@ func (client *Client) readPump() {
 			}
 			break
 		}
-
 		client.handleNewMessage(jsonMessage)
 	}
 
@@ -97,6 +95,7 @@ func (client *Client) writePump() {
 	for {
 		select {
 		case message, ok := <-client.send:
+			fmt.Println("서버 : " + string(message))
 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The WsServer closed the channel.
@@ -138,7 +137,7 @@ func (client *Client) disconnect() {
 	client.conn.Close()
 }
 
-// ServeWs handles websocket requests from clients requests.
+// wsServer는 클라이언트의 웹서버에 대한 요청을 처리
 func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -146,9 +145,10 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var user models.User
-	// loginUser, _ := models.ExtractMetadata(r)
+	// 토큰에서 유저의 정보를 가져옴
+	loginUser, _ := models.ExtractMetadata(r)
 	for _, u := range wsServer.users {
-		if u.GetName() == "ive" {
+		if u.GetName() == loginUser.Nickname {
 			user = u
 			break
 		}
@@ -162,6 +162,7 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 
 }
 
+// 클라이언트의 메세지를 처리하는 thread 실행
 func (client *Client) handleNewMessage(jsonMessage []byte) {
 
 	var message Message
@@ -195,15 +196,18 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 
 }
 
+// 채팅 방을 클릭하면 채팅방의 정보를 보여 줌.
 func (client *Client) handleRoomViewMessage(message Message) {
-	room := message.Target
-	if !client.isInRoom(room) {
+	room := client.wsServer.findRoomByName(message.Target.Name)
 
+	// 채팅 방을 클릭했을 때 그 방에
+	if !client.isInRoom(room) {
+		fmt.Println(room)
 		client.rooms[room] = true
 		room.register <- client
 	}
-	roomId := message.Target.ID
-	data := client.wsServer.getRoomViewData(roomId)
+
+	data := client.wsServer.getRoomViewData(room.GetId())
 	message = Message{
 		Action: RoomViewAction,
 		Data:   data,
@@ -231,7 +235,7 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 		return
 	}
 
-	// create unique room name combined to the two IDs
+	// 1:1 대화에 참여하는 유저 아이디를 오름차순 소팅하여 룸 이름으로 사용.
 	userA, _ := strconv.Atoi(message.Message)
 	userB, _ := strconv.Atoi(client.ID)
 	if userA > userB {
@@ -249,11 +253,9 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 }
 
 func (client *Client) handleJoinRoomMessage(message Message) {
-
 	strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
 	roomName := strArr[0]
 	members := strArr[1:]
-	fmt.Println(members)
 	joinedRoom := client.joinRoom(roomName, nil, members)
 	if joinedRoom != nil {
 		client.invitePublicRoom(members, joinedRoom)
@@ -275,7 +277,7 @@ func (client *Client) joinRoom(roomName string, sender models.User, members []st
 
 		client.rooms[room] = true
 		room.register <- client
-
+		fmt.Println(room)
 		client.notifyRoomJoined(room, sender)
 	}
 	return room

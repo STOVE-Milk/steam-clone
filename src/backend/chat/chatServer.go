@@ -15,8 +15,8 @@ type WsServer struct {
 	clients         map[*Client]bool // 클라이언트 저장
 	register        chan *Client     // 클라이언트 등록
 	unregister      chan *Client     // 클라이언트 제거
-	rooms           map[*Room]bool   // 룸 기록
-	broadcast       chan []byte      // 대화
+	rooms           map[*Room]bool   // 룸 저장
+	broadcast       chan []byte      // 클라이언트 찾을 때.
 	users           []models.User    // db에 등록된 유저 읽어 오기
 	roomMRepository models.RoomRepository
 	userMRepository models.UserMRepository
@@ -34,11 +34,12 @@ func NewWebsocketServer(roomMRepository models.RoomRepository, userMRepository m
 		userRepository:  userRepository,
 	}
 
-	// Add users from database to server
+	// 여기서 친구만 불러오면 어떨까나
 	wsServer.users = userRepository.GetAllUsers()
 
 	return wsServer
 }
+
 func (server *WsServer) Run() {
 	go server.listenPubSubChannel()
 	for {
@@ -55,17 +56,22 @@ func (server *WsServer) Run() {
 	}
 }
 
+// 클라이언트를 서버에 등록하는 로직
 func (server *WsServer) registerClient(client *Client) {
 	rooms := server.userMRepository.GetAllJoinedRoom(client.ID)
 	if rooms == nil {
+		// 처음 채팅을 시도하는 유저 MongoDB에 저장
 		server.userMRepository.AddUser(client.ID)
 	}
 	server.listOnlineClients(client)
-
-	// Publish user in PubSub
 	server.publishClientJoined(client)
-
 	server.clients[client] = true
+
+	message := &Message{
+		Action: RoomGetAction,
+		Data:   rooms,
+	}
+	client.send <- message.encode()
 
 }
 
@@ -78,7 +84,7 @@ func (server *WsServer) unregisterClient(client *Client) {
 			if _, ok := server.rooms[room]; ok {
 				delete(room.clients, client)
 
-				// 클라이언트가 없는 룸은 메모리 제거
+				// 클라이언트가 없는 룸은 웹 소켓 서버에서 제거
 				if len(room.clients) == 0 {
 					delete(server.rooms, room)
 				}
@@ -89,22 +95,20 @@ func (server *WsServer) unregisterClient(client *Client) {
 		// 서버에서 클라이언트 메모리 제거
 		delete(server.clients, client)
 
-		// 클라이언트 웹소켓 끊어짐 알림.
 		server.publishClientLeft(client)
 	}
 }
 
 func (server *WsServer) publishClientJoined(client *Client) {
-	data := server.userMRepository.GetAllJoinedRoom(client.ID)
 	message := &Message{
 		Action: UserJoinedAction,
 		Sender: client,
-		Data:   data,
 	}
 
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
 		log.Println(err)
 	}
+
 }
 
 func (server *WsServer) publishClientLeft(client *Client) {
@@ -119,6 +123,7 @@ func (server *WsServer) publishClientLeft(client *Client) {
 	}
 }
 
+// 웹 소캣 서버가 생성되면 general 채널을 구독
 func (server *WsServer) listenPubSubChannel() {
 
 	pubsub := config.Redis.Subscribe(ctx, PubSubGeneralChannel)
@@ -144,21 +149,23 @@ func (server *WsServer) listenPubSubChannel() {
 
 	}
 }
+
+// 클라이언트가 이 웹 소캣 서버에 존재한다면 그룹 방 참여
 func (server *WsServer) handleUserJoinPublic(message Message) {
-	// Find client for given user, if found add the user to the room.
 	targetClient := server.findClientByID(message.Message)
 	if targetClient != nil {
 		targetClient.joinRoom(message.Target.GetName(), message.Sender, nil)
 	}
 }
 
+// 1:1방 참여
 func (server *WsServer) handleUserJoinPrivate(message Message) {
-	// Find client for given user, if found add the user to the room.
 	targetClient := server.findClientByID(message.Message)
 	if targetClient != nil {
 		targetClient.joinRoom(message.Target.GetName(), message.Sender, nil)
 	}
 }
+
 func (server *WsServer) findUserByID(ID string) models.User {
 	var foundUser models.User
 	for _, client := range server.users {
@@ -171,12 +178,12 @@ func (server *WsServer) findUserByID(ID string) models.User {
 	return foundUser
 }
 func (server *WsServer) handleUserJoined(message Message) {
-	// Add the user to the slice
+	// 이걸 친구만 처리해야함.
 	server.broadcastToClients(message.encode())
 }
 
 func (server *WsServer) handleUserLeft(message Message) {
-
+	// 이걸 친구만 처리해야함.
 	server.broadcastToClients(message.encode())
 }
 
@@ -193,7 +200,7 @@ func (server *WsServer) listOnlineClients(client *Client) {
 }
 
 // 서버에 등록된 클라이언트들에게 메세지를 전송.
-// 누군가 웹 소켓 연결을 할 때나 연결을 끊을 때.
+// 클라이언트가 웹 소켓을 연결할 때나 연결을 끊을 때.
 func (server *WsServer) broadcastToClients(message []byte) {
 	for client := range server.clients {
 		client.send <- message
@@ -206,6 +213,7 @@ func (server *WsServer) getRoomViewData(roomId string) models.RoomViewData {
 	return roomViewData
 }
 
+// 이름으로 룸을 검색 후 웹 소캣 서버에 등록돼 있지 않다면 등록 후 thread 실행
 func (server *WsServer) findRoomByName(name string) *Room {
 	var foundRoom *Room
 	for room := range server.rooms {
@@ -215,15 +223,14 @@ func (server *WsServer) findRoomByName(name string) *Room {
 		}
 	}
 
-	// NEW: if there is no room, try to create it from the repo
 	if foundRoom == nil {
-		// Try to run the room from the repository, if it is found.
 		foundRoom = server.runRoomFromRepository(name)
 	}
 
 	return foundRoom
 }
 
+// 만약 방이 웹 소캣 서버에 등록돼 있지 않다면 등록 후 thread 등록
 func (server *WsServer) runRoomFromRepository(name string) *Room {
 	var room *Room
 	dbRoom := server.roomMRepository.FindRoomByName(name)
@@ -262,10 +269,14 @@ func (server *WsServer) findRoomByID(ID string) *Room {
 	return foundRoom
 }
 
+// 새로운 룸 생성
 func (server *WsServer) createRoom(name string, private bool, members []string) *Room {
 	room := NewRoom(name, private)
+	// MongoDB에 룸 정보 저장
 	server.roomMRepository.AddRoom(room)
-	server.addMembers(room, members)
+	// MongoDB에 채팅에 참여하는 members 정보 저장
+	server.roomMRepository.AddMembers(room, members)
+	// MongoDB에 user 마다 참여한 룸 정보 저장.
 	for _, member := range members {
 		server.userMRepository.AddRoom(room, member)
 	}
@@ -273,10 +284,6 @@ func (server *WsServer) createRoom(name string, private bool, members []string) 
 	server.rooms[room] = true
 
 	return room
-}
-
-func (server *WsServer) addUser() {
-
 }
 
 func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content string) {
@@ -287,8 +294,4 @@ func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content st
 		SendTime:       time.Now(),
 	}
 	server.roomMRepository.LoggingChat(chatLogData, roomId)
-}
-
-func (server *WsServer) addMembers(room models.Room, members []string) {
-	server.roomMRepository.AddMembers(room, members)
 }

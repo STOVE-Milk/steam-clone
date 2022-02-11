@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
@@ -59,7 +60,10 @@ func (repo *RoomMRepository) GetRoomViewData(roomId string) models.RoomViewData 
 	var roomViewData models.RoomViewData
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	findFilter := bson.D{{"id", roomId}}
-	chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomViewData)
+	err := chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomViewData)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return roomViewData
 }
 

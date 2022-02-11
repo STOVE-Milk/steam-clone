@@ -15,6 +15,7 @@ const JoinRoomAction = "join-room"
 const LeaveRoomAction = "leave-room"
 const RoomJoinedAction = "room-joined"
 const RoomViewAction = "room-view"
+const RoomGetAction = "room-get"
 const GetRoomListAction = "get-room-list"
 const JoinRoomPublicAction = "join-room-public"
 

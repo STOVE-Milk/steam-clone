@@ -33,7 +33,6 @@ func NewRoom(name string, private bool) *Room {
 	}
 }
 
-// RunRoom runs our room, accepting various requests
 func (room *Room) RunRoom() {
 	go room.subscribeToRoomMessages()
 
@@ -53,7 +52,6 @@ func (room *Room) RunRoom() {
 	}
 }
 
-// 초대하는 함수에 포함되어야함.
 func (room *Room) registerClientInRoom(client *Client) {
 	room.clients[client] = true
 }
@@ -100,17 +98,6 @@ func (room *Room) subscribeToRoomMessages() {
 		room.broadcastToClientsInRoom([]byte(msg.Payload))
 	}
 }
-
-// 한명이 초대하는 것으로 구현할 것이기 때문에 필요 없음.
-// func (room *Room) notifyClientJoined(client *Client) {
-// 	message := &Message{
-// 		Action:  SendMessageAction,
-// 		Target:  room,
-// 		Message: fmt.Sprintf(welcomeMessage, client.GetName()),
-// 	}
-
-// 	room.publishRoomMessage(message.encode())
-// }
 
 func (room *Room) GetId() string {
 	return room.ID
