@@ -43,6 +43,10 @@ const FriendSection = styled.div`
   flex-direction: column;
   flex: 1;
   overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const FriendItem = styled.div`
@@ -50,7 +54,7 @@ const FriendItem = styled.div`
   width: 100%;
   background: ${(props) => props.theme.colors.secondaryBg};
   margin: 0.5rem 0;
-  border-radius: 10px; ;
+  border-radius: 10px;
 `;
 
 const FriendActionBox = styled.div`
@@ -211,11 +215,11 @@ const Friend: NextPage = () => {
         TODO: FriendList로 컴포넌트화 하기 -> 고려해야할 것: 버튼 아이콘, 버튼별 함수, 버튼 개수
       */}
       <FriendSection>
-        {/* {tab === 0 ? (
+        {tab === 0 ? (
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox open={true} friendInfo={friend} />;
+                <FriendBox open={true} friendInfo={friend} />
                 <FriendActionBox>
                   <FriendActionBtn onClick={() => deleteFriend(friend.id)} icon={faTimes} inverse />
                 </FriendActionBox>
@@ -239,9 +243,14 @@ const Friend: NextPage = () => {
                 {friends.map((friend) => {
                   return (
                     <FriendItem key={friend.id}>
-                      <FriendBox open={true} friendInfo={friend} />;
+                      <FriendBox open={true} friendInfo={friend} />
+
                       <FriendActionBox>
-                        <FriendActionBtn onClick={() => sendFriendRequest(friend.id)} icon={faPlus} inverse />
+                        {friend.is_friend && friend.is_friend === 1 ? (
+                          <FriendActionBtn icon={faUser} inverse></FriendActionBtn>
+                        ) : (
+                          <FriendActionBtn onClick={() => sendFriendRequest(friend.id)} icon={faPlus} inverse />
+                        )}
                       </FriendActionBox>
                     </FriendItem>
                   );
@@ -253,7 +262,7 @@ const Friend: NextPage = () => {
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox open={true} friendInfo={friend} />;
+                <FriendBox open={true} friendInfo={friend} />
                 <FriendActionBox>
                   <FriendActionBtn onClick={() => deleteFriendRequest(friend.id)} icon={faTimes} inverse />
                 </FriendActionBox>
@@ -264,7 +273,7 @@ const Friend: NextPage = () => {
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox open={true} friendInfo={friend} />;
+                <FriendBox open={true} friendInfo={friend} />
                 <FriendActionBox>
                   <FriendActionBtn onClick={() => acceptFriend(friend.id)} icon={faCheck} inverse />
                   <FriendActionBtn onClick={() => deleteFriendRequest(friend.id)} icon={faTimes} inverse />
@@ -272,7 +281,7 @@ const Friend: NextPage = () => {
               </FriendItem>
             );
           })
-        ) : null} */}
+        ) : null}
       </FriendSection>
     </Wrapper>
   );
