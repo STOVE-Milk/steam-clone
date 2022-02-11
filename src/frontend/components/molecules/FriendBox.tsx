@@ -3,10 +3,21 @@ import styled from 'styled-components';
 import Text, { TextStyle } from 'components/atoms/Text';
 import Dot from 'components/atoms/Dot';
 import { theme } from 'styles/theme';
+import Profile from 'components/atoms/Profile';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+
+export interface IFriend {
+  id: number;
+  nickname: string;
+  profile: {
+    image: string | JSX.Element;
+    description: string;
+  };
+}
 
 export interface FriendBoxProps {
-  icon: JSX.Element;
-  name: string;
+  friendInfo: IFriend;
   open: boolean;
 }
 
@@ -41,8 +52,12 @@ const FriendStatus = styled(Dot)`
 export default function FriendBox(props: FriendBoxProps) {
   return (
     <FriendBoxWrapper>
-      {props.icon}
-      {props.open ? <FriendName types={'small'}>{props.name}</FriendName> : null}
+      {props.friendInfo.profile.image === '' ? (
+        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
+      ) : (
+        '실제 이미지'
+      )}
+      {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
       <FriendStatus color={theme.colors.online} />
     </FriendBoxWrapper>
   );

@@ -63,6 +63,8 @@ const UserPage: NextPage = () => {
 
   const [profile, setProfile] = useState({} as IUserInfo);
 
+  const [withFriend, setWithFriend] = useState({} as IUserInfo);
+
   const getProfile = async () => {
     const res = (await getProfileAPI(userId)).data;
     setProfile(res);
