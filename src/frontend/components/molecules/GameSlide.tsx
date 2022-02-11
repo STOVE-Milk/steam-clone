@@ -43,7 +43,7 @@ const ImageSection = styled.div`
 `;
 
 const InfoSection = styled.div`
-  height: 30%;
+  height: 70px;
   background: ${(props) => props.theme.colors.secondaryBg};
   padding: 0.5rem;
   display: flex;

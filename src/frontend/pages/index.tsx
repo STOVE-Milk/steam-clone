@@ -19,6 +19,10 @@ const MainWrapper = styled.div`
   height: 100%;
 `;
 
+const Title = styled(Text)`
+  margin: 3rem 0 0 3rem;
+`;
+
 const CarouselSection = styled.div`
   width: calc(100vw - 250px);
 `;
@@ -43,7 +47,7 @@ const Main: NextPage = () => {
   return (
     <MainWrapper>
       <CarouselSection>
-        <Text types={'large'}>인기 게임</Text>
+        <Title types={'large'}>인기 게임</Title>
         <CarouselBox>
           <BigCarouselComponent
             slides={rankGames.map((data) => {
@@ -51,7 +55,7 @@ const Main: NextPage = () => {
             })}
           ></BigCarouselComponent>
         </CarouselBox>
-        <Text types={'large'}>할인중인 게임</Text>
+        <Title types={'large'}>할인중인 게임</Title>
         <CarouselBox>
           <CarouselComponent
             slides={saleGames.map((data) => {
