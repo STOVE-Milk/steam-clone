@@ -11,14 +11,24 @@ import {
   ICheckNicknameReqType,
 } from './type';
 
+const getToken = () => {
+  typeof window !== 'undefined' && localStorage.getItem('accessToken') != null
+    ? localStorage.getItem('accessToken')
+    : '';
+};
 export async function getGiftCardListAPI(param: IGetGiftCardListReqType) {
-  const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/giftcards/KR`);
+  const token = getToken();
+  const response = await axiosClient(token).get<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/giftcards/KR`,
+  );
 
   return response.data;
 }
 
 export async function doChargeAPI(param: IDoChargeReqType) {
-  const response = await axiosClient.post<IResType>(
+  const token = getToken();
+
+  const response = await axiosClient(token).post<IResType>(
     `${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/charge/ready`,
     param,
   );
@@ -26,7 +36,9 @@ export async function doChargeAPI(param: IDoChargeReqType) {
 }
 
 export async function doApprovalChargeAPI(param: IDoApprovalChargeReqType) {
-  const response = await axiosClient.post<IResType>(
+  const token = getToken();
+
+  const response = await axiosClient(token).post<IResType>(
     `${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/charge/approve`,
     param,
   );
