@@ -38,8 +38,11 @@ public class KakaoPay {
     private final RestTemplate restTemplate;
     private final KakaoPayReadyCacheRepository kakaoPayReadyCacheRepository;
 
+    /*
+        카카오페이 API를 실제적으로 호출하는 서비스입니다.
+        RestTemplate를 이용해 동기적으로 API를 호출합니다.
+    */
     public KakaoPayReadyResponse ready(GiftcardDto giftcard, Integer orderCount) {
-        //TODO: LOGGING ORDER AND PUSH DATA INTO KakaoPayReady
         KakaoPayReadyRequest kakaoPayReadyRequest = KakaoPayReadyRequest.of(UserContext.getUserId(), giftcard, orderCount);
         kakaoPayReadyRequest.setCid(this.cid);
         kakaoPayReadyRequest.setApprovalUrl(this.approvalUrl);
