@@ -84,7 +84,7 @@ const FriendSection = styled.div`
   }
 `;
 
-const FriendSettingBtn = styled(FontAwesomeIcon)`
+const FriendSettingBtn = styled.div`
   margin-left: auto;
   cursor: pointer;
 `;
@@ -133,7 +133,9 @@ export default function NavBar() {
       <SectionTitle>
         Friends
         <Link href={'/friend'}>
-          <FriendSettingBtn icon={faCog} inverse />
+          <FriendSettingBtn>
+            <FontAwesomeIcon icon={faCog} inverse></FontAwesomeIcon>
+          </FriendSettingBtn>
         </Link>
       </SectionTitle>
 
