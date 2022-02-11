@@ -27,7 +27,8 @@ public class PurchaseLogDocument {
                 .build();
     }
 
-    public void plusCount() {
+    public void addLog(PurchaseLog log) {
+        this.purchaseLogs.add(log);
         this.count++;
     }
 

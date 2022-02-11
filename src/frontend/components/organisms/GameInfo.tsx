@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { IState } from 'modules';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import sImage from 'public/game.png';
-import { gameInfo as IGameInfo } from 'modules/game/types';
 import Text from 'components/atoms/Text';
 import { localePrice } from 'util/localeString';
 
-const GameInfoBox = styled.section`
+import { gameInfo } from 'modules/game/types';
+import { doWish, doUnWish, getUserData } from 'modules/game';
+import { useSelector, useDispatch } from 'react-redux';
+import { addCartInfo, rmCartInfo } from 'modules/game';
+
+interface IGameInfo extends gameInfo {
+  type?: string;
+}
+
+const GameInfoBox = styled.section<IGameInfo>`
+  margin-top: ${(props) => props.type === 'cart' && 0} !important;
   width: 60rem;
   height: 10rem;
   display: grid;
@@ -161,35 +171,74 @@ const OsBox = styled.span`
 // to do -> 1. 게임정보 타입 정하고 2. props들을 내려주고 3. 제대로 나오나 테스팅하고, 4. 혹시 정보가 없었을 떄 alt로 나오는 정보들이 제대로 나오는지 체크하고
 export default function GameInfo(props: IGameInfo) {
   const gameData = props;
-  const [like, setLike] = useState(false);
+  const { cartInfo, userData } = useSelector((state: IState) => state.game);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getUserData.request({}));
+  }, []);
+
+  const likeStatus = userData.data.wish_list != undefined ? userData.data.wish_list.includes(gameData.id) : false;
+
+  const [like, setLike] = useState(likeStatus);
   const [cart, setCart] = useState(false);
 
+  useEffect(() => {
+    setCart(cartInfo.data.includes(gameData.id));
+  }, []);
+
+  const cartFunc = (game_id: number, curStatus: Boolean) => {
+    curStatus ? alert('장바구니에서 빠졌습니다') : alert('장바구니에 담겼습니다.');
+
+    curStatus
+      ? dispatch(rmCartInfo.request({ prev: [...cartInfo.data], game_id }))
+      : dispatch(addCartInfo.request({ prev: [...cartInfo.data], game_id }));
+  };
+
+  const wishFunc = (game_id: number, curStatus: Boolean) => {
+    curStatus
+      ? dispatch(
+          doUnWish.request({
+            game_id,
+          }),
+        )
+      : dispatch(
+          doWish.request({
+            game_id,
+          }),
+        );
+    curStatus ? console.log('un wish') : console.log('wish');
+  };
+
   return (
-    <GameInfoBox>
+    <GameInfoBox type={gameData.type}>
       <ImageBox>
         {/* {image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
-        {/* TO DO(yangha): 게임데이터에서 온 이미지로 변경하기 ->  이미지 url domain 고정되면 config파일도 수정해야함. */}
-        <GameImage alt={'mainimage'} src={`${gameData.image.main}`} layout={'fill'}></GameImage>
+        <GameImage
+          alt={'mainimage'}
+          src={`${gameData.image != undefined ? gameData.image.main : ''}`}
+          layout={'fill'}
+        />
       </ImageBox>
-      {/* 할인중인지 여부에 따라서 ui 가 좀 다름 */}
       <GameDetailBox>
         <section className="info">
           <span>
             <Text types="medium">{gameData.name}</Text>
           </span>
           <OsBox>
-            {gameData.os_list &&
-              gameData.os_list.map((eachOs: string) => {
-                return (
-                  <FontAwesomeIcon
-                    icon={eachOs.toLocaleLowerCase().indexOf('window') ? faWindowMaximize : faAppleAlt}
-                    inverse
-                  />
-                );
-              })}
+            {gameData.os_list.map((eachOs: string) => {
+              return (
+                <FontAwesomeIcon
+                  icon={eachOs.toLocaleLowerCase().indexOf('window') ? faWindowMaximize : faAppleAlt}
+                  inverse
+                />
+              );
+            })}
           </OsBox>
           <DescriptionBox>{gameData.description_snippet}</DescriptionBox>
           <span>
+            {/*디비에서 안오는 경우가 있어서 뺴놓음 && 처리해놓음 (성현)*/}
             {gameData.category_list &&
               gameData.category_list.map((each: string) => {
                 return <CategoryBox>{`#${each}`}</CategoryBox>;
@@ -199,29 +248,40 @@ export default function GameInfo(props: IGameInfo) {
       </GameDetailBox>
       <EtcInfoBox>
         <section>
-          {Boolean(gameData.sale) && <SaleBadge>-{gameData.sale}%</SaleBadge>}
-          {gameData.price && (
-            <div>
-              {Boolean(gameData.sale) ? (
-                <>
-                  {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
-                  <DefaultPrice>{`${localePrice(gameData.price, 'KR')}`}</DefaultPrice>
-                  <Text types="medium">{`${localePrice((gameData.price / 100) * (100 - gameData.sale), 'KR')}`}</Text>
-                </>
-              ) : (
-                <Text types="medium">{`${localePrice(gameData.price, 'KR')}`}</Text>
-              )}
-            </div>
-          )}
+          {gameData.sale != 0 && <SaleBadge>-{gameData.sale}%</SaleBadge>}
+          <div>
+            {gameData.sale ? (
+              <>
+                {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
+                <DefaultPrice>{`${localePrice(gameData.price, 'KR')}`}</DefaultPrice>
+                <Text types="medium">{`${localePrice((gameData.price / 100) * (100 - gameData.sale), 'KR')}`}</Text>
+              </>
+            ) : (
+              <Text types="medium">{`${localePrice(gameData.price, 'KR')}`}</Text>
+            )}
+          </div>
         </section>
         <section>
-          <IconBox onClick={() => setLike(!like)}>
+          <IconBox
+            onClick={(e) => {
+              e.preventDefault();
+              wishFunc(gameData.id, like);
+              setLike(!like);
+            }}
+          >
             <span>
-              <FontAwesomeIcon className={like ? '' : 'pink-highlight'} icon={faHeart} inverse />
+              <FontAwesomeIcon className={like ? 'pink-highlight' : ''} icon={faHeart} inverse />
             </span>
           </IconBox>
-          <IconBox onClick={() => setCart(!cart)}>
-            <FontAwesomeIcon className={cart ? '' : 'blue-highlight'} icon={faShoppingCart} inverse />
+          <IconBox
+            onClick={(e) => {
+              e.preventDefault();
+              console.log(gameData.id, cart);
+              cartFunc(gameData.id, cart);
+              setCart(!cart);
+            }}
+          >
+            <FontAwesomeIcon className={cart ? 'blue-highlight' : ''} icon={faShoppingCart} inverse />
           </IconBox>
         </section>
       </EtcInfoBox>

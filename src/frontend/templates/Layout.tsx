@@ -18,7 +18,6 @@ const ContentSectionWrapper = styled.div`
 `;
 const ContentSection = styled.div`
   width: 100%;
-  margin-top: 80px;
   height: calc(100vh - 80px);
   overflow-y: scroll;
   background: ${(props) => props.theme.colors.primaryBg};
