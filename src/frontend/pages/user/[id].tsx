@@ -45,42 +45,23 @@ const GuestBookList = styled.div`
 `;
 
 const UserPage: NextPage = () => {
-  // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
+  /* 로그인 이후 뷰 처리
+  // TODO: 로그인 후, 스토어에서 유저 정보 가져오기
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
 
-  const [guestBooks, setGuestBooks] = useState<IGuestBook[]>([]);
-
-  const [userGuestBook, setUserGuestBook] = useState<IGuestBook>({
-    id: 1,
-    guest_id: 1,
-    is_friend: 1,
-    profile: {
-      description: '',
-      image: '',
-    },
-    displayed_name: '',
-    content: '',
-    created_at: '',
-  });
-
-  const [profile, setProfile] = useState<IUserInfo>({
-    id: 1,
-    nickname: '',
-    is_friend: 1,
-    profile: {
-      description: '',
-      image: '',
-    },
-    accessed_at: '',
-    createad_at: '',
-  });
+  // TODO: url의 Id 가져와서 스토어의 Id와 비교하기
+  // query.userId === store.userId ? mypage : userpage
 
   // default: query.userId
+  */
   const userId = 1;
-  // query.userId === store.userId ? mypage : userpage
-  // 내가 지금 보고 있는 유저 페이지가 나의 페이지인가, 다른 유저의 유저 페이지인가
   const [isMypage, setIsMypage] = useState(false);
+
+  const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]);
+  const [userGuestBook, setUserGuestBook] = useState({} as IGuestBook);
+
+  const [profile, setProfile] = useState({} as IUserInfo);
 
   const getProfile = async () => {
     const res = (await getProfileAPI(userId)).data;
@@ -94,7 +75,6 @@ const UserPage: NextPage = () => {
 
   const getWithFriend = async () => {
     const res = await getWithFriendAPI({ id: 4 });
-    console.log('getWithFriend', res);
   };
 
   const getGuestBooks = async () => {
@@ -124,7 +104,9 @@ const UserPage: NextPage = () => {
       <UserInfo {...profile}></UserInfo>
       <FriendSection>
         <Text types={'large'}>함께 아는 친구</Text>
-        {/* {isMypage ? null : (
+        {/* 
+        TODO: 마이페이지가 아닐 때만 함께 아는 친구 보여주기
+        {isMypage ? null : (
           <FriendList>
             {friends.map((friend) => {
               return (
