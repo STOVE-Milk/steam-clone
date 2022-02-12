@@ -13,21 +13,6 @@ import { purchaseGameAPI } from 'pages/api/game/api';
 import { IPurchaseGameReqType } from 'pages/api/game/type';
 import { getGameInfoByIdList } from 'modules/game';
 
-const CartInfoWrapper = styled.div`
-  width: fit-content;
-  display: flex;
-  flex-direction: column;
-  margin: 2rem auto;
-`;
-
-const TitleStyle = styled(Text)`
-  margin-bottom: 2rem;
-`;
-
-const ChenknGameInfoWrapper = styled.div`
-  display: flex;
-`;
-
 const cart: NextPage<IState> = (props) => {
   const { cartInfo, gamesByIdList } = useSelector((state: IState) => {
     console.log('카트에 있는 게임 id 배열: ', state.game.cartInfo.data);
@@ -102,5 +87,20 @@ const cart: NextPage<IState> = (props) => {
     </CartInfoWrapper>
   );
 };
+
+const CartInfoWrapper = styled.div`
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  margin: 2rem auto;
+`;
+
+const TitleStyle = styled(Text)`
+  margin-bottom: 2rem;
+`;
+
+const ChenknGameInfoWrapper = styled.div`
+  display: flex;
+`;
 
 export default cart;

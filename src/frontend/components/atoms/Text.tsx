@@ -8,11 +8,11 @@ type SizeType = {
   color: string;
 };
 
-interface TextThemeType {
+interface ITextThemeType {
   [index: string]: SizeType;
 }
 
-export const TextTheme: TextThemeType = {
+export const TextTheme: ITextThemeType = {
   title: {
     size: '3rem',
     weight: 'bold',
@@ -50,23 +50,23 @@ export const TextTheme: TextThemeType = {
   },
 };
 
-export interface TextProps {
-  types: string;
-  children: React.ReactNode;
-  onClick?: (e: any) => void;
-  className?: string;
-}
-
-export const TextStyle = styled.div<TextProps>`
-  font-size: ${(props) => TextTheme[props.types].size};
-  font-weight: ${(props) => TextTheme[props.types].weight};
-  color: ${(props) => TextTheme[props.types].color};
-`;
-
-export default function Text(props: TextProps) {
+export default function Text(props: ITextProps) {
   return <TextStyle {...props}>{props.children}</TextStyle>;
 }
 
 Text.defaultProps = {
   types: 'main',
 };
+
+export interface ITextProps {
+  types: string;
+  children: React.ReactNode;
+  onClick?: (e: any) => void;
+  className?: string;
+}
+
+export const TextStyle = styled.div<ITextProps>`
+  font-size: ${(props) => TextTheme[props.types].size};
+  font-weight: ${(props) => TextTheme[props.types].weight};
+  color: ${(props) => TextTheme[props.types].color};
+`;

@@ -2,12 +2,68 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import styled, { css } from 'styled-components';
 
-export type ModalProps = {
+export interface IModalProps {
   show: boolean;
   onClose: () => void;
   title?: string;
   children: React.ReactChild;
-};
+}
+
+export default function Modal(props: IModalProps) {
+  const [isBrowser, setIsBrowser] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflowY = props.show ? 'hidden' : 'initial';
+
+    let timeoutId: any;
+
+    if (props.show) {
+      setIsBrowser(true);
+    } else {
+      timeoutId = setTimeout(() => {
+        setIsBrowser(false);
+      }, 5000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [props.show]);
+
+  useEffect(() => {
+    setIsBrowser(true);
+
+    return () => {
+      document.body.style.overflowY = 'initial';
+    };
+  }, []);
+
+  const handleCloseClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    props.onClose();
+  };
+
+  const modalContent = props.show ? (
+    <ModalOverlay>
+      <ModalWrapper show={props.show}>
+        <ModalHeader>
+          <a href="#" onClick={handleCloseClick}>
+            x
+          </a>
+        </ModalHeader>
+        {props.title && <div>{props.title}</div>}
+        <ModalBody>{props.children}</ModalBody>
+      </ModalWrapper>
+    </ModalOverlay>
+  ) : null;
+
+  if (props.show && isBrowser) {
+    return ReactDOM.createPortal(modalContent, document.getElementById('portal')!!);
+  } else {
+    return null;
+  }
+}
 
 const ModalOverlay = styled.div`
   position: absolute;
@@ -72,59 +128,3 @@ const ModalHeader = styled.div`
 const ModalBody = styled.div`
   padding-top: 10px;
 `;
-
-export default function Modal(props: ModalProps) {
-  const [isBrowser, setIsBrowser] = useState(false);
-
-  useEffect(() => {
-    document.body.style.overflowY = props.show ? 'hidden' : 'initial';
-
-    let timeoutId: any;
-
-    if (props.show) {
-      setIsBrowser(true);
-    } else {
-      timeoutId = setTimeout(() => {
-        setIsBrowser(false);
-      }, 5000);
-    }
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [props.show]);
-
-  useEffect(() => {
-    setIsBrowser(true);
-
-    return () => {
-      document.body.style.overflowY = 'initial';
-    };
-  }, []);
-
-  const handleCloseClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    props.onClose();
-  };
-
-  const modalContent = props.show ? (
-    <ModalOverlay>
-      <ModalWrapper show={props.show}>
-        <ModalHeader>
-          <a href="#" onClick={handleCloseClick}>
-            x
-          </a>
-        </ModalHeader>
-        {props.title && <div>{props.title}</div>}
-        <ModalBody>{props.children}</ModalBody>
-      </ModalWrapper>
-    </ModalOverlay>
-  ) : null;
-
-  if (props.show && isBrowser) {
-    return ReactDOM.createPortal(modalContent, document.getElementById('portal')!!);
-  } else {
-    return null;
-  }
-}

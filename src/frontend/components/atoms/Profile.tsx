@@ -2,8 +2,12 @@ import React from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 
-export interface ProfileProps {
+export interface IProfileProps {
   userImage: JSX.Element | typeof Image;
+}
+
+export default function Profile(props: IProfileProps) {
+  return <ProfileStyle>{props.userImage}</ProfileStyle>;
 }
 
 const ProfileStyle = styled.div`
@@ -15,7 +19,3 @@ const ProfileStyle = styled.div`
   align-items: center;
   justify-content: center;
 `;
-
-export default function Profile(props: ProfileProps) {
-  return <ProfileStyle>{props.userImage}</ProfileStyle>;
-}

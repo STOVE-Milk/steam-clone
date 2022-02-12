@@ -13,24 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { IState } from 'modules';
 import { getCategories, getGamesByCategory } from 'modules/game';
 import { gameInfo } from 'modules/game/types';
-export type GameMedia = {
-  main: string;
-  sub: Array<string>;
-};
 
-const GameInfoWrapper = styled.div`
-  width: fit-content;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  padding-top: 2rem;
-`;
-const TitleStyle = styled(Text)`
-  margin-bottom: 2rem;
-`;
-const ContentWrapper = styled.div`
-  margin-bottom: 2rem;
-`;
 const Category: NextPage<IState> = () => {
   const [curSelectedCategory, setCurSelectedCategory] = useState('ALL');
   const { categories, gamesByCategory } = useSelector((state: IState) => {
@@ -77,14 +60,18 @@ const Category: NextPage<IState> = () => {
   );
 };
 
-// export const getServerSideProps = wrapper.getServerSideProps((store) => async ({ params }) => {
-//   store.dispatch(getCategories.request({}));
-//   // const data = store.getState();
-//   // const gamesByCategoryData = store.getState().game;
-//   // const gamesByCategoryData = store.getState().game.gamesByCategory.data;
-//   // console.log('data client', data, 'category data ', gamesByCategoryData);
-//   // console.log(gamesByCategoryData);
-//   return { props: {} };
-// });
+const GameInfoWrapper = styled.div`
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding-top: 2rem;
+`;
+const TitleStyle = styled(Text)`
+  margin-bottom: 2rem;
+`;
+const ContentWrapper = styled.div`
+  margin-bottom: 2rem;
+`;
 
 export default Category;
