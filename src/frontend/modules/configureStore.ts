@@ -3,7 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer, { IState, rootSaga } from '.';
 import { Reducer } from 'typesafe-actions';
-import { MakeStore, createWrapper, Context } from 'next-redux-wrapper';
+import { createWrapper } from 'next-redux-wrapper';
 
 function configureStore() {
   const sagaMiddleware = createSagaMiddleware();

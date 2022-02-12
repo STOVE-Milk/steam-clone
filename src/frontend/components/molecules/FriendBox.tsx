@@ -1,11 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import Text, { TextStyle } from 'components/atoms/Text';
-import Dot from 'components/atoms/Dot';
-import { theme } from 'styles/theme';
-import Profile from 'components/atoms/Profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+
+import { theme } from 'styles/theme';
+import Text, { TextStyle } from 'components/atoms/Text';
+import Dot from 'components/atoms/Dot';
+import Profile from 'components/atoms/Profile';
 
 export interface IFriend {
   id: number;
