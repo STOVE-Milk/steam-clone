@@ -124,16 +124,152 @@
             "description": "디폴트 에러"
         }
     },
-
-    "store" : {
+    "store": {
         "developer" : "장성현",
         "developer_id": 3,
         "server_id": 1,
         "success_code": 31000,
-        "test":123
-
+        "GET_REVIEW_QUERY_ERR":{
+            "code":31901,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_REVIEW_SCAN_ERR":{
+            "code":31902,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_PUBLISHER_QUERY_ERR":{
+            "code":31903,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_PUBLISHER_SCAN_ERR":{
+            "code":31904,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_GAME_DETAIL_QUERY_ERR":{
+            "code":31905,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_GAME_DETAIL_SCAN_ERR":{
+            "code":31906,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_SORTING_GAME_LIST_QUERY_ERR":{
+            "code":31907,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_SORTING_GAME_LIST_SCAN_ERR":{
+            "code":31908,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_CATEGORY_LIST_QUERY_ERR":{
+            "code":31909,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_CATEGORY_LIST_SCAN_ERR":{
+            "code":31910,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_CATEGORY_LIST_BY_GAME_ID_QUERY_ERR":{
+            "code":31911,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_CATEGORY_LIST_BY_GAME_ID_SCAN_ERR":{
+            "code":31912,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_GAME_LIST_IN_WISHLIST_QUERY_ERR":{
+            "code":31913,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_GAME_LIST_IN_WISHLIST_SCAN_ERR":{
+            "code":31914,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_GAME_LIST_IN_CART_QUERY_ERR":{
+            "code":31915,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_GAME_LIST_IN_CART_SCAN_ERR":{
+            "code":31916,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_PURCHASE_GAME_LIST_QUERY_ERR":{
+            "code":31917,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_PURCHASE_GAME_LIST_SCAN_ERR":{
+            "code":31918,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "POST_REIVEW_QUERY_ERR":{
+            "code":31919,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "PATCH_REVIEW_QUERY_ERR":{
+            "code":31920,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "DELETE_REVIEW_QUERY_ERR":{
+            "code":31921,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_WISHLIST_QUERY_ERR":{
+            "code":31922,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_WISHLIST_SCAN_ERR":{
+            "code":31923,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "POST_WISHLIST_QUERY_ERR":{
+            "code":31924,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "PATCH_WISHLIST_ERR":{
+            "code":31925,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "DELETE_WISHLIST_QUERY_ERR":{
+            "code":31926,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "NULL_TOKEN_ERR":{
+            "code":31801,
+            "message":"토큰값이 전달되지 않았습니다.",
+            "description":"메타데이터 파싱 에러."
+        },
+        "EMPTY_METADATA_ERR":{
+            "code":31802,
+            "message":"토큰의 메타데이터 중 빈 데이터가 존재합니다.",
+            "description":"메타데이터 파싱 에러."
+        }
     },
-
     "membership": {
         "developer" : "한태현",
         "developer_id": 7,
