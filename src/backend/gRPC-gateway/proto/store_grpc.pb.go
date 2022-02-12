@@ -30,11 +30,14 @@ type StoreClient interface {
 	GetGameListInCart(ctx context.Context, in *GameIdListQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
 	GetUserData(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDataResponse, error)
 	GetGameListInWishlist(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
+	GetSearchingGameList(ctx context.Context, in *SearchingContentQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
 	PostWishlist(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
 	DeleteWishlist(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
 	PostReview(ctx context.Context, in *ReviewQueryRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
 	PatchReview(ctx context.Context, in *ReviewQueryRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
 	DeleteReview(ctx context.Context, in *ReviewQueryRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
+	GameInstall(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
+	GameUninstall(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
 }
 
 type storeClient struct {
@@ -108,6 +111,15 @@ func (c *storeClient) GetGameListInWishlist(ctx context.Context, in *emptypb.Emp
 	return out, nil
 }
 
+func (c *storeClient) GetSearchingGameList(ctx context.Context, in *SearchingContentQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error) {
+	out := new(GameSimpleListResponse)
+	err := c.cc.Invoke(ctx, "/storepb.Store/GetSearchingGameList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storeClient) PostWishlist(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error) {
 	out := new(IsSuccessResponse)
 	err := c.cc.Invoke(ctx, "/storepb.Store/PostWishlist", in, out, opts...)
@@ -153,6 +165,24 @@ func (c *storeClient) DeleteReview(ctx context.Context, in *ReviewQueryRequest, 
 	return out, nil
 }
 
+func (c *storeClient) GameInstall(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error) {
+	out := new(IsSuccessResponse)
+	err := c.cc.Invoke(ctx, "/storepb.Store/GameInstall", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storeClient) GameUninstall(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error) {
+	out := new(IsSuccessResponse)
+	err := c.cc.Invoke(ctx, "/storepb.Store/GameUninstall", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StoreServer is the server API for Store service.
 // All implementations must embed UnimplementedStoreServer
 // for forward compatibility
@@ -164,11 +194,14 @@ type StoreServer interface {
 	GetGameListInCart(context.Context, *GameIdListQueryParamRequest) (*GameSimpleListResponse, error)
 	GetUserData(context.Context, *emptypb.Empty) (*UserDataResponse, error)
 	GetGameListInWishlist(context.Context, *emptypb.Empty) (*GameSimpleListResponse, error)
+	GetSearchingGameList(context.Context, *SearchingContentQueryParamRequest) (*GameSimpleListResponse, error)
 	PostWishlist(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error)
 	DeleteWishlist(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error)
 	PostReview(context.Context, *ReviewQueryRequest) (*IsSuccessResponse, error)
 	PatchReview(context.Context, *ReviewQueryRequest) (*IsSuccessResponse, error)
 	DeleteReview(context.Context, *ReviewQueryRequest) (*IsSuccessResponse, error)
+	GameInstall(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error)
+	GameUninstall(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error)
 	mustEmbedUnimplementedStoreServer()
 }
 
@@ -197,6 +230,9 @@ func (UnimplementedStoreServer) GetUserData(context.Context, *emptypb.Empty) (*U
 func (UnimplementedStoreServer) GetGameListInWishlist(context.Context, *emptypb.Empty) (*GameSimpleListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGameListInWishlist not implemented")
 }
+func (UnimplementedStoreServer) GetSearchingGameList(context.Context, *SearchingContentQueryParamRequest) (*GameSimpleListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSearchingGameList not implemented")
+}
 func (UnimplementedStoreServer) PostWishlist(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PostWishlist not implemented")
 }
@@ -211,6 +247,12 @@ func (UnimplementedStoreServer) PatchReview(context.Context, *ReviewQueryRequest
 }
 func (UnimplementedStoreServer) DeleteReview(context.Context, *ReviewQueryRequest) (*IsSuccessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteReview not implemented")
+}
+func (UnimplementedStoreServer) GameInstall(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GameInstall not implemented")
+}
+func (UnimplementedStoreServer) GameUninstall(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GameUninstall not implemented")
 }
 func (UnimplementedStoreServer) mustEmbedUnimplementedStoreServer() {}
 
@@ -351,6 +393,24 @@ func _Store_GetGameListInWishlist_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Store_GetSearchingGameList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchingContentQueryParamRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoreServer).GetSearchingGameList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/storepb.Store/GetSearchingGameList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoreServer).GetSearchingGameList(ctx, req.(*SearchingContentQueryParamRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Store_PostWishlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GameIdQueryParamRequest)
 	if err := dec(in); err != nil {
@@ -441,6 +501,42 @@ func _Store_DeleteReview_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Store_GameInstall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GameIdQueryParamRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoreServer).GameInstall(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/storepb.Store/GameInstall",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoreServer).GameInstall(ctx, req.(*GameIdQueryParamRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Store_GameUninstall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GameIdQueryParamRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoreServer).GameUninstall(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/storepb.Store/GameUninstall",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoreServer).GameUninstall(ctx, req.(*GameIdQueryParamRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Store_ServiceDesc is the grpc.ServiceDesc for Store service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -477,6 +573,10 @@ var Store_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Store_GetGameListInWishlist_Handler,
 		},
 		{
+			MethodName: "GetSearchingGameList",
+			Handler:    _Store_GetSearchingGameList_Handler,
+		},
+		{
 			MethodName: "PostWishlist",
 			Handler:    _Store_PostWishlist_Handler,
 		},
@@ -495,6 +595,14 @@ var Store_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteReview",
 			Handler:    _Store_DeleteReview_Handler,
+		},
+		{
+			MethodName: "GameInstall",
+			Handler:    _Store_GameInstall_Handler,
+		},
+		{
+			MethodName: "GameUninstall",
+			Handler:    _Store_GameUninstall_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
