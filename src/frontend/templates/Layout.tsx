@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import NavBar from 'components/organisms/Navbar';
+import NavBar from 'components/organisms/NavBar';
 import Header from 'components/organisms/Header';
 
 interface LayoutProps {
@@ -17,11 +17,14 @@ const ContentSectionWrapper = styled.div`
   width: 100%;
 `;
 const ContentSection = styled.div`
-  margin-top: 80px;
   width: 100%;
   height: calc(100vh - 80px);
   background: ${(props) => props.theme.colors.primaryBg};
   overflow-y: scroll;
+  ${(props) => props.theme.breakpoints.small} {
+    width: calc(100vw - 117px);
+  }
+  float: right;
 `;
 
 export default function Layout({ children }: LayoutProps) {

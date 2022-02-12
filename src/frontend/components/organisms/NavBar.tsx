@@ -3,14 +3,15 @@ import styled from 'styled-components';
 import Image from 'next/image';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGamepad, faUser, faBars, faComments, faHeart, faBook } from '@fortawesome/free-solid-svg-icons';
-import Logo from 'public/steam_logo.png';
+import { faGamepad, faBars, faComments, faHeart, faBook, faCog } from '@fortawesome/free-solid-svg-icons';
+import LogoImage from 'public/steam_logo.png';
 
 import MenuBox from 'components/molecules/MenuBox';
-import Profile from 'components/atoms/Profile';
 import FriendBox from 'components/molecules/FriendBox';
+import { IFriend } from 'components/molecules/FriendBox';
 
 import { theme } from 'styles/theme';
+import Link from 'next/link';
 
 interface INavBarStyledProps {
   open: boolean;
@@ -22,10 +23,14 @@ const NavBarWrapper = styled.div`
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   flex-direction: column;
-  position: fixed;
+  overflow-x: scroll;
   z-index: 999;
   padding: 10px;
   overflow-y: hidden;
+  border-right: 1px solid white;
+  ${(props) => props.theme.breakpoints.small} {
+    position: fixed;
+  }
 `;
 
 const LogoSection = styled.section`
@@ -33,12 +38,12 @@ const LogoSection = styled.section`
   background: ${(props) => props.theme.colors.primaryBg};
   display: flex;
   cursor: pointer;
+  padding: 1rem 1rem 1rem 1rem;
 `;
 
 const LogoBox = styled.div<INavBarStyledProps>`
   display: flex;
   flex-direction: row;
-  padding: 10px 10px 10px 20px;
   display: ${(props) => (props.open ? '' : 'none')};
 `;
 
@@ -46,18 +51,18 @@ const LogoTitle = styled.div`
   color: ${(props) => props.theme.colors.primaryText};
   font-weight: 700;
   font-size: 1.75rem;
-  margin: 0.3rem 0 0 10px;
+  margin-left: 1rem;
 `;
 
 const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
-  margin: auto 0;
-  margin-left: ${(props) => (props.open ? '1.5rem' : '1.7rem')};
-  margin-right: ${(props) => (props.open ? '1.5rem' : '1.5rem')};
+  margin-left: ${(props) => (props.open ? '1.5rem' : '1rem')};
+  margin-right: ${(props) => (props.open ? '2.5rem' : '1.7rem')};
 `;
 
 const SectionTitle = styled.div`
   color: ${(props) => props.theme.colors.secondaryText};
   padding: 30px 20px 0px 20px;
+  display: flex;
 `;
 
 const MenuSection = styled.div`
@@ -79,8 +84,16 @@ const FriendSection = styled.div`
   }
 `;
 
+const FriendSettingBtn = styled.div`
+  margin-left: auto;
+  cursor: pointer;
+`;
+
 export default function NavBar() {
   const [open, setOpen] = useState(true);
+
+  // TODO: 실제 친구 목록 가져오기
+  const [friends, setFriends] = useState([] as IFriend[]);
 
   useEffect(() => {
     const media = window.matchMedia(theme.breakpoints.medium.slice(7));
@@ -99,7 +112,7 @@ export default function NavBar() {
     <NavBarWrapper>
       <LogoSection>
         <LogoBox open={open}>
-          <Image src={Logo} layout={'fixed'} width={30} height={30}></Image>
+          <Image src={LogoImage} layout={'fixed'} width={30} height={30}></Image>
           <LogoTitle>STEAM</LogoTitle>
         </LogoBox>
         <OpenBar open={open} icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
@@ -114,12 +127,26 @@ export default function NavBar() {
           name={'Category'}
         />
         <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} size="2x" inverse />} name={'Chat'} />
-        <MenuBox open={open} page="wish" icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />} name={'Wish'} />
+        <MenuBox
+          open={open}
+          page="wishlist"
+          icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />}
+          name={'Wish'}
+        />
       </MenuSection>
       <SectionDivider />
-      <SectionTitle>Friends</SectionTitle>
+      <SectionTitle>
+        Friends
+        <Link href={'/friend'}>
+          <FriendSettingBtn>
+            <FontAwesomeIcon icon={faCog} inverse></FontAwesomeIcon>
+          </FriendSettingBtn>
+        </Link>
+      </SectionTitle>
       <FriendSection>
-        <FriendBox open={open} icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />} name={'user'} />
+        {friends.map((friend) => {
+          <FriendBox open={open} friendInfo={friend} />;
+        })}
       </FriendSection>
     </NavBarWrapper>
   );

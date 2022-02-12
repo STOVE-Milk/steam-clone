@@ -2,100 +2,182 @@ import { createReducer } from 'typesafe-actions';
 
 import { asyncState } from 'modules/utils/reducerUtils';
 import { gameState } from './types';
-import { GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL, GET_GAME_SUCCESS, GET_GAME_FAIL } from './actions';
+import {
+  GET_CATEGORIES,
+  GET_CATEGORIES_SUCCESS,
+  GET_CATEGORIES_FAIL,
+  GET_GAME,
+  GET_GAME_SUCCESS,
+  GET_GAME_FAIL,
+  GET_GAMESBYCATEGORY,
+  GET_GAMESBYCATEGORY_SUCCESS,
+  GET_GAMESBYCATEGORY_FAIL,
+  ADD_CARTINFO,
+  ADD_CARTINFO_SUCCESS,
+  ADD_CARTINFO_FAIL,
+  RM_CARTINFO,
+  RM_CARTINFO_SUCCESS,
+  RM_CARTINFO_FAIL,
+  GET_GAMEINFOBYIDLIST,
+  GET_GAMEINFOBYIDLIST_SUCCESS,
+  GET_GAMEINFOBYIDLIST_FAIL,
+  GET_WISHLIST,
+  GET_WISHLIST_SUCCESS,
+  GET_WISHLIST_FAIL,
+  DO_WISH,
+  DO_WISH_SUCCESS,
+  DO_WISH_FAIL,
+  GET_USERDATA,
+  GET_USERDATA_SUCCESS,
+  GET_USERDATA_FAIL,
+  DO_UNWISH,
+  DO_UNWISH_SUCCESS,
+  DO_UNWISH_FAIL,
+} from './actions';
+import {
+  initalCategory,
+  initalGamesByCategory,
+  initalGame,
+  initalCartInfo,
+  initalGamesByIdList,
+  initialWish,
+  initialUserData,
+  initialWishList,
+  initialUnWish,
+} from './initalData';
 
 const initialState: gameState = {
-  categories: asyncState.initial([
-    'Sandbox',
-    'Real-time strategy (RTS)',
-    'Shooters (FPS and TPS)',
-    'Multiplayer online battle arena (MOBA)',
-    'Role-playing (RPG, ARPG, and More)',
-    'Simulation and sports.',
-    'Puzzlers and party games.',
-    'Action-adventure.',
-  ]),
-  games: asyncState.initial([
-    {
-      id: 1,
-      name: 'Vampire Survivors',
-      os: ['windows', 'apple'],
-      description:
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.za',
-      price: {
-        KR: 10000,
-      },
-      sale: 10,
-      image: {
-        main: 'www',
-        sub: ['www1', 'www2'],
-      },
-      video: {
-        main: 'www',
-        sub: ['www1', 'www2'],
-      },
-      category_list: ['Sandbox', 'RTS', 'FPS', 'MOBA'],
-    },
-    {
-      id: 2,
-      name: 'Vampire Survivors2',
-      os: ['windows'],
-      description:
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.za',
-      price: {
-        KR: 20000,
-      },
-      sale: 0,
-      image: {
-        main: 'www',
-        sub: ['www1', 'www2'],
-      },
-      video: {
-        main: 'www',
-        sub: ['www1', 'www2'],
-      },
-      category_list: ['Sandbox', 'RTS', 'FPS'],
-    },
-  ]),
-  game: asyncState.initial({
-    id: 1,
-    name: 'Vampire Survivors',
-    os: ['windows', 'apple'],
-    description:
-      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.za',
-    price: {
-      KR: 10000,
-    },
-    sale: 10,
-    image: {
-      main: 'www',
-      sub: ['www1', 'www2'],
-    },
-    video: {
-      main: 'www',
-      sub: ['www1', 'www2'],
-    },
-    category_list: ['Sandbox', 'RTS', 'FPS', 'MOBA'],
-  }),
+  categories: asyncState.initial(initalCategory),
+  gamesByCategory: asyncState.initial(initalGamesByCategory),
+  game: asyncState.initial(initalGame),
+  cartInfo: asyncState.initial(initalCartInfo),
+  gamesByIdList: asyncState.initial(initalGamesByIdList),
+  wish: asyncState.initial(initialWish),
+  unWish: asyncState.initial(initialUnWish),
+  wishList: asyncState.initial(initialWishList), //임시로 inital data 넣어놓음
+  userData: asyncState.initial(initialUserData),
 };
 
 const reducer = createReducer<gameState>(initialState, {
+  [GET_CATEGORIES]: (state, action) => ({
+    ...state,
+    categories: asyncState.load(initalCategory),
+  }),
   [GET_CATEGORIES_SUCCESS]: (state, action) => ({
     ...state,
-    categories: action.payload,
+    categories: asyncState.success(action.payload.data.category_list),
   }),
   [GET_CATEGORIES_FAIL]: (state, action) => ({
     ...state,
-    categoryError: action.payload,
+    categories: asyncState.error(initalCategory, action.payload),
   }),
-
+  [GET_GAME]: (state, action) => ({
+    ...state,
+    game: asyncState.load(initalGame),
+  }),
   [GET_GAME_SUCCESS]: (state, action) => ({
     ...state,
-    game: action.payload,
+    game: asyncState.success(action.payload.data.game),
   }),
   [GET_GAME_FAIL]: (state, action) => ({
     ...state,
-    game: action.payload,
+    game: asyncState.error(initalGame, action.payload),
+  }),
+  [GET_GAMESBYCATEGORY]: (state, action) => ({
+    ...state,
+    gamesByCategory: asyncState.load(initalGamesByCategory),
+  }),
+  [GET_GAMESBYCATEGORY_SUCCESS]: (state, action) => ({
+    ...state,
+    gamesByCategory: asyncState.success(action.payload.data.game_list),
+  }),
+  [GET_GAMESBYCATEGORY_FAIL]: (state, action) => ({
+    ...state,
+    gamesByCategory: asyncState.error(initalGamesByCategory, action.payload),
+  }),
+  [GET_WISHLIST]: (state, action) => ({
+    ...state,
+    wishList: asyncState.load(initialWishList),
+  }),
+  [GET_WISHLIST_SUCCESS]: (state, action) => ({
+    ...state,
+    wishList: asyncState.success(action.payload.data.game_list),
+  }),
+  [GET_WISHLIST_FAIL]: (state, action) => ({
+    ...state,
+    wishList: asyncState.error(initialWishList, action.payload),
+  }),
+  [DO_WISH]: (state, action) => ({
+    ...state,
+    wish: asyncState.load(initialWish),
+  }),
+  [DO_WISH_SUCCESS]: (state, action) => ({
+    ...state,
+    wish: asyncState.success(action.payload.data.success),
+  }),
+  [DO_WISH_FAIL]: (state, action) => ({
+    ...state,
+    wish: asyncState.error(initialWish, action.payload),
+  }),
+  [DO_UNWISH]: (state, action) => ({
+    ...state,
+    unWish: asyncState.load(initialUnWish),
+  }),
+  [DO_UNWISH_SUCCESS]: (state, action) => ({
+    ...state,
+    unWish: asyncState.success(action.payload.data.success),
+  }),
+  [DO_UNWISH_FAIL]: (state, action) => ({
+    ...state,
+    unWish: asyncState.error(initialUnWish, action.payload),
+  }),
+  [GET_USERDATA]: (state, action) => ({
+    ...state,
+    userData: asyncState.load(initialUserData),
+  }),
+  [GET_USERDATA_SUCCESS]: (state, action) => ({
+    ...state,
+    userData: asyncState.success(action.payload.data),
+  }),
+  [GET_USERDATA_FAIL]: (state, action) => ({
+    ...state,
+    userData: asyncState.error(initialUserData, action.payload),
+  }),
+  [ADD_CARTINFO]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.load(initalCartInfo),
+  }),
+  [ADD_CARTINFO_SUCCESS]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.success(action.payload.data),
+  }),
+  [ADD_CARTINFO_FAIL]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.error(initalCartInfo, action.payload.data),
+  }),
+  [RM_CARTINFO]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.load(initalCartInfo),
+  }),
+  [RM_CARTINFO_SUCCESS]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.success(action.payload.data),
+  }),
+  [RM_CARTINFO_FAIL]: (state, action) => ({
+    ...state,
+    cartInfo: asyncState.error(initalCartInfo, action.payload.data),
+  }),
+  [GET_GAMEINFOBYIDLIST]: (state, action) => ({
+    ...state,
+    gamesByIdList: asyncState.load(initalGamesByIdList),
+  }),
+  [GET_GAMEINFOBYIDLIST_SUCCESS]: (state, action) => ({
+    ...state,
+    gamesByIdList: asyncState.success(action.payload.data.game_list),
+  }),
+  [GET_GAMEINFOBYIDLIST_FAIL]: (state, action) => ({
+    ...state,
+    gamesByIdList: asyncState.error(initalGamesByIdList, action.payload.data.game_list),
   }),
 });
 

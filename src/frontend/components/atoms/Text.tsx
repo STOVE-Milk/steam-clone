@@ -12,7 +12,13 @@ interface TextThemeType {
   [index: string]: SizeType;
 }
 
-const TextTheme: TextThemeType = {
+export const TextTheme: TextThemeType = {
+  title: {
+    size: '3rem',
+    weight: 'bold',
+    color: theme.colors.primaryText,
+  },
+
   large: {
     size: '1.5rem',
     weight: 'bold',
@@ -47,6 +53,8 @@ const TextTheme: TextThemeType = {
 export interface TextProps {
   types: string;
   children: React.ReactNode;
+  onClick?: (e: any) => void;
+  className?: string;
 }
 
 export const TextStyle = styled.div<TextProps>`

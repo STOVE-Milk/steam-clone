@@ -4,12 +4,19 @@ import Text from 'components/atoms/Text';
 
 interface IGameCategory {
   list: Array<string>;
+  curSelectedCategory: string;
+  setCurSelectedCategory?: (e: any) => void;
 }
 const CategoryWrapper = styled.section`
   display: flex;
   width: 60rem;
   margin: 0.5rem;
   flex-wrap: wrap;
+  min-height: 5rem;
+  .checked {
+    background: ${(props) => props.theme.colors['activeBg']};
+    border: 1px solid ${(props) => props.theme.colors.activeBg};
+  }
   ${(props) => props.theme.breakpoints.medium} {
     width: 40rem;
   }
@@ -17,6 +24,7 @@ const CategoryWrapper = styled.section`
     width: 20rem;
   }
 `;
+
 const CategoryBox = styled(Text)`
   border: 1px solid ${(props) => props.theme.colors.divider};
   background-color: ${(props) => props.theme.colors.secondaryBg};
@@ -35,11 +43,20 @@ const CategoryBox = styled(Text)`
   }
 `;
 
-export default function CategoryList({ list }: IGameCategory) {
+export default function CategoryList({ list, curSelectedCategory, setCurSelectedCategory }: IGameCategory) {
   return (
     <CategoryWrapper>
       {list.map((eachCategory) => {
-        return <CategoryBox>{eachCategory}</CategoryBox>;
+        return (
+          <CategoryBox
+            className={eachCategory === curSelectedCategory ? 'checked' : ''}
+            onClick={() => {
+              setCurSelectedCategory && setCurSelectedCategory(eachCategory);
+            }}
+          >
+            {eachCategory}
+          </CategoryBox>
+        );
       })}
     </CategoryWrapper>
   );
