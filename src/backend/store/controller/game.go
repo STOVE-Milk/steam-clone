@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/STOVE-Milk/steam-clone/store/models"
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -20,7 +21,7 @@ func NewGameCtr(db *sql.DB) *GameController {
 	}
 }
 
-func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.CategoryListResponse_CategoryList, error) {
+func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.CategoryListResponse_CategoryList, *models.Error) {
 	parentCategoryList, err := gc.r.GetAllCategoryList(ctx)
 	if err != nil {
 		return nil, err
@@ -36,7 +37,7 @@ func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.Catego
 	return &pbCategoryList, nil
 }
 
-func (gc *GameController) GetUserData(ctx context.Context) (*pb.UserDataResponse_UserData, error) {
+func (gc *GameController) GetUserData(ctx context.Context) (*pb.UserDataResponse_UserData, *models.Error) {
 	wishlist, err := gc.r.GetWishlist(ctx)
 	if err != nil {
 		return nil, err
@@ -51,7 +52,7 @@ func (gc *GameController) GetUserData(ctx context.Context) (*pb.UserDataResponse
 	return &pbUserData, nil
 }
 
-func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetailResponse_Game, error) {
+func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetailResponse_Game, *models.Error) {
 	gameDetail, err := gc.r.GetGameDetail(ctx)
 	if err != nil {
 		return nil, err
@@ -105,7 +106,7 @@ func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetailResp
 		},
 	}, nil
 }
-func (gc *GameController) GetGameListInCart(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+func (gc *GameController) GetGameListInCart(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
 	gameSimpleList, err := gc.r.GetGameListInCart(ctx)
 	if err != nil {
 		return nil, err
@@ -151,7 +152,7 @@ func (gc *GameController) GetGameListInCart(ctx context.Context) (*pb.GameSimple
 	}
 	return &pbGameSimpleList, nil
 }
-func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
 	gameSimpleList, err := gc.r.GetSortingGameList(ctx)
 	if err != nil {
 		return nil, err
@@ -199,7 +200,7 @@ func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpl
 	return &pbGameSimpleList, nil
 }
 
-func (gc *GameController) GetReviewList(ctx context.Context) (*pb.ReviewListResponse_ReviewList, error) {
+func (gc *GameController) GetReviewList(ctx context.Context) (*pb.ReviewListResponse_ReviewList, *models.Error) {
 	reviewList, err := gc.r.GetReviewList(ctx)
 	if err != nil {
 		return nil, err
@@ -221,7 +222,7 @@ func (gc *GameController) GetReviewList(ctx context.Context) (*pb.ReviewListResp
 	return &pbReviewList, nil
 }
 
-func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
+func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
 	gameSimpleList, err := gc.r.GetGameListInWishlist(ctx)
 	if err != nil {
 		return nil, err
@@ -268,7 +269,7 @@ func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSi
 	return &pbGameSimpleList, nil
 }
 
-func (gc *GameController) PostWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+func (gc *GameController) PostWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
 	isSuccess, err := gc.r.PostWishlist(ctx)
 	if err != nil {
 		return nil, err
@@ -278,7 +279,7 @@ func (gc *GameController) PostWishlist(ctx context.Context) (*pb.IsSuccessRespon
 	}, nil
 }
 
-func (gc *GameController) DeleteWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+func (gc *GameController) DeleteWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
 	isSuccess, err := gc.r.DeleteWishlist(ctx)
 	if err != nil {
 		return nil, err
@@ -288,7 +289,7 @@ func (gc *GameController) DeleteWishlist(ctx context.Context) (*pb.IsSuccessResp
 	}, nil
 }
 
-func (gc *GameController) PostReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+func (gc *GameController) PostReview(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
 	isSuccess, err := gc.r.PostReview(ctx)
 	if err != nil {
 		return nil, err
@@ -298,7 +299,7 @@ func (gc *GameController) PostReview(ctx context.Context) (*pb.IsSuccessResponse
 	}, nil
 }
 
-func (gc *GameController) PatchReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+func (gc *GameController) PatchReview(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
 	isSuccess, err := gc.r.PatchReview(ctx)
 	if err != nil {
 		return nil, err
@@ -308,7 +309,7 @@ func (gc *GameController) PatchReview(ctx context.Context) (*pb.IsSuccessRespons
 	}, nil
 }
 
-func (gc *GameController) DeleteReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
+func (gc *GameController) DeleteReview(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
 	isSuccess, err := gc.r.DeleteReview(ctx)
 	if err != nil {
 		return nil, err

@@ -9,16 +9,15 @@ import (
 	"github.com/STOVE-Milk/steam-clone/store/models"
 )
 
-func readErrorJson() *os.File {
+func ReadErrorJson() *os.File {
 	jsonFile, err := os.Open("../../common/ErrorCode.json")
 	if err != nil {
 		log.Panic(err)
 	}
 	return jsonFile
 }
-
-func InitError() models.StoreError {
-	jsonFile := readErrorJson()
+func InitError() *models.StoreError {
+	jsonFile := ReadErrorJson()
 	defer jsonFile.Close()
 	var e models.StoreError
 	byteValue, err := ioutil.ReadAll(jsonFile)
@@ -27,5 +26,5 @@ func InitError() models.StoreError {
 	}
 	json.Unmarshal(byteValue, &e)
 
-	return e
+	return &e
 }

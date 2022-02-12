@@ -7,8 +7,10 @@ import (
 
 	"github.com/STOVE-Milk/steam-clone/store/config"
 	"github.com/STOVE-Milk/steam-clone/store/controller"
-	"github.com/STOVE-Milk/steam-clone/store/models"
+	"github.com/STOVE-Milk/steam-clone/store/errors"
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
+	"github.com/STOVE-Milk/steam-clone/store/token"
+	"github.com/STOVE-Milk/steam-clone/store/utils"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 )
@@ -27,6 +29,8 @@ func Server() *storeServer {
 func (store *storeServer) Run() error {
 	db := config.InitDB()
 	defer db.Close()
+
+	errors.Errors = config.InitError().StoreError
 
 	lis, err := net.Listen("tcp", ":"+portNumber)
 	if err != nil {
@@ -51,8 +55,8 @@ func (store *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (
 	res, err := store.gameCtr.GetParentCategoryList(ctx)
 	if err != nil {
 		return &pb.CategoryListResponse{
-			Code:    31010,
-			Message: "부모 카테고리 불러오기 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.CategoryListResponse{
@@ -64,6 +68,7 @@ func (store *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (
 }
 
 func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.SortingParamRequest) (*pb.GameSimpleListResponse, error) {
+	defer utils.Recover()
 	ctx = context.WithValue(ctx, "category", req.Category)
 	ctx = context.WithValue(ctx, "page", req.Page)
 	ctx = context.WithValue(ctx, "size", req.Size)
@@ -71,8 +76,8 @@ func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.Sortin
 	res, err := store.gameCtr.GetSortingGameList(ctx)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
-			Code:    31002,
-			Message: "정렬된 게임 리스트 불러오기 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.GameSimpleListResponse{
@@ -83,12 +88,13 @@ func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.Sortin
 }
 
 func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.GameDetailResponse, error) {
+	defer utils.Recover()
 	ctx = context.WithValue(ctx, "gameId", req.GameId)
 	res, err := store.gameCtr.GetGameDetail(ctx)
 	if err != nil {
 		return &pb.GameDetailResponse{
-			Code:    31001,
-			Message: "게임 디테일 불러오기 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.GameDetailResponse{
@@ -99,12 +105,13 @@ func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamR
 }
 
 func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.ReviewListResponse, error) {
+	defer utils.Recover()
 	ctx = context.WithValue(ctx, "gameId", req.GameId)
 	res, err := store.gameCtr.GetReviewList(ctx)
 	if err != nil {
 		return &pb.ReviewListResponse{
-			Code:    31020,
-			Message: "리뷰 리스트 불러오기 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.ReviewListResponse{
@@ -115,17 +122,21 @@ func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQuery
 }
 
 func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.UserDataResponse, error) {
-	userMetaData, err := models.ExtractMetadata(ctx)
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.UserDataResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
 	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	res, err := store.gameCtr.GetUserData(ctx)
 	if err != nil {
 		return &pb.UserDataResponse{
-			Code:    31030,
-			Message: "유저 데이터 불러오기 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.UserDataResponse{
@@ -136,17 +147,21 @@ func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.
 }
 
 func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Empty) (*pb.GameSimpleListResponse, error) {
-	userMetaData, err := models.ExtractMetadata(ctx)
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.GameSimpleListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
 	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
 	res, err := store.gameCtr.GetGameListInWishlist(ctx)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
-			Code:    31003,
-			Message: "찜된 게임 목록 불러오기 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.GameSimpleListResponse{
@@ -157,12 +172,13 @@ func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Em
 }
 
 func (store *storeServer) GetGameListInCart(ctx context.Context, req *pb.GameIdListQueryParamRequest) (*pb.GameSimpleListResponse, error) {
+	defer utils.Recover()
 	ctx = context.WithValue(ctx, "gameIdList", req.GameIdList)
 	res, err := store.gameCtr.GetGameListInCart(ctx)
 	if err != nil {
 		return &pb.GameSimpleListResponse{
-			Code:    31004,
-			Message: "장바구니 게임 목록 불러오기 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.GameSimpleListResponse{
@@ -173,9 +189,13 @@ func (store *storeServer) GetGameListInCart(ctx context.Context, req *pb.GameIdL
 }
 
 func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := models.ExtractMetadata(ctx)
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
 	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
@@ -183,8 +203,8 @@ func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryP
 	res, err := store.gameCtr.PostWishlist(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31031,
-			Message: "찜 요청에 대한 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.IsSuccessResponse{
@@ -195,9 +215,13 @@ func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryP
 }
 
 func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := models.ExtractMetadata(ctx)
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
 	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
@@ -205,8 +229,8 @@ func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQuer
 	res, err := store.gameCtr.DeleteWishlist(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31001,
-			Message: "찜 취소에 대한 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.IsSuccessResponse{
@@ -217,9 +241,13 @@ func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQuer
 }
 
 func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := models.ExtractMetadata(ctx)
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
 	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
@@ -229,8 +257,8 @@ func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryReq
 	res, err := store.gameCtr.PostReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31021,
-			Message: "리뷰 포스팅에 대한 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.IsSuccessResponse{
@@ -241,9 +269,13 @@ func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryReq
 }
 
 func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := models.ExtractMetadata(ctx)
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
 	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
@@ -254,8 +286,8 @@ func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRe
 	res, err := store.gameCtr.PatchReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31022,
-			Message: "리뷰 수정에 대한 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.IsSuccessResponse{
@@ -265,9 +297,13 @@ func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRe
 	}, nil
 }
 func (store *storeServer) DeleteReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
-	userMetaData, err := models.ExtractMetadata(ctx)
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
 	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
 	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
@@ -275,8 +311,8 @@ func (store *storeServer) DeleteReview(ctx context.Context, req *pb.ReviewQueryR
 	res, err := store.gameCtr.DeleteReview(ctx)
 	if err != nil {
 		return &pb.IsSuccessResponse{
-			Code:    31023,
-			Message: "리뷰 삭제에 대한 에러 " + err.Error(),
+			Code:    int32(err.Code),
+			Message: err.Message,
 		}, nil
 	}
 	return &pb.IsSuccessResponse{

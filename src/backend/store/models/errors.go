@@ -7,5 +7,5 @@ type Error struct {
 }
 
 type StoreError struct {
-	StoreError map[string]Error `json:"store"`
+	StoreError map[string]*Error `json:"store"`
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 type dbConfig struct {
@@ -22,6 +23,10 @@ func (cfg dbConfig) String() string {
 }
 
 func makeDbConfig() string {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Panic(err)
+	}
 	cfg := &dbConfig{
 		dbHost: os.Getenv("DBHOST"),
 		dbName: os.Getenv("DBNAME"),
