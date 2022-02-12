@@ -1,4 +1,4 @@
-package model
+package models
 
 import (
 	"database/sql/driver"
@@ -6,18 +6,7 @@ import (
 	"errors"
 	"strings"
 	"time"
-
-	pb "github.com/STOVE-Milk/steam-clone/store/proto"
 )
-
-type GameRepository interface {
-	GetCategoryList() []string
-	GetGameListByCategory(category string) []*pb.GameSimple
-	GetGameDetail(gameId int) *pb.GameDetail
-	// GetReviewList()
-	// GetGameListInWishlist()
-	// GetDiscountingGameList()
-}
 
 type StringSlice []byte
 
@@ -62,19 +51,20 @@ func (m *StringJsonMap) Scan(src interface{}) error {
 	return nil
 }
 
-type rawTime []byte
+type RawTime []byte
 
-func (t rawTime) Time() (time.Time, error) {
-	return time.Parse("15:04:05", string(t))
+func (t RawTime) Time() (time.Time, error) {
+	return time.Parse(time.RFC3339, string(t))
 }
 
 type Review struct {
-	Id             int     `json:"idx"`
-	UserId         int     `json:"user_id"`
-	DisplayedName  string  `json:"displayed_name"`
-	Content        string  `json:"content"`
-	Recommendation int     `json:"recommendation"`
-	CreatedAt      rawTime `json:"created_at"`
+	Id             int       `json:"idx"`
+	UserId         int       `json:"user_id"`
+	DisplayedName  string    `json:"displayed_name"`
+	Content        string    `json:"content"`
+	Recommendation int       `json:"recommendation"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 type GameDetail struct {
@@ -90,7 +80,7 @@ type GameSimple struct {
 	Id                 int           `json:"game_id"`
 	Name               string        `json:"name"`
 	DescriptionSnippet string        `json:"description_snippet"`
-	Price              int           `json:"price"`
+	Price              StringJsonMap `json:"price"`
 	Sale               int           `json:"sale"`
 	Image              StringJsonMap `json:"image"`
 	Video              StringJsonMap `json:"video"`

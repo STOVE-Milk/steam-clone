@@ -5,6 +5,7 @@ package storepb;
 option go_package = "github.com/STOVE-Milk/steam-clone/store/proto;storepb";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
 service Store {
@@ -28,6 +29,11 @@ service Store {
             get: "/store/games/{game_id}/reviews"
         };
     }
+    rpc GetGameListInCart(GameIdListQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/cart/{game_id_list}"
+        };
+    }
     rpc GetUserData(google.protobuf.Empty) returns (UserDataResponse){
         option (google.api.http) = {
             get: "/store/userdata"
@@ -36,6 +42,11 @@ service Store {
     rpc GetGameListInWishlist(google.protobuf.Empty) returns (GameSimpleListResponse){
         option (google.api.http) = {
             get: "/store/wishes"
+        };
+    }
+    rpc GetSearchingGameList(SearchingContentQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/games/search"
         };
     }
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
@@ -64,6 +75,17 @@ service Store {
     rpc DeleteReview(ReviewQueryRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
             delete: "/store/games/reviews/{review_id}"
+        };
+    }
+    rpc GameInstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            patch: "/store/games/install"
+            body: "*"
+        };
+    }
+    rpc GameUninstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            delete: "/store/games/uninstall/{game_id}"
         };
     }
 }
@@ -108,7 +130,10 @@ message GameSimpleListResponse{
 message GameDetailResponse{
     int32 code = 1;
     string message = 2;
-    GameDetail data = 3;
+    Game data = 3;
+    message Game{
+        GameDetail game = 1;
+    }
 }
 
 message IsSuccessResponse{
@@ -127,6 +152,8 @@ message Review{
     string displayed_name = 3 [json_name = "displayed_name"];
     string content = 4;
     int32 recommendation = 5;
+    google.protobuf.Timestamp created_at = 6 [json_name = "created_at"];
+    google.protobuf.Timestamp updated_at = 7 [json_name = "updated_at"];
 }
 
 message GameDetail{
@@ -190,6 +217,13 @@ message ContentsPath{
 // Client 측에서 하나의 카테고리를 Request 받을 때. 
 message GameIdQueryParamRequest{
     int32 game_id = 1;
+}
+
+message GameIdListQueryParamRequest{
+    string game_id_list = 1;
+}
+message SearchingContentQueryParamRequest{
+    string content = 1;
 }
 
 message SortingParamRequest{

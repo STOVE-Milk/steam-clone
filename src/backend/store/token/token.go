@@ -1,4 +1,4 @@
-package model
+package token
 
 import (
 	"context"
@@ -6,16 +6,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/STOVE-Milk/steam-clone/store/config"
+	storeErr "github.com/STOVE-Milk/steam-clone/store/errors"
+	"github.com/STOVE-Milk/steam-clone/store/models"
+	"github.com/STOVE-Milk/steam-clone/store/utils"
 	"github.com/dgrijalva/jwt-go"
 	"google.golang.org/grpc/metadata"
 )
-
-type TokenMetaData struct {
-	UserId   int32
-	Nickname string
-	Role     int32
-	Country  string
-}
 
 func extractToken(ctx context.Context) string {
 	headers, _ := metadata.FromIncomingContext(ctx)
@@ -32,13 +29,13 @@ func extractToken(ctx context.Context) string {
 	return ""
 }
 
-func ExtractMetadata(ctx context.Context) (*TokenMetaData, error) {
-	metadata := &TokenMetaData{}
+func ExtractMetadata(ctx context.Context) (*models.TokenMetaData, *models.Error) {
+	metadata := &models.TokenMetaData{}
 	tokenString := extractToken(ctx)
 	if tokenString == "" {
-		return nil, errors.New("token.ExtractMetadata : 토큰 에러")
+		return nil, utils.ErrorHandler(storeErr.NullTokenErr, errors.New("토큰값이 입력되지 않음"))
 	}
-	secretString := "5dc5085d01e85fd229e32fedbd0f1a4b10cd57e61a7f423bca91263d7ce22ac5cf298a1f8ecc5f5f8125b07627329d06cbde50d25b5d00a17286cf577fd86e8b"
+	secretString := config.GetSecretKey()
 	secret := []byte(secretString)
 	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -51,19 +48,19 @@ func ExtractMetadata(ctx context.Context) (*TokenMetaData, error) {
 
 	userId, ok := claims["idx"]
 	if !ok {
-		return nil, errors.New("no user id")
+		return nil, utils.ErrorHandler(storeErr.NullMetaDataErr, errors.New("토큰 값 중 user 값이 없음"))
 	}
 	nickname, ok := claims["nickname"].(string)
 	if !ok {
-		return nil, errors.New("no nickname")
+		return nil, utils.ErrorHandler(storeErr.NullMetaDataErr, errors.New("토큰 값 중 nickname 값이 없음"))
 	}
 	country, ok := claims["country"].(string)
 	if !ok {
-		return nil, errors.New("no country")
+		return nil, utils.ErrorHandler(storeErr.NullMetaDataErr, errors.New("토큰 값 중 country 값이 없음"))
 	}
 	role, ok := claims["role"]
 	if !ok {
-		return nil, errors.New("no role")
+		return nil, utils.ErrorHandler(storeErr.NullMetaDataErr, errors.New("토큰 값 중 role 값이 없음"))
 	}
 	metadata.UserId = int32(userId.(float64))
 	metadata.Nickname = nickname
