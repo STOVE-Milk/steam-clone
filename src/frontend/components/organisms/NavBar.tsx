@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGamepad,
@@ -15,12 +15,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import LogoImage from 'public/steam_logo.png';
 
+import { theme } from 'styles/theme';
 import MenuBox from 'components/molecules/MenuBox';
 import FriendBox from 'components/molecules/FriendBox';
 import { IFriend } from 'components/molecules/FriendBox';
-
-import { theme } from 'styles/theme';
-import Link from 'next/link';
 
 interface INavBarStyledProps {
   open: boolean;

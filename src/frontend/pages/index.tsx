@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
-import CarouselComponent from 'components/organisms/Carousel';
-import BigCarouselComponent from 'components/organisms/BigCarousel';
+
+import { gameInfo } from 'modules/game';
+import { getGameListAPI } from 'api/game/api';
+
+import Text from 'components/atoms/Text';
 import GameSlide from 'components/molecules/GameSlide';
 import BigGameSlide from 'components/molecules/BigGameSlide';
-import gameImage2 from 'public/game2.jpg';
-import gameImage from 'public/game.png';
-import Image from 'next/image';
-import { getGameListAPI } from '../api/game/api';
-import Text from 'components/atoms/Text';
-import { IGameInfo } from 'components/molecules/GameSlide';
+import CarouselComponent from 'components/organisms/Carousel';
+import BigCarouselComponent from 'components/organisms/BigCarousel';
 
 const Main: NextPage = () => {
-  const [rankGames, setRankGames] = useState([] as IGameInfo[]); // 다운로드 높은 게임들
-  const [saleGames, setSaleGames] = useState([] as IGameInfo[]); // 할인률 높은 게임들
+  const [rankGames, setRankGames] = useState([] as gameInfo[]); // 다운로드 높은 게임들
+  const [saleGames, setSaleGames] = useState([] as gameInfo[]); // 할인률 높은 게임들
 
   const getGames = async () => {
     setRankGames((await getGameListAPI('category=ALL&page=1&size=5&sort=download_count,desc')).data.game_list);

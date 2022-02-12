@@ -1,7 +1,6 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { takeLatest } from 'redux-saga/effects';
 
 import createAsyncSaga from 'modules/utils/sagaUtils';
-
 import {
   getCategoriesAPI,
   getGameAPI,

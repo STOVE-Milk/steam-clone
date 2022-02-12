@@ -1,5 +1,7 @@
 import { createReducer } from 'typesafe-actions';
+
 import { asyncState } from 'modules/utils/reducerUtils';
+import { initialSingup, initalUserInfo } from 'modules/user/initalData';
 import { IUserState } from './types';
 import {
   DO_SIGNUP,
@@ -9,7 +11,6 @@ import {
   SAVE_USERINFO_SUCCESS,
   SAVE_USERINFO_FAIL,
 } from './actions';
-import { initialSingup, initalUserInfo } from 'modules/user/initalData';
 
 const initialState: IUserState = {
   signup: asyncState.initial(initialSingup),

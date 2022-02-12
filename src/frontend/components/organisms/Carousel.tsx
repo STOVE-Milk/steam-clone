@@ -1,9 +1,7 @@
 import React from 'react';
-import Carousel from 'react-multi-carousel';
 import styled from 'styled-components';
+import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import gameImage2 from 'public/game2.jpg';
-import Image from 'next/image';
 
 interface ICarouselProps {
   slides: Object;

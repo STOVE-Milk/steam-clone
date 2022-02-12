@@ -1,30 +1,12 @@
 import React from 'react';
-import styled from 'styled-components';
 import Image from 'next/image';
-import Text from 'components/atoms/Text';
+import styled from 'styled-components';
+
 import { localePrice } from 'util/localeString';
+import { gameInfo } from 'modules/game';
+import Text from 'components/atoms/Text';
 
-// 이거 다 안써도 되나?
-export interface IGameInfo {
-  category_list: string[];
-  description_snippet: string;
-  download_count: number;
-  id: number;
-  image: {
-    main: string;
-    sub: string[];
-  };
-  name: string;
-  os_list: string[];
-  price: number;
-  sale: number;
-  video?: {
-    main: string;
-    sub: string[];
-  };
-}
-
-export default function GameSlide(props: IGameInfo) {
+export default function GameSlide(props: gameInfo) {
   return (
     <SlideWrapper>
       <ImageSection>

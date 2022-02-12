@@ -2,7 +2,6 @@ import { createAsyncAction } from 'typesafe-actions';
 import { AxiosError } from 'axios';
 
 import { createRequestActionTypes } from 'modules/utils/actionUtils';
-
 import { IReqType } from 'api/type';
 import {
   IGetGameReqType,
@@ -11,7 +10,6 @@ import {
   IResStoreType,
   IGetGameInfoByIdListReqType,
 } from 'api/game/type';
-
 import { IAddCartInfoReqType, IRmCartInfoReqType } from 'api/cart/type';
 import { IDoWishReqType, IDoUnWishReqType } from 'api/wishlist/type';
 

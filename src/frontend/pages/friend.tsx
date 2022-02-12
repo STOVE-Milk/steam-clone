@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import styled, { css } from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestion, faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { IState } from 'modules';
 import * as FriendAPI from 'api/friend/api';
 
 import Text from 'components/atoms/Text';
-import FriendBox from 'components/molecules/FriendBox';
-import Profile from 'components/atoms/Profile';
-import FilledButton from 'components/atoms/FilledButton';
 import { TextTheme } from 'components/atoms/Text';
+import FriendBox from 'components/molecules/FriendBox';
 import { IFriend } from 'components/molecules/FriendBox';
 
 const Friend: NextPage = () => {

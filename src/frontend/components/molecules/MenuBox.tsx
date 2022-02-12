@@ -1,7 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
-import Text, { TextStyle } from 'components/atoms/Text';
 import Link from 'next/link';
+import styled from 'styled-components';
+
+import Text, { TextStyle } from 'components/atoms/Text';
 
 export interface IMenuBoxProps {
   icon: JSX.Element;
