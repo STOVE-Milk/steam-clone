@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorCode {
+public enum     ErrorCode {
     VALIDATION_FAILED(77100, "요청 데이터가 유효하지 않습니다."),
     USER_NOT_FOUND(77101, "유저 데이터를 불러오지 못했습니다."),
     DATA_NOT_FOUND(77102, "요청한 데이터가 없습니다."),
