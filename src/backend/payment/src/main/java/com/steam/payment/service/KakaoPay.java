@@ -40,7 +40,7 @@ public class KakaoPay {
 
     /*
         카카오페이 API를 실제적으로 호출하는 서비스입니다.
-        RestTemplate를 이용해 동기적으로 API를 호출합니다.
+        Request 객체를 만들어 API Call 메소드에 넘겨주어 처리합니다. --> 93번줄
     */
     public KakaoPayReadyResponse ready(GiftcardDto giftcard, Integer orderCount) {
         KakaoPayReadyRequest kakaoPayReadyRequest = KakaoPayReadyRequest.of(UserContext.getUserId(), giftcard, orderCount);
@@ -89,6 +89,14 @@ public class KakaoPay {
         );
     }
 
+    /*
+        중복적으로 사용될 것 같은 카카오페이 API 콜을 하나의 메소드로 처리하기 위해 만들었습니다.
+            카카오페이 API 요청을 위한 헤더 설정
+            요청 데이터 Body 설정
+            Response 데이터를 담을 클래스 지정
+            발생할 수 있는 에러를 받아 처리
+            RestTemplate를 이용한 동기적 API Call
+    */
     private <T> T callKakaopayAPI(String apiType, Object data, Class<T> returnClass, ErrorCode error) {
         HttpHeaders headers = new KakaoPayHeader(accessToken);
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();

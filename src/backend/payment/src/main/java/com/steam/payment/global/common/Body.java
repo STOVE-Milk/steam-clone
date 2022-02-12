@@ -8,8 +8,11 @@ import lombok.Getter;
 @Builder
 @Getter
 public class Body<T> {
+    // 서버에서 정한 코드
     private Integer code;
+    // 서버에서 정한 메세지
     private String message;
+    // 성공 시 Response Body 데이터
     private T data;
 
     public static <T> Body<Object> success(T data) {
