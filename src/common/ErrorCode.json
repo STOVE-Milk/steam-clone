@@ -226,8 +226,8 @@
         },
         "PATCH_REVIEW_QUERY_ERR":{
             "code":31920,
-            "message":"값 파싱에 실패하였습니다.",
-            "description":"DB데이터 파싱 에러."
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
         },
         "DELETE_REVIEW_QUERY_ERR":{
             "code":31921,
@@ -249,15 +249,35 @@
             "message":"옳지 않은 쿼리를 입력하였습니다.",
             "description":"의도하지 않은 쿼리 입력."
         },
-        "PATCH_WISHLIST_ERR":{
+        "PATCH_WISHLIST_QUERY_ERR":{
             "code":31925,
-            "message":"값 파싱에 실패하였습니다.",
-            "description":"DB데이터 파싱 에러."
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
         },
         "DELETE_WISHLIST_QUERY_ERR":{
             "code":31926,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },        
+        "GET_SEARCHING_GAMELIST_QUERY_ERR":{
+            "code":31927,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_SEARCHING_GAMELIST_SCAN_ERR":{
+            "code":31928,
             "message":"값 파싱에 실패하였습니다.",
             "description":"DB데이터 파싱 에러."
+        },
+        "GAME_INSTALL_QUERY_ERR":{
+            "code":31929,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GAME_UNINSTALL_QUERY_ERR":{
+            "code":31930,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
         },
         "NULL_TOKEN_ERR":{
             "code":31801,
@@ -268,6 +288,16 @@
             "code":31802,
             "message":"토큰의 메타데이터 중 빈 데이터가 존재합니다.",
             "description":"메타데이터 파싱 에러."
+        },
+        "ALREADY_GAME_INSTALL_ERR":{
+            "code":31101,
+            "message":"이미 설치한 게임입니다.",
+            "description":"설치 값 변경 없음."
+        },
+        "ALREADY_GAME_UNINSTALL_ERR":{
+            "code":31102,
+            "message":"이미 삭제한 게임입니다.",
+            "description":"삭제 값 변경 없음."
         }
     },
     "membership": {
