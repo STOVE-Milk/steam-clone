@@ -26,6 +26,49 @@ public class Room {
     private Map<String, UserDto> users;
     private MapDto map;
 
+    public synchronized boolean enter(UserDetails userDetails, WebSocketSession session) {
+        String userId = userDetails.getIdx().toString();
+        try {
+            if (!this.users.containsKey(userId)) {
+                this.users.put(userId, UserDto.of(userDetails));
+                this.userCount++;
+            }
+            this.sessions.put(userId, session);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    public synchronized Integer leave(String userId) {
+        try {
+            this.userCount--;
+            this.getUsers().remove(userId);
+            this.sessions.remove(userId);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+        return this.userCount;
+    }
+
+    public void moveUser(String userId, Direction direction) {
+        this.getUsers().get(userId).move(direction, this.map.getSide());
+    }
+
+    public void resetUserLocation() {
+        users.forEach((key, user) -> {
+            user.resetLocation();
+        });
+    }
+
+    public void updateMap(MapDto map) {
+        this.map = map;
+    }
+
+    public WebSocketSession getSessionBySessionId(String userId) {
+        return sessions.get(userId);
+    }
+
     public RoomCache toHash() {
         return RoomCache.builder()
                 .roomId(this.roomId.toString())
@@ -56,48 +99,5 @@ public class Room {
                 .users(new HashMap<>())
                 .map(map)
                 .build();
-    }
-
-    public synchronized boolean enter(UserDetails userDetails, WebSocketSession session) {
-        String userId = userDetails.getIdx().toString();
-        try {
-            if (!this.users.containsKey(userId)) {
-                this.users.put(userId, UserDto.of(userDetails));
-                this.userCount++;
-            }
-            this.sessions.put(userId, session);
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-    public synchronized Integer leave(String userId, WebSocketSession session) {
-        try {
-            this.userCount--;
-            this.getUsers().remove(userId);
-            this.sessions.remove(userId);
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        }
-        return this.userCount;
-    }
-
-    public void moveUser(String userId, Direction direction) {
-        this.getUsers().get(userId).move(direction, this.map.getSide());
-    }
-
-    public void resetUserLocation() {
-        users.forEach((key, user) -> {
-            user.resetLocation();
-        });
-    }
-
-    public void updateMap(MapDto map) {
-        this.map = map;
-    }
-
-    public WebSocketSession getSessionBySessionId(String userId) {
-        return sessions.get(userId);
     }
 }

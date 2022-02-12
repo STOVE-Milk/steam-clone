@@ -153,6 +153,7 @@ public class SocketService {
         return true;
     }
 
+    // 이동 메소드 입니다.
     public Boolean move(WebSocketSession session, MoveRequestMessage moveRequestMessage) throws NullPointerException{
         String sessionId = session.getId();
         String userId = userData.get(sessionId).getIdx().toString();
@@ -254,7 +255,7 @@ public class SocketService {
         // sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
 
         // 떠나기
-        Integer userNum = robby.get(roomId).leave(userId, session);
+        Integer userNum = robby.get(roomId).leave(userId);
         if(userNum.equals(0))
             robby.remove(roomId);
         user_session.remove(userId);
