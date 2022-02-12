@@ -35,11 +35,11 @@ const reducer = createReducer<IUserState>(initialState, {
   }),
   [SAVE_USERINFO_SUCCESS]: (state, action) => ({
     ...state,
-    userInfo: asyncState.success(action.payload),
+    userInfo: asyncState.success(action.payload.data),
   }),
   [SAVE_USERINFO_FAIL]: (state, action) => ({
     ...state,
-    userInfo: asyncState.error(initalUserInfo, action.payload),
+    userInfo: asyncState.error(initalUserInfo, action.payload.data),
   }),
 });
 
