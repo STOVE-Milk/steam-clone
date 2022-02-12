@@ -12,7 +12,7 @@ interface TextThemeType {
   [index: string]: SizeType;
 }
 
-const TextTheme: TextThemeType = {
+export const TextTheme: TextThemeType = {
   title: {
     size: '3rem',
     weight: 'bold',

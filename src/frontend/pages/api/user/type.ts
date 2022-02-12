@@ -1,3 +1,27 @@
+export interface IGetWithFriendReqType {
+  id: number;
+}
+
+export interface IAddGuestBookReqType {
+  content: string;
+}
+
+export interface ISearchReqType {
+  nickname: string;
+}
+
+export interface IModifyGuestBookReqType {
+  content: string;
+}
+
+export interface IAcceptFriendReqType {
+  request_id: number;
+}
+
+export interface ISendFriendReqType {
+  user_id: number;
+}
+
 export interface ICheckNicknameReqType {
   nickname: string;
 }
@@ -19,11 +43,7 @@ export interface IDoSignupReqType {
 export interface ICheckEmailReqtype {
   email: string;
 }
-export interface IResType {
-  code: number;
-  message: string;
-  data: any;
-}
+
 export interface IResStoreType {
   data: any; //API request를 통한 서버응답이 아닌 store만 거치는 경우를 위한 return 타입
 }
@@ -35,4 +55,10 @@ export interface ISaveUserInfoReqtype {
   idx: number;
   nickname: string;
   role: number;
+}
+
+export interface IResType {
+  code: number;
+  message: string;
+  data: any;
 }

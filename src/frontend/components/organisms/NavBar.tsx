@@ -3,14 +3,15 @@ import styled from 'styled-components';
 import Image from 'next/image';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGamepad, faUser, faBars, faComments, faHeart, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faGamepad, faBars, faComments, faHeart, faBook, faCog } from '@fortawesome/free-solid-svg-icons';
 import LogoImage from 'public/steam_logo.png';
 
 import MenuBox from 'components/molecules/MenuBox';
-import Profile from 'components/atoms/Profile';
 import FriendBox from 'components/molecules/FriendBox';
+import { IFriend } from 'components/molecules/FriendBox';
 
 import { theme } from 'styles/theme';
+import Link from 'next/link';
 
 interface INavBarStyledProps {
   open: boolean;
@@ -61,6 +62,7 @@ const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
 const SectionTitle = styled.div`
   color: ${(props) => props.theme.colors.secondaryText};
   padding: 30px 20px 0px 20px;
+  display: flex;
 `;
 
 const MenuSection = styled.div`
@@ -82,8 +84,16 @@ const FriendSection = styled.div`
   }
 `;
 
+const FriendSettingBtn = styled.div`
+  margin-left: auto;
+  cursor: pointer;
+`;
+
 export default function NavBar() {
   const [open, setOpen] = useState(true);
+
+  // TODO: 실제 친구 목록 가져오기
+  const [friends, setFriends] = useState([] as IFriend[]);
 
   useEffect(() => {
     const media = window.matchMedia(theme.breakpoints.medium.slice(7));
@@ -125,13 +135,18 @@ export default function NavBar() {
         />
       </MenuSection>
       <SectionDivider />
-      <SectionTitle>Friends</SectionTitle>
+      <SectionTitle>
+        Friends
+        <Link href={'/friend'}>
+          <FriendSettingBtn>
+            <FontAwesomeIcon icon={faCog} inverse></FontAwesomeIcon>
+          </FriendSettingBtn>
+        </Link>
+      </SectionTitle>
       <FriendSection>
-        <FriendBox
-          open={open}
-          icon={<Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />}
-          name={'user'}
-        />
+        {friends.map((friend) => {
+          <FriendBox open={open} friendInfo={friend} />;
+        })}
       </FriendSection>
     </NavBarWrapper>
   );
