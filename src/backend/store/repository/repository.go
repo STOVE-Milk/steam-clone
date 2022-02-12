@@ -402,7 +402,7 @@ func (r *Repo) GameInstall(ctx context.Context) (bool, *models.Error) {
 	defer cancel()
 	userId := ctx.Value("userId").(int32)
 	gameId := ctx.Value("gameId").(int32)
-	n, err := r.db.Exec("UPDATE review SET is_downloaded=1 WHERE user_id=? AND game_id=?", userId, gameId)
+	n, err := r.db.Exec("UPDATE library SET is_installed=1 WHERE user_id=? AND game_id=?", userId, gameId)
 	if err != nil {
 		return false, utils.ErrorHandler(storeErr.GameInstallQueryErr, err)
 	}
@@ -418,7 +418,7 @@ func (r *Repo) GameUninstall(ctx context.Context) (bool, *models.Error) {
 	defer cancel()
 	userId := ctx.Value("userId").(int32)
 	gameId := ctx.Value("gameId").(int32)
-	n, err := r.db.Exec("UPDATE review SET is_downloaded=0 WHERE user_id=? AND game_id=?", userId, gameId)
+	n, err := r.db.Exec("UPDATE library SET is_installed=0 WHERE user_id=? AND game_id=?", userId, gameId)
 	if err != nil {
 		return false, utils.ErrorHandler(storeErr.GameUninstallQueryErr, err)
 	}
