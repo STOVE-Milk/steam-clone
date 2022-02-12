@@ -10,6 +10,10 @@ import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    결제 로그 도큐먼트 입니다.
+    충전과 결제 로그를 통합하고 싶은 생각이 있는데, 아직 실현하지 못했습니다.
+*/
 @Builder
 @Getter
 @Document(collection = "purchase_log")
