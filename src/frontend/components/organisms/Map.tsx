@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import useWindowSize from 'util/Hooks/useWindowDimensions';
 
 import EachGame from 'components/organisms/EachGame';
+import { commandType } from 'pages/library';
 
 const absoluteVal = 500;
 
@@ -24,10 +25,21 @@ const StageStyled = styled.div`
 interface IMapProps {
   installedGame: any;
   resetSelect: () => void;
+  sendData: (command: number, data: any) => void;
+}
+interface IMoveProps {
+  [index: string]: number;
 }
 
+const moveType: IMoveProps = {
+  ArrowUp: 0,
+  ArrowRight: 1,
+  ArrowDown: 2,
+  ArrowLeft: 3,
+};
+
 const Map = (props: IMapProps) => {
-  const { installedGame, resetSelect } = props;
+  const { installedGame, resetSelect, sendData } = props;
 
   const windowSize = useWindowSize();
   const width = windowSize.width;
@@ -37,9 +49,11 @@ const Map = (props: IMapProps) => {
   const [userY, setUserY] = useState(250);
   //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
 
-  console.log(height);
-  const [game1X, setGame1X] = useState(20);
-  const [game1Y, setGame1Y] = useState(height - (height - 400));
+  console.log('height', height);
+  const [game1X, setGame1X] = useState(0);
+  const [game1Y, setGame1Y] = useState(0);
+
+  // const [game1Y, setGame1Y] = useState(height - (height - 400));
 
   const shapeRef = React.useRef(null);
 
@@ -76,10 +90,13 @@ const Map = (props: IMapProps) => {
         return prev;
       });
     }
+    //업데이트된 위치를 보내야하는데 또 setState 비동기 문제 생길듯
+
+    sendData(commandType.MOVE, { direction: moveType[event.key] });
   };
 
   useEffect(() => {
-    console.log(shapeRef.current);
+    // console.log(shapeRef.current);
     window.addEventListener('keydown', handleKeyDown);
 
     // cleanup this component
@@ -92,6 +109,7 @@ const Map = (props: IMapProps) => {
     <StageStyled>
       {console.log(userX, userY)}
       <Stage
+        id="canvas"
         width={absoluteVal}
         height={absoluteVal}
         ref={shapeRef}
@@ -101,7 +119,13 @@ const Map = (props: IMapProps) => {
         <Layer>
           <Circle x={userX} y={userY} radius={50} width={absoluteVal / 5} fill="#989899" />
           {installedGame ? (
-            <EachGame resetSelect={resetSelect} installedGame={installedGame} position={{ x: game1X, y: game1Y }} />
+            <EachGame
+              onChange={(e) => console.log(e)}
+              resetSelect={resetSelect}
+              installedGame={installedGame}
+              position={{ x: game1X, y: game1Y }}
+              // setGamePosFunc={{ setGame1X, setGame1Y }}
+            />
           ) : null}
         </Layer>
       </Stage>

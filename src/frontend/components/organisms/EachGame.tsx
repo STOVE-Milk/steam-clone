@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image } from 'react-konva';
 import useImage from 'use-image';
+import styled from 'styled-components';
+import { Html } from 'react-konva-utils';
 
 interface IEachGameProps {
   installedGame: any;
@@ -9,22 +11,30 @@ interface IEachGameProps {
     y: number;
   };
   resetSelect: () => void;
+  // setGamePosFunc: {
+  //   setGame1X: (x: number) => void;
+  //   setGame1Y: (x: number) => void;
+  // };
+  onChange: (e: any) => void;
 }
-const EachGame = (props: IEachGameProps) => {
-  const { installedGame, resetSelect } = props;
-  let { x, y } = props.position;
+const CloseBtn = styled.button`
+  background-color: black;
+  border-radius: 50%;
+`;
 
-  console.log(x, y);
-  const LionImage = (x: any, y: any) => {
-    const [image] = useImage(
-      'https://cdn.akamai.steamstatic.com/steam/apps/1446780/ss_f8249da14987e3c2d10fd4024736f28774c713da.600x338.jpg?t=1642121078',
-    );
+const EachGame = (props: IEachGameProps) => {
+  const { installedGame, resetSelect, onChange } = props;
+  let { x, y } = props.position;
+  // const { setGame1X, setGame1Y } = props.setGamePosFunc;
+  // const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+  // const ctx = canvas.getContext('2d');
+
+  console.log('게임좌표', x, y);
+  const GameImage = (x: any, y: any) => {
+    const [image] = useImage(installedGame.image.main);
+
     return <Image image={image} height={100} width={100} draggable />;
   };
-  return (
-    <div onClick={resetSelect}>
-      <LionImage x={x} y={y} />
-    </div>
-  );
+  return <GameImage x={x} y={y} onClick={resetSelect} />;
 };
 export default EachGame;
