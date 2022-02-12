@@ -12,7 +12,7 @@ interface CarouselProps {
 const CustomCarousel = styled(Carousel)`
   width: 80%;
   margin: 0 auto;
-  
+
   .react-multiple-carousel__arrow--right {
     margin-right: -3%;
     margin-bottom: 8%;
@@ -46,7 +46,7 @@ export default function CarouselComponent(props: CarouselProps) {
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
       autoPlay={true}
-      autoPlaySpeed={2000}
+      autoPlaySpeed={3000}
       infinite
       removeArrowOnDeviceType={['small']}
     >

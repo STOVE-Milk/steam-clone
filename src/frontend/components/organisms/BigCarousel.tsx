@@ -41,7 +41,7 @@ export default function BigCarouselComponent(props: CarouselProps) {
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
       autoPlay={true}
-      autoPlaySpeed={2000}
+      autoPlaySpeed={3000}
       infinite
       showDots={true}
       arrows={false}
