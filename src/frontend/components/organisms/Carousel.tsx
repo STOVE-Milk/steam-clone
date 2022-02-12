@@ -5,27 +5,11 @@ import 'react-multi-carousel/lib/styles.css';
 import gameImage2 from 'public/game2.jpg';
 import Image from 'next/image';
 
-interface CarouselProps {
+interface ICarouselProps {
   slides: Object;
 }
 
-const CustomCarousel = styled(Carousel)`
-  width: 80%;
-  margin: 0 auto;
-
-  .react-multiple-carousel__arrow--right {
-    margin-right: -3%;
-    margin-bottom: 8%;
-    background: ${(props) => props.theme.colors.secondaryBg};
-  }
-  .react-multiple-carousel__arrow--left {
-    margin-left: -2%;
-    margin-bottom: 8%;
-    background: ${(props) => props.theme.colors.secondaryBg};
-  }
-`;
-
-export default function CarouselComponent(props: CarouselProps) {
+export default function CarouselComponent(props: ICarouselProps) {
   const responsive = {
     large: {
       breakpoint: { max: 3000, min: 1048 },
@@ -54,3 +38,19 @@ export default function CarouselComponent(props: CarouselProps) {
     </CustomCarousel>
   );
 }
+
+const CustomCarousel = styled(Carousel)`
+  width: 80%;
+  margin: 0 auto;
+
+  .react-multiple-carousel__arrow--right {
+    margin-right: -3%;
+    margin-bottom: 8%;
+    background: ${(props) => props.theme.colors.secondaryBg};
+  }
+  .react-multiple-carousel__arrow--left {
+    margin-left: -2%;
+    margin-bottom: 8%;
+    background: ${(props) => props.theme.colors.secondaryBg};
+  }
+`;

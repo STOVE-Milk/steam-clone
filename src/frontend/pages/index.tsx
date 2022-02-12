@@ -12,25 +12,6 @@ import { getGameListAPI } from './api/game/api';
 import Text from 'components/atoms/Text';
 import { IGameInfo } from 'components/molecules/GameSlide';
 
-const MainWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-`;
-
-const Title = styled(Text)`
-  margin: 3rem 0 0 3rem;
-`;
-
-const CarouselSection = styled.div`
-  width: calc(100vw - 250px);
-`;
-
-const CarouselBox = styled.div`
-  margin: 3rem 0;
-`;
-
 const Main: NextPage = () => {
   const [rankGames, setRankGames] = useState([] as IGameInfo[]); // 다운로드 높은 게임들
   const [saleGames, setSaleGames] = useState([] as IGameInfo[]); // 할인률 높은 게임들
@@ -67,5 +48,24 @@ const Main: NextPage = () => {
     </MainWrapper>
   );
 };
+
+const MainWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+`;
+
+const Title = styled(Text)`
+  margin: 3rem 0 0 3rem;
+`;
+
+const CarouselSection = styled.div`
+  width: calc(100vw - 250px);
+`;
+
+const CarouselBox = styled.div`
+  margin: 3rem 0;
+`;
 
 export default Main;

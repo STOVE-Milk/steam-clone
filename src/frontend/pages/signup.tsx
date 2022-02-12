@@ -15,27 +15,6 @@ import { doSignup } from 'modules/user';
 import { checkEmailAPI, checkNicknameAPI } from 'pages/api/user/api';
 import { sign } from 'crypto';
 
-const SignUpFormWrapper = styled.div`
-  width: 40rem;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  padding: 2rem;
-  background: ${(props) => props.theme.colors.secondaryBg};
-  display: flex;
-  border-radius: 10px;
-  padding-top: 2rem;
-`;
-const InputAlign = styled.div`
-  display: flex;
-  width: 30rem;
-  justify-content: space-between;
-`;
-const SignUpButton = styled(FilledButton)`
-  width: 85%;
-  margin-top: 1rem;
-`;
-
 const signup: NextPage<IState> = () => {
   const { signup } = useSelector((state: IState) => state.user);
 
@@ -241,5 +220,26 @@ const signup: NextPage<IState> = () => {
     </SignUpFormWrapper>
   );
 };
+
+const SignUpFormWrapper = styled.div`
+  width: 40rem;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 2rem;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  display: flex;
+  border-radius: 10px;
+  padding-top: 2rem;
+`;
+const InputAlign = styled.div`
+  display: flex;
+  width: 30rem;
+  justify-content: space-between;
+`;
+const SignUpButton = styled(FilledButton)`
+  width: 85%;
+  margin-top: 1rem;
+`;
 
 export default signup;

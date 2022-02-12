@@ -4,31 +4,12 @@ import styled from 'styled-components';
 import 'react-multi-carousel/lib/styles.css';
 import { ButtonGroupProps } from 'react-multi-carousel/lib/types';
 
-interface CarouselProps {
+interface ICarouselProps {
   slides: Object;
   buttons: JSX.Element[];
 }
 
-const CustomCarousel = styled(Carousel)``;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  overflow: hidden;
-  padding-top: 1rem;
-`;
-
-const Button = styled.div`
-  width: 23%;
-  overflow: hidden;
-  border-radius: 10px;
-  height: calc(100vw / 12);
-  position: relative;
-`;
-
-export default function CarouselComponent(props: CarouselProps) {
+export default function CarouselComponent(props: ICarouselProps) {
   const responsive = {
     large: {
       breakpoint: { max: 3000, min: 1048 },
@@ -71,3 +52,22 @@ export default function CarouselComponent(props: CarouselProps) {
     </CustomCarousel>
   );
 }
+
+const CustomCarousel = styled(Carousel)``;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  padding-top: 1rem;
+`;
+
+const Button = styled.div`
+  width: 23%;
+  overflow: hidden;
+  border-radius: 10px;
+  height: calc(100vw / 12);
+  position: relative;
+`;

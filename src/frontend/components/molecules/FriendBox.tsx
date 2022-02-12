@@ -17,9 +17,23 @@ export interface IFriend {
   is_friend?: number;
 }
 
-export interface FriendBoxProps {
+export interface IFriendBoxProps {
   friendInfo: IFriend;
   open: boolean;
+}
+
+export default function FriendBox(props: IFriendBoxProps) {
+  return (
+    <FriendBoxWrapper>
+      {props.friendInfo.profile.image === '' ? (
+        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
+      ) : (
+        '실제 이미지'
+      )}
+      {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
+      <FriendStatus color={theme.colors.online} />
+    </FriendBoxWrapper>
+  );
 }
 
 const FriendBoxWrapper = styled.div`
@@ -49,17 +63,3 @@ const FriendStatus = styled(Dot)`
   margin-left: 20px;
   margin-right: 30px;
 `;
-
-export default function FriendBox(props: FriendBoxProps) {
-  return (
-    <FriendBoxWrapper>
-      {props.friendInfo.profile.image === '' ? (
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-      ) : (
-        '실제 이미지'
-      )}
-      {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
-      <FriendStatus color={theme.colors.online} />
-    </FriendBoxWrapper>
-  );
-}

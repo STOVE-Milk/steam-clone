@@ -29,56 +29,6 @@ export interface IGuestBookProps {
   modifyGuestBook?: (id: number, content: string) => Promise<void>;
 }
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  background-color: ${(props) => props.theme.colors.secondaryBg};
-  border-radius: 10px;
-  margin: 1rem 0;
-`;
-
-const UserBox = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const Name = styled(Text)`
-  margin: 0 0.7rem 0 0.3rem;
-`;
-
-const PostButton = styled(FilledButton)`
-  margin-left: auto;
-`;
-
-const Divider = styled.div`
-  height: 1px;
-  background-color: ${(props) => props.theme.colors.divider};
-  margin: 0.8rem 0;
-`;
-
-const EditBox = styled.textarea`
-  line-height: 1.3rem;
-  background: transparent;
-  border: 1px solid ${(props) => props.theme.colors.divider};
-  border-radius: 10px;
-  color: ${(props) => props.theme.colors.secondaryText};
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  padding: 0.5rem;
-`;
-
-const TextBox = styled.div`
-  color: ${(props) => props.theme.colors.secondaryText};
-  line-height: 1.3rem;
-`;
-
-const CreatedAt = styled(Text)`
-  margin: 0.3rem 0 0 1rem;
-`;
-
 export default function GuestBook(props: IGuestBookProps) {
   const [isEdited, setEdited] = useState(props.isAdd ? true : false);
 
@@ -134,3 +84,53 @@ export default function GuestBook(props: IGuestBookProps) {
     </Wrapper>
   );
 }
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background-color: ${(props) => props.theme.colors.secondaryBg};
+  border-radius: 10px;
+  margin: 1rem 0;
+`;
+
+const UserBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const Name = styled(Text)`
+  margin: 0 0.7rem 0 0.3rem;
+`;
+
+const PostButton = styled(FilledButton)`
+  margin-left: auto;
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  background-color: ${(props) => props.theme.colors.divider};
+  margin: 0.8rem 0;
+`;
+
+const EditBox = styled.textarea`
+  line-height: 1.3rem;
+  background: transparent;
+  border: 1px solid ${(props) => props.theme.colors.divider};
+  border-radius: 10px;
+  color: ${(props) => props.theme.colors.secondaryText};
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  padding: 0.5rem;
+`;
+
+const TextBox = styled.div`
+  color: ${(props) => props.theme.colors.secondaryText};
+  line-height: 1.3rem;
+`;
+
+const CreatedAt = styled(Text)`
+  margin: 0.3rem 0 0 1rem;
+`;

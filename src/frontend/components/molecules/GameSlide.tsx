@@ -24,6 +24,20 @@ export interface IGameInfo {
   };
 }
 
+export default function GameSlide(props: IGameInfo) {
+  return (
+    <SlideWrapper>
+      <ImageSection>
+        <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
+      </ImageSection>
+      <InfoSection>
+        <Text types="small">{props.name}</Text>
+        <Text types="tiny">{`${localePrice(props.price, 'KR')}`}</Text>
+      </InfoSection>
+    </SlideWrapper>
+  );
+}
+
 const SlideWrapper = styled.div`
   width: 100%;
   min-height: 250px;
@@ -53,17 +67,3 @@ const InfoSection = styled.div`
   border-radius: 0 0 10px 10px;
   line-height: normal;
 `;
-
-export default function GameSlide(props: IGameInfo) {
-  return (
-    <SlideWrapper>
-      <ImageSection>
-        <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
-      </ImageSection>
-      <InfoSection>
-        <Text types="small">{props.name}</Text>
-        <Text types="tiny">{`${localePrice(props.price, 'KR')}`}</Text>
-      </InfoSection>
-    </SlideWrapper>
-  );
-}

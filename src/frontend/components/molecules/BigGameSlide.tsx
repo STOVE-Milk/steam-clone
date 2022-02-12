@@ -24,14 +24,6 @@ export interface IGameInfo {
   };
 }
 
-const SlideWrapper = styled.div`
-  display: block;
-  height: calc(100vw / 3);
-  border-radius: 10px;
-  position: relative;
-  overflow: hidden;
-`;
-
 export default function BigGameSlide(props: IGameInfo) {
   return (
     <SlideWrapper>
@@ -39,3 +31,11 @@ export default function BigGameSlide(props: IGameInfo) {
     </SlideWrapper>
   );
 }
+
+const SlideWrapper = styled.div`
+  display: block;
+  height: calc(100vw / 3);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+`;
