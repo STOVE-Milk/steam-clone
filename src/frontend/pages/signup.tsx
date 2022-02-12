@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import AuthInput from 'components/molecules/AuthInput';
-import Text from 'components/atoms/Text';
-import AuthSelectBox from 'components/molecules/AuthSelectBox';
-import FilledButton from 'components/atoms/FilledButton';
-import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
 
 import { IState } from 'modules';
 import { doSignup } from 'modules/user';
 import { checkEmailAPI, checkNicknameAPI } from 'api/auth/api';
+import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
+
+import Text from 'components/atoms/Text';
+import FilledButton from 'components/atoms/FilledButton';
+import AuthInput from 'components/molecules/AuthInput';
+import AuthSelectBox from 'components/molecules/AuthSelectBox';
 
 const signup: NextPage<IState> = () => {
   const { signup } = useSelector((state: IState) => state.user);

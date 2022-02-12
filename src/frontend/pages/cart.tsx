@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+
 import styled from 'styled-components';
 
-import GameInfo from 'components/organisms/GameInfo';
-import Text from 'components/atoms/Text';
-import DefaultButton from 'components/atoms/DefaultButton';
-
-import { useSelector, useDispatch } from 'react-redux';
 import { IState } from 'modules';
+import { getGameInfoByIdList } from 'modules/game';
 import { purchaseGameAPI } from 'api/cart/api';
 import { IPurchaseGameReqType } from 'api/cart/type';
-import { getGameInfoByIdList } from 'modules/game';
+
+import Text from 'components/atoms/Text';
+import DefaultButton from 'components/atoms/DefaultButton';
+import GameInfo from 'components/organisms/GameInfo';
 
 const cart: NextPage<IState> = (props) => {
   const { cartInfo, gamesByIdList } = useSelector((state: IState) => {

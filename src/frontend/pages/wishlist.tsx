@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import type { NextPage } from 'next';
-import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
+import type { NextPage } from 'next';
+
+import styled from 'styled-components';
 
 import { IState } from 'modules';
 import { getWishList } from 'modules/game';
+
 import GameInfo from 'components/organisms/GameInfo';
 import Text from 'components/atoms/Text';
 
