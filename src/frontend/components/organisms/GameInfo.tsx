@@ -12,6 +12,7 @@ import { gameInfo } from 'modules/game/types';
 import { doWish, doUnWish, getUserData } from 'modules/game';
 import { useSelector, useDispatch } from 'react-redux';
 import { addCartInfo, rmCartInfo } from 'modules/game';
+import { useRouter } from 'next/router';
 
 interface IGameInfo extends gameInfo {
   type?: string;
@@ -33,6 +34,7 @@ export default function GameInfo(props: IGameInfo) {
 
   const [like, setLike] = useState(likeStatus);
   const [cart, setCart] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setCart(cartInfo.data.includes(gameData.id));
@@ -71,7 +73,7 @@ export default function GameInfo(props: IGameInfo) {
           layout={'fill'}
         />
       </ImageBox>
-      <GameDetailBox>
+      <GameDetailBox onClick={() => router.push(`game/${gameData.id}`)}>
         <section className="info">
           <span>
             <Text types="medium">{gameData.name}</Text>
@@ -178,6 +180,8 @@ const GameImage = styled(Image)`
 const GameDetailBox = styled.div`
   display: flex;
   margin: 1rem;
+  cursor: pointer;
+
   > section {
     display: flex;
     flex-direction: column;

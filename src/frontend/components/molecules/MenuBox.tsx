@@ -19,7 +19,7 @@ export default function MenuBox(props: IMenuBoxProps) {
     <Link href={`/${props.page}`}>
       <MenuBoxWrapper>
         <MenuIcon open={props.open}>{props.icon}</MenuIcon>
-        {props.open ? <MenuTitle types={'small'}>{props.name}</MenuTitle> : null}
+        {props.open ? <MenuTitle types={'main'}>{props.name}</MenuTitle> : null}
       </MenuBoxWrapper>
     </Link>
   );
@@ -53,5 +53,4 @@ const MenuIcon = styled.div<IMenuBoxStyleProps>`
 
 const MenuTitle = styled(Text)`
   margin-left: 20px;
-  margin-top: 5px;
 `;

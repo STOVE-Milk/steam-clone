@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGamepad, faBars, faComments, faHeart, faBook, faCog } from '@fortawesome/free-solid-svg-icons';
+import {
+  faGamepad,
+  faBars,
+  faComments,
+  faHeart,
+  faBook,
+  faCog,
+  faShoppingCart,
+} from '@fortawesome/free-solid-svg-icons';
 import LogoImage from 'public/steam_logo.png';
 
 import MenuBox from 'components/molecules/MenuBox';
@@ -19,6 +28,7 @@ interface INavBarStyledProps {
 
 export default function NavBar() {
   const [open, setOpen] = useState(true);
+  const router = useRouter();
 
   // TODO: 실제 친구 목록 가져오기
   const [friends, setFriends] = useState([] as IFriend[]);
@@ -39,28 +49,19 @@ export default function NavBar() {
   return (
     <NavBarWrapper>
       <LogoSection>
-        <LogoBox open={open}>
+        <LogoBox open={open} onClick={() => router.push('/')}>
           <Image src={LogoImage} layout={'fixed'} width={30} height={30}></Image>
           <LogoTitle>STEAM</LogoTitle>
         </LogoBox>
-        <OpenBar open={open} icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
+        <OpenBar open={open} icon={faBars} inverse onClick={() => setOpen(!open)} />
       </LogoSection>
       <SectionTitle>Menus</SectionTitle>
       <MenuSection>
-        <MenuBox open={open} page="game" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Game'} />
-        <MenuBox
-          open={open}
-          page="category"
-          icon={<FontAwesomeIcon icon={faBook} size="2x" inverse />}
-          name={'Category'}
-        />
-        <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} size="2x" inverse />} name={'Chat'} />
-        <MenuBox
-          open={open}
-          page="wishlist"
-          icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />}
-          name={'Wish'}
-        />
+        <MenuBox open={open} page="category" icon={<FontAwesomeIcon icon={faBook} inverse />} name={'카테고리'} />
+        <MenuBox open={open} page="library" icon={<FontAwesomeIcon icon={faGamepad} inverse />} name={'라이브러리'} />
+        <MenuBox open={open} page="wishlist" icon={<FontAwesomeIcon icon={faHeart} inverse />} name={'위시리스트'} />
+        <MenuBox open={open} page="cart" icon={<FontAwesomeIcon icon={faShoppingCart} inverse />} name={'장바구니'} />
+        <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} inverse />} name={'채팅'} />
       </MenuSection>
       <SectionDivider />
       <SectionTitle>

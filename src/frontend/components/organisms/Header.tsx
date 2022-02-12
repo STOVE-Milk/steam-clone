@@ -5,6 +5,7 @@ import SearchBox from 'components/molecules/SearchBox';
 import Profile from 'components/atoms/Profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/router';
 
 // to do: 영역 잡고, css 로 width 100%, height: 80px 등으로 고정
 // 내용물: inputBox, 알림 아이콘, 유저인포
@@ -12,6 +13,7 @@ import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 export default function Header() {
   const [option, setOption] = useState('name');
   const [inputText, setInputText] = useState('');
+  const router = useRouter();
 
   return (
     <HeaderStyle>
@@ -21,11 +23,7 @@ export default function Header() {
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
         {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
-        <Link href={'/cart'}>
-          <div>
-            <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />
-          </div>
-        </Link>
+        <Profile onClick={() => router.push('/user/1')} userImage={<FontAwesomeIcon icon={faUser} inverse />} />
       </AlertUserWrapper>
     </HeaderStyle>
   );

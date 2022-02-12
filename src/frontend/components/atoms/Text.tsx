@@ -37,16 +37,16 @@ export const TextTheme: ITextThemeType = {
     color: theme.colors.secondaryText,
   },
 
-  tiny: {
-    size: '0.8rem',
-    weight: 'normal',
-    color: theme.colors.secondaryText,
-  },
-
   main: {
     size: '1rem',
     weight: 'normal',
     color: theme.colors.primaryText,
+  },
+
+  tiny: {
+    size: '0.8rem',
+    weight: 'normal',
+    color: theme.colors.secondaryText,
   },
 };
 

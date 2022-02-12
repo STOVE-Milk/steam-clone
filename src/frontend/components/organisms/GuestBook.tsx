@@ -6,6 +6,7 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
+import { useRouter } from 'next/router';
 
 export interface IGuestBook {
   id: number;
@@ -37,10 +38,15 @@ export default function GuestBook(props: IGuestBookProps) {
     setContent(e.target.value);
   };
 
+  const router = useRouter();
+
   return (
     <Wrapper>
       <UserBox>
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
+        <Profile
+          onClick={() => router.push(`${props.guestBook.guest_id}`)}
+          userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />}
+        />
         <Name types="medium">{props.guestBook.displayed_name}</Name>
         <CreatedAt types="tiny">
           {props.guestBook.updated_at === props.guestBook.created_at
