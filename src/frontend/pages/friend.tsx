@@ -6,16 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion, faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { IState } from 'modules';
-import {
-  getFriendsAPI,
-  acceptFriendAPI,
-  deleteFriendAPI,
-  getReceivedFriendsAPI,
-  getSendedFriendAPI,
-  deleteFriendRequestAPI,
-  sendFriendRequestAPI,
-  searchFriendAPI,
-} from 'pages/api/user/api';
+import * as FriendAPI from 'api/friend/api';
 
 import Text from 'components/atoms/Text';
 import FriendBox from 'components/molecules/FriendBox';
@@ -51,36 +42,36 @@ const Friend: NextPage = () => {
 
   // 친구 목록
   const getFriends = async () => {
-    const res = (await getFriendsAPI()).data.friends;
+    const res = (await FriendAPI.getFriendsAPI()).data.friends;
     setFriends(res);
   };
 
   // 친구 삭제
   const deleteFriend = async (id: number) => {
-    await deleteFriendAPI(id);
+    await FriendAPI.deleteFriendAPI(id);
     getFriends();
   };
 
   // 친구 신청을  위해 유저 검색
   const searchFriend = async () => {
-    const res = (await searchFriendAPI(searchInput)).data;
+    const res = (await FriendAPI.searchFriendAPI(searchInput)).data;
     setFriends(res);
   };
 
   // 친구 신청
   const sendFriendRequest = async (id: number) => {
-    await sendFriendRequestAPI({ user_id: id });
+    await FriendAPI.sendFriendRequestAPI({ user_id: id });
   };
 
   // 내가 보낸 친구 신청 목록
   const sendedFriend = async () => {
-    const res = (await getSendedFriendAPI()).data.requests;
+    const res = (await FriendAPI.getSendedFriendAPI()).data.requests;
     setFriends(res);
   };
 
   // 내가 보낸 친구 신청 취소, 내가 받은 친구 신청 거절
   const deleteFriendRequest = async (id: number) => {
-    await deleteFriendRequestAPI(id);
+    await FriendAPI.deleteFriendRequestAPI(id);
 
     if (tab === 2) {
       sendedFriend();
@@ -91,13 +82,13 @@ const Friend: NextPage = () => {
 
   // 내가 받은 친구 신청 목록
   const receivedFriend = async () => {
-    const res = (await getReceivedFriendsAPI()).data.requests;
+    const res = (await FriendAPI.getReceivedFriendsAPI()).data.requests;
     setFriends(res);
   };
 
   // 친구 신청 수락
   const acceptFriend = async (id: number) => {
-    await acceptFriendAPI({ request_id: id });
+    await FriendAPI.acceptFriendAPI({ request_id: id });
     receivedFriend();
   };
 

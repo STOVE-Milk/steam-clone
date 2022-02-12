@@ -12,8 +12,7 @@ import { countryOption, languageOption, validateEmail, validatePassWord } from '
 
 import { IState } from 'modules';
 import { doSignup } from 'modules/user';
-import { checkEmailAPI, checkNicknameAPI } from 'pages/api/user/api';
-import { sign } from 'crypto';
+import { checkEmailAPI, checkNicknameAPI } from 'api/auth/api';
 
 const signup: NextPage<IState> = () => {
   const { signup } = useSelector((state: IState) => state.user);

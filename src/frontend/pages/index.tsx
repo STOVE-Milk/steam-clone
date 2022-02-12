@@ -8,7 +8,7 @@ import BigGameSlide from 'components/molecules/BigGameSlide';
 import gameImage2 from 'public/game2.jpg';
 import gameImage from 'public/game.png';
 import Image from 'next/image';
-import { getGameListAPI } from './api/game/api';
+import { getGameListAPI } from '../api/game/api';
 import Text from 'components/atoms/Text';
 import { IGameInfo } from 'components/molecules/GameSlide';
 

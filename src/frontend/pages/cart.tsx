@@ -9,8 +9,8 @@ import DefaultButton from 'components/atoms/DefaultButton';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { IState } from 'modules';
-import { purchaseGameAPI } from 'pages/api/game/api';
-import { IPurchaseGameReqType } from 'pages/api/game/type';
+import { purchaseGameAPI } from 'api/cart/api';
+import { IPurchaseGameReqType } from 'api/cart/type';
 import { getGameInfoByIdList } from 'modules/game';
 
 const cart: NextPage<IState> = (props) => {

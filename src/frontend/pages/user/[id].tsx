@@ -6,13 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { IState } from 'modules';
-import {
-  getProfileAPI,
-  getWithFriendAPI,
-  getGuestBooksAPI,
-  addGuestBookAPI,
-  modifyGuestBookAPI,
-} from '../api/user/api';
+import * as UserAPI from 'api/user/api';
+import * as GuestBookAPI from 'api/guestbook/api';
+import * as guestAPI from '../../api/guestbook/api';
 
 import Text from 'components/atoms/Text';
 import UserInfo, { IUserInfo } from 'components/organisms/UserInfo';
@@ -64,7 +60,7 @@ const UserPage: NextPage = () => {
   const [withFriend, setWithFriend] = useState([] as IFriend[]);
 
   const getProfile = async () => {
-    const res = (await getProfileAPI(userId)).data;
+    const res = (await UserAPI.getProfileAPI(userId)).data;
     setProfile(res);
     setUserGuestBook((prev) => ({
       ...prev,
@@ -74,22 +70,22 @@ const UserPage: NextPage = () => {
   };
 
   const getWithFriend = async () => {
-    const res = (await getWithFriendAPI(userId)).data.friends;
+    const res = (await UserAPI.getWithFriendAPI(userId)).data.friends;
     setWithFriend(res);
   };
 
   const getGuestBooks = async () => {
-    const res = (await getGuestBooksAPI(userId)).data.guest_books;
+    const res = (await guestAPI.getGuestBooksAPI(userId)).data.guest_books;
     setGuestBooks(res);
   };
 
   const addGuestBook = async (content: string) => {
-    await addGuestBookAPI(userId, { content: content });
+    await guestAPI.addGuestBookAPI(userId, { content: content });
     await getGuestBooks();
   };
 
   const modifyGuestBook = async (bookId: number, content: string) => {
-    await modifyGuestBookAPI(userId, bookId, { content: content });
+    await guestAPI.modifyGuestBookAPI(userId, bookId, { content: content });
     await getGuestBooks();
   };
 

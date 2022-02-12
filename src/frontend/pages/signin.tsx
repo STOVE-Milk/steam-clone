@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import AuthInput from 'components/molecules/AuthInput';
-import { doSignInAPI } from 'pages/api/user/api';
+import { doSignInAPI } from 'api/auth/api';
 
 import { IState } from 'modules';
 import { useSelector, useDispatch } from 'react-redux';
