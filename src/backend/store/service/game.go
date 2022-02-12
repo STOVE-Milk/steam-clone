@@ -105,98 +105,18 @@ func (gc *GameService) GetGameDetail(ctx context.Context) (*pb.GameDetailRespons
 		},
 	}, nil
 }
-func (gc *GameService) GetGameListInCart(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
-	gameSimpleList, err := gc.r.GetGameListInCart(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
-	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
-	for i, game := range gameSimpleList {
-		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
-		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
-		if err != nil {
-			return nil, err
-		}
-		categoryTmp := make([]string, len(categoryList))
-		for i, category := range categoryList {
-			categoryTmp[i] = category.Name
-		}
-		var imageSub []string
-		var videoSub []string
-		for _, image := range game.Image["sub"].([]interface{}) {
-			imageSub = append(imageSub, image.(string))
-		}
-		for _, video := range game.Video["sub"].([]interface{}) {
-			videoSub = append(videoSub, video.(string))
-		}
-		pbGameSimpleList.GameList[i] = &pb.GameSimple{
-			Id:                 int32(game.Id),
-			Name:               game.Name,
-			DescriptionSnippet: game.DescriptionSnippet,
-			Price:              int32(game.Price["KR"].(float64)),
-			Sale:               int32(game.Sale),
-			Image: &pb.ContentsPath{
-				Main: game.Image["main"].(string),
-				Sub:  imageSub,
-			},
-			Video: &pb.ContentsPath{
-				Main: game.Video["main"].(string),
-				Sub:  videoSub,
-			},
-			OsList:        game.Os.ToSlice(),
-			CategoryList:  categoryTmp,
-			DownloadCount: int32(game.DownloadCount),
-		}
-	}
-	return &pbGameSimpleList, nil
-}
+
 func (gc *GameService) GetSortingGameList(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
 	gameSimpleList, err := gc.r.GetSortingGameList(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
-	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
-	for i, game := range gameSimpleList {
-		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
-		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
-		if err != nil {
-			return nil, err
-		}
-		categoryTmp := make([]string, len(categoryList))
-		for i, category := range categoryList {
-			categoryTmp[i] = category.Name
-		}
-		imageSub := make([]string, 0)
-		videoSub := make([]string, 0)
-		for _, image := range game.Image["sub"].([]interface{}) {
-			imageSub = append(imageSub, image.(string))
-		}
-		for _, video := range game.Video["sub"].([]interface{}) {
-			videoSub = append(videoSub, video.(string))
-		}
-		pbGameSimpleList.GameList[i] = &pb.GameSimple{
-			Id:                 int32(game.Id),
-			Name:               game.Name,
-			DescriptionSnippet: game.DescriptionSnippet,
-			Price:              int32(game.Price["KR"].(float64)),
-			Sale:               int32(game.Sale),
-			Image: &pb.ContentsPath{
-				Main: game.Image["main"].(string),
-				Sub:  imageSub,
-			},
-			Video: &pb.ContentsPath{
-				Main: game.Video["main"].(string),
-				Sub:  videoSub,
-			},
-			OsList:        game.Os.ToSlice(),
-			CategoryList:  categoryTmp,
-			DownloadCount: int32(game.DownloadCount),
-		}
+	pbGameSimpleList, err := gc.parsingGameSimpleList(ctx, gameSimpleList)
+	if err != nil {
+		return nil, err
 	}
 
-	return &pbGameSimpleList, nil
+	return pbGameSimpleList, nil
 }
 
 func (gc *GameService) GetReviewList(ctx context.Context) (*pb.ReviewListResponse_ReviewList, *models.Error) {
@@ -226,46 +146,11 @@ func (gc *GameService) GetGameListInWishlist(ctx context.Context) (*pb.GameSimpl
 	if err != nil {
 		return nil, err
 	}
-	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
-	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
-	for i, game := range gameSimpleList {
-		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
-		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
-		if err != nil {
-			return nil, err
-		}
-		categoryTmp := make([]string, len(categoryList))
-		for i, category := range categoryList {
-			categoryTmp[i] = category.Name
-		}
-		var imageSub []string
-		var videoSub []string
-		for _, image := range game.Image["sub"].([]interface{}) {
-			imageSub = append(imageSub, image.(string))
-		}
-		for _, video := range game.Video["sub"].([]interface{}) {
-			videoSub = append(videoSub, video.(string))
-		}
-		pbGameSimpleList.GameList[i] = &pb.GameSimple{
-			Id:                 int32(game.Id),
-			Name:               game.Name,
-			DescriptionSnippet: game.DescriptionSnippet,
-			Price:              int32(game.Price["KR"].(float64)),
-			Sale:               int32(game.Sale),
-			Image: &pb.ContentsPath{
-				Main: game.Image["main"].(string),
-				Sub:  imageSub,
-			},
-			Video: &pb.ContentsPath{
-				Main: game.Video["main"].(string),
-				Sub:  videoSub,
-			},
-			OsList:        game.Os.ToSlice(),
-			CategoryList:  categoryTmp,
-			DownloadCount: int32(game.DownloadCount),
-		}
+	pbGameSimpleList, err := gc.parsingGameSimpleList(ctx, gameSimpleList)
+	if err != nil {
+		return nil, err
 	}
-	return &pbGameSimpleList, nil
+	return pbGameSimpleList, nil
 }
 
 func (gc *GameService) PostWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
@@ -316,4 +201,71 @@ func (gc *GameService) DeleteReview(ctx context.Context) (*pb.IsSuccessResponse_
 	return &pb.IsSuccessResponse_Success{
 		Success: isSuccess,
 	}, nil
+}
+
+func (gc *GameService) GetSearchingGameListInCart(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
+	gameSimpleList, err := gc.r.GetGameListInWishlist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pbGameSimpleList, err := gc.parsingGameSimpleList(ctx, gameSimpleList)
+	if err != nil {
+		return nil, err
+	}
+	return pbGameSimpleList, nil
+}
+
+func (gc *GameService) GetGameListInCart(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
+	gameSimpleList, err := gc.r.GetGameListInCart(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pbGameSimpleList, err := gc.parsingGameSimpleList(ctx, gameSimpleList)
+	if err != nil {
+		return nil, err
+	}
+	return pbGameSimpleList, nil
+}
+
+func (gc *GameService) parsingGameSimpleList(ctx context.Context, gameSimpleList []*models.GameSimple) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
+	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
+	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
+	for i, game := range gameSimpleList {
+		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
+		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
+		if err != nil {
+			return nil, err
+		}
+		categoryTmp := make([]string, len(categoryList))
+		for i, category := range categoryList {
+			categoryTmp[i] = category.Name
+		}
+		var imageSub []string
+		var videoSub []string
+		for _, image := range game.Image["sub"].([]interface{}) {
+			imageSub = append(imageSub, image.(string))
+		}
+		for _, video := range game.Video["sub"].([]interface{}) {
+			videoSub = append(videoSub, video.(string))
+		}
+		pbGameSimpleList.GameList[i] = &pb.GameSimple{
+			Id:                 int32(game.Id),
+			Name:               game.Name,
+			DescriptionSnippet: game.DescriptionSnippet,
+			Price:              int32(game.Price["KR"].(float64)),
+			Sale:               int32(game.Sale),
+			Image: &pb.ContentsPath{
+				Main: game.Image["main"].(string),
+				Sub:  imageSub,
+			},
+			Video: &pb.ContentsPath{
+				Main: game.Video["main"].(string),
+				Sub:  videoSub,
+			},
+			OsList:        game.Os.ToSlice(),
+			CategoryList:  categoryTmp,
+			DownloadCount: int32(game.DownloadCount),
+		}
+	}
+	return &pbGameSimpleList, nil
 }
