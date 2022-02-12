@@ -10,7 +10,7 @@ import (
 )
 
 func ReadErrorJson() *os.File {
-	jsonFile, err := os.Open("../../common/ErrorCode.json")
+	jsonFile, err := os.Open("ErrorCode.json")
 	if err != nil {
 		log.Panic(err)
 	}

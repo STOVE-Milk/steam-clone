@@ -46,7 +46,7 @@ service Store {
     }
     rpc GetSearchingGameList(SearchingContentQueryParamRequest) returns (GameSimpleListResponse){
         option (google.api.http) = {
-            get: "/store/games/search"
+            get: "/store/search"
         };
     }
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
@@ -85,7 +85,8 @@ service Store {
     }
     rpc GameUninstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            delete: "/store/games/uninstall/{game_id}"
+            patch: "/store/games/uninstall"
+            body: "*"
         };
     }
 }
