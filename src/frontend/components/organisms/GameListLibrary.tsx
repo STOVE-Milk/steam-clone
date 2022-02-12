@@ -28,10 +28,12 @@ const EachGameInfoBox = styled(FilledButton)`
 
 interface IGameListLibararyProps {
   onSelect: (e: any) => void;
+  sendData: (command: number, data: any) => void;
 }
 
 export const GameListLibrary = (props: IGameListLibararyProps) => {
   const { userData, gamesByIdList } = useSelector((state: IState) => state.game);
+  const { onSelect } = props;
 
   // userData
   const dispatch = useDispatch();
@@ -43,11 +45,13 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
   return (
     <GameListWrapper>
       {/* 게임의 설치 상태에 따라서 button types를 다르게 */}
-      {gamesByIdList.data.map((eachGame) => {
+      {gamesByIdList.data.map((eachGame, i) => {
         return (
           <>
-            <EachGameInfoBox types="active">{eachGame.name}</EachGameInfoBox>
-            <button onClick={() => props.onSelect(eachGame)}>Select</button>
+            <EachGameInfoBox key={i} types="active">
+              {eachGame.name}
+            </EachGameInfoBox>
+            <button onClick={() => onSelect(eachGame)}>Select</button>
           </>
         );
       })}
