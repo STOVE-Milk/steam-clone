@@ -39,7 +39,7 @@ public class SocketService {
     // sessionId : roomId
     private static final Map<String, String> session_room = new ConcurrentHashMap<>();
     // roomId : room
-    private static final Map<String, Room> robby = new ConcurrentHashMap<>();
+    private static final Map<String, Room> lobby = new ConcurrentHashMap<>();
 
     private final SocketDataService socketDataService;
     private final PublishService publishService;
@@ -58,14 +58,14 @@ public class SocketService {
         concurrency 옵션을 통해 소비하는 속도를 높여보려 했지만 concurrency 수 만큼 메세지를 중복으로 소비해서 방법을 찾고있습니다.
         동일한 채널에서 concurrency 수 만큼 구독하게 되는데, 채널이 같아서 구독한 목록 중 배분해서 소비할 줄 알았지만, 전체가 함께 소비합니다.
     */
-    @RabbitListener(queues = "robby.queue", concurrency = "1")
+    @RabbitListener(queues = "lobby.queue", concurrency = "1")
     public void receiveMessage(final Message message) {
         String messageStr = new String(message.getBody(), StandardCharsets.UTF_8);
         messageStr = messageStr.substring(1, messageStr.length() - 1).replace("\\", "");
         String[] messages = messageStr.split("\\|");
         String roomId = messages[0];
 
-        if(robby.containsKey(roomId)) {
+        if(lobby.containsKey(roomId)) {
             try {
                 Behavior behavior = Behavior.fromInteger(Integer.parseInt(messages[1]));
                 switch (behavior) {
@@ -75,8 +75,8 @@ public class SocketService {
                         break;
                     case RESET:
                         String userId = messages[2];
-                        robby.get(roomId).updateMap(socketDataService.getUserMap(Integer.parseInt(userId)));
-                        robby.get(roomId).resetUserLocation();
+                        lobby.get(roomId).updateMap(socketDataService.getUserMap(Integer.parseInt(userId)));
+                        lobby.get(roomId).resetUserLocation();
                         synchronizeRoom(roomId, userId);
                         break;
                     case LEAVE:
@@ -116,7 +116,7 @@ public class SocketService {
         if(user_session.containsKey(userId)) {
             String preSessionId = user_session.get(userId);
             String preRoomId = session_room.get(preSessionId);
-            WebSocketSession preSession = robby.get(preRoomId).getSessionBySessionId(userId);
+            WebSocketSession preSession = lobby.get(preRoomId).getSessionBySessionId(userId);
             log.info("이전 세션, 방: " + preSessionId + "|" + preRoomId + "|" + (preSession == null));
             if(preSession != null) {
                 sendErrorMessage(preSession, ErrorCode.CONNECT_TO_OTHER_ROOM);
@@ -126,11 +126,11 @@ public class SocketService {
 
         // 방 생성
         Room room;
-        if(!robby.containsKey(roomId)) {
+        if(!lobby.containsKey(roomId)) {
             room = socketDataService.makeRoom(roomId, userId);
-            robby.put(roomId, room);
+            lobby.put(roomId, room);
         } else {
-            room = robby.get(roomId);
+            room = lobby.get(roomId);
         }
 
         // 방 입장
@@ -162,7 +162,7 @@ public class SocketService {
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
 
         // Direction Enum의 값 대로 이동을 시킵니다.
-        robby.get(roomId).moveUser(userId, moveRequestMessage.getDirection());
+        lobby.get(roomId).moveUser(userId, moveRequestMessage.getDirection());
         socketDataService.moveUserInRedis(roomId, userId, moveRequestMessage.getDirection());
 
         // 이동 메세지 발행
@@ -196,13 +196,13 @@ public class SocketService {
         // Map 데이터 수정
         Boolean isSuccess = socketDataService.updateUserMap(Integer.parseInt(roomId), buildRequestMessage.getMap());
         if(isSuccess) {
-            robby.get(roomId).updateMap(buildRequestMessage.getMap());
+            lobby.get(roomId).updateMap(buildRequestMessage.getMap());
             // 유저 위치 리셋 & 데이터 동기화
-            robby.get(roomId).resetUserLocation();
+            lobby.get(roomId).resetUserLocation();
             publishService.publishResetUserLocationAndSync(roomId, userId);
             socketDataService.resetUserLocationAndUpdateMap(roomId, buildRequestMessage.getMap());
             // 본인이 발행한 메세지까지 소비해서 주석처리
-            //sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, robby.get(roomId));
+            //sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, lobby.get(roomId));
             return true;
         } else {
             return sendErrorMessage(session, ErrorCode.SERVER_ERROR);
@@ -255,9 +255,9 @@ public class SocketService {
         // sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
 
         // 떠나기
-        Integer userNum = robby.get(roomId).leave(userId);
+        Integer userNum = lobby.get(roomId).leave(userId);
         if(userNum.equals(0))
-            robby.remove(roomId);
+            lobby.remove(roomId);
         user_session.remove(userId);
         userData.remove(sessionId);
         session_room.remove(sessionId);
@@ -321,8 +321,8 @@ public class SocketService {
 
     // 자신을 제외한 같은 방의 유저들에게 메세지를 전송합니다.
     public synchronized boolean sendMessageToRoom(String roomId, String myId, TextMessage message) throws NullPointerException{
-        if(robby.containsKey(roomId)) {
-            final Map<String, WebSocketSession> sessions = robby.get(roomId).getSessions();
+        if(lobby.containsKey(roomId)) {
+            final Map<String, WebSocketSession> sessions = lobby.get(roomId).getSessions();
             sessions.forEach( (sessionId, session) -> {
                 try {
                     if (!userData.get(session.getId()).getIdx().toString().equals(myId)) {
@@ -346,8 +346,8 @@ public class SocketService {
     }
 
     public synchronized boolean sendMessageToAll(String roomId, TextMessage message) throws NullPointerException{
-        if(robby.containsKey(roomId)) {
-            final Map<String, WebSocketSession> sessions = robby.get(roomId).getSessions();
+        if(lobby.containsKey(roomId)) {
+            final Map<String, WebSocketSession> sessions = lobby.get(roomId).getSessions();
             sessions.forEach( (sessionId, session) -> {
                 try {
                     synchronized (session) {
