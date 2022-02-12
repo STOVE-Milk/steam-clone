@@ -17,6 +17,69 @@ interface INavBarStyledProps {
   open: boolean;
 }
 
+export default function NavBar() {
+  const [open, setOpen] = useState(true);
+
+  // TODO: 실제 친구 목록 가져오기
+  const [friends, setFriends] = useState([] as IFriend[]);
+
+  useEffect(() => {
+    const media = window.matchMedia(theme.breakpoints.medium.slice(7));
+    const listener = () => {
+      if (media.matches) {
+        setOpen(false);
+      } else {
+        setOpen(true);
+      }
+    };
+    window.addEventListener('resize', listener);
+    return () => window.removeEventListener('resize', listener);
+  }, []);
+
+  return (
+    <NavBarWrapper>
+      <LogoSection>
+        <LogoBox open={open}>
+          <Image src={LogoImage} layout={'fixed'} width={30} height={30}></Image>
+          <LogoTitle>STEAM</LogoTitle>
+        </LogoBox>
+        <OpenBar open={open} icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
+      </LogoSection>
+      <SectionTitle>Menus</SectionTitle>
+      <MenuSection>
+        <MenuBox open={open} page="game" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Game'} />
+        <MenuBox
+          open={open}
+          page="category"
+          icon={<FontAwesomeIcon icon={faBook} size="2x" inverse />}
+          name={'Category'}
+        />
+        <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} size="2x" inverse />} name={'Chat'} />
+        <MenuBox
+          open={open}
+          page="wishlist"
+          icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />}
+          name={'Wish'}
+        />
+      </MenuSection>
+      <SectionDivider />
+      <SectionTitle>
+        Friends
+        <Link href={'/friend'}>
+          <FriendSettingBtn>
+            <FontAwesomeIcon icon={faCog} inverse></FontAwesomeIcon>
+          </FriendSettingBtn>
+        </Link>
+      </SectionTitle>
+      <FriendSection>
+        {friends.map((friend) => {
+          <FriendBox open={open} friendInfo={friend} />;
+        })}
+      </FriendSection>
+    </NavBarWrapper>
+  );
+}
+
 const NavBarWrapper = styled.div`
   width: fit-content;
   height: 100vh;
@@ -88,66 +151,3 @@ const FriendSettingBtn = styled.div`
   margin-left: auto;
   cursor: pointer;
 `;
-
-export default function NavBar() {
-  const [open, setOpen] = useState(true);
-
-  // TODO: 실제 친구 목록 가져오기
-  const [friends, setFriends] = useState([] as IFriend[]);
-
-  useEffect(() => {
-    const media = window.matchMedia(theme.breakpoints.medium.slice(7));
-    const listener = () => {
-      if (media.matches) {
-        setOpen(false);
-      } else {
-        setOpen(true);
-      }
-    };
-    window.addEventListener('resize', listener);
-    return () => window.removeEventListener('resize', listener);
-  }, []);
-
-  return (
-    <NavBarWrapper>
-      <LogoSection>
-        <LogoBox open={open}>
-          <Image src={LogoImage} layout={'fixed'} width={30} height={30}></Image>
-          <LogoTitle>STEAM</LogoTitle>
-        </LogoBox>
-        <OpenBar open={open} icon={faBars} size="2x" inverse onClick={() => setOpen(!open)} />
-      </LogoSection>
-      <SectionTitle>Menus</SectionTitle>
-      <MenuSection>
-        <MenuBox open={open} page="game" icon={<FontAwesomeIcon icon={faGamepad} size="2x" inverse />} name={'Game'} />
-        <MenuBox
-          open={open}
-          page="category"
-          icon={<FontAwesomeIcon icon={faBook} size="2x" inverse />}
-          name={'Category'}
-        />
-        <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} size="2x" inverse />} name={'Chat'} />
-        <MenuBox
-          open={open}
-          page="wishlist"
-          icon={<FontAwesomeIcon icon={faHeart} size="2x" inverse />}
-          name={'Wish'}
-        />
-      </MenuSection>
-      <SectionDivider />
-      <SectionTitle>
-        Friends
-        <Link href={'/friend'}>
-          <FriendSettingBtn>
-            <FontAwesomeIcon icon={faCog} inverse></FontAwesomeIcon>
-          </FriendSettingBtn>
-        </Link>
-      </SectionTitle>
-      <FriendSection>
-        {friends.map((friend) => {
-          <FriendBox open={open} friendInfo={friend} />;
-        })}
-      </FriendSection>
-    </NavBarWrapper>
-  );
-}

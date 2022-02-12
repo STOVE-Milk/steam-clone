@@ -10,8 +10,19 @@ export interface IMenuBoxProps {
   open: boolean;
 }
 
-interface MenuBoxStyleProps {
+interface IMenuBoxStyleProps {
   open: boolean;
+}
+
+export default function MenuBox(props: IMenuBoxProps) {
+  return (
+    <Link href={`/${props.page}`}>
+      <MenuBoxWrapper>
+        <MenuIcon open={props.open}>{props.icon}</MenuIcon>
+        {props.open ? <MenuTitle types={'small'}>{props.name}</MenuTitle> : null}
+      </MenuBoxWrapper>
+    </Link>
+  );
 }
 
 const MenuBoxWrapper = styled.div`
@@ -31,7 +42,7 @@ const MenuBoxWrapper = styled.div`
   }
 `;
 
-const MenuIcon = styled.div<MenuBoxStyleProps>`
+const MenuIcon = styled.div<IMenuBoxStyleProps>`
   width: 30px;
   height: 30px;
   display: flex;
@@ -44,14 +55,3 @@ const MenuTitle = styled(Text)`
   margin-left: 20px;
   margin-top: 5px;
 `;
-
-export default function MenuBox(props: IMenuBoxProps) {
-  return (
-    <Link href={`/${props.page}`}>
-      <MenuBoxWrapper>
-        <MenuIcon open={props.open}>{props.icon}</MenuIcon>
-        {props.open ? <MenuTitle types={'small'}>{props.name}</MenuTitle> : null}
-      </MenuBoxWrapper>
-    </Link>
-  );
-}

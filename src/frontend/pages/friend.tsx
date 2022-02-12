@@ -24,94 +24,6 @@ import FilledButton from 'components/atoms/FilledButton';
 import { TextTheme } from 'components/atoms/Text';
 import { IFriend } from 'components/molecules/FriendBox';
 
-const Wrapper = styled.div`
-  display: flex;
-  padding: 3rem;
-  flex-direction: column;
-  height: 100%;
-`;
-
-const TitleSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 2rem 0;
-  height: fit-content;
-`;
-
-const FriendSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow-y: scroll;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const FriendItem = styled.div`
-  display: flex;
-  width: 100%;
-  background: ${(props) => props.theme.colors.secondaryBg};
-  margin: 0.5rem 0;
-  border-radius: 10px;
-`;
-
-const FriendActionBox = styled.div`
-  width: fit-content;
-  padding: 0 1rem;
-  display: flex;
-  align-items: center;
-`;
-
-const FriendActionBtn = styled(FontAwesomeIcon)`
-  margin: 0 1rem;
-  cursor: pointer;
-`;
-
-const Title = styled.div<{ focus: boolean }>`
-  padding: 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-
-  ${(props) =>
-    props.focus
-      ? css`
-          background: ${props.theme.colors.activeBg};
-        `
-      : null}
-  :hover {
-    background: ${(props) => props.theme.colors.activeBg};
-  }
-`;
-
-const SearchBox = styled.div`
-  border: 1px solid white;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-`;
-
-const SearchInput = styled.input`
-  border: none;
-  padding: 0.5rem;
-  flex: 1;
-  background: transparent;
-  color: ${TextTheme.medium.color};
-  font-size: ${TextTheme.medium.size};
-`;
-
-const ResultBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-top: 3rem;
-`;
-
-const FriendList = styled.div`
-  padding: 1rem 0;
-`;
-
 const Friend: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
   // const { user } = useSelector((state: IState) => state.user);
@@ -288,3 +200,91 @@ const Friend: NextPage = () => {
 };
 
 export default Friend;
+
+const Wrapper = styled.div`
+  display: flex;
+  padding: 3rem;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const TitleSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0;
+  height: fit-content;
+`;
+
+const FriendSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const FriendItem = styled.div`
+  display: flex;
+  width: 100%;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  margin: 0.5rem 0;
+  border-radius: 10px;
+`;
+
+const FriendActionBox = styled.div`
+  width: fit-content;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+`;
+
+const FriendActionBtn = styled(FontAwesomeIcon)`
+  margin: 0 1rem;
+  cursor: pointer;
+`;
+
+const Title = styled.div<{ focus: boolean }>`
+  padding: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+
+  ${(props) =>
+    props.focus
+      ? css`
+          background: ${props.theme.colors.activeBg};
+        `
+      : null}
+  :hover {
+    background: ${(props) => props.theme.colors.activeBg};
+  }
+`;
+
+const SearchBox = styled.div`
+  border: 1px solid white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+`;
+
+const SearchInput = styled.input`
+  border: none;
+  padding: 0.5rem;
+  flex: 1;
+  background: transparent;
+  color: ${TextTheme.medium.color};
+  font-size: ${TextTheme.medium.size};
+`;
+
+const ResultBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 3rem;
+`;
+
+const FriendList = styled.div`
+  padding: 1rem 0;
+`;

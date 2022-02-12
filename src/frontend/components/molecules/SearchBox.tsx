@@ -11,23 +11,6 @@ interface ISearchbox {
   setOption: (e: any) => void;
   setInputText: (e: any) => void;
 }
-const SearchBoxWrapper = styled.div`
-  width: 60%;
-  display: flex;
-  align-items: center;
-`;
-
-const InputStyle = styled.input`
-  flex: 1;
-  padding: 0.25rem 0.25rem;
-  border: 1px solid ${(props) => props.theme.colors.primaryBg};
-  border-radius: 10px;
-  background-color: ${(props) => props.theme.colors.primaryBg};
-  color: ${(props) => props.theme.colors.secondaryText};
-`;
-const FontAwesomeIconStyle = styled(FontAwesomeIcon)`
-  cursor: pointer;
-`;
 
 export default function SearchBox({ option, inputText, setOption, setInputText }: ISearchbox) {
   const optionName = [
@@ -65,3 +48,21 @@ export default function SearchBox({ option, inputText, setOption, setInputText }
     </SearchBoxWrapper>
   );
 }
+
+const SearchBoxWrapper = styled.div`
+  width: 60%;
+  display: flex;
+  align-items: center;
+`;
+
+const InputStyle = styled.input`
+  flex: 1;
+  padding: 0.25rem 0.25rem;
+  border: 1px solid ${(props) => props.theme.colors.primaryBg};
+  border-radius: 10px;
+  background-color: ${(props) => props.theme.colors.primaryBg};
+  color: ${(props) => props.theme.colors.secondaryText};
+`;
+const FontAwesomeIconStyle = styled(FontAwesomeIcon)`
+  cursor: pointer;
+`;
