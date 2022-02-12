@@ -203,18 +203,6 @@ func (gc *GameService) DeleteReview(ctx context.Context) (*pb.IsSuccessResponse_
 	}, nil
 }
 
-func (gc *GameService) GetSearchingGameListInCart(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
-	gameSimpleList, err := gc.r.GetGameListInWishlist(ctx)
-	if err != nil {
-		return nil, err
-	}
-	pbGameSimpleList, err := gc.parsingGameSimpleList(ctx, gameSimpleList)
-	if err != nil {
-		return nil, err
-	}
-	return pbGameSimpleList, nil
-}
-
 func (gc *GameService) GetGameListInCart(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
 	gameSimpleList, err := gc.r.GetGameListInCart(ctx)
 	if err != nil {
@@ -225,6 +213,38 @@ func (gc *GameService) GetGameListInCart(ctx context.Context) (*pb.GameSimpleLis
 		return nil, err
 	}
 	return pbGameSimpleList, nil
+}
+
+func (gc *GameService) GetSearchingGameList(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
+	gameSimpleList, err := gc.r.GetSearchingGameList(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pbGameSimpleList, err := gc.parsingGameSimpleList(ctx, gameSimpleList)
+	if err != nil {
+		return nil, err
+	}
+	return pbGameSimpleList, nil
+}
+
+func (gc *GameService) GameInstall(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
+	isSuccess, err := gc.r.GameInstall(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IsSuccessResponse_Success{
+		Success: isSuccess,
+	}, nil
+}
+
+func (gc *GameService) GameUninstall(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
+	isSuccess, err := gc.r.GameUninstall(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IsSuccessResponse_Success{
+		Success: isSuccess,
+	}, nil
 }
 
 func (gc *GameService) parsingGameSimpleList(ctx context.Context, gameSimpleList []*models.GameSimple) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {

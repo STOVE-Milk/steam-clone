@@ -32,7 +32,6 @@ func (store *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (
 		Message: "category list",
 		Data:    res,
 	}, nil
-
 }
 
 func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.SortingParamRequest) (*pb.GameSimpleListResponse, error) {
@@ -286,6 +285,74 @@ func (store *storeServer) DeleteReview(ctx context.Context, req *pb.ReviewQueryR
 	return &pb.IsSuccessResponse{
 		Code:    31000,
 		Message: "리뷰 삭제를 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) GameInstall(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.GameCtr.GameInstall(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "게임 인스톨 요청을 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+func (store *storeServer) GameUninstall(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.GameCtr.GameUninstall(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "게임 언인스톨 요청을 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) GetSearchingGameList(ctx context.Context, req *pb.SearchingContentQueryParamRequest) (*pb.GameSimpleListResponse, error) {
+	defer utils.Recover()
+	ctx = context.WithValue(ctx, "content", req.Content)
+	res, err := store.GameCtr.GetSearchingGameList(ctx)
+	if err != nil {
+		return &pb.GameSimpleListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.GameSimpleListResponse{
+		Code:    31000,
+		Message: "game list by cart",
 		Data:    res,
 	}, nil
 }

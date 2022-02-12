@@ -16,7 +16,7 @@ func ReadErrorJson() *os.File {
 	}
 	return jsonFile
 }
-func InitError() *models.StoreError {
+func InitError() models.StoreError {
 	jsonFile := ReadErrorJson()
 	defer jsonFile.Close()
 	var e models.StoreError
@@ -26,5 +26,5 @@ func InitError() *models.StoreError {
 	}
 	json.Unmarshal(byteValue, &e)
 
-	return &e
+	return e
 }

@@ -44,6 +44,11 @@ service Store {
             get: "/store/wishes"
         };
     }
+    rpc GetSearchingGameList(SearchingContentQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/games/search"
+        };
+    }
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
             post: "/store/wishes"
@@ -70,6 +75,17 @@ service Store {
     rpc DeleteReview(ReviewQueryRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
             delete: "/store/games/reviews/{review_id}"
+        };
+    }
+    rpc GameInstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            patch: "/store/games/install"
+            body: "*"
+        };
+    }
+    rpc GameUninstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            delete: "/store/games/uninstall/{game_id}"
         };
     }
 }
@@ -205,6 +221,9 @@ message GameIdQueryParamRequest{
 
 message GameIdListQueryParamRequest{
     string game_id_list = 1;
+}
+message SearchingContentQueryParamRequest{
+    string content = 1;
 }
 
 message SortingParamRequest{

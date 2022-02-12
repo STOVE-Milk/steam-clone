@@ -250,7 +250,6 @@ func (r *Repo) GetGameListInCart(ctx context.Context) ([]*models.GameSimple, *mo
 		if err != nil {
 			return nil, utils.ErrorHandler(storeErr.GetGameListInCartScanErr, err)
 		}
-		fmt.Println(gameIdList)
 		gameSimpleList = append(gameSimpleList, &game)
 	}
 	return gameSimpleList, nil
@@ -370,6 +369,62 @@ func (r *Repo) PostWishlist(ctx context.Context) (bool, *models.Error) {
 		return false, utils.ErrorHandler(storeErr.PostWishListQueryErr, err)
 	}
 
+	return true, nil
+}
+
+func (r *Repo) GetSearchingGameList(ctx context.Context) ([]*models.GameSimple, *models.Error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	content := ctx.Value("content").(string)
+	var gameSimpleList []*models.GameSimple
+	rows, err := r.db.QueryContext(ctx, `	
+	SELECT idx, name, description_snippet, price, sale, image, video, os, download_count 
+	FROM steam.game
+	WHERE name like ?
+	`, "%"+content+"%")
+	if err != nil {
+		return nil, utils.ErrorHandler(storeErr.GetSearchingGameListQueryErr, err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var game models.GameSimple
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
+		if err != nil {
+			return nil, utils.ErrorHandler(storeErr.GetSearchingGameListScanErr, err)
+		}
+		gameSimpleList = append(gameSimpleList, &game)
+	}
+	return gameSimpleList, nil
+}
+
+func (r *Repo) GameInstall(ctx context.Context) (bool, *models.Error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	userId := ctx.Value("userId").(int32)
+	gameId := ctx.Value("gameId").(int32)
+	n, err := r.db.Exec("UPDATE review SET is_downloaded=1 WHERE user_id=? AND game_id=?", userId, gameId)
+	if err != nil {
+		return false, utils.ErrorHandler(storeErr.GameInstallQueryErr, err)
+	}
+	if ok, _ := n.RowsAffected(); ok == 0 {
+		return false, utils.ErrorHandler(storeErr.AlreadyGameInstallErr, err)
+	}
+
+	return true, nil
+}
+
+func (r *Repo) GameUninstall(ctx context.Context) (bool, *models.Error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	userId := ctx.Value("userId").(int32)
+	gameId := ctx.Value("gameId").(int32)
+	n, err := r.db.Exec("UPDATE review SET is_downloaded=0 WHERE user_id=? AND game_id=?", userId, gameId)
+	if err != nil {
+		return false, utils.ErrorHandler(storeErr.GameUninstallQueryErr, err)
+	}
+	if ok, _ := n.RowsAffected(); ok == 0 {
+		return false, utils.ErrorHandler(storeErr.AlreadyGameUninstallErr, err)
+	}
 	return true, nil
 }
 
