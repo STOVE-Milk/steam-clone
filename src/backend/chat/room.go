@@ -8,6 +8,11 @@ import (
 	uuid "github.com/google/uuid"
 )
 
+// 룸을 생성하고 다룹니다.
+// 룸이 생성 될 시 레디스에 룸의 이름으로 구독 신청을 합니다.
+// 타겟 룸이 존재한다면 타겟 룸에 받은 채팅 메세지를 브로드캐스팅 합니다.
+// 룸에 클라이언트를 등록합니다.
+
 const goodbyeMessage = "%s leave the room"
 
 type Room struct {
@@ -20,7 +25,6 @@ type Room struct {
 	broadcast  chan *Message
 }
 
-// NewRoom creates a new Room
 func NewRoom(name string, private bool) *Room {
 	return &Room{
 		ID:         uuid.New().String(),
