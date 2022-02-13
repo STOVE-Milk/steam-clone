@@ -1,13 +1,14 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import styled from 'styled-components';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowMaximize, faAppleAlt } from '@fortawesome/free-solid-svg-icons';
 
-import wrapper from 'modules/configureStore';
 import { IState } from 'modules';
+import { gameInfo } from 'modules/game';
+import * as GameAPI from 'api/game/api';
 import { localePrice } from 'util/localeString';
 
 import Text from 'components/atoms/Text';
@@ -18,71 +19,73 @@ import gameImage1 from 'public/game.png';
 import gameImage2 from 'public/game2.jpg';
 
 const Detail: NextPage<IState> = () => {
-  const { game } = useSelector((state: IState) => state.game);
-  const array = [1, 2, 3, 4];
+  const [game, setGame] = useState({} as gameInfo);
+
+  const userId = 1;
+  const getGame = async () => {
+    // (스토어의 userId !== 현재 url의 userId 일 때)
+    const res = (await GameAPI.getGameAPI(userId)).data.game;
+    setGame(res);
+  };
+
+  useEffect(() => {
+    getGame();
+  }, []);
 
   return (
     <DetailWrapper>
       <GameIntroSection>
-        <GameTitle types={'title'}>{game.data && game.data.name}</GameTitle>
+        <GameTitle types={'title'}>{game.name}</GameTitle>
         <CarouselComponent
-          buttons={array.map((data) => {
-            return <Image src={data % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover"></Image>;
+          buttons={game.image.sub.map((img, index) => {
+            return <Image src={index % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover"></Image>;
           })}
-          slides={array.map((data) => {
-            return (
-              <BigGameSlide
-                key={game.data?.id}
-                image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="responsive" />}
-              ></BigGameSlide>
-            );
+          slides={game.image.sub.map((img) => {
+            return <BigGameSlide key={game.id} {...game}></BigGameSlide>;
           })}
         ></CarouselComponent>
       </GameIntroSection>
       <GameDetailSection>
         <GameDetailBox>
           <TitleBox>
-            <Text types="large"> {game.data && game.data.name}</Text>
+            <Text types="large"> {game.name}</Text>
             <div className="desc">
-              <Text types="small"> {game.data && game.data.description}</Text>
+              <Text types="small"> {game.description_snippet}</Text>
             </div>
           </TitleBox>
           <OSBox>
             <Text types="medium">지원 가능 OS</Text>
-            {game.data &&
-              game.data.os.map((eachOs: string) => {
-                return (
-                  <div className="OSCol">
-                    <FontAwesomeIcon icon={eachOs === 'windows' ? faWindowMaximize : faAppleAlt} inverse />
-                    <Text types="small">{eachOs}</Text>
-                  </div>
-                );
-              })}
+            {game.os_list.map((eachOs: string) => {
+              return (
+                <div className="OSCol">
+                  <FontAwesomeIcon icon={eachOs === 'windows' ? faWindowMaximize : faAppleAlt} inverse />
+                  <Text types="small">{eachOs}</Text>
+                </div>
+              );
+            })}
           </OSBox>
           <CategoryBox>
             <Text types="medium">게임 카테고리</Text>
             <div className="categories">
-              {game.data &&
-                game.data.category_list.map((category: string) => {
-                  return (
-                    <span>
-                      <Text types="small">{`#${category}`}</Text>
-                    </span>
-                  );
-                })}
+              {game.category_list.map((category: string) => {
+                return (
+                  <span>
+                    <Text types="small">{`#${category}`}</Text>
+                  </span>
+                );
+              })}
             </div>
           </CategoryBox>
           <GameBuyBox>
-            <Text types="large"> {game.data && game.data.name}</Text>
+            <Text types="large"> {game.name}</Text>
             <div className="actionBox">
-              <Text types="medium"> {`${game.data && localePrice(game.data.price['KR'], game.data.country)}`}</Text>
+              <Text types="medium"> {`${localePrice(game.price, 'KR')}원`}</Text>
               <FilledButton types={'primary'}>구매</FilledButton>
               <FilledButton types={'primary'}>장바구니</FilledButton>
             </div>
           </GameBuyBox>
           <DevInfoBox>
             <Text types="medium">개발자 정보</Text>
-            {/* <Text types="small"> {game.data && game.data.name}</Text> */}
           </DevInfoBox>
         </GameDetailBox>
       </GameDetailSection>

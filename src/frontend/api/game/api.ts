@@ -14,8 +14,8 @@ export async function getGamesByCategoryAPI(param: IGetGamesByCategoryReqType) {
   return response.data;
 }
 
-export async function getGameAPI(param: IGetGameReqType) {
-  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/detail/${param.id}`);
+export async function getGameAPI(id: number) {
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/detail/${id.toString()}`);
 
   return response.data;
 }

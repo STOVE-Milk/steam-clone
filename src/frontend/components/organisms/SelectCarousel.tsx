@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+
 import Carousel from 'react-multi-carousel';
 import { ButtonGroupProps } from 'react-multi-carousel/lib/types';
 import 'react-multi-carousel/lib/styles.css';

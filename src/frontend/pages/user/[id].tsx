@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import styled from 'styled-components';
 
 import * as UserAPI from 'api/user/api';
-import * as guestAPI from '../../api/guestbook/api';
+import * as guestAPI from 'api/guestbook/api';
 
 import Text from 'components/atoms/Text';
 import FriendBox, { IFriend } from 'components/molecules/FriendBox';

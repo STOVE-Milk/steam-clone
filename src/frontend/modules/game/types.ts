@@ -8,7 +8,7 @@ export interface gameInfo {
   description_snippet: string;
   download_count: number;
   id: number;
-  image?: {
+  image: {
     main: string;
     sub: string[];
   };
@@ -16,7 +16,7 @@ export interface gameInfo {
   os_list: string[];
   price: number;
   sale: number;
-  video?: {
+  video: {
     main: string;
     sub: string[];
   };

@@ -8,6 +8,7 @@ export default function BigGameSlide(props: gameInfo) {
   return (
     <SlideWrapper>
       <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
+      {/* image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="responsive" />} */}
     </SlideWrapper>
   );
 }
