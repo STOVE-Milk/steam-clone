@@ -12,6 +12,7 @@ MD파일을 예쁘게 보기 위해, 하단 이미지를 참고하여 "Display t
 1. [프로젝트 소개](#1-프로젝트-소개)
 2. [디렉토리 구조](#2-디렉토리-구조)
 3. [페이지 소개](#3-페이지-소개)
+4. [코드 주석 컨벤션](#4-코드-주석-컨벤션)
 
 </br></br>
 
@@ -20,7 +21,7 @@ MD파일을 예쁘게 보기 위해, 하단 이미지를 참고하여 "Display t
 - **주제**: STEAM(스토어) 클론 프로젝트
 - **프론트엔드 기술 스택**: [NextJS](https://nextjs.org/)(ReactJS기반 SSR 프레임워크), Redux, Saga, TypeScript, Styled-component
 - **맡은 기능**:
-  - [HTTP통신] 카테고리, 회원가입, 로그인, 찜, 카트
+  - [HTTP통신] 카테고리, 회원가입, 로그인, 찜, 카트, 충전
   - [WebSocket통신] 라이브러리(2d)
 
 ![](https://i.imgur.com/VKceTwA.png)
@@ -74,11 +75,11 @@ MD파일을 예쁘게 보기 위해, 하단 이미지를 참고하여 "Display t
 - [페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/category.tsx): `pages/category.tsx`
 - [중심 컴포넌트](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/GameInfo.tsx): `/organisms/GameInfo.tsx`
 
-| Desktop                              |
+| Desktop 뷰                           |
 | ------------------------------------ |
 | ![](https://i.imgur.com/5C5U1rc.png) |
 
-| Tablet                               | Mobile                               |
+| Tablet 뷰                            | Mobile 뷰                            |
 | ------------------------------------ | ------------------------------------ |
 | ![](https://i.imgur.com/Mxe95dv.png) | ![](https://i.imgur.com/YfqrSoM.png) |
 
@@ -91,7 +92,7 @@ MD파일을 예쁘게 보기 위해, 하단 이미지를 참고하여 "Display t
 
 : 회원가입/로그인으로 나온 정보(JWT)를 Localstorage로 관리하고 전체 Authorization이 필요한 페이지들에게 영상을 미치는 시작 포인트가 되는 페이지 입니다.
 
-- **구현 중점 포인트**: `#setState Hooks를 사용한 setErros 객체로 회원가입 페이지의 모든 에러 처리`
+- **구현 중점 포인트**: `#setState Hooks를 사용한 setErrors 객체로 회원가입 페이지의 모든 에러 처리`
 - [회원가입 페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/signup.tsx): `pages/signup.tsx`
 - [로그인 페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/signin.tsx): `pages/signin.tsx`
 - [중심 컴포넌트](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/molecules/AuthInput.tsx): `/molecules/AuthInput.tsx`
@@ -114,9 +115,9 @@ MD파일을 예쁘게 보기 위해, 하단 이미지를 참고하여 "Display t
 - [장바구니(cart) 페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/cart.tsx): `pages/cart.tsx`
   - 카카오페이 충전
 
-| 찜(wishlist)                         | 장바구니(cart)                       | 결제                                 |
-| ------------------------------------ | ------------------------------------ | ------------------------------------ |
-| ![](https://i.imgur.com/OLlrGcJ.png) | ![](https://i.imgur.com/pUxq0HH.png) | ![](https://i.imgur.com/Iht4CYW.png) |
+| 찜(wishlist)                         | 장바구니(cart)                       |
+| ------------------------------------ | ------------------------------------ |
+| ![](https://i.imgur.com/OLlrGcJ.png) | ![](https://i.imgur.com/pUxq0HH.png) |
 
 </br>
 </br>
@@ -129,8 +130,13 @@ MD파일을 예쁘게 보기 위해, 하단 이미지를 참고하여 "Display t
 - 비동기 처리 이슈로 개발 진행 중 입니다. [Pull Request 바로가기](https://github.com/STOVE-Milk/steam-clone/pull/18)
 - [충전 요청 페이지](https://github.com/STOVE-Milk/steam-clone/blob/d6b590931ef77329b4b57cd15dba7f4c50939d13/src/frontend/pages/charge/index.tsx)
 - [충전 승인 페이지](https://github.com/STOVE-Milk/steam-clone/blob/d6b590931ef77329b4b57cd15dba7f4c50939d13/src/frontend/pages/charge/approval/finish.tsx)
-  </br>
-  </br>
+
+| 충전 요청 페이지                     |
+| ------------------------------------ |
+| ![](https://i.imgur.com/Iht4CYW.png) |
+
+</br>
+</br>
 
 ### 5. 라이브러리
 
@@ -145,6 +151,7 @@ MD파일을 예쁘게 보기 위해, 하단 이미지를 참고하여 "Display t
 </br>
  
 ###  4. 코드 주석 컨벤션
+: 코드 속에서 설명을 위해 추가해놓은 주석에 대한 내용입니다.
 ```
 [refer]: 참고한 코드가 있는 경우
 [explain]: 설명이 필요하다고 생각하는 부분
