@@ -1,16 +1,9 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import type { NextPage } from 'next';
-import { GetServerSideProps } from 'next';
-import styled, { StyledInterface } from 'styled-components';
-import { useSelector } from 'react-redux';
-import Image from 'next/image';
-import { io } from 'socket.io-client';
 
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faUser, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-
-import wrapper from 'modules/configureStore';
-// import { IState } from 'modules';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
@@ -66,8 +59,6 @@ const ChatViewBox = styled.div`
   }
 `;
 
-const Message = styled.div``;
-
 const ChatInputBox = styled.div`
   background: ${(props) => props.theme.colors.secondaryBg};
   height: 5rem;
@@ -92,11 +83,6 @@ const ChatInput = styled.textarea`
 `;
 
 const ChatButton = styled(FilledButton)``;
-// const Chat: NextPage<IState> = () => {
-//   const { game } = useSelector((state: IState) => state.game);
-
-//   return <div></div>;
-// };
 
 interface IServerMessage {
   action: string;
@@ -220,25 +206,9 @@ const Chat: NextPage = () => {
     );
   };
 
-  const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.shiftKey) {
-      return;
-    }
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  };
-
-  const onSelect = (id: number) => {
-    let array = selectFriends;
-    array.push(id);
-    setSelectFriends(array);
-  };
-
   const onSubmit = () => {
     // TODO: 개인채팅인지 단체채팅인지 선택하는 뷰랑 로직 추가
     // TODO: 단체채팅일 경우 채팅방 이름 입력 받기
-
     ws.current?.send(
       JSON.stringify({
         action: 'join-room-private',
@@ -254,6 +224,21 @@ const Chat: NextPage = () => {
         })}`.toString(),
       }),
     );
+  };
+
+  const onSelect = (id: number) => {
+    let array = selectFriends;
+    array.push(id);
+    setSelectFriends(array);
+  };
+
+  const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.shiftKey) {
+      return;
+    }
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
   };
 
   return (
@@ -309,11 +294,5 @@ const Chat: NextPage = () => {
     </ChatWrapper>
   );
 };
-
-// export const getServerSideProps = wrapper.getServerSideProps((store) => async ({ params }) => {
-//   // store.dispatch(getGame.request({ id: params && Number(params.id) }));
-
-//   return { props: {} };
-// });
 
 export default Chat;
