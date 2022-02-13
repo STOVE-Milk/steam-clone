@@ -1,17 +1,36 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+
 import styled from 'styled-components';
-import SearchBox from 'components/molecules/SearchBox';
-import Profile from 'components/atoms/Profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 
-// to do: 영역 잡고, css 로 width 100%, height: 80px 등으로 고정
-// 내용물: inputBox, 알림 아이콘, 유저인포
+import Profile from 'components/atoms/Profile';
+import SearchBox from 'components/molecules/SearchBox';
+
+export default function Header() {
+  const [option, setOption] = useState('name');
+  const [inputText, setInputText] = useState('');
+  const router = useRouter();
+
+  return (
+    <HeaderStyle>
+      <SearchBarWrapper>
+        <SearchBox option={option} inputText={inputText} setOption={setOption} setInputText={setInputText} />
+      </SearchBarWrapper>
+      <AlertUserWrapper>
+        <FontAwesomeIcon icon={faBell} inverse />
+        {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
+        <Profile onClick={() => router.push('/user/1')} userImage={<FontAwesomeIcon icon={faUser} inverse />} />
+      </AlertUserWrapper>
+    </HeaderStyle>
+  );
+}
 
 const HeaderStyle = styled.header`
   width: 100%;
   height: 80px;
-  position: fixed;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -38,24 +57,6 @@ const AlertUserWrapper = styled.div`
     div {
       margin-right: 20px;
       position: relative;
-      right: 30px;
     }
   }
 `;
-
-export default function Header() {
-  const [option, setOption] = useState('name');
-  const [inputText, setInputText] = useState('');
-
-  return (
-    <HeaderStyle>
-      <SearchBarWrapper>
-        <SearchBox option={option} inputText={inputText} setOption={setOption} setInputText={setInputText} />
-      </SearchBarWrapper>
-      <AlertUserWrapper>
-        <FontAwesomeIcon icon={faBell} inverse />
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />
-      </AlertUserWrapper>
-    </HeaderStyle>
-  );
-}

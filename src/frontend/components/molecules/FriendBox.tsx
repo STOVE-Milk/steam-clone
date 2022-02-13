@@ -1,13 +1,41 @@
 import React from 'react';
 import styled from 'styled-components';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+
+import { theme } from 'styles/theme';
 import Text, { TextStyle } from 'components/atoms/Text';
 import Dot from 'components/atoms/Dot';
-import { theme } from 'styles/theme';
+import Profile from 'components/atoms/Profile';
 
-export interface FriendBoxProps {
-  icon: JSX.Element;
-  name: string;
+export interface IFriend {
+  id: number;
+  nickname: string;
+  profile: {
+    image: string | JSX.Element;
+    description: string;
+  };
+  is_friend?: number;
+}
+
+export interface IFriendBoxProps {
+  friendInfo: IFriend;
   open: boolean;
+}
+
+export default function FriendBox(props: IFriendBoxProps) {
+  return (
+    <FriendBoxWrapper>
+      {props.friendInfo.profile.image === '' ? (
+        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
+      ) : (
+        '실제 이미지'
+      )}
+      {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
+      <FriendStatus color={theme.colors.online} />
+    </FriendBoxWrapper>
+  );
 }
 
 const FriendBoxWrapper = styled.div`
@@ -17,6 +45,7 @@ const FriendBoxWrapper = styled.div`
   border-radius: 10px;
   cursor: pointer;
   padding-left: 10px;
+  width: 100%;
 
   :hover {
     background: ${(props) => props.theme.colors.activeBg};
@@ -30,20 +59,9 @@ const FriendBoxWrapper = styled.div`
 const FriendName = styled(Text)`
   margin-left: 20px;
   margin-top: 5px;
-  flex: 1;
 `;
 
 const FriendStatus = styled(Dot)`
-  margin-left: 10px;
-  margin-right: 20px;
+  margin-left: 20px;
+  margin-right: 30px;
 `;
-
-export default function FriendBox(props: FriendBoxProps) {
-  return (
-    <FriendBoxWrapper>
-      {props.icon}
-      {props.open ? <FriendName types={'small'}>{props.name}</FriendName> : null}
-      <FriendStatus color={theme.colors.online} />
-    </FriendBoxWrapper>
-  );
-}

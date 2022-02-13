@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class KakaoPayApprove {
+public class KakaoPayApproveRequest {
     private String cid;
     private String tid;
     private String partnerOrderId;
@@ -17,8 +17,8 @@ public class KakaoPayApprove {
     private String pgToken;
     private String payload;
 
-    public static KakaoPayApprove of(KakaoPayReadyCache cache, String pgToken) {
-        return KakaoPayApprove.builder()
+    public static KakaoPayApproveRequest of(KakaoPayReadyCache cache, String pgToken) {
+        return KakaoPayApproveRequest.builder()
                 .cid(cache.getCid())
                 .tid(cache.getTid())
                 .partnerOrderId(cache.getPartnerOrderId())

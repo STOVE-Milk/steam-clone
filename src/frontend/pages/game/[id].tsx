@@ -1,26 +1,182 @@
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
-import { GetServerSideProps } from 'next';
-import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
+import styled from 'styled-components';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { faWindowMaximize, faAppleAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { getGame } from 'modules/game';
 import { IState } from 'modules';
-import { getReviewAPI, addReviewAPI, modifyReviewAPI } from 'pages/api/game/api';
+import { gameInfo } from 'modules/game/types';
+import * as GameAPI from 'api/game/api';
+import * as ReviewAPI from 'api/review/api';
+import { localePrice } from 'util/localeString';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
-import { localePrice } from 'util/localeString';
-
-import CarouselComponent from 'components/organisms/SelectCarousel';
 import BigGameSlide from 'components/molecules/BigGameSlide';
+import CarouselComponent from 'components/organisms/SelectCarousel';
 import GameReview from 'components/organisms/GameReview';
-import gameImage1 from 'public/game.png';
-import gameImage2 from 'public/game2.jpg';
+
+interface IReview {
+  id: number;
+  user_id: number;
+  displayed_name: string;
+  content: string;
+  recommendation: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+const Detail: NextPage<IState> = () => {
+  const [game, setGame] = useState({} as gameInfo);
+  const [reviews, setReviews] = useState([] as IReview[]); // TODO: API/resType으로 만들기, 다른 곳도 통일
+  const [userReview, setUserReview] = useState({ content: '', recommendation: true });
+
+  const gameId = 1; // query.gameId;
+
+  const getGame = async () => {
+    const res = (await GameAPI.getGameAPI(gameId)).data.game;
+    setGame(res);
+  };
+
+  const getReviews = async () => {
+    const res = (await ReviewAPI.getReviewAPI(gameId)).data.review_list;
+    setReviews(res);
+  };
+
+  const setRecommend = (r: boolean) => {
+    setUserReview({ ...userReview, recommendation: r });
+  };
+
+  const addReview = async () => {
+    await ReviewAPI.addReviewAPI(gameId, { content: '', recommendation: false });
+  };
+
+  const modifyReview = async (id: number) => {
+    await ReviewAPI.modifyReviewAPI(gameId, { review_id: id, content: '', recommendation: false });
+  };
+
+  useEffect(() => {
+    getGame();
+    getReviews();
+  }, []);
+
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUserReview({ ...userReview, content: e.target.value });
+  };
+
+  return (
+    <DetailWrapper>
+      <GameImageSection>
+        <GameTitle types={'title'}>{game.name}</GameTitle>
+        <CarouselComponent
+          buttons={game.image.sub.map((img) => {
+            return <Image src={img} layout="fill" objectFit="cover"></Image>;
+          })}
+          slides={game.image.sub.map((img) => {
+            return <BigGameSlide key={game.id} {...game}></BigGameSlide>;
+          })}
+        ></CarouselComponent>
+      </GameImageSection>
+      <GameIntroSection>
+        <SnippetBox>
+          <GameInfoTitle types="large">{game.name}</GameInfoTitle>
+          <DescText types="small"> {game.description_snippet}</DescText>
+        </SnippetBox>
+        <Divider />
+        <EvaluationBox>
+          <GameInfoTitle types="medium">평가</GameInfoTitle>
+          <Evaluation>
+            <div className="RecommendBox">
+              <Text types="large">{`${(game.recommend_count / game.review_count) * 100}%`}</Text>
+              <RecommendCount types="tiny">{`${game.review_count}명 중 ${game.recommend_count}명 추천`}</RecommendCount>
+            </div>
+            <WishButtonBox>
+              <WishButton types="primary">위시리스트</WishButton>
+            </WishButtonBox>
+          </Evaluation>
+        </EvaluationBox>
+      </GameIntroSection>
+      <GameDetailSection>
+        <GameDetailBox>
+          <DescBox>
+            <GameInfoTitle types="medium">게임 상세 설명</GameInfoTitle>
+            <DescText types="small"> {game.description}</DescText>
+          </DescBox>
+          <OSBox>
+            <GameInfoTitle types="medium">지원 가능 OS</GameInfoTitle>
+            {game.os_list.map((eachOs: string) => {
+              return (
+                <div className="OSCol">
+                  <FontAwesomeIcon icon={eachOs === 'Window' ? faWindowMaximize : faAppleAlt} inverse />
+                  <Text types="small">{eachOs}</Text>
+                </div>
+              );
+            })}
+          </OSBox>
+          <CategoryBox>
+            <GameInfoTitle types="medium">게임 카테고리</GameInfoTitle>
+            <div className="categories">
+              {game.category_list.map((category: string) => {
+                return (
+                  <span>
+                    <Text types="small">{`#${category}`}</Text>
+                  </span>
+                );
+              })}
+            </div>
+          </CategoryBox>
+          <GameBuyBox>
+            <GameInfoTitle types="medium">구매 정보</GameInfoTitle>
+            <div className="actionBox">
+              <Text types="medium"> {`${localePrice(game.price, 'KR')}`}</Text>
+              <FilledButton types={'primary'}>구매</FilledButton>
+              <FilledButton types={'primary'}>장바구니</FilledButton>
+            </div>
+          </GameBuyBox>
+          <DevInfoBox>
+            <GameInfoTitle types="medium">개발자 정보</GameInfoTitle>
+            <Text types="small">minjyo</Text>
+          </DevInfoBox>
+        </GameDetailBox>
+      </GameDetailSection>
+      <ReviewSection>
+        <ReviewTitle types="large">사용자 리뷰</ReviewTitle>
+        <GameReview
+          isMine={false}
+          name={'username'}
+          time={'1시'}
+          text={'abc'}
+          recommendation={true}
+          isFirst={true}
+          userReview={userReview}
+          onChange={onChange}
+          addReview={addReview}
+          setRecommend={setRecommend}
+        ></GameReview>
+        {reviews.map((review: IReview) => {
+          return (
+            // isMine: 로그인했을 때 내 리뷰면 true, 아니면 false
+            <GameReview
+              reviewId={review.id}
+              isMine={true}
+              name={review.displayed_name}
+              time={'1시'}
+              text={review.content}
+              recommendation={review.recommendation}
+              isFirst={false}
+              userReview={userReview}
+              onChange={onChange}
+              modifyReview={modifyReview}
+              setRecommend={setRecommend}
+            ></GameReview>
+          );
+        })}
+      </ReviewSection>
+    </DetailWrapper>
+  );
+};
 
 const DetailWrapper = styled.div`
   display: flex;
@@ -163,195 +319,5 @@ const ReviewSection = styled.div`
 const ReviewTitle = styled(Text)`
   margin: 0 0 1rem 0.5rem;
 `;
-
-interface IResReview {
-  id: number;
-  user_id: number;
-  displayed_name: string;
-  content: string;
-  recommendation: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-const Detail: NextPage<IState> = () => {
-  const { game } = useSelector((state: IState) => state.game);
-  const dispatch = useDispatch();
-  const [reviews, setReviews] = useState<IResReview[]>([
-    {
-      id: 1,
-      user_id: 1,
-      displayed_name: 'user1',
-      content: 'review1\nreview1\nreview2',
-      recommendation: false,
-      created_at: 'time1',
-      updated_at: 'time2',
-    },
-    {
-      id: 2,
-      user_id: 2,
-      displayed_name: 'user2',
-      content: 'review2\nreview2\nreview2',
-      recommendation: true,
-      created_at: 'time3',
-      updated_at: 'time4',
-    },
-  ]);
-
-  const getReviews = async (id: number) => {
-    const res = (await getReviewAPI({ id: id })).data.review_list;
-    console.log(res);
-    setReviews(res);
-  };
-
-  const [userReview, setUserReview] = useState({ content: '', recommendation: true });
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUserReview({ ...userReview, content: e.target.value });
-  };
-  const setRecommend = (r: boolean) => {
-    setUserReview({ ...userReview, recommendation: r });
-  };
-
-  const addReview = async () => {
-    // id: game.data.id
-    const res = (await addReviewAPI({ id: 1, content: '', recommendation: false })).data.success;
-    console.log(res);
-  };
-
-  const modifyReview = async (id: number) => {
-    // id: game.data.id
-    const res = (await modifyReviewAPI({ id: 1, reviewId: id, content: '', recommendation: false })).data.success;
-    console.log(res);
-  };
-
-  useEffect(() => {
-    dispatch(getGame.request({ id: 1 }));
-    // getReviews(1);
-  }, []);
-
-  const array = [1, 2, 3, 4];
-
-  return (
-    <DetailWrapper>
-      <GameImageSection>
-        <GameTitle types={'title'}>{game.data && game.data.name}</GameTitle>
-        <CarouselComponent
-          buttons={array.map((data) => {
-            return <Image src={data % 2 ? gameImage1 : gameImage2} layout="fill" objectFit="cover"></Image>;
-          })}
-          slides={array.map((data) => {
-            return (
-              <BigGameSlide
-                key={game.data?.id}
-                image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="responsive" />}
-              ></BigGameSlide>
-            );
-          })}
-        ></CarouselComponent>
-      </GameImageSection>
-      <GameIntroSection>
-        <SnippetBox>
-          <GameInfoTitle types="large">{game.data.name}</GameInfoTitle>
-          <DescText types="small"> {game.data.description_snippet}</DescText>
-        </SnippetBox>
-        <Divider />
-        <EvaluationBox>
-          <GameInfoTitle types="medium">평가</GameInfoTitle>
-          <Evaluation>
-            <div className="RecommendBox">
-              <Text types="large">{`${(game.data.recommend_count / game.data.review_count) * 100}%`}</Text>
-              <RecommendCount types="tiny">{`${game.data.review_count}명 중 ${game.data.recommend_count}명 추천`}</RecommendCount>
-            </div>
-            <WishButtonBox>
-              <WishButton types="primary">위시리스트</WishButton>
-            </WishButtonBox>
-          </Evaluation>
-        </EvaluationBox>
-      </GameIntroSection>
-      <GameDetailSection>
-        <GameDetailBox>
-          <DescBox>
-            <GameInfoTitle types="medium">게임 상세 설명</GameInfoTitle>
-            <DescText types="small"> {game.data && game.data.description}</DescText>
-          </DescBox>
-          <OSBox>
-            <GameInfoTitle types="medium">지원 가능 OS</GameInfoTitle>
-            {game.data.os_list.map((eachOs: string) => {
-              return (
-                <div className="OSCol">
-                  <FontAwesomeIcon icon={eachOs === 'Window' ? faWindowMaximize : faAppleAlt} inverse />
-                  <Text types="small">{eachOs}</Text>
-                </div>
-              );
-            })}
-          </OSBox>
-          <CategoryBox>
-            <GameInfoTitle types="medium">게임 카테고리</GameInfoTitle>
-            <div className="categories">
-              {game.data.category_list.map((category: string) => {
-                return (
-                  <span>
-                    <Text types="small">{`#${category}`}</Text>
-                  </span>
-                );
-              })}
-            </div>
-          </CategoryBox>
-          <GameBuyBox>
-            <GameInfoTitle types="medium">구매 정보</GameInfoTitle>
-            <div className="actionBox">
-              <Text types="medium"> {`${localePrice(game.data.price, 'KR')}`}</Text>
-              <FilledButton types={'primary'}>구매</FilledButton>
-              <FilledButton types={'primary'}>장바구니</FilledButton>
-            </div>
-          </GameBuyBox>
-          <DevInfoBox>
-            <GameInfoTitle types="medium">개발자 정보</GameInfoTitle>
-            <Text types="small">{game.data.publisher.name}</Text>
-          </DevInfoBox>
-        </GameDetailBox>
-      </GameDetailSection>
-      <ReviewSection>
-        <ReviewTitle types="large">사용자 리뷰</ReviewTitle>
-        <GameReview
-          isMine={false}
-          name={'username'}
-          time={'1시'}
-          text={'abc'}
-          recommendation={true}
-          isFirst={true}
-          userReview={userReview}
-          onChange={onChange}
-          addReview={addReview}
-          setRecommend={setRecommend}
-        ></GameReview>
-        {reviews.map((review: IResReview) => {
-          return (
-            // isMine: 로그인했을 때 내 리뷰면 true, 아니면 false
-            <GameReview
-              reviewId={review.id}
-              isMine={true}
-              name={review.displayed_name}
-              time={'1시'}
-              text={review.content}
-              recommendation={review.recommendation}
-              isFirst={false}
-              userReview={userReview}
-              onChange={onChange}
-              modifyReview={modifyReview}
-              setRecommend={setRecommend}
-            ></GameReview>
-          );
-        })}
-      </ReviewSection>
-    </DetailWrapper>
-  );
-};
-
-// export const getServerSideProps = wrapper.getServerSideProps((store) => async ({ params }) => {
-//   store.dispatch(getGame.request({ id: params && Number(params.id) }));
-
-//   return { props: {} };
-// });
 
 export default Detail;

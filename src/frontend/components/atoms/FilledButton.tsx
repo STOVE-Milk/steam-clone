@@ -1,14 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export interface ButtonProps {
+export interface IButtonProps {
   types: string;
   onClick?: React.MouseEventHandler;
   children: React.ReactNode;
   disabled?: boolean;
 }
 
-const ButtonStyle = styled.button<ButtonProps>`
+export default function FilledButton(props: IButtonProps) {
+  return (
+    <ButtonStyle {...props} onClick={props.onClick}>
+      {props.children}
+    </ButtonStyle>
+  );
+}
+
+FilledButton.defaultProps = {
+  onClick: () => console.log('clicked'),
+};
+
+const ButtonStyle = styled.button<IButtonProps>`
   background: ${(props) => props.theme.colors[props.types + 'Bg']};
   color: ${(props) => props.theme.colors['primaryText']};
   font-size: 1em;
@@ -27,15 +39,3 @@ const ButtonStyle = styled.button<ButtonProps>`
     border: 1px solid ${(props) => props.theme.colors['activeBg']};
   }
 `;
-
-export default function FilledButton(props: ButtonProps) {
-  return (
-    <ButtonStyle {...props} onClick={props.onClick}>
-      {props.children}
-    </ButtonStyle>
-  );
-}
-
-FilledButton.defaultProps = {
-  onClick: () => console.log('clicked'),
-};

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface GiftcardRepository extends JpaRepository<Giftcard, Integer> {
-    List<Giftcard> findAllByCountry(String Country);
+    List<Giftcard> findTop4ByCountry(String Country);
 }

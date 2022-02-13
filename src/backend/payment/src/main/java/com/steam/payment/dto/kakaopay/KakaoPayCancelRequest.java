@@ -9,14 +9,14 @@ import lombok.Data;
 @Data
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class KakaoPayCancel {
+public class KakaoPayCancelRequest {
     private String tid;
     private String cid;
     private Integer cancleAmount;
     private Integer cancleTaxFreeAmount;
 
-    public static KakaoPayCancel of(KakaoPayReadyCache cache) {
-        return KakaoPayCancel.builder()
+    public static KakaoPayCancelRequest of(KakaoPayReadyCache cache) {
+        return KakaoPayCancelRequest.builder()
                 .cid(cache.getCid())
                 .tid(cache.getTid())
                 .cancleAmount(cache.getTotalAmount())

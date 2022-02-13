@@ -1,20 +1,22 @@
 import React from 'react';
-import styled from 'styled-components';
 import Image from 'next/image';
-import Text from 'components/atoms/Text';
-import { localePrice } from 'util/localeString';
+import styled from 'styled-components';
 
-interface SlideProps {
-  image: JSX.Element | typeof Image;
+import { gameInfo } from 'modules/game';
+
+export default function BigGameSlide(props: gameInfo) {
+  return (
+    <SlideWrapper>
+      <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
+      {/* image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="responsive" />} */}
+    </SlideWrapper>
+  );
 }
 
 const SlideWrapper = styled.div`
   display: block;
-  overflow: hidden;
   height: calc(100vw / 3);
   border-radius: 10px;
+  position: relative;
+  overflow: hidden;
 `;
-
-export default function BigGameSlide(props: SlideProps) {
-  return <SlideWrapper>{props.image}</SlideWrapper>;
-}
