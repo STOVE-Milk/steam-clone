@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class PublishService {
-    private static final String EXCHANGE_KEY = "steam.robby";
-    private static final String ROUTING_KEY = "robby.normal";
+    private static final String EXCHANGE_KEY = "steam.lobby";
+    private static final String ROUTING_KEY = "lobby.normal";
 
     private final RabbitTemplate rabbitTemplate;
 
