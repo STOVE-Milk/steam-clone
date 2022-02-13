@@ -18,6 +18,7 @@ const (
 	gRPCGatewayHost       = "grpc_gateway:"
 )
 
+// 헤더의 인증 토큰을 gRPC store 서버로 전달합니다.
 func CustomMatcher(key string) (string, bool) {
 	switch key {
 	case "authorization":
