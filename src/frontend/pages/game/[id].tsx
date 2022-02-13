@@ -45,10 +45,6 @@ const Detail: NextPage<IState> = () => {
     setReviews(res);
   };
 
-  const setRecommend = (r: boolean) => {
-    setUserReview({ ...userReview, recommendation: r });
-  };
-
   const addReview = async () => {
     await ReviewAPI.addReviewAPI(gameId, { content: '', recommendation: false });
   };
@@ -57,14 +53,18 @@ const Detail: NextPage<IState> = () => {
     await ReviewAPI.modifyReviewAPI(gameId, { review_id: id, content: '', recommendation: false });
   };
 
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUserReview({ ...userReview, content: e.target.value });
+  };
+
+  const setRecommend = (r: boolean) => {
+    setUserReview({ ...userReview, recommendation: r });
+  };
+
   useEffect(() => {
     getGame();
     getReviews();
   }, []);
-
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUserReview({ ...userReview, content: e.target.value });
-  };
 
   return (
     <DetailWrapper>

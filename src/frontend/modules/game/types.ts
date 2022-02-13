@@ -6,7 +6,9 @@ import * as actions from './actions';
 export interface gameInfo {
   category_list: string[];
   description_snippet: string;
+  recommend_count: number;
   download_count: number;
+  review_count: number;
   id: number;
   image: {
     main: string;
@@ -20,7 +22,9 @@ export interface gameInfo {
     main: string;
     sub: string[];
   };
+  description: string;
 }
+
 interface gameDetail extends gameInfo {
   description: string;
   publisher: {
