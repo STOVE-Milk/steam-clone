@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
-import { IState } from 'modules';
+import { useRouter } from 'next/router';
 
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import Text from 'components/atoms/Text';
+
+import { IState } from 'modules';
+import { gameInfo } from 'modules/game/types';
+import { doWish, doUnWish, getUserData, addCartInfo, rmCartInfo } from 'modules/game';
 import { localePrice } from 'util/localeString';
 
-import { gameInfo } from 'modules/game/types';
-import { doWish, doUnWish, getUserData } from 'modules/game';
-import { useSelector, useDispatch } from 'react-redux';
-import { addCartInfo, rmCartInfo } from 'modules/game';
-import { useRouter } from 'next/router';
+import Text from 'components/atoms/Text';
 
 interface IGameInfo extends gameInfo {
   type?: string;

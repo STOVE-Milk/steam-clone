@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import Link from 'next/link';
-import styled from 'styled-components';
-import SearchBox from 'components/molecules/SearchBox';
-import Profile from 'components/atoms/Profile';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router';
 
-// to do: 영역 잡고, css 로 width 100%, height: 80px 등으로 고정
-// 내용물: inputBox, 알림 아이콘, 유저인포
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
+
+import Profile from 'components/atoms/Profile';
+import SearchBox from 'components/molecules/SearchBox';
 
 export default function Header() {
   const [option, setOption] = useState('name');

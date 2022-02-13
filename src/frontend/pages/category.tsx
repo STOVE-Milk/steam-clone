@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
 
-import GameInfo from 'components/organisms/GameInfo';
-import Text from 'components/atoms/Text';
-// import IGameInfo from 'pages/category';
 import styled from 'styled-components';
-import CategoryList from 'components/molecules/CategoryList';
 
-import { useSelector, useDispatch } from 'react-redux';
-// import { END } from 'redux-saga';
-// import wrapper from 'modules/configureStore';
 import { IState } from 'modules';
 import { getCategories, getGamesByCategory } from 'modules/game';
-import { gameInfo } from 'modules/game/types';
+
+import Text from 'components/atoms/Text';
+import CategoryList from 'components/molecules/CategoryList';
+import GameInfo from 'components/organisms/GameInfo';
 
 const Category: NextPage<IState> = () => {
   const [curSelectedCategory, setCurSelectedCategory] = useState('ALL');

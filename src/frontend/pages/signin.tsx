@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
+
+import { IState } from 'modules';
+import { saveUserInfo } from 'modules/user';
+import { doSignInAPI } from 'api/auth/api';
+import { parseToken } from 'util/parseToken';
+
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import AuthInput from 'components/molecules/AuthInput';
-import { doSignInAPI } from 'api/auth/api';
-
-import { IState } from 'modules';
-import { useSelector, useDispatch } from 'react-redux';
-import { saveUserInfo } from 'modules/user';
-import { parseToken } from 'util/parseToken';
 
 const signin: NextPage<IState> = () => {
   //[info]: userInfo.data에 accessToken에서 온 정보들이 들어가 있습니다.
