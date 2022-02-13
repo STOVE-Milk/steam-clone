@@ -9,9 +9,6 @@ import {
   RM_CARTINFO,
   RM_CARTINFO_SUCCESS,
   RM_CARTINFO_FAIL,
-  GET_WISHLIST,
-  GET_WISHLIST_SUCCESS,
-  GET_WISHLIST_FAIL,
   DO_WISH,
   DO_WISH_SUCCESS,
   DO_WISH_FAIL,
@@ -22,37 +19,17 @@ import {
   DO_UNWISH_SUCCESS,
   DO_UNWISH_FAIL,
 } from './actions';
-import {
-  initalCartInfo,
-  initalGamesByIdList,
-  initialWish,
-  initialUserData,
-  initialWishList,
-  initialUnWish,
-} from './initalData';
+import { initalCartInfo, initalGamesByIdList, initialWish, initialUserData, initialUnWish } from './initalData';
 
 const initialState: gameState = {
   cartInfo: asyncState.initial(initalCartInfo),
   gamesByIdList: asyncState.initial(initalGamesByIdList),
   wish: asyncState.initial(initialWish),
   unWish: asyncState.initial(initialUnWish),
-  wishList: asyncState.initial(initialWishList), //임시로 inital data 넣어놓음
   userData: asyncState.initial(initialUserData),
 };
 
 const reducer = createReducer<gameState>(initialState, {
-  [GET_WISHLIST]: (state, action) => ({
-    ...state,
-    wishList: asyncState.load(initialWishList),
-  }),
-  [GET_WISHLIST_SUCCESS]: (state, action) => ({
-    ...state,
-    wishList: asyncState.success(action.payload.data.game_list),
-  }),
-  [GET_WISHLIST_FAIL]: (state, action) => ({
-    ...state,
-    wishList: asyncState.error(initialWishList, action.payload),
-  }),
   [DO_WISH]: (state, action) => ({
     ...state,
     wish: asyncState.load(initialWish),

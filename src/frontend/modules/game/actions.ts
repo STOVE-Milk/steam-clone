@@ -12,7 +12,6 @@ export const [RM_CARTINFO, RM_CARTINFO_SUCCESS, RM_CARTINFO_FAIL] = createReques
 export const [DO_WISH, DO_WISH_SUCCESS, DO_WISH_FAIL] = createRequestActionTypes('DO_WISH');
 export const [DO_UNWISH, DO_UNWISH_SUCCESS, DO_UNWISH_FAIL] = createRequestActionTypes('DO_UNWISH');
 export const [GET_USERDATA, GET_USERDATA_SUCCESS, GET_USERDATA_FAIL] = createRequestActionTypes('GET_USERDATA');
-export const [GET_WISHLIST, GET_WISHLIST_SUCCESS, GET_WISHLIST_FAIL] = createRequestActionTypes('GET_WISHLIST');
 
 export const addCartInfo = createAsyncAction(ADD_CARTINFO, ADD_CARTINFO_SUCCESS, ADD_CARTINFO_FAIL)<
   IAddCartInfoReqType,
@@ -23,12 +22,6 @@ export const addCartInfo = createAsyncAction(ADD_CARTINFO, ADD_CARTINFO_SUCCESS,
 export const rmCartInfo = createAsyncAction(RM_CARTINFO, RM_CARTINFO_SUCCESS, RM_CARTINFO_FAIL)<
   IRmCartInfoReqType,
   IResStoreType,
-  AxiosError
->();
-
-export const getWishList = createAsyncAction(GET_WISHLIST, GET_WISHLIST_SUCCESS, GET_WISHLIST_FAIL)<
-  IReqType,
-  IResType,
   AxiosError
 >();
 

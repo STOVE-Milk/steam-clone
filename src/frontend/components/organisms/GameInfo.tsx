@@ -37,6 +37,7 @@ export default function GameInfo(props: IGameInfo) {
   const router = useRouter();
 
   useEffect(() => {
+    setLike(userData.data.wish_list.includes(gameData.id));
     setCart(cartInfo.data.includes(gameData.id));
   }, []);
 
