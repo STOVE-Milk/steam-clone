@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import type { NextPage } from 'next';
-import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
+import type { NextPage } from 'next';
+
+import styled from 'styled-components';
 
 import { IState } from 'modules';
 import { getWishList } from 'modules/game';
+
 import GameInfo from 'components/organisms/GameInfo';
 import Text from 'components/atoms/Text';
-
-const TitleStyle = styled(Text)`
-  margin-bottom: 2rem;
-`;
-
-const WishListWrapper = styled.div`
-  width: 80%;
-  margin: 2rem auto;
-`;
 
 const wishlist: NextPage<IState> = () => {
   const { wishList } = useSelector((state: IState) => state.game);
@@ -36,5 +29,13 @@ const wishlist: NextPage<IState> = () => {
     </WishListWrapper>
   );
 };
+const TitleStyle = styled(Text)`
+  margin-bottom: 2rem;
+`;
+
+const WishListWrapper = styled.div`
+  width: 80%;
+  margin: 2rem auto;
+`;
 
 export default wishlist;

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
@@ -27,6 +29,67 @@ export interface IGuestBookProps {
   isAdd: boolean;
   addGuestBook?: (content: string) => Promise<void>;
   modifyGuestBook?: (id: number, content: string) => Promise<void>;
+}
+
+export default function GuestBook(props: IGuestBookProps) {
+  const [isEdited, setEdited] = useState(props.isAdd ? true : false);
+
+  const [content, setContent] = useState(props.isAdd ? '' : props.guestBook.content);
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+  };
+
+  const router = useRouter();
+
+  return (
+    <Wrapper>
+      <UserBox>
+        <Profile
+          onClick={() => router.push(`${props.guestBook.guest_id}`)}
+          userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />}
+        />
+        <Name types="medium">{props.guestBook.displayed_name}</Name>
+        <CreatedAt types="tiny">
+          {props.guestBook.updated_at === props.guestBook.created_at
+            ? props.guestBook.created_at
+            : `${props.guestBook.updated_at} (수정됨)`}
+        </CreatedAt>
+        {isEdited ? (
+          <PostButton
+            types="primary"
+            onClick={() => {
+              if (props.isAdd) {
+                props.addGuestBook && props.addGuestBook(content);
+                setContent('');
+              } else {
+                props.modifyGuestBook && props.modifyGuestBook(props.guestBook.id, content);
+                setContent(content);
+                setEdited(false);
+              }
+            }}
+          >
+            등록
+          </PostButton>
+        ) : null}
+        {!isEdited && props.isMine ? (
+          <PostButton types="primary" onClick={() => setEdited(true)}>
+            수정
+          </PostButton>
+        ) : null}
+      </UserBox>
+
+      <Divider />
+      {isEdited ? (
+        <EditBox value={content} onChange={(e) => onChange(e)}></EditBox>
+      ) : (
+        <TextBox>
+          {props.guestBook.content.split('\n').map((text, key) => (
+            <p key={key}> {text} </p>
+          ))}
+        </TextBox>
+      )}
+    </Wrapper>
+  );
 }
 
 const Wrapper = styled.div`
@@ -78,59 +141,3 @@ const TextBox = styled.div`
 const CreatedAt = styled(Text)`
   margin: 0.3rem 0 0 1rem;
 `;
-
-export default function GuestBook(props: IGuestBookProps) {
-  const [isEdited, setEdited] = useState(props.isAdd ? true : false);
-
-  const [content, setContent] = useState(props.isAdd ? '' : props.guestBook.content);
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-  };
-
-  return (
-    <Wrapper>
-      <UserBox>
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-        <Name types="medium">{props.guestBook.displayed_name}</Name>
-        <CreatedAt types="tiny">
-          {props.guestBook.updated_at === props.guestBook.created_at
-            ? props.guestBook.created_at
-            : `${props.guestBook.updated_at} (수정됨)`}
-        </CreatedAt>
-        {isEdited ? (
-          <PostButton
-            types="primary"
-            onClick={() => {
-              if (props.isAdd) {
-                props.addGuestBook && props.addGuestBook(content);
-                setContent('');
-              } else {
-                props.modifyGuestBook && props.modifyGuestBook(props.guestBook.id, content);
-                setContent(content);
-                setEdited(false);
-              }
-            }}
-          >
-            등록
-          </PostButton>
-        ) : null}
-        {!isEdited && props.isMine ? (
-          <PostButton types="primary" onClick={() => setEdited(true)}>
-            수정
-          </PostButton>
-        ) : null}
-      </UserBox>
-
-      <Divider />
-      {isEdited ? (
-        <EditBox value={content} onChange={(e) => onChange(e)}></EditBox>
-      ) : (
-        <TextBox>
-          {props.guestBook.content.split('\n').map((text, key) => (
-            <p key={key}> {text} </p>
-          ))}
-        </TextBox>
-      )}
-    </Wrapper>
-  );
-}

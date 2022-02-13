@@ -1,32 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+
 import styled from 'styled-components';
 
-import GameInfo from 'components/organisms/GameInfo';
+import { IState } from 'modules';
+import { getGameInfoByIdList } from 'modules/game';
+import { purchaseGameAPI } from 'api/cart/api';
+import { IPurchaseGameReqType } from 'api/cart/type';
+
 import Text from 'components/atoms/Text';
 import DefaultButton from 'components/atoms/DefaultButton';
-
-import { useSelector, useDispatch } from 'react-redux';
-import { IState } from 'modules';
-import { purchaseGameAPI } from 'pages/api/game/api';
-import { IPurchaseGameReqType } from 'pages/api/game/type';
-import { getGameInfoByIdList } from 'modules/game';
-
-const CartInfoWrapper = styled.div`
-  width: fit-content;
-  display: flex;
-  flex-direction: column;
-  margin: 2rem auto;
-`;
-
-const TitleStyle = styled(Text)`
-  margin-bottom: 2rem;
-`;
-
-const ChenknGameInfoWrapper = styled.div`
-  display: flex;
-`;
+import GameInfo from 'components/organisms/GameInfo';
 
 const cart: NextPage<IState> = (props) => {
   const { cartInfo, gamesByIdList } = useSelector((state: IState) => {
@@ -102,5 +88,20 @@ const cart: NextPage<IState> = (props) => {
     </CartInfoWrapper>
   );
 };
+
+const CartInfoWrapper = styled.div`
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  margin: 2rem auto;
+`;
+
+const TitleStyle = styled(Text)`
+  margin-bottom: 2rem;
+`;
+
+const ChenknGameInfoWrapper = styled.div`
+  display: flex;
+`;
 
 export default cart;

@@ -1,5 +1,5 @@
 import { AnyAction, CombinedState, combineReducers } from 'redux';
-import { all } from 'redux-saga/effects';
+import { all, fork } from 'redux-saga/effects';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import game, { gameSaga, gameState } from './game';

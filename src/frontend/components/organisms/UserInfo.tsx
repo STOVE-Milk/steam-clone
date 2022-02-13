@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
 import Image from 'next/image';
+import styled from 'styled-components';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
@@ -15,6 +15,23 @@ export interface IUserInfo {
   };
   accessed_at?: string;
   createad_at?: string;
+}
+
+export default function UserInfo(props: IUserInfo) {
+  return (
+    <Wrapper>
+      <UserSection>
+        <Text types="large">{`${props.nickname} 님`}</Text>
+        {props.is_friend === 1 ? null : <AddFriendBtn types="primary">친구 추가</AddFriendBtn>}
+      </UserSection>
+      <ProfileSection>
+        <ProfileImage>
+          {props.profile && props.profile.image !== '' ? <Image src={props.profile.image}></Image> : null}
+        </ProfileImage>
+        <Desc>{props.profile && props.profile.description}</Desc>
+      </ProfileSection>
+    </Wrapper>
+  );
 }
 
 const Wrapper = styled.div`
@@ -53,20 +70,3 @@ const Desc = styled.div`
   margin-left: 1rem;
   padding: 1rem;
 `;
-
-export default function UserInfo(props: IUserInfo) {
-  return (
-    <Wrapper>
-      <UserSection>
-        <Text types="large">{`${props.nickname} 님`}</Text>
-        {props.is_friend === 1 ? null : <AddFriendBtn types="primary">친구 추가</AddFriendBtn>}
-      </UserSection>
-      <ProfileSection>
-        <ProfileImage>
-          {props.profile && props.profile.image !== '' ? <Image src={props.profile.image}></Image> : null}
-        </ProfileImage>
-        <Desc>{props.profile && props.profile.description}</Desc>
-      </ProfileSection>
-    </Wrapper>
-  );
-}

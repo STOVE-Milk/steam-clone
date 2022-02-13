@@ -1,27 +1,16 @@
 import React from 'react';
-import styled from 'styled-components';
 import Image from 'next/image';
-import Text from 'components/atoms/Text';
-import { localePrice } from 'util/localeString';
+import styled from 'styled-components';
 
-// 이거 다 안써도 되나?
-export interface IGameInfo {
-  category_list: string[];
-  description_snippet: string;
-  download_count: number;
-  id: number;
-  image: {
-    main: string;
-    sub: string[];
-  };
-  name: string;
-  os_list: string[];
-  price: number;
-  sale: number;
-  video?: {
-    main: string;
-    sub: string[];
-  };
+import { gameInfo } from 'modules/game';
+
+export default function BigGameSlide(props: gameInfo) {
+  return (
+    <SlideWrapper>
+      <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
+      {/* image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="responsive" />} */}
+    </SlideWrapper>
+  );
 }
 
 const SlideWrapper = styled.div`
@@ -31,11 +20,3 @@ const SlideWrapper = styled.div`
   position: relative;
   overflow: hidden;
 `;
-
-export default function BigGameSlide(props: IGameInfo) {
-  return (
-    <SlideWrapper>
-      <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
-    </SlideWrapper>
-  );
-}

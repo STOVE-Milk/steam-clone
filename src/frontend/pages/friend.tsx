@@ -1,116 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import styled, { css } from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestion, faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { IState } from 'modules';
-import {
-  getFriendsAPI,
-  acceptFriendAPI,
-  deleteFriendAPI,
-  getReceivedFriendsAPI,
-  getSendedFriendAPI,
-  deleteFriendRequestAPI,
-  sendFriendRequestAPI,
-  searchFriendAPI,
-} from 'pages/api/user/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
+
+import * as FriendAPI from 'api/friend/api';
 
 import Text from 'components/atoms/Text';
-import FriendBox from 'components/molecules/FriendBox';
-import Profile from 'components/atoms/Profile';
-import FilledButton from 'components/atoms/FilledButton';
 import { TextTheme } from 'components/atoms/Text';
+import FriendBox from 'components/molecules/FriendBox';
 import { IFriend } from 'components/molecules/FriendBox';
-
-const Wrapper = styled.div`
-  display: flex;
-  padding: 3rem;
-  flex-direction: column;
-  height: 100%;
-`;
-
-const TitleSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 2rem 0;
-  height: fit-content;
-`;
-
-const FriendSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow-y: scroll;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const FriendItem = styled.div`
-  display: flex;
-  width: 100%;
-  background: ${(props) => props.theme.colors.secondaryBg};
-  margin: 0.5rem 0;
-  border-radius: 10px;
-`;
-
-const FriendActionBox = styled.div`
-  width: fit-content;
-  padding: 0 1rem;
-  display: flex;
-  align-items: center;
-`;
-
-const FriendActionBtn = styled(FontAwesomeIcon)`
-  margin: 0 1rem;
-  cursor: pointer;
-`;
-
-const Title = styled.div<{ focus: boolean }>`
-  padding: 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-
-  ${(props) =>
-    props.focus
-      ? css`
-          background: ${props.theme.colors.activeBg};
-        `
-      : null}
-  :hover {
-    background: ${(props) => props.theme.colors.activeBg};
-  }
-`;
-
-const SearchBox = styled.div`
-  border: 1px solid white;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-`;
-
-const SearchInput = styled.input`
-  border: none;
-  padding: 0.5rem;
-  flex: 1;
-  background: transparent;
-  color: ${TextTheme.medium.color};
-  font-size: ${TextTheme.medium.size};
-`;
-
-const ResultBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-top: 3rem;
-`;
-
-const FriendList = styled.div`
-  padding: 1rem 0;
-`;
 
 const Friend: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
@@ -139,36 +39,36 @@ const Friend: NextPage = () => {
 
   // 친구 목록
   const getFriends = async () => {
-    const res = (await getFriendsAPI()).data.friends;
+    const res = (await FriendAPI.getFriendsAPI()).data.friends;
     setFriends(res);
   };
 
   // 친구 삭제
   const deleteFriend = async (id: number) => {
-    await deleteFriendAPI(id);
+    await FriendAPI.deleteFriendAPI(id);
     getFriends();
   };
 
   // 친구 신청을  위해 유저 검색
   const searchFriend = async () => {
-    const res = (await searchFriendAPI(searchInput)).data;
+    const res = (await FriendAPI.searchFriendAPI(searchInput)).data;
     setFriends(res);
   };
 
   // 친구 신청
   const sendFriendRequest = async (id: number) => {
-    await sendFriendRequestAPI({ user_id: id });
+    await FriendAPI.sendFriendRequestAPI({ user_id: id });
   };
 
   // 내가 보낸 친구 신청 목록
   const sendedFriend = async () => {
-    const res = (await getSendedFriendAPI()).data.requests;
+    const res = (await FriendAPI.getSendedFriendAPI()).data.requests;
     setFriends(res);
   };
 
   // 내가 보낸 친구 신청 취소, 내가 받은 친구 신청 거절
   const deleteFriendRequest = async (id: number) => {
-    await deleteFriendRequestAPI(id);
+    await FriendAPI.deleteFriendRequestAPI(id);
 
     if (tab === 2) {
       sendedFriend();
@@ -179,13 +79,13 @@ const Friend: NextPage = () => {
 
   // 내가 받은 친구 신청 목록
   const receivedFriend = async () => {
-    const res = (await getReceivedFriendsAPI()).data.requests;
+    const res = (await FriendAPI.getReceivedFriendsAPI()).data.requests;
     setFriends(res);
   };
 
   // 친구 신청 수락
   const acceptFriend = async (id: number) => {
-    await acceptFriendAPI({ request_id: id });
+    await FriendAPI.acceptFriendAPI({ request_id: id });
     receivedFriend();
   };
 
@@ -288,3 +188,91 @@ const Friend: NextPage = () => {
 };
 
 export default Friend;
+
+const Wrapper = styled.div`
+  display: flex;
+  padding: 3rem;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const TitleSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0;
+  height: fit-content;
+`;
+
+const FriendSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const FriendItem = styled.div`
+  display: flex;
+  width: 100%;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  margin: 0.5rem 0;
+  border-radius: 10px;
+`;
+
+const FriendActionBox = styled.div`
+  width: fit-content;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+`;
+
+const FriendActionBtn = styled(FontAwesomeIcon)`
+  margin: 0 1rem;
+  cursor: pointer;
+`;
+
+const Title = styled.div<{ focus: boolean }>`
+  padding: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+
+  ${(props) =>
+    props.focus
+      ? css`
+          background: ${props.theme.colors.activeBg};
+        `
+      : null}
+  :hover {
+    background: ${(props) => props.theme.colors.activeBg};
+  }
+`;
+
+const SearchBox = styled.div`
+  border: 1px solid white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+`;
+
+const SearchInput = styled.input`
+  border: none;
+  padding: 0.5rem;
+  flex: 1;
+  background: transparent;
+  color: ${TextTheme.medium.color};
+  font-size: ${TextTheme.medium.size};
+`;
+
+const ResultBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 3rem;
+`;
+
+const FriendList = styled.div`
+  padding: 1rem 0;
+`;

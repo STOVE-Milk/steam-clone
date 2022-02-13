@@ -13,6 +13,31 @@ export interface IAuthInputProps {
   warningMsg?: string;
 }
 
+export default function AuthInput({
+  title,
+  type,
+  placeholder,
+  name,
+  onChange,
+  checkValidation,
+  warningMsg,
+}: IAuthInputProps) {
+  return (
+    <InputWrapper>
+      <InputTitleText>{title}</InputTitleText>
+      <InputBoxWrapper>
+        <InputBox name={name} type={type} placeholder={placeholder} onChange={onChange} />
+        {checkValidation && (
+          <ValidateBtnStyle types="primary" onClick={checkValidation}>
+            중복확인
+          </ValidateBtnStyle>
+        )}
+      </InputBoxWrapper>
+      <WarningMsg>{warningMsg}</WarningMsg>
+    </InputWrapper>
+  );
+}
+
 const InputTitleText = styled(Text)`
   margin-bottom: 0.5rem;
 `;
@@ -39,28 +64,3 @@ const WarningMsg = styled(Text)`
   margin-top: 0.5rem;
   color: ${(props) => props.theme.colors.wish};
 `;
-
-export default function AuthInput({
-  title,
-  type,
-  placeholder,
-  name,
-  onChange,
-  checkValidation,
-  warningMsg,
-}: IAuthInputProps) {
-  return (
-    <InputWrapper>
-      <InputTitleText>{title}</InputTitleText>
-      <InputBoxWrapper>
-        <InputBox name={name} type={type} placeholder={placeholder} onChange={onChange} />
-        {checkValidation && (
-          <ValidateBtnStyle types="primary" onClick={checkValidation}>
-            중복확인
-          </ValidateBtnStyle>
-        )}
-      </InputBoxWrapper>
-      <WarningMsg>{warningMsg}</WarningMsg>
-    </InputWrapper>
-  );
-}

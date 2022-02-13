@@ -1,40 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import AuthInput from 'components/molecules/AuthInput';
-import Text from 'components/atoms/Text';
-import AuthSelectBox from 'components/molecules/AuthSelectBox';
-import FilledButton from 'components/atoms/FilledButton';
-import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
 
 import { IState } from 'modules';
 import { doSignup } from 'modules/user';
-import { checkEmailAPI, checkNicknameAPI } from 'pages/api/user/api';
-import { sign } from 'crypto';
+import { checkEmailAPI, checkNicknameAPI } from 'api/auth/api';
+import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
 
-const SignUpFormWrapper = styled.div`
-  width: 40rem;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  padding: 2rem;
-  background: ${(props) => props.theme.colors.secondaryBg};
-  display: flex;
-  border-radius: 10px;
-  padding-top: 2rem;
-`;
-const InputAlign = styled.div`
-  display: flex;
-  width: 30rem;
-  justify-content: space-between;
-`;
-const SignUpButton = styled(FilledButton)`
-  width: 85%;
-  margin-top: 1rem;
-`;
+import Text from 'components/atoms/Text';
+import FilledButton from 'components/atoms/FilledButton';
+import AuthInput from 'components/molecules/AuthInput';
+import AuthSelectBox from 'components/molecules/AuthSelectBox';
 
 const signup: NextPage<IState> = () => {
   const { signup } = useSelector((state: IState) => state.user);
@@ -241,5 +220,26 @@ const signup: NextPage<IState> = () => {
     </SignUpFormWrapper>
   );
 };
+
+const SignUpFormWrapper = styled.div`
+  width: 40rem;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 2rem;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  display: flex;
+  border-radius: 10px;
+  padding-top: 2rem;
+`;
+const InputAlign = styled.div`
+  display: flex;
+  width: 30rem;
+  justify-content: space-between;
+`;
+const SignUpButton = styled(FilledButton)`
+  width: 85%;
+  margin-top: 1rem;
+`;
 
 export default signup;

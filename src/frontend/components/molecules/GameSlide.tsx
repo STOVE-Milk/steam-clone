@@ -1,27 +1,23 @@
 import React from 'react';
-import styled from 'styled-components';
 import Image from 'next/image';
-import Text from 'components/atoms/Text';
-import { localePrice } from 'util/localeString';
+import styled from 'styled-components';
 
-// 이거 다 안써도 되나?
-export interface IGameInfo {
-  category_list: string[];
-  description_snippet: string;
-  download_count: number;
-  id: number;
-  image: {
-    main: string;
-    sub: string[];
-  };
-  name: string;
-  os_list: string[];
-  price: number;
-  sale: number;
-  video?: {
-    main: string;
-    sub: string[];
-  };
+import { localePrice } from 'util/localeString';
+import { gameInfo } from 'modules/game';
+import Text from 'components/atoms/Text';
+
+export default function GameSlide(props: gameInfo) {
+  return (
+    <SlideWrapper>
+      <ImageSection>
+        <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
+      </ImageSection>
+      <InfoSection>
+        <Text types="small">{props.name}</Text>
+        <Text types="tiny">{`${localePrice(props.price, 'KR')}`}</Text>
+      </InfoSection>
+    </SlideWrapper>
+  );
 }
 
 const SlideWrapper = styled.div`
@@ -53,17 +49,3 @@ const InfoSection = styled.div`
   border-radius: 0 0 10px 10px;
   line-height: normal;
 `;
-
-export default function GameSlide(props: IGameInfo) {
-  return (
-    <SlideWrapper>
-      <ImageSection>
-        <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
-      </ImageSection>
-      <InfoSection>
-        <Text types="small">{props.name}</Text>
-        <Text types="tiny">{`${localePrice(props.price, 'KR')}`}</Text>
-      </InfoSection>
-    </SlideWrapper>
-  );
-}

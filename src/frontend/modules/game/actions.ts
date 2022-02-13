@@ -1,22 +1,17 @@
 import { createAsyncAction } from 'typesafe-actions';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 import { createRequestActionTypes } from 'modules/utils/actionUtils';
-
+import { IReqType } from 'api/type';
 import {
-  IGetCategoriesReqType,
   IGetGameReqType,
   IGetGamesByCategoryReqType,
-  IAddCartInfoReqType,
   IResType,
   IResStoreType,
-  IRmCartInfoReqType,
   IGetGameInfoByIdListReqType,
-  IGetWishListReqType,
-  IDoWishReqType,
-  IGetUserDataReqType,
-  IDoUnWishReqType,
-} from 'pages/api/game/type';
+} from 'api/game/type';
+import { IAddCartInfoReqType, IRmCartInfoReqType } from 'api/cart/type';
+import { IDoWishReqType, IDoUnWishReqType } from 'api/wishlist/type';
 
 export const [GET_CATEGORIES, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL] = createRequestActionTypes('GET_CATEGORIES');
 export const [GET_GAME, GET_GAME_SUCCESS, GET_GAME_FAIL] = createRequestActionTypes('GET_GAME');
@@ -32,7 +27,7 @@ export const [GET_USERDATA, GET_USERDATA_SUCCESS, GET_USERDATA_FAIL] = createReq
 export const [GET_WISHLIST, GET_WISHLIST_SUCCESS, GET_WISHLIST_FAIL] = createRequestActionTypes('GET_WISHLIST');
 
 export const getCategories = createAsyncAction(GET_CATEGORIES, GET_CATEGORIES_SUCCESS, GET_CATEGORIES_FAIL)<
-  IGetCategoriesReqType,
+  IReqType,
   IResType,
   AxiosError
 >();
@@ -66,7 +61,7 @@ export const getGameInfoByIdList = createAsyncAction(
   GET_GAMEINFOBYIDLIST_FAIL,
 )<IGetGameInfoByIdListReqType, IResType, AxiosError>();
 export const getWishList = createAsyncAction(GET_WISHLIST, GET_WISHLIST_SUCCESS, GET_WISHLIST_FAIL)<
-  IGetWishListReqType,
+  IReqType,
   IResType,
   AxiosError
 >();
@@ -80,7 +75,7 @@ export const doUnWish = createAsyncAction(DO_UNWISH, DO_UNWISH_SUCCESS, DO_UNWIS
 >();
 
 export const getUserData = createAsyncAction(GET_USERDATA, GET_USERDATA_SUCCESS, GET_USERDATA_FAIL)<
-  IGetUserDataReqType,
+  IReqType,
   IResType,
   AxiosError
 >();

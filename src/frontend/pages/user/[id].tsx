@@ -1,48 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestion, faUser } from '@fortawesome/free-solid-svg-icons';
 
-import { IState } from 'modules';
-import {
-  getProfileAPI,
-  getWithFriendAPI,
-  getGuestBooksAPI,
-  addGuestBookAPI,
-  modifyGuestBookAPI,
-} from '../api/user/api';
+import * as UserAPI from 'api/user/api';
+import * as guestAPI from 'api/guestbook/api';
 
 import Text from 'components/atoms/Text';
-import UserInfo, { IUserInfo } from 'components/organisms/UserInfo';
 import FriendBox, { IFriend } from 'components/molecules/FriendBox';
-import Profile from 'components/atoms/Profile';
+import UserInfo, { IUserInfo } from 'components/organisms/UserInfo';
 import GuestBook, { IGuestBook } from 'components/organisms/GuestBook';
-
-const Wrapper = styled.div`
-  padding: 3rem;
-`;
-
-const FriendSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-top: 3rem;
-`;
-
-const FriendList = styled.div`
-  padding-top: 1rem;
-`;
-
-const GuestBookSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-top: 3rem;
-`;
-
-const GuestBookList = styled.div`
-  padding-top: 1rem;
-`;
 
 const UserPage: NextPage = () => {
   /* 로그인 이후 뷰 처리
@@ -64,7 +30,7 @@ const UserPage: NextPage = () => {
   const [withFriend, setWithFriend] = useState([] as IFriend[]);
 
   const getProfile = async () => {
-    const res = (await getProfileAPI(userId)).data;
+    const res = (await UserAPI.getProfileAPI(userId)).data;
     setProfile(res);
     setUserGuestBook((prev) => ({
       ...prev,
@@ -74,22 +40,22 @@ const UserPage: NextPage = () => {
   };
 
   const getWithFriend = async () => {
-    const res = (await getWithFriendAPI(userId)).data.friends;
+    const res = (await UserAPI.getWithFriendAPI(userId)).data.friends;
     setWithFriend(res);
   };
 
   const getGuestBooks = async () => {
-    const res = (await getGuestBooksAPI(userId)).data.guest_books;
+    const res = (await guestAPI.getGuestBooksAPI(userId)).data.guest_books;
     setGuestBooks(res);
   };
 
   const addGuestBook = async (content: string) => {
-    await addGuestBookAPI(userId, { content: content });
+    await guestAPI.addGuestBookAPI(userId, { content: content });
     await getGuestBooks();
   };
 
   const modifyGuestBook = async (bookId: number, content: string) => {
-    await modifyGuestBookAPI(userId, bookId, { content: content });
+    await guestAPI.modifyGuestBookAPI(userId, bookId, { content: content });
     await getGuestBooks();
   };
 
@@ -134,5 +100,29 @@ const UserPage: NextPage = () => {
     </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  padding: 3rem;
+`;
+
+const FriendSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 3rem;
+`;
+
+const FriendList = styled.div`
+  padding-top: 1rem;
+`;
+
+const GuestBookSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 3rem;
+`;
+
+const GuestBookList = styled.div`
+  padding-top: 1rem;
+`;
 
 export default UserPage;
