@@ -8,6 +8,10 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
+// gRPC의 통신 방법인 proto buffer를 사용하기 위한 메세지와 서비스를 정의하는 파일입니다.
+// 데이터 통신을 적절히 하기 위해 프론트 역할의 팀원들과 많은 대화를 하며 구조화 하였습니다.
+
+
 service Store {
     rpc GetCategoryList(google.protobuf.Empty) returns (CategoryListResponse) {
         option (google.api.http) = {
@@ -91,6 +95,8 @@ service Store {
     }
 }
 
+
+//응답 값을 줄 때 사용할 message
 message UserDataResponse{
     int32 code = 1;
     string message = 2;
@@ -146,7 +152,7 @@ message IsSuccessResponse{
     }
 }
 
-
+// 요청 값 및 응답값에 임베드 될 message
 message Review{
     int32 id = 1;
     int32 user_id = 2 [json_name = "user_id"];
@@ -205,17 +211,13 @@ message GameSimple {
     int32 download_count = 10 [json_name = "download_count"];
 }
 
-
-// 미디어 컨텐츠를 Response 해야할 때.
 message ContentsPath{
     string main = 1;
     repeated string sub = 2;
 }
 
 
-//Request Parameter에 사용되는 message
-
-// Client 측에서 하나의 카테고리를 Request 받을 때. 
+//요청에 사용되는 message
 message GameIdQueryParamRequest{
     int32 game_id = 1;
 }
