@@ -22,12 +22,6 @@ const Category: NextPage<IState> = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    axios.post('http://localhost:8200/auth/email', { email: 'abc' }).then((res) => {
-      console.log(res.data);
-    });
-  });
-
-  useEffect(() => {
     dispatch(getCategories.request({}));
     dispatch(getGamesByCategory.request({ category: `${curSelectedCategory}` }));
     // dispatch(getGamesByCategory.request({ category: '액션' }));
