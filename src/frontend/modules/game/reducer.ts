@@ -3,12 +3,6 @@ import { createReducer } from 'typesafe-actions';
 import { asyncState } from 'modules/utils/reducerUtils';
 import { gameState } from './types';
 import {
-  GET_CATEGORIES,
-  GET_CATEGORIES_SUCCESS,
-  GET_CATEGORIES_FAIL,
-  GET_GAMESBYCATEGORY,
-  GET_GAMESBYCATEGORY_SUCCESS,
-  GET_GAMESBYCATEGORY_FAIL,
   ADD_CARTINFO,
   ADD_CARTINFO_SUCCESS,
   ADD_CARTINFO_FAIL,
@@ -32,8 +26,6 @@ import {
   DO_UNWISH_FAIL,
 } from './actions';
 import {
-  initalCategory,
-  initalGamesByCategory,
   initalCartInfo,
   initalGamesByIdList,
   initialWish,
@@ -43,7 +35,6 @@ import {
 } from './initalData';
 
 const initialState: gameState = {
-  categories: asyncState.initial(initalCategory),
   cartInfo: asyncState.initial(initalCartInfo),
   gamesByIdList: asyncState.initial(initalGamesByIdList),
   wish: asyncState.initial(initialWish),
@@ -53,30 +44,6 @@ const initialState: gameState = {
 };
 
 const reducer = createReducer<gameState>(initialState, {
-  [GET_CATEGORIES]: (state, action) => ({
-    ...state,
-    categories: asyncState.load(initalCategory),
-  }),
-  [GET_CATEGORIES_SUCCESS]: (state, action) => ({
-    ...state,
-    categories: asyncState.success(action.payload.data.category_list),
-  }),
-  [GET_CATEGORIES_FAIL]: (state, action) => ({
-    ...state,
-    categories: asyncState.error(initalCategory, action.payload),
-  }),
-  [GET_GAMESBYCATEGORY]: (state, action) => ({
-    ...state,
-    gamesByCategory: asyncState.load(initalGamesByCategory),
-  }),
-  [GET_GAMESBYCATEGORY_SUCCESS]: (state, action) => ({
-    ...state,
-    gamesByCategory: asyncState.success(action.payload.data.game_list),
-  }),
-  [GET_GAMESBYCATEGORY_FAIL]: (state, action) => ({
-    ...state,
-    gamesByCategory: asyncState.error(initalGamesByCategory, action.payload),
-  }),
   [GET_WISHLIST]: (state, action) => ({
     ...state,
     wishList: asyncState.load(initialWishList),
