@@ -20,7 +20,7 @@ const ContentSection = styled.div`
   width: 100%;
   height: calc(100vh - 80px);
   background: ${(props) => props.theme.colors.primaryBg};
-  overflow-y: scroll;
+  overflow-y: auto;
   ${(props) => props.theme.breakpoints.small} {
     width: calc(100vw - 117px);
   }

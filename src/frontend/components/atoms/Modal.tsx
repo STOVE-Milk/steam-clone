@@ -78,11 +78,13 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalWrapper = styled.div<{ show: boolean }>`
-  background: white;
+  background: ${(props) => props.theme.colors.secondaryBg};
   width: 500px;
   height: 600px;
   border-radius: 15px;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
 
   ${(props) =>
     props.show
@@ -125,6 +127,12 @@ const ModalHeader = styled.div`
   font-size: 25px;
 `;
 
+const CloseBtn = styled.span`
+  color: black;
+  cursor: pointer;
+`;
+
 const ModalBody = styled.div`
   padding-top: 10px;
+  flex: 1;
 `;

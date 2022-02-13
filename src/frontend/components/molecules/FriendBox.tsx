@@ -22,6 +22,7 @@ export interface IFriend {
 export interface IFriendBoxProps {
   friendInfo: IFriend;
   open: boolean;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export default function FriendBox(props: IFriendBoxProps) {
