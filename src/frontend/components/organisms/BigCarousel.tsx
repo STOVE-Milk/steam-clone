@@ -1,26 +1,14 @@
 import React from 'react';
-import Carousel from 'react-multi-carousel';
 import styled from 'styled-components';
+
+import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 
-interface CarouselProps {
+interface ICarouselProps {
   slides: Object;
 }
 
-const CustomCarousel = styled(Carousel)`
-  width: 80%;
-  margin: 0 auto;
-`;
-
-const DotBar = styled.div`
-  width: 10%;
-  height: 3px;
-  margin: 0 1rem;
-  border-radius: 10px;
-  background: ${(props) => props.theme.colors.divider};
-`;
-
-export default function BigCarouselComponent(props: CarouselProps) {
+export default function BigCarouselComponent(props: ICarouselProps) {
   const responsive = {
     large: {
       breakpoint: { max: 3000, min: 1048 },
@@ -41,7 +29,7 @@ export default function BigCarouselComponent(props: CarouselProps) {
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
       autoPlay={true}
-      autoPlaySpeed={2000}
+      autoPlaySpeed={3000}
       infinite
       showDots={true}
       arrows={false}
@@ -51,3 +39,16 @@ export default function BigCarouselComponent(props: CarouselProps) {
     </CustomCarousel>
   );
 }
+
+const CustomCarousel = styled(Carousel)`
+  width: 80%;
+  margin: 0 auto;
+`;
+
+const DotBar = styled.div`
+  width: 10%;
+  height: 3px;
+  margin: 0 1rem;
+  border-radius: 10px;
+  background: ${(props) => props.theme.colors.divider};
+`;

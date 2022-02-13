@@ -2,7 +2,7 @@ package main
 
 func main() {
 
-	err := Server().Run()
+	err := Run()
 	if err != nil {
 		panic(err)
 	}

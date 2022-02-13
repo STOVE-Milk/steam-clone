@@ -1,6 +1,3 @@
-import { AnyAction } from 'redux';
-import { AsyncActionCreatorBuilder, getType } from 'typesafe-actions';
-
 export type AsyncState<T, E = any> = {
   data: T;
   loading: boolean;
@@ -21,7 +18,7 @@ export const asyncState = {
   }),
   success: <T, E = any>(data: T): AsyncState<T, E> => ({
     loading: false,
-    data,
+    data: data,
     error: null,
   }),
   error: <T, E>(initialData: T, error: E): AsyncState<T, E> => ({

@@ -1,20 +1,18 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { takeLatest, call, put } from 'redux-saga/effects';
 
 import createAsyncSaga from 'modules/utils/sagaUtils';
-
 import {
   getCategoriesAPI,
   getGameAPI,
   getGamesByCategoryAPI,
-  doWishAPI,
   getUserDataAPI,
-  doUnWishAPI,
-  getWishListAPI,
   getGameInfoByIdListAPI,
-} from 'pages/api/game/api';
+} from 'api/game/api';
+import { doWishAPI, doUnWishAPI, getWishListAPI } from 'api/wishlist/api';
 import {
   getCategories,
   GET_CATEGORIES,
+  GET_CATEGORIES_SUCCESS,
   getGame,
   GET_GAME,
   getGamesByCategory,

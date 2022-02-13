@@ -6,7 +6,9 @@ export function localePrice(price: number, region: string) {
       string = price.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
       break;
     case 'KR':
-      string = price.toLocaleString('ko-KR', { style: 'currency', currency: 'KRW' });
+      if (price) {
+        string = price.toLocaleString('ko-KR', { style: 'currency', currency: 'KRW' });
+      }
       break;
   }
 
