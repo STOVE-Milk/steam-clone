@@ -34,7 +34,7 @@
     - Spring Cloud Netflix Eureka를 이용하여 구현
     - 로드 밸런싱, 여러 엔드포인트의 쉬운 식별을 위해 구현했습니다.
 # 디렉토리 구조 
-- [백엔드 깃 주소](https://github.com/STOVE-Milk/steam-clone/tree/develop/src/backend)
+- [백엔드 깃 링크](https://github.com/STOVE-Milk/steam-clone/tree/develop/src/backend)
   
 ``` sql
 +---payment # 충전, 결제 서버
@@ -143,6 +143,7 @@
     - [결제에 대한 로그](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/payment/src/main/java/com/steam/payment/entity/mongodb/PurchaseLog.java)
     - [결제 로그를 담은 MongoDB Document](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/payment/src/main/java/com/steam/payment/entity/mongodb/PurchaseLogDocument.java)
 - 라이브러리-로비 서버
+  - [로비 서버 깃 링크](https://github.com/STOVE-Milk/steam-clone/tree/develop/src/backend/library)
   - 자체 메세지 규약
     - [행위](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/global/common/Behavior.java)
     - [메세지 디렉토리](https://github.com/STOVE-Milk/steam-clone/tree/develop/src/backend/library/src/main/java/com/steam/library/dto/messages)
@@ -153,5 +154,18 @@
     - [트랜잭션 로직들을 처리하는 클래스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/service/SocketDataService.java)
     - [메세지를 다른 서버에 발행하는 클래스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/service/PublishService.java)
 - 멤버십 서버
+  - [멤버십 서버 깃 링크](https://github.com/STOVE-Milk/steam-clone/tree/develop/src/backend/membership)
+  - 친구
+    - [친구 관련 서비스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/membership/src/main/java/com/steam/membership/service/FriendService.java)
+    - 친구 신청
+      - 친구는 신청-수락/거절 과정을 거치기 때문에, FriendRequest 라는 이름으로 친구 신청 상태를 나타냈습니다.
+  - 프로필 관련
+    - [프로필, 방명록 서비스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/membership/src/main/java/com/steam/membership/service/ProfileService.java)
+  - 검색
+    - [검색 서비스(유저 검색)](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/membership/src/main/java/com/steam/membership/service/SearchService.java)
+    - [검색 관련 Repository, Query](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/membership/src/main/java/com/steam/membership/repository/UserRepository.java)
 - API Gateway
-- 서비스 디스커버리
+  - [API Gateway 깃 링크](https://github.com/STOVE-Milk/steam-clone/tree/develop/src/backend/api-gateway)
+  - API Gateway는 Spring Cloud Gateway를 이용해 구현했습니다.
+    - [JWT 검증 클래스](https://github.com/STOVE-Milk/steam-clone/blob/feature/back-api-gateway/src/backend/api-gateway/src/main/java/com/steam/gateway/JwtValidator.java)
+    - [JWT 검증 필터](https://github.com/STOVE-Milk/steam-clone/blob/feature/back-api-gateway/src/backend/api-gateway/src/main/java/com/steam/gateway/filter/AuthorizationCheckFilter.java)
