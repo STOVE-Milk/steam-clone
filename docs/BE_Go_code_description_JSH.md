@@ -46,7 +46,7 @@
 ## 4. 디렉토리 구조
 ---
 ### store
-```json
+```
 store
 ├── config                  // 서버 초기 실행 시 필요한 설정
 │   ├── database.go
@@ -82,7 +82,7 @@ store
 ```
 
 ### chat
-```json
+```
 chat
 ├── chatServer.go             // 웹 소캣 서버가 맡은 동작을 관리 
 ├── client.go                 // 클라이언트가 맡은 동작을 관리
