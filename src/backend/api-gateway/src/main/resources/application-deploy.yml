@@ -23,19 +23,19 @@ spring:
             postLogger: true
       routes:
         - id: auth-svc
-          uri: lb://AUTH-SERVICE
+          uri: http://localhost:8081
           predicates:
             - Path=/auth/**
         - id: grpc-gateway
-          uri: lb://GRPC-GATEWAY
+          uri: http://localhost:8100
           predicates:
             - Path=/store/**
         - id: chat-ws-svc
-          uri: lb://CHAT-SERVICE
+          uri: ws://localhost:8102/
           predicates:
             - Path=/chat/**
         - id: chat-http-svc
-          uri: lb://CHAT-SERVICE
+          uri: http://localhost:8102/
           predicates:
             - Path=/chat/info/**
         - id: payment-svc
@@ -46,14 +46,26 @@ spring:
             - name: AuthorizationCheckFilter
               args:
                 baseMessage: Spring Cloud Gateway AuthorizationCheckFilter
-        - id: membership-svc
+        - id: membership-svc-auth-check-friend
           uri: lb://MEMBERSHIP-SERVICE
           predicates:
-            - Path=/membership/**
+            - Path=/membership/friends/**
           filters:
             - name: AuthorizationCheckFilter
               args:
                 baseMessage: Membership AuthorizationCheckFilter
+        - id: membership-svc-auth-check-friend-request
+            uri: lb://MEMBERSHIP-SERVICE
+            predicates:
+              - Path=/membership/friend-requests/**
+            filters:
+              - name: AuthorizationCheckFilter
+                args:
+                  baseMessage: Membership AuthorizationCheckFilter
+        - id: membership-svc-no-auth
+            uri: lb://MEMBERSHIP-SERVICE
+            predicates:
+              - Path=/membership/**
         - id: robby-http-svc
           uri: lb://ROBBY-SERVICE
           predicates:
