@@ -55,36 +55,6 @@ export const initalGamesByCategory = [
     category_list: ['액션', '격투'],
   },
 ];
-export const initalGame = {
-  id: 1,
-  name: '[TEST]MONSTER HUNTER RISE',
-  description_snippet:
-    '[TEST]역동하는 사냥 본능! 사냥에 새로운 바람을 불러일으킬, 종횡무진으로 도약하는 액션. 마음 가는 대로 달릴 수 있는 필드. 미지의 흥분과 놀라움을 선사할 새로운 몬스터들. 이제껏 없었던 사냥 체험이 「MONSTER HUNTER RISE」에서 헌터들을 기다린다!',
-  price: 66800,
-  sale: 6,
-  image: {
-    main: 'https://cdn.akamai.steamstatic.com/steam/apps/1446780/ss_f8249da14987e3c2d10fd4024736f28774c713da.600x338.jpg?t=1642121078',
-    sub: [
-      'https://cdn.akamai.steamstatic.com/steam/apps/1446780/ss_25686086b61ca88a859bc20d588682be92ab4d63.600x338.jpg?t=1642121078',
-      'https://cdn.akamai.steamstatic.com/steam/apps/1446780/ss_d8d96313f1049c800d37a3fc521f06f926fca3ac.116x65.jpg?t=1642121078',
-    ],
-  },
-  video: {
-    main: 'https://cdn.akamai.steamstatic.com/steam/apps/256864285/movie480_vp9.webm?t=1640223329',
-    sub: ['https://cdn.akamai.steamstatic.com/steam/apps/256864285/movie480_vp9.webm?t=1640223329'],
-  },
-  category_list: ['액션', '3인칭', '롤플레잉'],
-  os_list: ['Window', 'macOs'],
-  description: '"네르기간테 너무 쎄다"',
-  download_count: 52228,
-  publisher: {
-    id: 1,
-    name: 'FOR',
-  },
-  review_count: 3,
-  recommend_count: 3,
-  language: ['한국어', '영어'],
-};
 
 export const initalGamesByIdList = [
   {

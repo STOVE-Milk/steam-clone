@@ -3,7 +3,6 @@ import { takeLatest, call, put } from 'redux-saga/effects';
 import createAsyncSaga from 'modules/utils/sagaUtils';
 import {
   getCategoriesAPI,
-  getGameAPI,
   getGamesByCategoryAPI,
   getUserDataAPI,
   getGameInfoByIdListAPI,
@@ -13,8 +12,6 @@ import {
   getCategories,
   GET_CATEGORIES,
   GET_CATEGORIES_SUCCESS,
-  getGame,
-  GET_GAME,
   getGamesByCategory,
   GET_GAMESBYCATEGORY,
   addCartInfo,
@@ -35,7 +32,6 @@ import {
 import { addCartToStore, rmCartToStore } from 'modules/game/sagaFunction';
 
 const getCategoriesSaga = createAsyncSaga(getCategories, getCategoriesAPI);
-const getGameSaga = createAsyncSaga(getGame, getGameAPI);
 const getGamesByCategorySaga = createAsyncSaga(getGamesByCategory, getGamesByCategoryAPI);
 const addCartInfoSaga = createAsyncSaga(addCartInfo, addCartToStore);
 const rmCartInfoSaga = createAsyncSaga(rmCartInfo, rmCartToStore);
@@ -47,7 +43,6 @@ const getUserDataSaga = createAsyncSaga(getUserData, getUserDataAPI);
 
 export function* gameSaga() {
   yield takeLatest(GET_CATEGORIES, getCategoriesSaga);
-  yield takeLatest(GET_GAME, getGameSaga);
   yield takeLatest(GET_GAMESBYCATEGORY, getGamesByCategorySaga);
   yield takeLatest(ADD_CARTINFO, addCartInfoSaga);
   yield takeLatest(RM_CARTINFO, rmCartInfoSaga);

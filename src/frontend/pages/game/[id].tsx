@@ -89,7 +89,9 @@ const Detail: NextPage<IState> = () => {
           <GameInfoTitle types="medium">평가</GameInfoTitle>
           <Evaluation>
             <div className="RecommendBox">
-              <Text types="large">{`${(game.recommend_count / game.review_count) * 100}%`}</Text>
+              <Text types="large">{`${
+                game.recommend_count && game.review_count && (game.recommend_count / game.review_count) * 100
+              }%`}</Text>
               <RecommendCount types="tiny">{`${game.review_count}명 중 ${game.recommend_count}명 추천`}</RecommendCount>
             </div>
             <WishButtonBox>
