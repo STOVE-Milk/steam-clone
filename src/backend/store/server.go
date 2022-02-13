@@ -14,6 +14,7 @@ import (
 
 const portNumber = "8101"
 
+// 상점 서버를 위한 Init을 실행합니다.
 func Run() error {
 	db := config.InitDB()
 	defer db.Close()
@@ -24,11 +25,13 @@ func Run() error {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-
+	// gRPC 객체를 생성합니다.
 	grpcServer := grpc.NewServer()
+
 	storeServer := controller.Server()
 	storeServer.GameCtr = service.NewGameCtr(db)
 
+	// gRPC 객체와 연결합니다.
 	pb.RegisterStoreServer(grpcServer, storeServer)
 
 	log.Printf("start gRPC server on %s port", portNumber)

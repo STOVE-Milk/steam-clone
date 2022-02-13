@@ -10,6 +10,8 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
+// 상점서버에서 유저들의 요청을 받고 그에대한 응답을 주는 패키지 입니다.
+
 type storeServer struct {
 	pb.StoreServer
 	GameCtr *service.GameService

@@ -9,6 +9,8 @@ import (
 	"github.com/STOVE-Milk/steam-clone/store/models"
 )
 
+// ErrorCode.json을 불러들여 메모리에 적재합니다.
+
 func ReadErrorJson() *os.File {
 	jsonFile, err := os.Open("ErrorCode.json")
 	if err != nil {

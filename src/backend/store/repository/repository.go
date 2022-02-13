@@ -14,6 +14,9 @@ import (
 	"github.com/STOVE-Milk/steam-clone/store/utils"
 )
 
+// db와의 통신을 관리하고 데이터를 저장하는 패키지입니다.
+// db와의 CRUD 역할을 합니다.
+
 type Repo struct {
 	db *sql.DB
 }
@@ -92,6 +95,8 @@ func (r *Repo) GetGameDetail(ctx context.Context) (*models.GameDetail, *models.E
 	return &gd, nil
 }
 
+// 카카오 프렌즈샵의 통신을 위한 request를 참조하여 제작하였습니다.
+// 가장 많이 호출되는 repo 함수로 예상되고 잦은 string 타입의 변화가 있을 것으로 예상 돼 byte buffer를 사용하여 최대한 연산 속도를 높혔습니다.
 func (r *Repo) GetSortingGameList(ctx context.Context) ([]*models.GameSimple, *models.Error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()

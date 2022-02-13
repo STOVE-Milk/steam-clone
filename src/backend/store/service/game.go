@@ -10,6 +10,12 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// 응답 요청에 대한 비지니스 로직을 관리하는 패키지입니다.
+// 주로 파싱의 역할을 합니다.
+// interface의 값을 원하는 타입으로 캐스팅 하는곳에서 패닉 에러가 자주 발생하기에 이부분에서 서버가 자주 죽는것을 확인하였습니다.
+// 이를 reverse를 통해 해결하였습니다.
+// 또한 컨텍스트를 사용하여 repo에서 필요한 데이터를 옮김으로써 직접적으로 많은 값을 넘겨야 하는 함수를 만들지 않을 수 있었습니다.
+
 type GameService struct {
 	r *repository.Repo
 }
