@@ -2,7 +2,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://54.180.117.120:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: milk
     password: milk
   jpa:
@@ -20,7 +20,7 @@ spring:
         globally_quoted_identifiers: true
   redis:
     port: 6379
-    host: 54.180.117.120
+    host: localhost
     lettuce:
       shutdown-timeout: 100ms
   data:
@@ -31,9 +31,17 @@ spring:
       database: steam
       username: milk
       password: milk
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
 logging:
   file:
-    path: /home/ubuntu/payment_log
+    path: /home/fortice/payment_log
     max-size: 10MB
     max-history: 10
   level:
