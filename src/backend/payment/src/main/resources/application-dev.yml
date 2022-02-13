@@ -27,7 +27,7 @@ spring:
     mongodb:
       host: localhost
       port: 27017
-      authentication-database: admin
+      authentication-database: steam
       database: steam
       username: milk
       password: milk
