@@ -74,7 +74,7 @@ export const initialWishList = [
     category_list: ['액션', '격투'],
   },
 ];
-export const initalCartInfo = [1, 5, 6];
+export const initalCartInfo = [];
 export const initialUserData = {
   wish_list: [1, 3],
   purchase_list: [6],
