@@ -18,6 +18,15 @@ public class AuthorizationCheckFilter extends AbstractGatewayFilterFactory<Autho
         this.jwtValidator = jwtValidator;
     }
 
+    /*
+        헤더의 authorization이 비어 있는지 검증
+        토큰 검증 - JwtValidator
+        
+        권한을 판별하는 것이 아닌 인증이 제대로 되었나 판단하는 상황으로
+        FORBIDDEN이 아닌 UNAUTHORIZED 상태 코드를 반환합니다.
+
+        나중에 USER_ROLE에 의한 권한 판별의 경우 FORBIDDEN을 반환할 생각입니다.
+    */
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
