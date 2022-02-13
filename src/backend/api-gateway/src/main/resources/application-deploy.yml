@@ -55,17 +55,17 @@ spring:
               args:
                 baseMessage: Membership AuthorizationCheckFilter
         - id: membership-svc-auth-check-friend-request
-            uri: lb://MEMBERSHIP-SERVICE
-            predicates:
-              - Path=/membership/friend-requests/**
-            filters:
-              - name: AuthorizationCheckFilter
-                args:
-                  baseMessage: Membership AuthorizationCheckFilter
+          uri: lb://MEMBERSHIP-SERVICE
+          predicates:
+            - Path=/membership/friend-requests/**
+          filters:
+            - name: AuthorizationCheckFilter
+              args:
+                baseMessage: Membership AuthorizationCheckFilter
         - id: membership-svc-no-auth
-            uri: lb://MEMBERSHIP-SERVICE
-            predicates:
-              - Path=/membership/**
+          uri: lb://MEMBERSHIP-SERVICE
+          predicates:
+            - Path=/membership/**
         - id: robby-http-svc
           uri: lb://ROBBY-SERVICE
           predicates:
