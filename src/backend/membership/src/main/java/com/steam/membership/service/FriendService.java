@@ -30,6 +30,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/*
+    결제 서버와는 다르게 데이터가 비어있는 경우와 같은 예외상황에 대한 Response 처리를
+    Throw가 아닌 ErrorBody를 만들어 리턴합니다. Jmeter를 이용해 테스트해봤을 때의 TPS가
+    Throw를 통한 ExceptionHandler 처리와 비교해서 10퍼센트 더 빨라지는 결과를 얻었습니다.
+*/
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -44,9 +49,6 @@ public class FriendService {
     public Body<Object> getFriendList() {
         final List<Friend> friends = friendRepository.findTop20ByUser(UserContext.getUser());
 
-//        if(friends.isEmpty())
-//            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
-
         return Body.success(FriendsResponse.of(friends));
     }
 
@@ -55,13 +57,12 @@ public class FriendService {
                 UserContext.getUserId(),
                 userId
         );
-//
+
         if(sameFriends.isEmpty())
             return Body.success(FriendsResponse.of(sameFriends));
-            //return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
-        // 현재 하나씩 불러오게 됨
-        // Id List를 뽑아 한꺼번에 SELECT 하도록 or 처음부터 join해서 가져오기
+        // TODO: N+1 문제 해결 - Lazy Fetch로 현재 유저를 하나씩 불러오게 됨
+        // Id List를 뽑아 한꺼번에 SELECT 하도록 or 처음부터 Join해서 가져오기
         List<UserDto> userDatas = sameFriends.stream()
                 .map(Friend::getFriend)
                 .map(UserDto::of)
@@ -99,10 +100,9 @@ public class FriendService {
 
     @Transactional
     public Body<Object> deleteFriend(Integer friendId) {
-        // TODO 한쪽만 친구를 끊을 것인가?
         final Integer userId = UserContext.getUserId();
         final List<Friend> friend = friendRepository.findFriendsByUserIdAndFriendId(userId, friendId);
-        log.info("size: " + friend.size());
+
         if(friend.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
@@ -117,21 +117,12 @@ public class FriendService {
 
         if(type.equals(FRIEND_REQUEST_TYPE_SENDED)) {
             friendRequests = friendRequestRepository.findAllBySender(me);
-
-//            if(friendRequests.isEmpty())
-//                return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
-
             return Body.success(FriendRequestResponse.receiverOf(friendRequests));
         } else if(type.equals(FRIEND_REQUEST_TYPE_RECEIVED)) {
             friendRequests = friendRequestRepository.findAllByReceiver(me);
-
-//            if(friendRequests.isEmpty())
-//                return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
-
             return Body.success(FriendRequestResponse.senderOf(friendRequests));
         } else {
             return Body.success(FriendRequestResponse.builder().requests(new ArrayList<>()).build());
-            //return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
         }
     }
 
@@ -142,7 +133,6 @@ public class FriendService {
 
         if(receiver.isEmpty())
             return Body.success(new EmptyData());
-            //return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
         final Optional<FriendRequest> friendRequest = friendRequestRepository.findBySenderAndReceiver(me, receiver.get());
         if(friendRequest.isPresent())

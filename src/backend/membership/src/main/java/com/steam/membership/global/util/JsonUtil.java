@@ -30,7 +30,6 @@ public class JsonUtil {
 
     public static <T> T toObject(String json, Class<T> tClass) {
         try {
-            log.info(json);
             return objectMapper.readValue(json, tClass);
         } catch (JsonProcessingException e) {
             throw new CustomException(ErrorCode.JSON_PARSE_EXCEPTION);

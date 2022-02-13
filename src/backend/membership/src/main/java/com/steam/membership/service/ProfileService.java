@@ -23,6 +23,11 @@ import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+/*
+    결제 서버와는 다르게 데이터가 비어있는 경우와 같은 예외상황에 대한 Response 처리를
+    Throw가 아닌 ErrorBody를 만들어 리턴합니다. Jmeter를 이용해 테스트해봤을 때의 TPS가
+    Throw를 통한 ExceptionHandler 처리와 비교해서 10퍼센트 더 빨라지는 결과를 얻었습니다.
+*/
 @RequiredArgsConstructor
 @Service
 public class ProfileService {
@@ -49,8 +54,7 @@ public class ProfileService {
                 User.builder().idx(userId).build(),
                 PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "createdAt"))
         );
-//        if(guestBooks.isEmpty())
-//            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+
         return Body.success(GuestBookResponse.of(guestBooks));
     }
 
