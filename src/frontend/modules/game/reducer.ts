@@ -9,9 +9,6 @@ import {
   RM_CARTINFO,
   RM_CARTINFO_SUCCESS,
   RM_CARTINFO_FAIL,
-  GET_GAMEINFOBYIDLIST,
-  GET_GAMEINFOBYIDLIST_SUCCESS,
-  GET_GAMEINFOBYIDLIST_FAIL,
   GET_WISHLIST,
   GET_WISHLIST_SUCCESS,
   GET_WISHLIST_FAIL,
@@ -115,18 +112,6 @@ const reducer = createReducer<gameState>(initialState, {
   [RM_CARTINFO_FAIL]: (state, action) => ({
     ...state,
     cartInfo: asyncState.error(initalCartInfo, action.payload.data),
-  }),
-  [GET_GAMEINFOBYIDLIST]: (state, action) => ({
-    ...state,
-    gamesByIdList: asyncState.load(initalGamesByIdList),
-  }),
-  [GET_GAMEINFOBYIDLIST_SUCCESS]: (state, action) => ({
-    ...state,
-    gamesByIdList: asyncState.success(action.payload.data.game_list),
-  }),
-  [GET_GAMEINFOBYIDLIST_FAIL]: (state, action) => ({
-    ...state,
-    gamesByIdList: asyncState.error(initalGamesByIdList, action.payload.data.game_list),
   }),
 });
 
