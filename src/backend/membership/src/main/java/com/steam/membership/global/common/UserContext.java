@@ -5,6 +5,10 @@ import com.steam.membership.entity.User;
 public class UserContext {
     private static final ThreadLocal<UserDetails> userContextHolder = new ThreadLocal<UserDetails>();
 
+    public static boolean isLogined() {
+        return userContextHolder.get() != null;
+    }
+
     public static UserDetails getUserDetails() {
         return userContextHolder.get();
     }

@@ -18,4 +18,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "ORDER BY u.nickname " +
             "LIMIT :start ,:size", nativeQuery = true)
     List<UserWithIsFriend> findAllByNicknameStartsWith(@Param("userId") Integer userId, @Param("nickname") String nickname, @Param("start") Integer start, @Param("size") Integer size);
+
+    @Query(value = "SELECT u.idx, u.nickname, NULL IS NOT NULL as 'friends', u.`profile`, u.accessed_at as accessedAt, u.created_at as createdAt FROM user u " +
+            "WHERE u.deleted_at IS NULL AND u.nickname LIKE CONCAT(:nickname ,'%') " +
+            "ORDER BY u.nickname " +
+            "LIMIT :start ,:size", nativeQuery = true)
+    List<UserWithIsFriend> findAllByNicknameStartsWith(@Param("nickname") String nickname, @Param("start") Integer start, @Param("size") Integer size);
 }

@@ -36,12 +36,13 @@ public class SearchService {
 
     public Body<Object> searchUsersByNickname(String nickname, Integer page) {
         Integer start = page * 20;
-        List<UserWithIsFriend> users = userRepository.findAllByNicknameStartsWith(UserContext.getUserId(), nickname, start, 20);
+        List<UserWithIsFriend> users;
+        if(UserContext.isLogined()) {
+            users = userRepository.findAllByNicknameStartsWith(UserContext.getUserId(), nickname, start, 20);
+        } else {
+            users = userRepository.findAllByNicknameStartsWith(nickname, start, 20);
+        }
 
-        return Body.success(
-                users.stream()
-                        .map(UserDto::of)
-                        .collect(Collectors.toList())
-        );
+        return Body.success(SearchUserResponse.of(users));
     }
 }

@@ -35,9 +35,13 @@ public class ProfileService {
         if(user.isEmpty())
             return Body.error(ErrorCode.USER_NOT_FOUND);
 
-        final Optional<Friend> friend = friendRepository.findByUserAndFriend(user.get(), UserContext.getUser());
+        boolean isFriend = false;
+        if(UserContext.isLogined()) {
+            final Optional<Friend> friend = friendRepository.findByUserAndFriend(user.get(), UserContext.getUser());
+            isFriend = friend.isPresent();
+        }
 
-        return Body.success(UserDto.of(user.get(), friend.isPresent()));
+        return Body.success(UserDto.of(user.get(), isFriend));
     }
 
     public Body<Object> getGuestBooks(Integer userId, Integer page) {

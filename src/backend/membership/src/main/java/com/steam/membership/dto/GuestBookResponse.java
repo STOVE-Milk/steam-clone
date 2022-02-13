@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GuestBookResponse {
-    List<GuestBookDto> guestBooks;
+    List<GuestBookDto> guestBook;
 
     public static GuestBookResponse of(final List<GuestBook> guestBooks) {
         return GuestBookResponse.builder()
-                .guestBooks(guestBooks.stream()
+                .guestBook(guestBooks.stream()
                         .map(GuestBookDto::of)
                         .collect(Collectors.toList())
                 ).build();

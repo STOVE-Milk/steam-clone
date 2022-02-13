@@ -19,6 +19,7 @@ public class GuestBookDto {
     private ProfileDto proflie;
     private String content;
     private Date createdAt;
+    private Date updatedAt;
 
     public static GuestBookDto of(GuestBook guestBook) {
         return GuestBookDto.builder()
@@ -28,6 +29,7 @@ public class GuestBookDto {
                 .proflie(JsonUtil.toObject(guestBook.getGuest().getProfile(), ProfileDto.class))
                 .content(guestBook.getContent())
                 .createdAt(guestBook.getCreatedAt())
+                .updatedAt(guestBook.getUpdatedAt())
                 .build();
     }
 }
