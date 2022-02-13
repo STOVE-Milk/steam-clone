@@ -67,10 +67,10 @@ spring:
           predicates:
             - Path=/membership/**
         - id: robby-http-svc
-          uri: lb://ROBBY-SERVICE
+          uri: lb://LOBBY-SERVICE
           predicates:
             - Path=/library/info/**
         - id: robby-ws-svc
-          uri: lb://ROBBY-SERVICE
+          uri: lb://LOBBY-SERVICE
           predicates:
             - Path=/library/**
