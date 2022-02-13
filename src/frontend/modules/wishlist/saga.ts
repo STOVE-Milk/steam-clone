@@ -7,9 +7,9 @@ import { doWish, DO_WISH, doUnWish, DO_UNWISH } from 'modules/wishlist/actions';
 const doWishSaga = createAsyncSaga(doWish, doWishAPI);
 const doUnWishSaga = createAsyncSaga(doUnWish, doUnWishAPI);
 
-export function* gameSaga() {
+export function* wishSaga() {
   yield takeLatest(DO_WISH, doWishSaga);
   yield takeLatest(DO_UNWISH, doUnWishSaga);
 }
 
-export { gameSaga as default };
+export { wishSaga as default };

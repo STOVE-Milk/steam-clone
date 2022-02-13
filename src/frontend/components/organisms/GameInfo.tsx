@@ -9,7 +9,10 @@ import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawes
 
 import { IState } from 'modules';
 import { gameInfo } from 'modules/game/types';
-import { doWish, doUnWish, getUserData, addCartInfo, rmCartInfo } from 'modules/game';
+import { getUserData } from 'modules/game';
+import { addCartInfo, rmCartInfo } from 'modules/cart';
+import { doWish, doUnWish } from 'modules/wishlist';
+
 import { localePrice } from 'util/localeString';
 
 import Text from 'components/atoms/Text';
@@ -20,7 +23,8 @@ interface IGameInfo extends gameInfo {
 
 export default function GameInfo(props: IGameInfo) {
   const gameData = props;
-  const { cartInfo, userData } = useSelector((state: IState) => state.game);
+  const { userData } = useSelector((state: IState) => state.game);
+  const { cartInfo } = useSelector((state: IState) => state.cart);
 
   const dispatch = useDispatch();
 

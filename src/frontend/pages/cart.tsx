@@ -17,10 +17,7 @@ import DefaultButton from 'components/atoms/DefaultButton';
 import GameInfo from 'components/organisms/GameInfo';
 
 const cart: NextPage<IState> = (props) => {
-  const { cartInfo } = useSelector((state: IState) => {
-    console.log('카트에 있는 게임 id 배열: ', state.game.cartInfo.data);
-    return state.game;
-  });
+  const { cartInfo } = useSelector((state: IState) => state.cart);
   const [gameList, setGameList] = useState([] as gameInfo[]);
   const [checkedGame, setCheckedGame] = useState([] as number[]); // 체크된 게임은 number[] 타입으로 관리
 

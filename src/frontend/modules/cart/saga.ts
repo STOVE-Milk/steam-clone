@@ -7,9 +7,9 @@ import { addCartToStore, rmCartToStore } from 'modules/cart/sagaFunction';
 const addCartInfoSaga = createAsyncSaga(addCartInfo, addCartToStore);
 const rmCartInfoSaga = createAsyncSaga(rmCartInfo, rmCartToStore);
 
-export function* wishSaga() {
+export function* cartSaga() {
   yield takeLatest(ADD_CARTINFO, addCartInfoSaga);
   yield takeLatest(RM_CARTINFO, rmCartInfoSaga);
 }
 
-export { wishSaga as default };
+export { cartSaga as default };

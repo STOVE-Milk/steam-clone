@@ -34,12 +34,7 @@ interface IUserData {
 }
 
 export interface gameState {
-  cartInfo: AsyncState<number[], Error>;
-  gamesByIdList: AsyncState<gameInfo[], Error>;
-  wish: AsyncState<IWish, Error>;
-  unWish: AsyncState<IWish, Error>;
   userData: AsyncState<IUserData, Error>;
-  wishList: AsyncState<gameInfo[], Error>;
 }
 
 export type gameAction = ActionType<typeof actions>;
