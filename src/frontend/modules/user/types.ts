@@ -9,7 +9,6 @@ interface IUserInfo {
   iat: number;
   idx: number;
   nickname: string;
-  role: number;
 }
 export interface IUserState {
   userInfo: AsyncState<IUserInfo, Error>;

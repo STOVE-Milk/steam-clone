@@ -7,6 +7,7 @@ import user, { userSaga, IUserState } from './user';
 import cart, { cartSaga, ICartState } from './cart';
 import wishlist, { wishSaga, IWishState } from './wishlist';
 import auth, { authSaga, IAuthState } from './auth';
+import charge, { chargeSaga, IChargeState } from './charge';
 
 export interface IState {
   game: gameState;
@@ -14,6 +15,7 @@ export interface IState {
   cart: ICartState;
   wishlist: IWishState;
   auth: IAuthState;
+  charge: IChargeState;
 }
 
 export const rootReducer = (state: IState, action: AnyAction): CombinedState<IState> => {
@@ -27,6 +29,7 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
         cart: cart,
         wishlist: wishlist,
         auth: auth,
+        charge: charge,
       });
       return combinedReducers(state, action);
     }
@@ -36,5 +39,5 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
 export default rootReducer;
 
 export function* rootSaga() {
-  yield all([gameSaga(), userSaga(), cartSaga(), wishSaga(), authSaga()]);
+  yield all([gameSaga(), userSaga(), cartSaga(), wishSaga(), authSaga(), chargeSaga()]);
 }

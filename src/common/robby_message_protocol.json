@@ -1,0 +1,130 @@
+{
+    "message_description": {
+        "format": "behavior_code + json_data",
+        "example": "10{\"user_id\":3}",
+        "postData": "사용자가 보낼 데이터",
+        "getData": "다른 사용자의 행위, 시스템 이벤트에 따라 받을 데이터",
+        "behavior": {
+            "ENTER": "유저 입장",
+            "SYNC": "정보 동기화",
+            "RESET": "유저 위치 RESET_12 (아직 추가 안함)",
+            "LEAVE": "떠나기_19",
+            "MOVE": "유저 이동",
+            "BUILD": "게임, 오브젝트(벽) 설치 후 정보 동기화",
+            "ERROR": "에러 발생"
+        }
+    },
+    "ENTER": {
+        "code": 10,
+        "mock": {
+            "authorization": {
+                "secret": "5dc5085d01e85fd229e32fedbd0f1a4b10cd57e61a7f423bca91263d7ce22ac5cf298a1f8ecc5f5f8125b07627329d06cbde50d25b5d00a17286cf577fd86e8b",
+                "user_id": "access_token",
+                "1": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjEsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.6P_NJvZhGGc4XAdVlm74rgIVIzPtXZbChaZCqBbUba4",
+                "2": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjIsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9._mgKj7UC9YMk2Q5nq2PgX33rzDOhI0sF12X9Z4Q5Xn4",
+                "3": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjMsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.8oLvc4rLDf84plkuWEnxcJrrXonxrMrF0uTWrCMNfIY",
+                "4": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjQsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.-HJMms8T0L5rVUmPZnui12p3IunPeq2Hnv70Vbr9G6E",
+                "5": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjUsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.X8qi7C67meB8HJIgWywvWgtNFBrxsmSN4hVpXgLmTUc",
+                "6": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjYsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.ZKz9JU__4utvmp9tSaZxS2tkFgSJEfhtIKzkH61_bsc",
+                "7": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjcsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.4fdUnOVmp9fh9m265DvziHxEFMPmBi5Rhy0AxQU2zww",
+                "8": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjgsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.TdeI7zweEl18c3W4ep728vjocL6AMsUJ9l9GHB7-pbk",
+                "9": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjksIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.CuCvHcATOsIaBvxQxDSHZ7brNTvgHDOnty8PYHUb_2M",
+                "10": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjEwLCJuaWNrbmFtZSI6InRlc3QiLCJyb2xlIjoxLCJjb3VudHJ5IjoiS1IifQ.VLSPfPJaLda3ars5MPnyn2NaebWJrLN0rJVoQL15bY8"
+            }
+        },
+        "postData": {
+            "room_id": "1",
+            "authorization": "access_token_string"
+        },
+        "getData": {
+            "user_id": "3",
+            "nickname": "fortice"
+        }
+    },
+    "SYNC": {
+        "code": 11,
+        "description": {
+            "SYNC": "해당 방에 대한 정보를 갱신 - user, game 등"
+        },
+        "postData": {
+        },
+        "getData": {
+            "room": {
+                "roomId": "1",
+                "users": {
+                    "1": {
+                        "nickname":"test",
+                        "x":0,
+                        "y":0
+                    },
+                    "2": {
+                        "nickname":"fortice",
+                        "x":0,
+                        "y":0
+                    }
+                },
+                "map": {
+                    "side":20,
+                    "gameList":[],
+                    "objectList":[],
+                    "games":{},
+                    "objects":{}
+                }
+            }
+        }
+    },
+    "MOVE": {
+        "code": 20,
+        "description": {
+            "derection": {
+                "UP": 0,
+                "RIGHT": 1,
+                "DOWN": 2,
+                "LEFT": 3
+            }
+        },
+        "postData": {
+            "direction": 1
+        },
+        "getData": {
+            "user_id": "3",
+            "direction": 1
+        }
+    },
+    "BUILD": {
+        "code": 40,
+        "description": {
+            "game_list": "Build한 String형 gameId",
+            "map": "Build한 게임 정보가 담긴 map"
+        },
+        "postData": {
+            "map": {
+                "side": 20,
+                "game_list": ["1"],
+                "object_list": [],
+                "games": {
+                    "game_id": {
+                        "name" : "Battle Ground",
+                        "x" : 0,
+                        "y" : 0
+                    }
+                },
+                "objects": {
+
+                }
+            }
+        },
+        "getData": {
+        }
+    },
+    "ERROR": {
+        "code": 99,
+        "description": {
+        },
+        "postData": {
+        },
+        "getData": {
+            "message": "error message"
+        }
+    }
+}
