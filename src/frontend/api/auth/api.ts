@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { IDoSignupReqType, ICheckEmailReqType, IDoSignInReqType, ICheckNicknameReqType, IResType } from './type';
+import { IResType } from 'api/game/type';
+import { IDoSignupReqType, ICheckEmailReqType, IDoSignInReqType, ICheckNicknameReqType } from './type';
 
 export async function doSignupAPI(param: IDoSignupReqType) {
   const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_AUTH}/auth/signup`, param);
