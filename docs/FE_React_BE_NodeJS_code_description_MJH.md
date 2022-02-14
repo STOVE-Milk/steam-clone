@@ -177,70 +177,124 @@ github: https://github.com/STOVE-Milk/steam-clone/tree/develop/src/frontend
 
 ### 2-3. 페이지와 내부에서 쓰인 주요 컴포넌트
 
-- 메인 페이지 : https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/index.tsx
-  - 하나의 carousel 라이브러리를 이용하여 여러가지의 carousel 개발
+#### 1) [메인 페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/index.tsx) pages/main.tsx
+- 1개의 carousel 라이브러리를 이용하여 3개의 carousel 개발 (BigCarousel, Carousel)
+- carousel 반응형 처리
+- NavBar 반응형 처리 (모든 페이지에서 보이는 네비게이션 바라, 메인 페이지에 포함시켜 설명하겠습니다.)
+- 주요 컴포넌트
 
-  - BigCarousel : https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/BigCarousel.tsx
-
+  - **[BigCarousel](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/BigCarousel.tsx)** components/oragnisms/BigCarousel.tsx
+     
+  <br/>
+  
     <img width="1405" alt="스크린샷 2022-02-14 오전 7 41 12" src="https://user-images.githubusercontent.com/24283401/153778453-fb4a5605-1f17-4c5c-89ac-202b70779e6d.png">
 
+       
+  <br/>
   
+<br/>
 
-  - Carousel : https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/Carousel.tsx
+  
+  - **[Carousel](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/Carousel.tsx)** components/oragnisms/Carousel.tsx
+  
+  <br/>
+  
+   <img width="1419" alt="스크린샷 2022-02-14 오전 8 01 58" src="https://user-images.githubusercontent.com/24283401/153779167-9769f3c6-15c4-4ce2-abfe-93cdd7166c0b.png">
+     
+  <br/>
+  
+<br/>
 
-    <img width="1419" alt="스크린샷 2022-02-14 오전 8 01 58" src="https://user-images.githubusercontent.com/24283401/153779167-9769f3c6-15c4-4ce2-abfe-93cdd7166c0b.png">
-
-  - NavBar: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/NavBar.tsx
+  
+  - **[NavBar](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/NavBar.tsx)** components/oragnisms/NavBar.tsx
   - window width에 따라 media query를 이용하여 NavBar 반응형 처리 
-
-    <img width="227" alt="스크린샷 2022-02-14 오전 8 19 50" src="https://user-images.githubusercontent.com/24283401/153779745-ba4d7f7c-0218-4aac-8f81-e67790fab241.png">
-    <img width="118" alt="스크린샷 2022-02-14 오전 8 20 07" src="https://user-images.githubusercontent.com/24283401/153779752-98102714-06eb-4897-8e3e-53e66c746be7.png">
-
-<br/>
-
-- 채팅 페이지: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/chat.tsx
-  - 웹 소켓을 이용한 채팅 
-
-  ![스크린샷 2022-02-11 오전 11 05 29](https://user-images.githubusercontent.com/24283401/153527199-814a4687-9d03-4667-9707-c749148696d4.png)
-
   
+  <br/>
+  
+<br/>
 
-  - JoinChat: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/JoinChat.tsx
 
-    ![스크린샷 2022-02-11 오전 11 05 43](https://user-images.githubusercontent.com/24283401/153527217-02e3ea8c-341f-4757-b913-f6e31582e7ad.png) 
+   <img width="227" alt="스크린샷 2022-02-14 오전 8 19 50" src="https://user-images.githubusercontent.com/24283401/153779745-ba4d7f7c-0218-4aac-8f81-e67790fab241.png">  -> <img width="118" alt="스크린샷 2022-02-14 오전 8 20 07" src="https://user-images.githubusercontent.com/24283401/153779752-98102714-06eb-4897-8e3e-53e66c746be7.png">
 
 <br/>
 
-- 친구 페이지: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/friend.tsx
+#### 2) [채팅 페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/chat.tsx) pages/chat.tsx
+- 웹 소켓을 이용한 채팅 
+- 웹 소켓 통신 규약
+  
+  <br/>
+  
+  <img width="819" alt="스크린샷 2022-02-14 오후 12 04 01" src="https://user-images.githubusercontent.com/24283401/153793187-31ac597b-b908-46ca-806f-b4dd5137d5a1.png">
+  
+  <br/>
+- 뷰
+  <br/>
+  
+  ![스크린샷 2022-02-11 오전 11 05 29](https://user-images.githubusercontent.com/24283401/153527199-814a4687-9d03-4667-9707-c749148696d4.png)
+     
+  <br/>
+  
+- 주요 컴포넌트
+  - [JoinChat](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/JoinChat.tsx) components/oragnisms/JoinChat.tsx
+  
+  <br/>
+  
+   ![스크린샷 2022-02-11 오전 11 05 43](https://user-images.githubusercontent.com/24283401/153527217-02e3ea8c-341f-4757-b913-f6e31582e7ad.png) 
 
+<br/>
+
+#### 3) [친구 페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/friend.tsx) pages/friend.tsx
+- 이전에 만든 FriendBox molecule 재사용
+- 뷰
+  <br/>
   ​	![스크린샷 2022-02-11 오후 5 03 57](https://user-images.githubusercontent.com/24283401/153556462-4d7f8436-91bd-4647-ae55-3e2321fdbb5b.png)
 
   ![스크린샷 2022-02-11 오후 5 17 46](https://user-images.githubusercontent.com/24283401/153558072-45552dfb-4bf6-4fe4-a5f6-0d477e6e5135.png)
   
   <br/>
 
-- 유저 페이지: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/user/%5Bid%5D.tsx
+#### 4) [유저 페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/user/%5Bid%5D.tsx) pages/user/[id].tsx
+- 뷰
+
+
+  <br/>
   <img width="1418" alt="스크린샷 2022-02-14 오전 8 45 19" src="https://user-images.githubusercontent.com/24283401/153780727-2eeded3c-d3b2-4b75-bf68-f560bc77036f.png">
 
-  - GuestBook: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/GuestBook.tsx
+- 주요 컴포넌트
+  - [GuestBook](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/GuestBook.tsx) components/oragnisms/GuestBook.tsx
   - 로그인 여부에 따른 3가지 상태 처리 (로그인 했을 때 등록된 내 방명록, 방명록 수정, 로그인 했을 때 타인의 방명록)
 
 <br/>
 
-- 게임 상세 페이지 : https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/game/%5Bid%5D.tsx		![스크린샷 2022-01-24 오후 4 10 36](https://user-images.githubusercontent.com/24283401/150737536-cbdd87db-80aa-465a-86f6-3975c8f412c4.png)
+#### 5) [게임 상세 페이지](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/pages/game/%5Bid%5D.tsx) pages/game/[id].tsx
+- 1개의 carousel 라이브러리를 이용하여 3개의 carousel 개발 (SelectCarousel)
+    
+  <br/>
+  
+  ![스크린샷 2022-01-24 오후 4 10 36](https://user-images.githubusercontent.com/24283401/150737536-cbdd87db-80aa-465a-86f6-3975c8f412c4.png)
+    
+  <br/>
+  
+- 주요 컴포넌트
 
-  - 하나의 carousel 라이브러리를 이용하여 여러가지의 carousel 개발	
+  <br/>
+  
+   - [SelcectCarousel](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/SelectCarousel.tsx) components/oragnisms/SelcectCarousel.tsx
 
-  - SelcectCarousel: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/SelectCarousel.tsx
+<br/>
 
-    ![스크린샷 2022-01-24 오후 4 10 12](https://user-images.githubusercontent.com/24283401/150737489-9f8ff92d-3996-42c3-957a-45c2d090953a.png)
+   ![스크린샷 2022-01-24 오후 4 10 12](https://user-images.githubusercontent.com/24283401/150737489-9f8ff92d-3996-42c3-957a-45c2d090953a.png)
+
+<br/>
 
     
 
   - GameReview: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/components/organisms/GameReview.tsx
   - 로그인 여부에 따른 4가지 상태 처리 (로그인 했을 때 등록되지 않은 내 리뷰, 로그인 했을 때 등록된 내 리뷰, 리뷰 수정, 로그인 했을 때 타인의 리뷰)
 
-    <img width="985" alt="스크린샷 2022-02-14 오전 7 58 10" src="https://user-images.githubusercontent.com/24283401/153779040-b385bee6-5105-44d4-9501-430892469750.png">
+<br/>
+
+   <img width="985" alt="스크린샷 2022-02-14 오전 7 58 10" src="https://user-images.githubusercontent.com/24283401/153779040-b385bee6-5105-44d4-9501-430892469750.png">
 <br/>
 
 <br/>
@@ -250,7 +304,11 @@ github: https://github.com/STOVE-Milk/steam-clone/tree/develop/src/frontend
 
 - 리덕스 스토어 및 사가 구조 세팅: https://github.com/STOVE-Milk/steam-clone/tree/develop/src/frontend/modules
 
+<br/>
+
 ![스크린샷 2022-02-14 오전 8 17 20](https://user-images.githubusercontent.com/24283401/153779648-68bb28cb-5d4c-46f9-8c04-6b47dec597d9.png)
+
+<br/>
 
 - 액션, 리듀서, 사가에서 쓰일 **유틸 함수** 개발
   - 액션 유틸 함수: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/frontend/modules/utils/actionUtils.ts
@@ -274,24 +332,40 @@ github: https://github.com/STOVE-Milk/steam-clone/tree/develop/src/backend/auth
 
 - 인증 서버 
 
-  - accessToken, refreshToken 발급 정책
+  - accessToken, refreshToken 발급 정책: http://wiki.smilegate.net:8090/pages/viewpage.action?pageId=162850950 
+  
+  <br/>
 
-  - 인증 서버 API 설계: https://docs.google.com/spreadsheets/d/1NmEUcdA1a5VPHRbN1bDj_5DzdJtYtxrzz0wexQFJeCY/edit#gid=425828133
+ ![img](https://t1.daumcdn.net/cfile/tistory/99DB8C475B5CA1C936)
+   
+ <img width="1059" alt="스크린샷 2022-02-14 오전 11 42 23" src="https://user-images.githubusercontent.com/24283401/153791149-64bf5256-18aa-44d7-9fca-cb970aa70971.png">
+    
+  <br/>
 
-  - 인증 서버 API 개발: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/auth/routes/auth.js
+   - 인증 서버 API 설계
+  
+  <br/>
 
-    - 닉네임 중복 확인  /auth/nickname
-    - 이메일 중복 확인  /auth/email
-    - 회원가입 /auth/signup
-    - 로그인 /auth/signin
-    - 토큰 재발급 /auth/token
-    - 비밀번호 변경 /auth/password
-    - 회원 탈퇴 /auth/signout
-    - 로그아웃 /auth/logut
+<img width="1319" alt="스크린샷 2022-02-14 오후 12 10 25" src="https://user-images.githubusercontent.com/24283401/153793803-49e1bfca-eb0f-4acd-9caf-fe34d62c25cc.png">
+  
+  <br/>
 
-  - 에러 코드: https://github.com/STOVE-Milk/steam-clone/tree/feature/common/src/common
+   - 인증 서버 API 개발: https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/auth/routes/auth.js
 
-    <img width="849" alt="스크린샷 2022-02-14 오전 8 38 37" src="https://user-images.githubusercontent.com/24283401/153780499-4f12c6f3-305e-49e8-a595-185a269a0ecc.png">
+      - 닉네임 중복 확인  /auth/nickname
+      - 이메일 중복 확인  /auth/email
+      - 회원가입 /auth/signup
+       - 로그인 /auth/signin
+       - 토큰 재발급 /auth/token
+       - 비밀번호 변경 /auth/password
+       - 회원 탈퇴 /auth/signout
+       - 로그아웃 /auth/logut
+
+   - 에러 코드 작성: https://github.com/STOVE-Milk/steam-clone/tree/feature/common/src/common
+
+<br/>
+
+ <img width="849" alt="스크린샷 2022-02-14 오전 8 38 37" src="https://user-images.githubusercontent.com/24283401/153780499-4f12c6f3-305e-49e8-a595-185a269a0ecc.png">
 
 <br/>
 <br/>
