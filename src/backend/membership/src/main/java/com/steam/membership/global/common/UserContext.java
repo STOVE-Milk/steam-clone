@@ -3,10 +3,11 @@ package com.steam.membership.global.common;
 import com.steam.membership.entity.User;
 
 public class UserContext {
+    private static boolean isLogined = false;
     private static final ThreadLocal<UserDetails> userContextHolder = new ThreadLocal<UserDetails>();
 
-    public static boolean isLogined() {
-        return userContextHolder.get() != null;
+    public static boolean isLoginedUser() {
+        return isLogined;
     }
 
     public static UserDetails getUserDetails() {
@@ -22,11 +23,13 @@ public class UserContext {
     }
 
     public static void setUserDetails(UserDetails userDetails) {
-        userContextHolder.set(userDetails);;
+        userContextHolder.set(userDetails);
+        isLogined = true;
     }
 
     public static void removeUserDetails() {
         userContextHolder.remove();
+        isLogined = false;
     }
 }
 
