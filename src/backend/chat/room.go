@@ -67,7 +67,6 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 	if !room.Private {
 		room.notifyClientLeave(client)
 	}
-
 }
 
 func (room *Room) broadcastToClientsInRoom(message []byte) {

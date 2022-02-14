@@ -90,3 +90,14 @@ func (repo *RoomMRepository) AddMembers(room models.Room, members []string) {
 	updateBson := bson.D{{"$push", bson.D{{"members", bson.D{{"$each", members}}}}}}
 	chatCollection.UpdateOne(context.TODO(), updateFilter, updateBson)
 }
+
+func (repo *RoomMRepository) DeleteMember(room models.Room, userId string) {
+	chatCollection := repo.Db.Database("chat").Collection("rooms")
+	pullFilter := bson.D{{"id", room.GetId()}}
+	pullBson := bson.D{{"$pull",
+		bson.D{{
+			"members", userId,
+		}},
+	}}
+	chatCollection.UpdateOne(context.TODO(), pullFilter, pullBson)
+}

@@ -15,6 +15,7 @@ type Room interface {
 type RoomRepository interface {
 	AddRoom(room Room)
 	AddMembers(room Room, members []string)
+	DeleteMember(room Room, userId string)
 	FindRoomByName(name string) Room
 	LoggingChat(chatLogData ChatLogData, content string)
 	GetRoomViewData(roomId string) RoomViewData

@@ -43,8 +43,6 @@ func NewWebsocketServer(roomMRepository models.RoomRepository, userMRepository m
 		userMRepository: userMRepository,
 		userRepository:  userRepository,
 	}
-
-	// 여기서 친구만 불러오면 어떨까나
 	wsServer.users = userRepository.GetAllUsers()
 
 	return wsServer
@@ -68,7 +66,7 @@ func (server *WsServer) Run() {
 
 // 클라이언트를 서버에 등록하는 로직
 func (server *WsServer) registerClient(client *Client) {
-	rooms := server.userMRepository.GetAllJoinedRoom(client.ID)
+	rooms := server.getAllJoinedRoom(client.ID)
 	if rooms == nil {
 		// 처음 채팅을 시도하는 유저 MongoDB에 저장
 		server.userMRepository.AddUser(client.ID)
@@ -193,6 +191,7 @@ func (server *WsServer) handleUserJoined(message Message) {
 }
 
 func (server *WsServer) handleUserLeft(message Message) {
+
 	// 이걸 친구만 처리해야함.
 	server.broadcastToClients(message.encode())
 }
@@ -293,6 +292,18 @@ func (server *WsServer) createRoom(name string, private bool, members []string) 
 	server.rooms[room] = true
 
 	return room
+}
+
+func (server *WsServer) getAllJoinedRoom(clientId string) []models.RoomMongo {
+	return server.userMRepository.GetAllJoinedRoom(clientId)
+}
+
+func (server *WsServer) deleteMember(room models.Room, userId string) {
+	server.roomMRepository.DeleteMember(room, userId)
+}
+
+func (server *WsServer) deleteRoom(room models.Room, userId string) {
+	server.userMRepository.DeleteRoom(room, userId)
 }
 
 func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content string) {

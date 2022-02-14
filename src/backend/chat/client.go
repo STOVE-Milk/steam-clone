@@ -232,7 +232,9 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 	if _, ok := client.rooms[room]; ok {
 		delete(client.rooms, room)
 	}
-	client.wsServer.userMRepository.DeleteRoom(room, client.ID)
+	client.wsServer.deleteRoom(room, client.ID)
+	client.wsServer.deleteMember(room, client.ID)
+
 	room.unregister <- client
 }
 
