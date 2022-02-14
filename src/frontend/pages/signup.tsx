@@ -6,6 +6,8 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import { IState } from 'modules';
+import * as AuthAPI from 'api/auth/api';
+
 import { doSignup } from 'modules/auth';
 import { checkEmailAPI, checkNicknameAPI } from 'api/auth/api';
 import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
@@ -149,7 +151,8 @@ const signup: NextPage<IState> = () => {
         return { ...state };
       });
     }
-    if (!Object.values(dupChecks).includes(false)) {
+    console.log(Object.values(dupChecks));
+    if (Object.values(dupChecks).includes(false)) {
       setErrors((prev) => ({
         ...prev,
         dupChecks: '이메일과 닉네임 중복체크를 진행해주세요.',
