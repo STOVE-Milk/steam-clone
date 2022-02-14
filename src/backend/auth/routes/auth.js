@@ -47,7 +47,6 @@ router.post("/nickname", async (req, res, next) => {
 
 // /auth/signup 회원가입
 router.post("/signup", async (req, res, next) => {
-    // 이메일 중복 시, 회원가입 신청이 안되도록 프론트에서 처리
     const { email, password, username, nickname, language, country } = req.body;
 
     try {
@@ -102,12 +101,11 @@ router.post("/signin", async (req, res, next) => {
                 },
             }
         );
-
         const refreshToken = jwt.sign({}, `${process.env.JWT_SECRET}`, {
             expiresIn: "14d",
         });
 
-        // 서버에서 나중에 작업할 때 필요한 것들을 accessToken에 넣어준다
+        // 서버에서 나중에 작업할 때 필요한 정보들로 accessToken을 발급한다.
         const accessToken = jwt.sign(
             { idx: exUser.idx, nickname: exUser.nickname, role: exUser.role, country: exUser.country },
             `${process.env.JWT_SECRET}`,
@@ -116,7 +114,8 @@ router.post("/signin", async (req, res, next) => {
             }
         );
 
-        // redis에 refreshToken=accessToken 으로 저장
+        // redis에 refreshToken=accessToken 으로 저장 (key-value)
+        // TODO: key-value 가 아닌 다른 방식으로 개발 필요 (from.태현님)
         req.redisClient.set(refreshToken, accessToken);
 
         return successRes(res, 10000, "Login OK", { accessToken: accessToken, refreshToken: refreshToken });
@@ -189,6 +188,7 @@ router.post("/password", async (req, res, next) => {
             return failureRes(res, 10103, "Password Error", "비밀번호가 일치하지 않습니다.");
         }
 
+        // 비밀번호 암호화하여 db에 저장
         const hash = await bcrypt.hash(newPassword, 12);
         User.update(
             {
@@ -237,10 +237,12 @@ router.post("/logout", async (req, res, next) => {
     const { accessToken, refreshToken } = req.body;
 
     try {
+        // redis에서 refreshToken 삭제
         req.redisClient.del(refreshToken);
 
         const decoded = jwt.decode(accessToken, `${process.env.JWT_SECRET}`);
 
+        // 로그아웃 요청을 한 유저의 accessToken을 redis에 블랙리스트 등록: accessToken 남은 만료 시간만큼 등록한다.  
         req.redisClient.set(accessToken, "logout", "EX", decoded.exp - decoded.iat);
 
         return successRes(res, 10000, "Signout OK", {});
