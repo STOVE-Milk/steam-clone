@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-
 import styled from 'styled-components';
 
 import { IState } from 'modules';

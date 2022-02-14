@@ -14,7 +14,6 @@ export interface IChargeInfo {
 }
 
 export interface IChargeState {
-  giftCardList: AsyncState<IGiftcard[], Error>;
   charge: AsyncState<IChargeInfo, Error>;
   approvalCharge: AsyncState<{}, Error>;
 }

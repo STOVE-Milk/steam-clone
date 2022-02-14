@@ -58,6 +58,7 @@ export default function NavBar() {
         <MenuBox open={open} page="wishlist" icon={<FontAwesomeIcon icon={faHeart} inverse />} name={'위시리스트'} />
         <MenuBox open={open} page="cart" icon={<FontAwesomeIcon icon={faShoppingCart} inverse />} name={'장바구니'} />
         <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} inverse />} name={'채팅'} />
+        <MenuBox open={open} page="charge" icon={<FontAwesomeIcon icon={faComments} inverse />} name={'충전'} />
       </MenuSection>
       <SectionDivider />
       <SectionTitle>

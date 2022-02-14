@@ -21,9 +21,9 @@ export const initialGiftCard = [
   },
 ];
 export const initialChargeInfo = {
-  tid: '[TEST]T10023132402',
-  next_redirect_pc_url: '[TEST]http://localhost:3000/charge/approval?pg_token=e703bc6b3f22d3e90ece',
-  created_at: '[TEST]string',
+  tid: '',
+  next_redirect_pc_url: '',
+  created_at: '',
 };
 export const initialApprovalCharge = {};
 export const initialSingup = {};

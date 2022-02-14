@@ -1,38 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 
-import DefaultButton from 'components/atoms/DefaultButton';
+import styled from 'styled-components';
 
 import { IState } from 'modules';
-import { useSelector, useDispatch } from 'react-redux';
-import { doApprovalCharge } from 'modules/charge';
+import * as ChargeAPI from 'api/charge/api';
 import { useRouter } from 'next/router';
 
-const approval: NextPage<IState> = () => {
-  //TO DO(양하): 리팩토링 -> 생각해보면 이거야말로 그냥 request만 보내면 되는 요청같음, 굳이 store 안거치고
-  const { charge } = useSelector((state: IState) => state.charge);
+import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
+import Text from 'components/atoms/Text';
+import DefaultButton from 'components/atoms/DefaultButton';
 
-  const dispatch = useDispatch();
+const approval: NextPage<IState> = () => {
   const router = useRouter();
 
   return (
-    <DefaultButton
-      types={'primary'}
-      onClick={() => {
-        const approvalReqObj = {
-          method: 'kakaopay',
-          tid: charge.data.tid,
-          pg_token:
-            typeof window !== 'undefined' && localStorage.getItem('pg_token') != null
-              ? localStorage.getItem('pg_token')
-              : '',
-        };
-        dispatch(doApprovalCharge.request(approvalReqObj));
-      }}
-    >
-      충전승인하기
-    </DefaultButton>
+    <FinishWrapper>
+      <TitleStyle>충전 승인을 위해 승인버튼을 눌러주세요.</TitleStyle>
+      <ApproveBtn
+        types={'primary'}
+        onClick={async () => {
+          const approvalReqObj = {
+            method: 'kakaopay',
+            tid: getItemFromLocalStorage('tid'),
+            pg_token: getItemFromLocalStorage('pg_token'),
+          };
+          const res = await ChargeAPI.doApprovalChargeAPI(approvalReqObj);
+          alert(res.message);
+          router.push('/');
+        }}
+      >
+        충전승인하기
+      </ApproveBtn>
+    </FinishWrapper>
   );
 };
-
+const TitleStyle = styled(Text)`
+  margin-bottom: 2rem;
+  display: block;
+`;
+const FinishWrapper = styled.div`
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const ApproveBtn = styled(DefaultButton)`
+  width: 50%;
+`;
 export default approval;
