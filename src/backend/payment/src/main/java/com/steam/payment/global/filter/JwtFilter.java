@@ -20,6 +20,11 @@ public class JwtFilter implements Filter {
         Filter.super.init(filterConfig);
     }
 
+    /*
+        API Gateway에서 검증이 됐다고 판단하여 Secret Key를 이용해 검증을 하지 않고,
+        JWT Payload의 데이터를 해석해서 UserDetails로 Deserialize합니다.
+        UserDetails는 ThreadLocal에 저장하여 쓰레드 내에서 공유하며 사용합니다.
+    */
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;

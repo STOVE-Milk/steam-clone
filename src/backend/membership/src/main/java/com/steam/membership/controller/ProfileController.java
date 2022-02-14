@@ -1,6 +1,7 @@
 package com.steam.membership.controller;
 
 
+import com.steam.membership.dto.GuestBookDto;
 import com.steam.membership.service.FriendService;
 import com.steam.membership.service.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -42,9 +43,13 @@ public class ProfileController {
     public ResponseEntity<Object> getGuestBooks(
             @NotBlank @PathVariable("userId") Integer userId,
             @RequestParam(value = "page", required = false) Integer page) {
+        if(page == null || page <= 0)
+            page = 0;
+        else
+            page--;
 
         return ResponseEntity.ok(
-                profileService.getGuestBooks(userId)
+                profileService.getGuestBooks(userId, page)
         );
     }
 
@@ -52,10 +57,10 @@ public class ProfileController {
     @ResponseBody
     public ResponseEntity<Object> writeGuestBook(
             @NotEmpty @PathVariable("userId") Integer userId,
-            @NotBlank @RequestParam("content") String content) {
+            @NotBlank @RequestBody GuestBookDto guestbook) {
 
         return ResponseEntity.ok(
-                profileService.writeGuestBook(userId, content)
+                profileService.writeGuestBook(userId, guestbook.getContent())
         );
     }
 
@@ -64,9 +69,9 @@ public class ProfileController {
     public ResponseEntity<Object> patchGuestBook(
             @NotEmpty @PathVariable("userId") Integer userId,
             @NotEmpty @PathVariable("bookId") Integer bookId,
-            @NotBlank @RequestParam("content") String content) {
+            @NotBlank @RequestBody GuestBookDto guestbook) {
         return ResponseEntity.ok(
-                profileService.patchGuestBook(userId, bookId, content)
+                profileService.patchGuestBook(userId, bookId, guestbook.getContent())
         );
     }
 

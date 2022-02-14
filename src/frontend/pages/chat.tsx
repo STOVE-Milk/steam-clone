@@ -1,0 +1,310 @@
+import React, { useEffect, useState, useRef } from 'react';
+import type { NextPage } from 'next';
+
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+
+import Profile from 'components/atoms/Profile';
+import Text from 'components/atoms/Text';
+import FilledButton from 'components/atoms/FilledButton';
+import MsgBox from 'components/atoms/MsgBox';
+import Modal from 'components/atoms/Modal';
+import JoinChat from 'components/organisms/JoinChat';
+
+interface IServerMessage {
+  //서버에서 받는 메세지 객체 타입
+  action: string;
+  message: string;
+  target: null | IRoom;
+  sender: null | IUser;
+  data: null | IRoom | IRoomIn;
+}
+
+interface IUser {
+  //채팅 유저 객체 타입
+  id: string;
+  name: string;
+}
+
+interface IRoom {
+  //채팅 방 객체 타입
+  id: string;
+  name: string;
+  private: boolean; //개인 채팅방이면 true, 단체 채팅방이면 false
+}
+
+interface IRoomIn {
+  //채팅 방안 정보 객체 타입
+  members: string[]; //채팅방 멤버들
+  log: Log[]; //채팅방 메세지들
+}
+
+interface Log {
+  //채팅방 메세지 객체 타입
+  sender_id: string;
+  sender_nickname: string[];
+  content: string;
+  send_time: string;
+}
+
+// interface Message {
+//   id: string;
+//   name: string;
+//   message: string;
+// }
+
+const Chat: NextPage = () => {
+  const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n'); // temp message
+  const [showModal, setShowModal] = useState(false); // 채팅방 생성 모달을 띄우는가
+  const [selectFriends, setSelectFriends] = useState<number[]>([]); // 채팅방 생성 시 선택한 친구들
+  const [rooms, setRooms] = useState<IRoom[]>([]); // 채팅방 목록
+
+  // TODO: 밑에 값들을 props로 가지는 채팅 컴포넌트 organism으로 컴포넌트화 하기
+  const [curRoom, setCurRoom] = useState(''); // 현재 채팅방 이름
+  const [members, setMembers] = useState<string[]>(); // 채팅방 멤버들
+  const [logs, setLogs] = useState<Log[]>(); // 채팅방 메세지들
+  const [message, setMessage] = useState({} as Log); //현재 보낼 메세지, 받을 메세지
+
+  let ws = useRef<WebSocket>(); // 웹 소켓 사용
+
+  // 소켓 통신 시 임시로 사용하는 토큰
+  const token =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHgiOjE0LCJuaWNrbmFtZSI6Im5pY2sxNCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiIsImlhdCI6MTY0NDEzNzUyOCwiZXhwIjoxNjQ0MTQxMTI4fQ.rgF0cR0dhqLOY3yhDuYPHJss4exAeTIfw2H1yAKf_78';
+
+  useEffect(() => {
+    if (!ws.current) {
+      ws.current = new WebSocket(`ws://localhost:8102/ws?token=${token}`); //웹 소켓 연결
+
+      // 서버 -> 클라이언트
+      // 웹 소켓 통신 과정에서 서버로부터 받는 메세지들을 action에 따라 처리. 아직 개발중!
+      ws.current.onmessage = (e: MessageEvent) => {
+        const serverMessage = e.data;
+
+        switch (serverMessage.action) {
+          case 'user-join': // 유저 접속
+            console.log('user-join', serverMessage.data);
+            break;
+          case 'room-get': // 유저 접속 시, 채팅방 목록 가져오기
+            console.log('room-get', serverMessage.data);
+            setRooms(serverMessage.data);
+            break;
+          case 'room-joined': // 채팅방 접속
+            console.log('room-joined', serverMessage.target);
+            if (serverMessage.target.private) {
+            }
+            let array = rooms;
+            array.push(serverMessage.target);
+            setRooms(array);
+            break;
+          case 'room-view': // 채팅방 접속 시, 채팅방에 관한 정보 가져오기
+            console.log('room-view', serverMessage.data);
+            setMembers(serverMessage.data.members);
+            setLogs(serverMessage.data.log);
+            break;
+          case 'send-message': // 메세지를 받음
+            console.log('send-message', serverMessage);
+            setMessage({
+              sender_id: serverMessage.sender.id,
+              sender_nickname: serverMessage.sender.name,
+              send_time: '1시',
+              content: serverMessage.message,
+            });
+            setMembers(serverMessage.data.members);
+            let array2 = logs;
+            message && array2?.push(message);
+            setLogs(array2);
+            break;
+        }
+      };
+    }
+  }, []);
+
+  const inRoom = (roomId: string) => {
+    // 클->서: 채팅방에 들어감
+    ws.current?.send(
+      JSON.stringify({
+        action: 'room-view',
+        target: { id: roomId },
+      }),
+    );
+    setCurRoom(roomId);
+  };
+
+  const sendMessage = () => {
+    // 클->서: 메세지를 보냄
+    ws.current?.send(
+      JSON.stringify({
+        action: 'send-message',
+        message: message.content,
+        target: {
+          id: curRoom,
+        },
+      }),
+    );
+  };
+
+  const onSubmit = () => {
+    // 클->서: 채팅방 생성
+    // TODO: 개인채팅인지 단체채팅인지 선택하는 뷰랑 로직 추가
+    // TODO: 단체채팅일 경우 채팅방 이름 입력 받기
+    ws.current?.send(
+      JSON.stringify({
+        action: 'join-room-private',
+        message: selectFriends[0].toString(),
+      }),
+    );
+
+    ws.current?.send(
+      JSON.stringify({
+        action: 'join-room-public',
+        message: `publicRoom${selectFriends.map((friend) => {
+          return `-${friend}`;
+        })}`.toString(),
+      }),
+    );
+  };
+
+  const onSelect = (id: number) => {
+    let array = selectFriends;
+    array.push(id);
+    setSelectFriends(array);
+  };
+
+  const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.shiftKey) {
+      // shift+enter처리
+      return;
+    }
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
+  return (
+    <ChatWrapper>
+      <ChatListSection>
+        {rooms.map((room) => {
+          return (
+            <ChatListBox key={room.id} onClick={() => inRoom(room.id)}>
+              <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
+              <ChatListName types={'medium'}>{room.name}</ChatListName>
+            </ChatListBox>
+          );
+        })}
+        <button onClick={() => setShowModal(true)}>채팅방 생성</button>
+        <Modal onClose={() => setShowModal(false)} show={showModal}>
+          {/* TODO: 실제 친구 불러오기 */}
+          <JoinChat
+            friends={[
+              { name: 'user1', id: 1 },
+              { name: 'user2', id: 2 },
+              { name: 'user3', id: 3 },
+            ]}
+            onSelect={onSelect}
+            onSubmit={onSubmit}
+          ></JoinChat>
+        </Modal>
+      </ChatListSection>
+      <ChatRoomSection>
+        <ChatViewBox>
+          {/* TODO: 채팅 컴포넌트 oragnism 만들어서 빼기. msg가 Logs로 대체될 예정 */}
+          <MsgBox isMine={true}>
+            {msg.map((text, key) => (
+              <p key={key}> {text} </p>
+            ))}
+          </MsgBox>
+          <MsgBox isMine={false}>
+            {msg.map((text, key) => (
+              <p key={key}> {text} </p>
+            ))}
+          </MsgBox>
+        </ChatViewBox>
+        <ChatInputBox>
+          <ChatInput
+            value={message?.content}
+            onChange={(e) => setMessage((prev) => ({ ...prev, content: e.target.value }))}
+            onKeyPress={(e) => onKeyPress(e)}
+          ></ChatInput>
+          <ChatButton types="primary" onClick={sendMessage}>
+            전송
+          </ChatButton>
+        </ChatInputBox>
+      </ChatRoomSection>
+    </ChatWrapper>
+  );
+};
+
+const ChatWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+`;
+
+const ChatListSection = styled.div`
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid ${(props) => props.theme.colors.divider};
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const ChatListBox = styled.div`
+  width: 100%;
+  min-height: 5rem;
+  border-bottom: 1px solid ${(props) => props.theme.colors.divider};
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+`;
+
+const ChatListName = styled(Text)`
+  margin: 0 1rem;
+`;
+
+const ChatRoomSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ChatViewBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1rem;
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const ChatInputBox = styled.div`
+  background: ${(props) => props.theme.colors.secondaryBg};
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+`;
+
+const ChatInput = styled.textarea`
+  flex: 1;
+  border: none;
+  height: 3rem;
+  border-bottom: 1px solid ${(props) => props.theme.colors.primaryText};
+  background: transparent;
+  padding: 1rem;
+  color: ${(props) => props.theme.colors.primaryText};
+  word-break: break-word;
+  font-size: 1.3rem;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const ChatButton = styled(FilledButton)``;
+
+export default Chat;

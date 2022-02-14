@@ -20,6 +20,10 @@ public class JwtValidator {
         this.key = Base64.getEncoder().encodeToString(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
+    /*
+        Bearer 토큰이 맞는 지 확인
+        JWT Secret Key를 이용해 Sign 검증
+    */
     public boolean validate(String authorization) {
         if(!authorization.startsWith(AUTHORIZATION_TYPE))
                 return false;

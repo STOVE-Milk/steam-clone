@@ -22,7 +22,6 @@ public class GuestBook {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //Guest는 Lazy Loading을 안하거나 profile 등 필요한 정보를 column으로 속도를 줄이는게 좋다.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guest_id")
     private User guest;

@@ -1,14 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export interface ButtonProps {
+export interface IButtonProps {
   types: string;
   onClick?: React.MouseEventHandler;
   children: React.ReactNode;
   disabled?: boolean;
 }
 
-const ButtonStyle = styled.button<ButtonProps>`
+export default function DefaultButton(props: IButtonProps) {
+  return (
+    <ButtonStyle {...props} onClick={props.onClick} disabled={props.disabled}>
+      {props.children}
+    </ButtonStyle>
+  );
+}
+
+DefaultButton.defaultProps = {
+  onClick: () => console.log('clicked'),
+};
+
+const ButtonStyle = styled.button<IButtonProps>`
   background: ${(props) => props.theme.colors['plain']};
   color: ${(props) => props.theme.colors[props.types + 'Bg']};
   font-size: 1rem;
@@ -22,16 +34,10 @@ const ButtonStyle = styled.button<ButtonProps>`
   &:hover {
     box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
   }
+
+  ${(props) =>
+    props.disabled && {
+      background: props.theme.colors['secondaryBg'],
+      color: props.theme.colors['plain'],
+    }}
 `;
-
-export default function DefaultButton(props: ButtonProps) {
-  return (
-    <ButtonStyle {...props} onClick={props.onClick}>
-      {props.children}
-    </ButtonStyle>
-  );
-}
-
-DefaultButton.defaultProps = {
-  onClick: () => console.log('clicked'),
-};

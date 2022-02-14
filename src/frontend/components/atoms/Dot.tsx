@@ -1,11 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export interface DotProps {
+export interface IDotProps {
   color: string;
 }
 
-const DotStyle = styled.div<DotProps>`
+export default function Profile(props: IDotProps) {
+  return <DotStyle {...props} />;
+}
+
+const DotStyle = styled.div<IDotProps>`
   width: 7px;
   height: 7px;
   border-radius: 30px;
@@ -14,7 +18,3 @@ const DotStyle = styled.div<DotProps>`
   align-items: center;
   justify-content: center;
 `;
-
-export default function Profile(props: DotProps) {
-  return <DotStyle {...props} />;
-}

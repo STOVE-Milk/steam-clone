@@ -3,7 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer, { IState, rootSaga } from '.';
 import { Reducer } from 'typesafe-actions';
-import { MakeStore, createWrapper, Context } from 'next-redux-wrapper';
+import { createWrapper } from 'next-redux-wrapper';
 
 function configureStore() {
   const sagaMiddleware = createSagaMiddleware();
@@ -18,6 +18,7 @@ function configureStore() {
   return store;
 }
 
+//next에서 redux의 단일 스토어를 지키기 위해 wrapper로 스토어를 감싸줌
 const wrapper = createWrapper<Store<IState>>(configureStore);
 
 export default wrapper;

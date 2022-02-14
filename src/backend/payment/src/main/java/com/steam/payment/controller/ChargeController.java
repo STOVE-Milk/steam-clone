@@ -17,6 +17,15 @@ import javax.validation.constraints.NotBlank;
 public class ChargeController {
     private final ChargeService chargeService;
 
+    // 임시 잔액 확인 서비스
+    @GetMapping("/wallet")
+    @ResponseBody
+    public ResponseEntity<Body<Object>> getBalance() {
+        return ResponseEntity.ok(
+                Body.success(chargeService.getBalance())
+        );
+    }
+
     @GetMapping("/giftcards/{country}")
     @ResponseBody
     public ResponseEntity<Body<Object>> getGiftcardList(@Valid @NotBlank @PathVariable("country") String country) {

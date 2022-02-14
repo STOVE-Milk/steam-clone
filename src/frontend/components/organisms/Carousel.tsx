@@ -1,31 +1,15 @@
 import React from 'react';
-import Carousel from 'react-multi-carousel';
 import styled from 'styled-components';
-import 'react-multi-carousel/lib/styles.css';
-import gameImage2 from 'public/game2.jpg';
-import Image from 'next/image';
 
-interface CarouselProps {
-  slides: Object;
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+
+interface ICarouselProps {
+  slides: Object; //carousel에서 element로 쓰일 슬라이드
 }
 
-const CustomCarousel = styled(Carousel)`
-  width: 80%;
-  margin: 0 auto;
-  
-  .react-multiple-carousel__arrow--right {
-    margin-right: -3%;
-    margin-bottom: 8%;
-    background: ${(props) => props.theme.colors.secondaryBg};
-  }
-  .react-multiple-carousel__arrow--left {
-    margin-left: -2%;
-    margin-bottom: 8%;
-    background: ${(props) => props.theme.colors.secondaryBg};
-  }
-`;
-
-export default function CarouselComponent(props: CarouselProps) {
+//carousel 반응형을 위해 breakpoint 지정
+export default function CarouselComponent(props: ICarouselProps) {
   const responsive = {
     large: {
       breakpoint: { max: 3000, min: 1048 },
@@ -46,7 +30,7 @@ export default function CarouselComponent(props: CarouselProps) {
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
       autoPlay={true}
-      autoPlaySpeed={2000}
+      autoPlaySpeed={3000}
       infinite
       removeArrowOnDeviceType={['small']}
     >
@@ -54,3 +38,19 @@ export default function CarouselComponent(props: CarouselProps) {
     </CustomCarousel>
   );
 }
+
+const CustomCarousel = styled(Carousel)`
+  width: 80%;
+  margin: 0 auto;
+
+  .react-multiple-carousel__arrow--right {
+    margin-right: -3%;
+    margin-bottom: 8%;
+    background: ${(props) => props.theme.colors.secondaryBg};
+  }
+  .react-multiple-carousel__arrow--left {
+    margin-left: -2%;
+    margin-bottom: 8%;
+    background: ${(props) => props.theme.colors.secondaryBg};
+  }
+`;

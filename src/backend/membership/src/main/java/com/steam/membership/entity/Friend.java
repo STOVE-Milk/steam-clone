@@ -20,7 +20,8 @@ import javax.persistence.*;
 public class Friend {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "idx")
+    private Integer idx;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

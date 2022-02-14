@@ -1,54 +1,14 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { takeLatest, call, put } from 'redux-saga/effects';
 
 import createAsyncSaga from 'modules/utils/sagaUtils';
+import { getUserDataAPI } from 'api/game/api';
 
-import {
-  getCategoriesAPI,
-  getGameAPI,
-  getGamesByCategoryAPI,
-  doWishAPI,
-  getUserDataAPI,
-  doUnWishAPI,
-  getWishListAPI,
-  getGameInfoByIdListAPI,
-} from 'pages/api/game/api';
-import {
-  getCategories,
-  GET_CATEGORIES,
-  getGame,
-  GET_GAME,
-  getGamesByCategory,
-  GET_GAMESBYCATEGORY,
-  getWishList,
-  GET_WISHLIST,
-  doWish,
-  DO_WISH,
-  doUnWish,
-  DO_UNWISH,
-  getUserData,
-  GET_USERDATA,
-  getGameInfoByIdList,
-  GET_GAMEINFOBYIDLIST,
-} from 'modules/game/actions';
+import { getUserData, GET_USERDATA } from 'modules/game/actions';
 
-const getCategoriesSaga = createAsyncSaga(getCategories, getCategoriesAPI);
-const getGameSaga = createAsyncSaga(getGame, getGameAPI);
-const getGamesByCategorySaga = createAsyncSaga(getGamesByCategory, getGamesByCategoryAPI);
-const getWishListSaga = createAsyncSaga(getWishList, getWishListAPI);
-const doWishSaga = createAsyncSaga(doWish, doWishAPI);
-const doUnWishSaga = createAsyncSaga(doUnWish, doUnWishAPI);
 const getUserDataSaga = createAsyncSaga(getUserData, getUserDataAPI);
-const getGameInfoByIdListSaga = createAsyncSaga(getGameInfoByIdList, getGameInfoByIdListAPI);
 
 export function* gameSaga() {
-  yield takeLatest(GET_CATEGORIES, getCategoriesSaga);
-  yield takeLatest(GET_GAME, getGameSaga);
-  yield takeLatest(GET_GAMESBYCATEGORY, getGamesByCategorySaga);
-  yield takeLatest(GET_WISHLIST, getWishListSaga);
-  yield takeLatest(DO_WISH, doWishSaga);
-  yield takeLatest(DO_UNWISH, doUnWishSaga);
   yield takeLatest(GET_USERDATA, getUserDataSaga);
-  yield takeLatest(GET_GAMEINFOBYIDLIST, getGameInfoByIdListSaga);
 }
 
 export { gameSaga as default };

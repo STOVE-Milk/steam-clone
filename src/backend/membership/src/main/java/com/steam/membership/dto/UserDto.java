@@ -32,6 +32,17 @@ public class UserDto {
                 .build();
     }
 
+    public static UserDto of(final UserWithIsFriend user) {
+        return UserDto.builder()
+                .id(user.getIdx())
+                .nickname(user.getNickname())
+                .isFriend(user.getFriends())
+                .profile(JsonUtil.toObject(user.getProfile(), ProfileDto.class))
+                .accessedAt(user.getAccessedAt())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
+
     public static UserDto of(final User user, Date createdAt) {
         return UserDto.builder()
                 .id(user.getIdx())

@@ -12,8 +12,8 @@ spring:
         - name: GlobalFilter
           args:
             baseMessage: Spring Cloud Gateway GlobalFilter
-            preLogger: false
-            postLogger: false
+            preLogger: true
+            postLogger: true
       routes:
         - id: auth-svc
           uri: http://localhost:8081/
@@ -55,22 +55,3 @@ spring:
           uri: ws://localhost:8210/
           predicates:
             - Path=/library/**
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:3000"
-            allow-credentials: true
-            allowedHeaders:
-              - x-requested-with
-              - authorization
-              - content-type
-              - credential
-              - X-AUTH-TOKEN
-              - X-CSRF-TOKEN
-            allowedMethods:
-              - POST
-              - GET
-              - PUT
-              - OPTIONS
-              - DELETE
-              - PATCH

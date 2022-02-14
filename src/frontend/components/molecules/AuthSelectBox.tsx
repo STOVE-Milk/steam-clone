@@ -9,6 +9,21 @@ interface IOptionProp {
   onChange?: React.ChangeEventHandler;
 }
 
+export default function AuthSelectBox({ title, option, onChange }: IOptionProp) {
+  const optionArr = option.map((each, i) => {
+    return <option key={i} value={`${each.code}`}>{`${each.name}`}</option>;
+  });
+
+  return (
+    <SelectWrapper>
+      <InputTitleText>{title}</InputTitleText>
+      <SelectStyle onChange={onChange} name={`${title.toLocaleLowerCase()}`}>
+        {optionArr}
+      </SelectStyle>
+    </SelectWrapper>
+  );
+}
+
 const SelectWrapper = styled.div`
   margin-top: 2rem;
 `;
@@ -26,18 +41,3 @@ const SelectStyle = styled.select`
     width: 10rem;
   }
 `;
-
-export default function AuthSelectBox({ title, option, onChange }: IOptionProp) {
-  const optionArr = option.map((each, i) => {
-    return <option key={i} value={`${each.code}`}>{`${each.name}`}</option>;
-  });
-
-  return (
-    <SelectWrapper>
-      <InputTitleText>{title}</InputTitleText>
-      <SelectStyle onChange={onChange} name={`${title.toLocaleLowerCase()}`}>
-        {optionArr}
-      </SelectStyle>
-    </SelectWrapper>
-  );
-}
