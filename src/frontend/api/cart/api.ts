@@ -11,3 +11,7 @@ export async function purchaseGameAPI(param: IPurchaseGameReqType[]) {
 
   return response.data;
 }
+export async function getWalletInfoAPI() {
+  const responnse = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/wallet`);
+  return responnse.data;
+}

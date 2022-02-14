@@ -4,6 +4,8 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWallet } from '@fortawesome/free-solid-svg-icons';
 
 import { IState } from 'modules';
 import * as GameAPI from 'api/game/api';
@@ -11,6 +13,7 @@ import * as CartAPI from 'api/cart/api'; //purchaseGameAPI
 import { gameInfo } from 'modules/game/types';
 import { IPurchaseGameReqType } from 'api/cart/type';
 import { isEmpty } from 'util/isEmpty';
+import { localePrice } from 'util/localeString';
 
 import Text from 'components/atoms/Text';
 import DefaultButton from 'components/atoms/DefaultButton';
@@ -20,12 +23,20 @@ const cart: NextPage<IState> = (props) => {
   const { cartInfo } = useSelector((state: IState) => state.cart);
   const [gameList, setGameList] = useState([] as gameInfo[]);
   const [checkedGame, setCheckedGame] = useState([] as number[]); // 체크된 게임은 number[] 타입으로 관리
+  const [walletInfo, setWalletInfo] = useState(0 as number);
 
   const router = useRouter();
 
   useEffect(() => {
+    getWalletInfo();
     getGamesByIdList();
   }, []);
+
+  const getWalletInfo = async () => {
+    const res = await CartAPI.getWalletInfoAPI();
+    const money = await res.data.money;
+    setWalletInfo(money);
+  };
 
   const getGamesByIdList = async () => {
     if (!isEmpty(cartInfo.data)) {
@@ -70,6 +81,10 @@ const cart: NextPage<IState> = (props) => {
 
   return (
     <CartInfoWrapper>
+      <WalletInfoWrapper>
+        <FontAwesomeIcon icon={faWallet} inverse />
+        <TitleStyle types="large">{`나의 잔액: ${localePrice(walletInfo, 'KR')}`}</TitleStyle>
+      </WalletInfoWrapper>
       <TitleStyle types="large">카트에 담긴 게임 리스트</TitleStyle>
       {/* TO DO(양하): #1 전체선택(React에서 input태그의 checked처리 확인), #2 이미 구매목록에 있는 게임이면 카트에 담길수가 없음. */}
       {/* <SelectAllWrapper>
@@ -99,6 +114,14 @@ const cart: NextPage<IState> = (props) => {
     </CartInfoWrapper>
   );
 };
+
+const WalletInfoWrapper = styled.div`
+  display: flex;
+  align-items: baseline;
+  > div {
+    margin-left: 0.5rem;
+  }
+`;
 
 const CartInfoWrapper = styled.div`
   width: fit-content;
