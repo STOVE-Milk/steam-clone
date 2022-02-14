@@ -1,4 +1,4 @@
-import { IAddCartInfoReqType, IRmCartInfoReqType } from 'api/game/type';
+import { IAddCartInfoReqType, IRmCartInfoReqType } from 'api/cart/type';
 
 export const addCartToStore = async ({ prev, game_id }: IAddCartInfoReqType) => {
   //중복제거 로직

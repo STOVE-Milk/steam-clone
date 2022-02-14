@@ -17,5 +17,5 @@ export interface IGetGamesByCategoryReqType {
 }
 
 export interface IGetGameInfoByIdListReqType {
-  idList: number[];
+  idList: string;
 }

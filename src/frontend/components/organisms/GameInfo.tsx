@@ -9,7 +9,10 @@ import { faHeart, faWindowMaximize, faAppleAlt, faShoppingCart } from '@fortawes
 
 import { IState } from 'modules';
 import { gameInfo } from 'modules/game/types';
-import { doWish, doUnWish, getUserData, addCartInfo, rmCartInfo } from 'modules/game';
+import { getUserData } from 'modules/game';
+import { addCartInfo, rmCartInfo } from 'modules/cart';
+import { doWish, doUnWish } from 'modules/wishlist';
+
 import { localePrice } from 'util/localeString';
 
 import Text from 'components/atoms/Text';
@@ -18,11 +21,10 @@ interface IGameInfo extends gameInfo {
   type?: string;
 }
 
-// 게임 정보가 담긴 obj {}를 props로 내려주면,
-// to do -> 1. 게임정보 타입 정하고 2. props들을 내려주고 3. 제대로 나오나 테스팅하고, 4. 혹시 정보가 없었을 떄 alt로 나오는 정보들이 제대로 나오는지 체크하고
 export default function GameInfo(props: IGameInfo) {
   const gameData = props;
-  const { cartInfo, userData } = useSelector((state: IState) => state.game);
+  const { userData } = useSelector((state: IState) => state.game);
+  const { cartInfo } = useSelector((state: IState) => state.cart);
 
   const dispatch = useDispatch();
 
@@ -30,6 +32,8 @@ export default function GameInfo(props: IGameInfo) {
     dispatch(getUserData.request({}));
   }, []);
 
+  // [explain]: 현재 like(찜)상태는 스토어에 저장된 userData의 wish_list 배열속에 존재하므로 그 정보와 비교합니다.
+  // 마찬가지로, cart(장바구니) 또한 store와 비교합니다.
   const likeStatus = userData.data.wish_list != undefined ? userData.data.wish_list.includes(gameData.id) : false;
 
   const [like, setLike] = useState(likeStatus);
@@ -37,9 +41,11 @@ export default function GameInfo(props: IGameInfo) {
   const router = useRouter();
 
   useEffect(() => {
+    setLike(userData.data.wish_list.includes(gameData.id));
     setCart(cartInfo.data.includes(gameData.id));
   }, []);
 
+  //[explain]: 찜 목록과 장바구니에 담는 액션 모두 store에서 관리하기 때문에 dispatch를 진행했습니다.
   const cartFunc = (game_id: number, curStatus: Boolean) => {
     curStatus ? alert('장바구니에서 빠졌습니다') : alert('장바구니에 담겼습니다.');
 
@@ -66,7 +72,7 @@ export default function GameInfo(props: IGameInfo) {
   return (
     <GameInfoBox type={gameData.type}>
       <ImageBox>
-        {/* {image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
+        {/* TO DO(양하): 이미지가 없을 때 디폴트 처리{image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
         <GameImage
           alt={'mainimage'}
           src={`${gameData.image != undefined ? gameData.image.main : ''}`}
@@ -90,7 +96,7 @@ export default function GameInfo(props: IGameInfo) {
           </OsBox>
           <DescriptionBox>{gameData.description_snippet}</DescriptionBox>
           <span>
-            {/*디비에서 안오는 경우가 있어서 뺴놓음 && 처리해놓음 (성현)*/}
+            {/* TO DO(성현 -> 양하): 디비에서 안오는 경우가 있어서 뺴놓음 && 처리해놓음*/}
             {gameData.category_list &&
               gameData.category_list.map((each: string) => {
                 return <CategoryBox>{`#${each}`}</CategoryBox>;
@@ -104,7 +110,7 @@ export default function GameInfo(props: IGameInfo) {
           <div>
             {gameData.sale ? (
               <>
-                {/* 로그인할 때, 유저 돈 단위 정보도 가져오기*/}
+                {/* TO DO(양하): 로그인할 때, 유저 화폐 단위 정보도 가져오기*/}
                 <DefaultPrice>{`${localePrice(gameData.price, 'KR')}`}</DefaultPrice>
                 <Text types="medium">{`${localePrice((gameData.price / 100) * (100 - gameData.sale), 'KR')}`}</Text>
               </>
@@ -116,6 +122,7 @@ export default function GameInfo(props: IGameInfo) {
         <section>
           <IconBox
             onClick={(e) => {
+              //[explain]: 유저가 클릭할때, 카드에 담는 액션과 이벤트 버블링이 되는 경우를 막기위해 e.preventDefault()를 적용했습니다.
               e.preventDefault();
               wishFunc(gameData.id, like);
               setLike(!like);
@@ -146,6 +153,7 @@ const GameInfoBox = styled.section<IGameInfo>`
   width: 60rem;
   height: 10rem;
   display: grid;
+  //[explain]:  display: grid에서 사용되는 fr단위입니다.(1fr은 전체를 총 fr단위로 나눴을때 차지하는 한 칸을 의미합니다)
   grid-template-columns: 1fr 3fr 1fr;
   margin: 1rem 0.5rem;
   background: ${(props) => props.theme.colors['secondaryBg']};
@@ -163,7 +171,6 @@ const GameInfoBox = styled.section<IGameInfo>`
   }
 `;
 const ImageBox = styled.div`
-  /* border: 1px solid ${(props) => props.theme.colors.divider}; */
   margin: 1rem;
   position: relative;
   ${(props) => props.theme.breakpoints.medium} {

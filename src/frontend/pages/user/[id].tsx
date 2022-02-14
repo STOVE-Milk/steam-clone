@@ -17,11 +17,11 @@ const UserPage: NextPage = () => {
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
   */
-  const userId = 1;  // TODO: url의 Id 가져와서 스토어의 Id와 비교하기
+  const userId = 1; // TODO: url의 Id 가져와서 스토어의 Id와 비교하기
   const [isMypage, setIsMypage] = useState(false); // 현재 보고 있는 페이지가 마이 페이지인지, 다른 유저의 페이지인지 여부
 
-  const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]); // 현재 유저 페이지의 방명록 
-  const [userGuestBook, setUserGuestBook] = useState({} as IGuestBook); // 유저가 작성중인 방명록의 내용 
+  const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]); // 현재 유저 페이지의 방명록
+  const [userGuestBook, setUserGuestBook] = useState({} as IGuestBook); // 유저가 작성중인 방명록의 내용
 
   const [profile, setProfile] = useState({} as IUserInfo); // 현재 유저 페이지의 유저의 정보
 

@@ -27,12 +27,11 @@ export async function getGameListAPI(query: string) {
 }
 
 export async function getGameInfoByIdListAPI(param: IGetGameInfoByIdListReqType) {
-  const convertedParam = param.idList.join(',');
-  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/cart/${convertedParam}`);
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/cart${param.idList}`);
   return response.data;
 }
 
-///store/userdata
+///store/userdata -> wish_list, purchase_list 관련임 (유저정보 x)
 export async function getUserDataAPI() {
   const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/userdata`);
 
