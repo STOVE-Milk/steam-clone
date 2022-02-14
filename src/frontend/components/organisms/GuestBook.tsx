@@ -25,7 +25,7 @@ export interface IGuestBook {
 
 export interface IGuestBookProps {
   guestBook: IGuestBook;
-  isMine?: boolean;
+  isMine?: boolean; //내가 등록한 방명록인가
   isAdd: boolean;
   addGuestBook?: (content: string) => Promise<void>;
   modifyGuestBook?: (id: number, content: string) => Promise<void>;

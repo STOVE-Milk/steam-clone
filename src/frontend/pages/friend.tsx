@@ -17,10 +17,11 @@ const Friend: NextPage = () => {
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
 
-  const [tab, setTab] = useState(0);
-  const [friends, setFriends] = useState([] as IFriend[]);
-  const [searchInput, setSearchInput] = useState('');
+  const [tab, setTab] = useState(0); //탭 number
+  const [friends, setFriends] = useState([] as IFriend[]); //각 탭에서 보일 친구 목록들. 친구 객체 타입이 동일하므로 같은 state 사용
+  const [searchInput, setSearchInput] = useState(''); // 친구 검색 input 값
 
+  // 화면에서 탭 전환 함수
   const changeTab = (tabNumber: number) => {
     setTab(tabNumber);
 

@@ -7,6 +7,18 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+export default function Layout({ children }: LayoutProps) {
+  return (
+    <MainWrapper>
+      <NavBar />
+      <ContentSectionWrapper>
+        <Header />
+        <ContentSection>{children}</ContentSection>
+      </ContentSectionWrapper>
+    </MainWrapper>
+  );
+}
+
 const MainWrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -26,15 +38,3 @@ const ContentSection = styled.div`
   }
   float: right;
 `;
-
-export default function Layout({ children }: LayoutProps) {
-  return (
-    <MainWrapper>
-      <NavBar />
-      <ContentSectionWrapper>
-        <Header />
-        <ContentSection>{children}</ContentSection>
-      </ContentSectionWrapper>
-    </MainWrapper>
-  );
-}

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { IAcceptFriendReqType, ISendFriendReqType, IResType } from './type';
 import { axiosClient } from 'api/axiosClient';
 
@@ -9,6 +8,7 @@ export async function searchFriendAPI(nickname: string) {
 
   return response.data;
 }
+
 
 export async function getFriendsAPI() {
   const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends`);

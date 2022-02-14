@@ -2,8 +2,8 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 
 export interface MsgBoxProps {
-  isMine: boolean;
-  children: React.ReactNode;
+  isMine: boolean; //내가 보낸 메세지인지 여부
+  children: React.ReactNode; //메세지 내용
 }
 
 const MsgBoxStyle = styled.span<MsgBoxProps>`

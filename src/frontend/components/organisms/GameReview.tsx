@@ -9,15 +9,16 @@ import FilledButton from 'components/atoms/FilledButton';
 
 export interface IReviewProps {
   reviewId?: number;
-  isMine: boolean;
+  isMine: boolean; //내가 작성한 리뷰인지 여부
   name: string;
   time: string;
   text: string;
-  recommendation: boolean;
+  recommendation: boolean; //게임 추천 여부
   addReview?: () => Promise<void>;
   modifyReview?: (id: number) => Promise<void>;
-  isFirst: boolean;
+  isFirst: boolean; //이 게임에 대해 처음으로 리뷰를 등록하는가
   userReview?: {
+    //리뷰 등록/수정 시 유저가 입력한 정보
     content: string;
     recommendation: boolean;
   };
@@ -25,70 +26,8 @@ export interface IReviewProps {
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const ReviewWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  background-color: ${(props) => props.theme.colors.secondaryBg};
-  border-radius: 10px;
-  margin: 1rem 0;
-`;
-
-const UserBox = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const Name = styled(Text)`
-  margin: 0 0.7rem 0 0.3rem;
-`;
-
-const ThumbsUp = styled(FontAwesomeIcon)<{ isEdited: boolean; userReview?: { recommendation: boolean } }>`
-  margin-left: 0.3rem;
-  color: ${(props) => (props.isEdited && props.userReview?.recommendation ? props.theme.colors.activeBg : 'white')};
-`;
-
-const ThumbsDown = styled(FontAwesomeIcon)<{ isEdited: boolean; userReview?: { recommendation: boolean } }>`
-  margin: 0.7rem 0 0 0.3rem;
-  color: ${(props) => (props.isEdited && !props.userReview?.recommendation ? props.theme.colors.activeBg : 'white')};
-`;
-
-const CreatedAt = styled(Text)`
-  margin: 0.3rem 0 0 1rem;
-`;
-
-const PostActionBox = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const Divider = styled.div`
-  height: 1px;
-  background-color: ${(props) => props.theme.colors.divider};
-  margin: 0.8rem 0;
-`;
-
-const EditBox = styled.textarea`
-  line-height: 1.3rem;
-  background: transparent;
-  border: 1px solid ${(props) => props.theme.colors.divider};
-  border-radius: 10px;
-  color: ${(props) => props.theme.colors.secondaryText};
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const TextBox = styled.div`
-  color: ${(props) => props.theme.colors.secondaryText};
-  line-height: 1.3rem;
-`;
-
 export default function GameReview(props: IReviewProps) {
-  const [isEdited, setEdited] = useState(props.isFirst ? true : false);
+  const [isEdited, setEdited] = useState(props.isFirst ? true : false); //유저가 등록/수정 중인지 여부
 
   return (
     <ReviewWrapper>
@@ -160,3 +99,65 @@ export default function GameReview(props: IReviewProps) {
     </ReviewWrapper>
   );
 }
+
+const ReviewWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background-color: ${(props) => props.theme.colors.secondaryBg};
+  border-radius: 10px;
+  margin: 1rem 0;
+`;
+
+const UserBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const Name = styled(Text)`
+  margin: 0 0.7rem 0 0.3rem;
+`;
+
+const ThumbsUp = styled(FontAwesomeIcon)<{ isEdited: boolean; userReview?: { recommendation: boolean } }>`
+  margin-left: 0.3rem;
+  color: ${(props) => (props.isEdited && props.userReview?.recommendation ? props.theme.colors.activeBg : 'white')};
+`;
+
+const ThumbsDown = styled(FontAwesomeIcon)<{ isEdited: boolean; userReview?: { recommendation: boolean } }>`
+  margin: 0.7rem 0 0 0.3rem;
+  color: ${(props) => (props.isEdited && !props.userReview?.recommendation ? props.theme.colors.activeBg : 'white')};
+`;
+
+const CreatedAt = styled(Text)`
+  margin: 0.3rem 0 0 1rem;
+`;
+
+const PostActionBox = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  background-color: ${(props) => props.theme.colors.divider};
+  margin: 0.8rem 0;
+`;
+
+const EditBox = styled.textarea`
+  line-height: 1.3rem;
+  background: transparent;
+  border: 1px solid ${(props) => props.theme.colors.divider};
+  border-radius: 10px;
+  color: ${(props) => props.theme.colors.secondaryText};
+  padding: 1rem;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const TextBox = styled.div`
+  color: ${(props) => props.theme.colors.secondaryText};
+  line-height: 1.3rem;
+`;

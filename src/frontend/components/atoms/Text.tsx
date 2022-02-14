@@ -12,6 +12,7 @@ interface ITextThemeType {
   [index: string]: SizeType;
 }
 
+// Text 컴포넌트의 type을 정의해서, 컴포넌트 밖에서 types={}로 텍스트 스타일을 지정할 수 있음
 export const TextTheme: ITextThemeType = {
   title: {
     size: '3rem',
