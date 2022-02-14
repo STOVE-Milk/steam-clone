@@ -17,7 +17,6 @@ func MongoConn() *mongo.Client {
 		log.Fatal(err)
 	}
 
-	// Check the connection
 	err = conn.Ping(context.TODO(), nil)
 
 	if err != nil {

@@ -199,7 +199,6 @@ func (server *WsServer) handleUserLeft(message Message) {
 
 //해당 클라이언트에게 접속 중인 클라이언트들의 정보를 줌.
 func (server *WsServer) listOnlineClients(client *Client) {
-	// NEW: Use the users slice instead of the client map
 	for _, user := range server.users {
 		message := &Message{
 			Action: UserJoinedAction,

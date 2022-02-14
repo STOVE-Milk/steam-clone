@@ -277,7 +277,6 @@ func (client *Client) joinRoom(roomName string, sender models.User, members []st
 		room = client.wsServer.createRoom(roomName, sender != nil, members)
 	}
 
-	// Don't allow to join private rooms through public room message
 	if sender == nil && room.Private {
 		return nil
 	}
