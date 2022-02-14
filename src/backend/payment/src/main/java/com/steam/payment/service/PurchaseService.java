@@ -74,7 +74,7 @@ public class PurchaseService {
         List<Integer> gameIds = games.stream()
                 .map(GameDto::getId)
                 .collect(Collectors.toList());
-        List<Library> myLibraries = libraryRepository.findAllById(gameIds);
+        List<Library> myLibraries = libraryRepository.findAllByUserAndGameId(user, gameIds);
         if(!myLibraries.isEmpty())
             throw new CustomException(ErrorCode.GAME_ALEADY_PURCHASED);
 
