@@ -8,6 +8,7 @@ type User interface {
 type UserRepository interface {
 	FindUserById(ID string) User
 	GetAllUsers() []User
+	GetUserFriends(clientId string) []User
 }
 
 type UserMRepository interface {

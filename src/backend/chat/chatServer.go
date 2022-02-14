@@ -58,8 +58,6 @@ func (server *WsServer) Run() {
 		case client := <-server.unregister:
 			server.unregisterClient(client)
 
-		case message := <-server.broadcast:
-			server.broadcastToClients(message)
 		}
 	}
 }
@@ -111,6 +109,7 @@ func (server *WsServer) publishClientJoined(client *Client) {
 	message := &Message{
 		Action: UserJoinedAction,
 		Sender: client,
+		Data:   client.friends,
 	}
 
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
@@ -186,14 +185,17 @@ func (server *WsServer) findUserByID(ID string) models.User {
 	return foundUser
 }
 func (server *WsServer) handleUserJoined(message Message) {
-	// 이걸 친구만 처리해야함.
-	server.broadcastToClients(message.encode())
+
+	friends := server.getUserFriends(message.Sender.GetId())
+	clients := server.friendsToClient(friends)
+	server.broadcastToClients(message.encode(), clients)
 }
 
 func (server *WsServer) handleUserLeft(message Message) {
 
-	// 이걸 친구만 처리해야함.
-	server.broadcastToClients(message.encode())
+	friends := server.getUserFriends(message.Sender.GetId())
+	clients := server.friendsToClient(friends)
+	server.broadcastToClients(message.encode(), clients)
 }
 
 //해당 클라이언트에게 접속 중인 클라이언트들의 정보를 줌.
@@ -209,8 +211,9 @@ func (server *WsServer) listOnlineClients(client *Client) {
 
 // 서버에 등록된 클라이언트들에게 메세지를 전송.
 // 클라이언트가 웹 소켓을 연결할 때나 연결을 끊을 때.
-func (server *WsServer) broadcastToClients(message []byte) {
-	for client := range server.clients {
+func (server *WsServer) broadcastToClients(message []byte, friends []*Client) {
+
+	for _, client := range friends {
 		client.send <- message
 	}
 }
@@ -298,6 +301,10 @@ func (server *WsServer) getAllJoinedRoom(clientId string) []models.RoomMongo {
 	return server.userMRepository.GetAllJoinedRoom(clientId)
 }
 
+func (server *WsServer) getUserFriends(clientId string) []models.User {
+	return server.userRepository.GetUserFriends(clientId)
+}
+
 func (server *WsServer) deleteMember(room models.Room, userId string) {
 	server.roomMRepository.DeleteMember(room, userId)
 }
@@ -314,4 +321,13 @@ func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content st
 		SendTime:       time.Now(),
 	}
 	server.roomMRepository.LoggingChat(chatLogData, roomId)
+}
+
+func (server *WsServer) friendsToClient(friends []models.User) []*Client {
+	var clients []*Client
+	for _, friend := range friends {
+		client := server.findClientByID(friend.GetId())
+		clients = append(clients, client)
+	}
+	return clients
 }

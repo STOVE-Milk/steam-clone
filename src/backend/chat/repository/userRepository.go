@@ -24,6 +24,25 @@ type UserRepository struct {
 	Db *sql.DB
 }
 
+func (repo *UserRepository) GetUserFriends(ID string) []models.User {
+	var friends []models.User
+
+	rows, err := repo.Db.Query("SELECT idx, nickname FROM user")
+	if err == sql.ErrNoRows {
+		log.Println("등록된 친구가 없습니다.")
+		return nil
+	} else if err != nil {
+		log.Println(err)
+		return nil
+	}
+	for rows.Next() {
+		var friend User
+		rows.Scan(&friend.Id, &friend.Name)
+		friends = append(friends, &friend)
+	}
+	return friends
+}
+
 func (repo *UserRepository) FindUserById(ID string) models.User {
 
 	row := repo.Db.QueryRow("SELECT idx, nickname FROM user where idx = ? LIMIT 1", ID)

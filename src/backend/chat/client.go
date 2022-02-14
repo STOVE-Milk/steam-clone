@@ -55,12 +55,13 @@ type Client struct {
 	send     chan []byte
 	ID       string `json:"id"`
 	Name     string `json:"name"`
+	friends  []models.User
 	rooms    map[*Room]bool
 }
 
-// 존재하는 룸을 웹 서버에 등록
+// DB에 등록된 클라이언트을 웹 서버에 등록
 func newClient(conn *websocket.Conn, wsServer *WsServer, user models.User) *Client {
-	return &Client{
+	client := &Client{
 		ID:       user.GetId(),
 		Name:     user.GetName(),
 		conn:     conn,
@@ -68,6 +69,8 @@ func newClient(conn *websocket.Conn, wsServer *WsServer, user models.User) *Clie
 		send:     make(chan []byte, 256),
 		rooms:    make(map[*Room]bool),
 	}
+	client.friends = wsServer.getUserFriends(user.GetId())
+	return client
 
 }
 
@@ -103,7 +106,7 @@ func (client *Client) writePump() {
 	for {
 		select {
 		case message, ok := <-client.send:
-			fmt.Println("서버 : " + string(message))
+			// fmt.Println("서버 : " + string(message))
 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The WsServer closed the channel.
@@ -178,7 +181,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		log.Printf("Error on unmarshal JSON message %s", err)
 		return
 	}
-	fmt.Println("클라이언트 : " + string(message.encode()))
+	fmt.Println(message.encode())
 
 	message.Sender = client
 	switch message.Action {
@@ -210,7 +213,6 @@ func (client *Client) handleRoomViewMessage(message Message) {
 
 	// 채팅 방을 클릭했을 때 그 방에
 	if !client.isInRoom(room) {
-		fmt.Println(room)
 		client.rooms[room] = true
 		room.register <- client
 	}
@@ -286,7 +288,6 @@ func (client *Client) joinRoom(roomName string, sender models.User, members []st
 
 		client.rooms[room] = true
 		room.register <- client
-		fmt.Println(room)
 		client.notifyRoomJoined(room, sender)
 	}
 	return room
