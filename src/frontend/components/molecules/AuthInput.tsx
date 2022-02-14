@@ -54,7 +54,7 @@ const InputBox = styled.input`
   border: 1px solid ${(props) => props.theme.colors.plain};
   border-radius: 10px;
   padding: 0.5rem 1rem;
-  width: 30rem;
+  width: 100%;
 `;
 const ValidateBtnStyle = styled(FilledButton)`
   height: 100%;
