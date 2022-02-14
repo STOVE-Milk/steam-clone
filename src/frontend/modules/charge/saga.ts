@@ -15,10 +15,10 @@ const getCategoriesSaga = createAsyncSaga(getGiftCardList, getGiftCardListAPI);
 const doChargeSaga = createAsyncSaga(doCharge, doChargeAPI);
 const doApprovalChargeSaga = createAsyncSaga(doApprovalCharge, doApprovalChargeAPI);
 
-export function* userSaga() {
+export function* chargeSaga() {
   yield takeLatest(GET_GIFTCARDLIST, getCategoriesSaga);
   yield takeLatest(DO_CHARGE, doChargeSaga);
   yield takeLatest(DO_APPROVAL_CHARGE, doApprovalChargeSaga);
 }
 
-export { userSaga as default };
+export { chargeSaga as default };

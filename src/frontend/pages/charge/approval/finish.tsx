@@ -5,12 +5,12 @@ import DefaultButton from 'components/atoms/DefaultButton';
 
 import { IState } from 'modules';
 import { useSelector, useDispatch } from 'react-redux';
-import { doApprovalCharge } from 'modules/user';
+import { doApprovalCharge } from 'modules/charge';
 import { useRouter } from 'next/router';
 
 const approval: NextPage<IState> = () => {
   //TO DO(양하): 리팩토링 -> 생각해보면 이거야말로 그냥 request만 보내면 되는 요청같음, 굳이 store 안거치고
-  const { charge } = useSelector((state: IState) => state.user);
+  const { charge } = useSelector((state: IState) => state.charge);
 
   const dispatch = useDispatch();
   const router = useRouter();
