@@ -86,7 +86,7 @@ const signin: NextPage<IState> = () => {
 
 const SignInFormWrapper = styled.div`
   width: 40rem;
-  margin: 0 auto;
+  margin: 2rem auto;
   padding: 2rem;
   background: ${(props) => props.theme.colors.secondaryBg};
   align-items: center;

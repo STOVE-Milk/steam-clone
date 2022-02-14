@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import { IState } from 'modules';
-import { doSignup } from 'modules/user';
+import { doSignup } from 'modules/auth';
 import { checkEmailAPI, checkNicknameAPI } from 'api/auth/api';
 import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
 
@@ -16,7 +16,7 @@ import AuthInput from 'components/molecules/AuthInput';
 import AuthSelectBox from 'components/molecules/AuthSelectBox';
 
 const signup: NextPage<IState> = () => {
-  const { signup } = useSelector((state: IState) => state.user);
+  const { signup } = useSelector((state: IState) => state.auth);
 
   const [inputs, setInputs] = useState({
     email: '',
@@ -225,8 +225,8 @@ const SignUpFormWrapper = styled.div`
   width: 40rem;
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
-  padding: 2rem;
+  margin: 2rem auto;
+  padding: 2rem 4rem;
   background: ${(props) => props.theme.colors.secondaryBg};
   display: flex;
   border-radius: 10px;
@@ -238,8 +238,8 @@ const InputAlign = styled.div`
   justify-content: space-between;
 `;
 const SignUpButton = styled(FilledButton)`
-  width: 85%;
-  margin-top: 1rem;
+  width: 92%;
+  margin: 1rem 0;
 `;
 
 export default signup;
