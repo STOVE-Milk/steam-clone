@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Your First WebSocket!</title>
+    <style>
+        table {
+          width: 100%;
+          border: 1px solid #444444;
+        }
+        th, td {
+          border: 1px solid #444444;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        var wsUri = "ws://localhost:8210/library";
+        var websocket;
+        var output;
+        var map;
+        var textID
+        const el = tag => document.createElement(tag);
+        const commandType = {
+            INIT: 10,
+            SYNC: 11,
+            LEAVE: 12,
+            MOVE: 20,
+            BUILD: 40
+        }
+        const moveType = {
+            "w": 0,
+            "d": 1,
+            "s": 2,
+            "a": 3
+        }
+        Array.matrix = function (m, n, initial) {
+            var a, i, j, mat = [];
+            for (i = 0; i < m; i += 1) {
+                a = [];
+                for (j = 0; j < n; j += 1) {
+                    a[j] = initial;
+                }
+                mat[i] = a;
+            }
+            return mat;
+        };
+        
+        function init() {
+            output = document.getElementById("output");
+            map = document.getElementById("map");
+            textID = document.getElementById("textID");
+        }
+        function connect() {
+            if (!websocket) {
+                websocket = new WebSocket(wsUri);
+                websocket.onopen = function (evt) {
+                    onOpen(evt)
+                    var roomId = prompt("방 id 입력:","");
+                    var token = prompt("access token 입력:","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjEsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.6P_NJvZhGGc4XAdVlm74rgIVIzPtXZbChaZCqBbUba4");
+                    let access = {
+                        "room_id": roomId,
+                        "authorization": token
+                    }
+                    send_data(commandType.INIT, access)
+                };
+                websocket.onmessage = function (evt) {
+                    onMessage(evt)
+                };
+                websocket.onerror = function (evt) {
+                    onError(evt)
+                };
+            }
+        }
+        
+        function disconnect() {
+            if (!websocket) websocket.close();
+        }
+        
+        function send_message() {
+            var message = textID.value;
+            writeToScreen("Message Sent: " + message);
+            websocket.send(message);
+        }
+
+        function send_data(command, data) {
+            websocket.send(command + JSON.stringify(data));
+        }
+
+        function onOpen(evt) {
+            writeToScreen("Connected to Endpoint!");
+        }
+
+        function onMessage(evt) {
+            writeToScreen(evt.data)
+            //updateMap(JSON.parse(evt.data))
+        }
+
+        function onError(evt) {
+            
+            writeToScreen('ERROR: ' + evt.data);
+        }
+
+        function writeToScreen(message) {
+            var pre = document.createElement("p");
+            pre.style.wordWrap = "break-word";
+            pre.innerHTML = message;
+            output.appendChild(pre);
+        }
+        function update_map() {
+            let data = {
+                "map": {
+                    "side":20,
+                    "gameList":["1"],
+                    "objectList":[],
+                    "games":{"1": {
+                        "name": "skull",
+                        "x": 1,
+                        "y": 1
+                    }},
+                    "objects":{}
+                }
+            }
+            send_data(commandType.BUILD, data)
+        }
+
+        function updateMap(data) {
+            console.log("Message Received: " + data);
+            let table = document.querySelector('table')
+            let child = table.lastElementChild; 
+            while (child) {
+                table.removeChild(child);
+                child = table.lastElementChild;
+            }
+            let array = Array.matrix(100,100,'m');
+            for(key in data) {
+                array[data[key].y][data[key].x] = key
+            }
+            array.forEach(row => table.appendChild(
+                row.reduce((tr, n)=>{
+                    tr.appendChild(el('td')).innerHTML=n
+                    return tr
+                }, el('tr'))
+            ))
+        }
+        window.addEventListener("load", init, false);
+
+        window.addEventListener("keydown", (e) => {
+            if(['w', 'a', 'd', 's'].indexOf(e.key) != -1)
+                send_data(commandType.MOVE, {direction: moveType[e.key]})
+        });
+    </script>
+    <h1 style="text-align: center;">Hello World WebSocket Client</h1><br>
+    <div style="text-align: center;">
+        <form action="">
+            <input onclick="connect()" value="Connect" type="button">
+            <input onclick="send_message()" value="Send" type="button">
+            <input onclick="update_map()" value="Update Map" type="button">
+            <input id="textID" name="message" value="Hello WebSocket!" type="text"><br>
+        </form>
+    </div>
+    <table style=id="map"> 
+
+    </table>
+    <div id="output"></div>
+</body>
+</html>
