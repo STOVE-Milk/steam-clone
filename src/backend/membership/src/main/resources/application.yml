@@ -3,3 +3,5 @@ server:
 spring:
   profiles:
     active: local
+  application:
+    name: membership-service

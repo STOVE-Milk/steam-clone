@@ -21,14 +21,12 @@ public class GlobalFilter extends AbstractGatewayFilterFactory<GlobalFilter.Conf
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             long now = System.currentTimeMillis();
-            System.out.println("Global start");
-            logger.info("GlobalFilter baseMessage>>>>>>" + config.getBaseMessage());
             if (config.isPreLogger()) {
-                logger.info("GlobalFilter Start>>>>>>" + exchange.getRequest());
+                logger.info(exchange.getRequest());
             }
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 if (config.isPostLogger()) {
-                    logger.info("GlobalFilter End>>>>>>" + exchange.getRequest().getPath() + (System.currentTimeMillis() - now));
+                    logger.info("request: " + exchange.getRequest().getMethod() + " " + exchange.getRequest().getPath() + " " + (System.currentTimeMillis() - now));
                 }
             }));
         });

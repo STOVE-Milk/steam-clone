@@ -1,4 +1,4 @@
-import { ISaveUserInfoReqtype } from 'pages/api/user/type';
+import { ISaveUserInfoReqtype } from 'api/user/type';
 
 export const saveUserInfoToStore = async (data: ISaveUserInfoReqtype) => {
   return {

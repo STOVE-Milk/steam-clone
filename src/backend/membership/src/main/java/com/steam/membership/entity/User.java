@@ -5,6 +5,7 @@ import com.steam.membership.global.error.ErrorCode;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.servlet.annotation.MultipartConfig;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,9 @@ public class User {
 
     @Column(name = "deleted_at")
     private Timestamp deletedAt;
+
+    @OneToMany(mappedBy = "user")
+    List<Friend> friends = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     List<GuestBook> guestBooks = new ArrayList<>();

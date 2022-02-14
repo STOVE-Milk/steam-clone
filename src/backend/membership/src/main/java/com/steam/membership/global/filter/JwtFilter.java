@@ -20,13 +20,26 @@ public class JwtFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
 
-        if(!request.getMethod().equals("OPTIONS")) {
+        /*
+            GET 요청의 경우 Authorization이 없어도 처리할 수 있도록 처리
+            --> ApiGateway에서도 해당 처리가 필요함
+        */
+        if(needTokenDecode(request.getMethod(), request.getServletPath())) {
             String accessToken = request.getHeader(AUTHORIZATION_HEADER).substring(TOKEN_PREFIX.length());
             UserDetails userDetails = JwtUtil.getPayload(accessToken);
             UserContext.setUserDetails(userDetails);
         }
 
         chain.doFilter(servletRequest, servletResponse);
+    }
+
+    private boolean needTokenDecode(String method, String path) {
+        return !method.equals("OPTIONS") &&
+                (
+                        method.equals("GET") ||
+                        path.equals("/membership/profile/**/friends") ||
+                        path.equals("/membership/search/users")
+                );
     }
 
     @Override

@@ -1,13 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import type { NextPage } from 'next';
-import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
+import type { NextPage } from 'next';
+
+import styled from 'styled-components';
 
 import { IState } from 'modules';
-import { getWishList } from 'modules/game';
+import * as WishlistAPI from 'api/wishlist/api'; //getWishList
+import { gameInfo } from 'modules/game/types';
+
 import GameInfo from 'components/organisms/GameInfo';
 import Text from 'components/atoms/Text';
 
+const wishlist: NextPage<IState> = () => {
+  const [wishList, setWistList] = useState([] as gameInfo[]);
+
+  useEffect(() => {
+    getWishList();
+  }, []);
+
+  const getWishList = async () => {
+    const res = await WishlistAPI.getWishListAPI();
+    const game_list = await res.data.game_list;
+    setWistList(game_list);
+  };
+
+  return (
+    <WishListWrapper>
+      <TitleStyle types="large">WISH 게임 리스트</TitleStyle>
+      {/*TO DO(성현): wishlist가 없으면 데이터가 아예 안와서 Undefined 처리 해놓음! 나중에 빈배열로오면 length 로 고치면 될 듯*/}
+      {wishList === undefined
+        ? 'no wishdata'
+        : wishList.map((eachGame) => {
+            return <GameInfo key={eachGame.id} {...eachGame} />;
+          })}
+    </WishListWrapper>
+  );
+};
 const TitleStyle = styled(Text)`
   margin-bottom: 2rem;
 `;
@@ -16,25 +44,5 @@ const WishListWrapper = styled.div`
   width: 80%;
   margin: 2rem auto;
 `;
-
-const wishlist: NextPage<IState> = () => {
-  const { wishList } = useSelector((state: IState) => state.game);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getWishList.request({}));
-  }, []);
-  return (
-    <WishListWrapper>
-      <TitleStyle types="large">WISH 게임 리스트</TitleStyle>
-      {/*(성현) wishlist가 없으면 데이터가 아예 안와서 Undefined 처리 해놓음! 나중에 빈배열로오면 length 로 고치면 될 듯*/}
-      {wishList.data === undefined
-        ? 'no wishdata'
-        : wishList.data.map((eachGame) => {
-            return <GameInfo key={eachGame.id} {...eachGame} />;
-          })}
-    </WishListWrapper>
-  );
-};
 
 export default wishlist;

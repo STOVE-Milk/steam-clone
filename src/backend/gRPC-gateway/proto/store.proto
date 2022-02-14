@@ -29,6 +29,11 @@ service Store {
             get: "/store/games/{game_id}/reviews"
         };
     }
+    rpc GetGameListInCart(GameIdListQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/cart/{game_id_list}"
+        };
+    }
     rpc GetUserData(google.protobuf.Empty) returns (UserDataResponse){
         option (google.api.http) = {
             get: "/store/userdata"
@@ -37,6 +42,11 @@ service Store {
     rpc GetGameListInWishlist(google.protobuf.Empty) returns (GameSimpleListResponse){
         option (google.api.http) = {
             get: "/store/wishes"
+        };
+    }
+    rpc GetSearchingGameList(SearchingContentQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/games/search"
         };
     }
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
@@ -65,6 +75,17 @@ service Store {
     rpc DeleteReview(ReviewQueryRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
             delete: "/store/games/reviews/{review_id}"
+        };
+    }
+    rpc GameInstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            patch: "/store/games/install"
+            body: "*"
+        };
+    }
+    rpc GameUninstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            delete: "/store/games/uninstall/{game_id}"
         };
     }
 }
@@ -196,6 +217,13 @@ message ContentsPath{
 // Client 측에서 하나의 카테고리를 Request 받을 때. 
 message GameIdQueryParamRequest{
     int32 game_id = 1;
+}
+
+message GameIdListQueryParamRequest{
+    string game_id_list = 1;
+}
+message SearchingContentQueryParamRequest{
+    string content = 1;
 }
 
 message SortingParamRequest{

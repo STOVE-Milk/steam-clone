@@ -1,5 +1,6 @@
 package com.steam.membership.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.steam.membership.dto.FriendRequestResponse;
 import com.steam.membership.dto.FriendsResponse;
 import com.steam.membership.dto.UserDto;
@@ -11,10 +12,14 @@ import com.steam.membership.global.common.EmptyData;
 import com.steam.membership.global.common.UserContext;
 import com.steam.membership.global.error.CustomException;
 import com.steam.membership.global.error.ErrorCode;
+import com.steam.membership.global.util.JsonUtil;
 import com.steam.membership.repository.FriendRepository;
 import com.steam.membership.repository.FriendRequestRepository;
 import com.steam.membership.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +30,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/*
+    결제 서버와는 다르게 데이터가 비어있는 경우와 같은 예외상황에 대한 Response 처리를
+    Throw가 아닌 ErrorBody를 만들어 리턴합니다. Jmeter를 이용해 테스트해봤을 때의 TPS가
+    Throw를 통한 ExceptionHandler 처리와 비교해서 10퍼센트 더 빨라지는 결과를 얻었습니다.
+*/
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FriendService {
@@ -38,28 +49,26 @@ public class FriendService {
     public Body<Object> getFriendList() {
         final List<Friend> friends = friendRepository.findTop20ByUser(UserContext.getUser());
 
-        if(friends.isEmpty())
-            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
-
         return Body.success(FriendsResponse.of(friends));
     }
 
     public Body<Object> getFriendListRelatedMe(Integer userId) {
-        final List<Friend> myFriends = friendRepository.findAllByUser(UserContext.getUser());
-        final List<User> usersFriends = friendRepository.findAllByUser(UserContext.getUser()).stream()
-                .map(Friend::getFriend)
-                .collect(Collectors.toList());
+        final List<Friend> sameFriends = friendRepository.findFriendsTop20ByUserId(
+                UserContext.getUserId(),
+                userId
+        );
 
-        if(myFriends.isEmpty() || usersFriends.isEmpty())
-            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+        if(sameFriends.isEmpty())
+            return Body.success(FriendsResponse.of(sameFriends));
 
-        List<UserDto> sameFriends = myFriends.stream()
+        // TODO: N+1 문제 해결 - Lazy Fetch로 현재 유저를 하나씩 불러오게 됨
+        // Id List를 뽑아 한꺼번에 SELECT 하도록 or 처음부터 Join해서 가져오기
+        List<UserDto> userDatas = sameFriends.stream()
                 .map(Friend::getFriend)
-                .filter(usersFriends::contains)
                 .map(UserDto::of)
                 .collect(Collectors.toList());
 
-        return Body.success(FriendsResponse.builder().friends(sameFriends).build());
+        return Body.success(FriendsResponse.builder().friends(userDatas).build());
     }
 
     @Transactional
@@ -91,11 +100,10 @@ public class FriendService {
 
     @Transactional
     public Body<Object> deleteFriend(Integer friendId) {
-        // TODO 한쪽만 친구를 끊을 것인가?
         final Integer userId = UserContext.getUserId();
         final List<Friend> friend = friendRepository.findFriendsByUserIdAndFriendId(userId, friendId);
 
-        if(friend == null)
+        if(friend.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
 
         friendRepository.deleteAll(friend);
@@ -109,20 +117,12 @@ public class FriendService {
 
         if(type.equals(FRIEND_REQUEST_TYPE_SENDED)) {
             friendRequests = friendRequestRepository.findAllBySender(me);
-
-            if(friendRequests.isEmpty())
-                return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
-
             return Body.success(FriendRequestResponse.receiverOf(friendRequests));
         } else if(type.equals(FRIEND_REQUEST_TYPE_RECEIVED)) {
             friendRequests = friendRequestRepository.findAllByReceiver(me);
-
-            if(friendRequests.isEmpty())
-                return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
-
             return Body.success(FriendRequestResponse.senderOf(friendRequests));
         } else {
-            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+            return Body.success(FriendRequestResponse.builder().requests(new ArrayList<>()).build());
         }
     }
 
@@ -132,7 +132,7 @@ public class FriendService {
         final Optional<User> receiver = userRepository.findById(userId);
 
         if(receiver.isEmpty())
-            return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);
+            return Body.success(new EmptyData());
 
         final Optional<FriendRequest> friendRequest = friendRequestRepository.findBySenderAndReceiver(me, receiver.get());
         if(friendRequest.isPresent())
@@ -148,9 +148,8 @@ public class FriendService {
     }
 
     @Transactional
-    public Body<Object> rejectFriendRequest(Integer requestId) {
-        final User me = UserContext.getUser();
-        final Optional<FriendRequest> friendRequest = friendRequestRepository.findByIdAndUser(requestId, me);
+    public Body<Object> rejectFriendRequest(Integer userId) {
+        final Optional<FriendRequest> friendRequest = friendRequestRepository.findByUserIdAndMyId(userId, UserContext.getUserId());
 
         if(friendRequest.isEmpty())
             return Body.error(ErrorCode.REQUEST_DATA_NOT_FOUND);

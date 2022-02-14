@@ -1,0 +1,388 @@
+{
+    "format": {
+        "서버 종류": {
+            "developer": "개발자명",
+            "developer_id": "Integer형 개발자 번호",
+            "server_id": "Integer형 서버 번호",
+            "success_code": "Integer형 성공 코드",
+            "error_name": {
+                "code": "Integer형 에러 코드",
+                "message": "error message",
+                "description" : "에러에 대한 설명"
+            }
+        }
+    },
+    "api-gateway": {
+        "developer": "한태현",
+        "developer_id": 7,
+        "description": "API Gateway 단에서 막혀서 엔드 포인트랑 통신이 안되는 경우의 HTTP STATUS CODE를 정의",
+        "UNAUTHORIZED": {
+            "status_code": 401,
+            "message": "error message",
+            "description": "인증 토큰이 없는 경우, 인증 토큰이 있지만 변조되거나 만료되었을 경우"
+        },
+        "FORBIDDEN": {
+            "status_code": 403,
+            "message": "error message",
+            "description": "인증 토큰이 제대로 되었으나, 해당 서비스에 접근 권한이 없는 경우"
+        },
+        "SERVER_ERROR": {
+            "status_code": 500,
+            "message": "error message",
+            "description": "서버가 다운되거나, API Gateway 설정 오류로 인해 연결이 불가능할 경우"
+        }
+    },
+
+    "payment" : {
+        "developer": "한태현",
+        "developer_id": 7,
+        "server_id": 7,
+        "success_code": 77000,
+        "VALIDATION_FAILED" :{
+            "code": 77100,
+            "message": "요청 데이터가 유효하지 않습니다.",
+            "description": "Path Variable 혹은 Request Body 데이터의 검증 실패 에러"
+        },
+        "USER_NOT_FOUND": {
+            "code": 77101, 
+            "message": "유저 데이터를 불러오지 못했습니다.",
+            "description": "로직 중 유저 데이터를 불러오지 못할 경우"
+        },
+        "GAME_PRICE_VALIDATION_FAILED": {
+            "code": 77201,
+            "message": "게임 정보가 일치하지 않습니다.",
+            "description" : "게임 구매 중 장바구니의 게임 정보와 DB의 게임 정보가 다를 경우 검증 실패 에러"
+        },
+        "USER_MONEY_NOT_ENOUGH": {
+            "code": 77203,
+            "message": "돈이 충분하지 않습니다.",
+            "description": "게임 구매 중 유저의 보유금이 게임의 합산 금액보다 적을 경우 실패 에러"
+        },
+        "GAME_PRICE_ACCUMULATE_FAILED": {
+            "code": 77202, 
+            "messgae": "게임 가격 계산 중 오류가 발생했습니다.",
+            "description": ""
+        },
+        "GAME_ALEADY_PURCHASED": {
+            "code": 77204,
+            "message": "이미 구매한 게임이 목록에 있습니다.",
+            "description": ""
+        },
+        "JPA_JSON_CONVERTER_EXCEPTION": {
+            "code": 77301,
+            "message": "JPA JSON Converter Exception 발생",
+            "description": ""
+        },
+        "KAKAOPAY_CACHE_DATA_NOT_FOUND": {
+            "code": 77401,
+            "message": "해당 결제 승인에 대한 데이터가 존재하지 않습니다.",
+            "description": ""
+        },
+        "KAKAOPAY_READY_FAILED": {
+            "code": 77402,
+            "message": "결제 준비 요청이 실패했습니다.",
+            "description": "카카오페이 결제 준비 API 호출 실패 에러"
+        },
+        "KAKAOPAY_APPROVAL_FAILED": {
+            "code": 77403,
+            "message": "결제 승인 요청이 실패했습니다.",
+            "description": "카카오페이 결제 승인 API 호출 실패 에러"
+        },
+        "KAKAOPAY_CANCEL_NOT_FOUND": {
+            "code": 77404,
+            "message": "결제 취소할 데이터가 없습니다.",
+            "description": "카카오페이 결제 취소 API 호출 실패 에러"
+        },
+        "USER_CHARGE_CANCLED": {
+            "code": 77801,
+            "message": "충전 중 오류가 발생해 결제 승인을 취소합니다. 관리자에게 문의해주세요",
+            "description": "카카오페이 승인은 되었으나, 결제 트랜잭션 도중 문제로 인해 결제를 취소하는 상황"
+        },
+        "JSON_PARSE_EXCEPTION": {
+            "code": 77802,
+            "message": "JSON 파싱 중 오류가 발생했습니다. 관리자에게 문의해주세요",
+            "description": ""
+        },
+        "JWT_CLAIM_EXCEPTION": {
+            "code": 77803,
+            "message": "JWT 해석 중 오류가 발생했습니다. 관리자에게 문의해주세요",
+            "description": "JWT Payload가 서버 객체와 구성이 다를 경우"
+        },
+        "REDIS_CONNECTION_FAILED": {
+            "code": 77901,
+            "message": "캐시 서버 연결에 실패했습니다. 관리자에게 문의해주세요",
+            "description": ""
+        },
+        "LOGGING_FAILED": {
+            "code": 77902,
+            "message": "결제 시스템에 장애가 발생했습니다. 관리자에게 문의해주세요",
+            "description": "MongoDB 로깅 중 발생하는 서버 장애 에러"
+        },
+        "SERVER_ERROR": {
+            "code": 77999,
+            "message": "예상하지 못한 문제가 발생했습니다. 관리자에게 문의해주세요",
+            "description": "디폴트 에러"
+        }
+    },
+    "store": {
+        "developer" : "장성현",
+        "developer_id": 3,
+        "server_id": 1,
+        "success_code": 31000,
+        "GET_REVIEW_QUERY_ERR":{
+            "code":31901,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_REVIEW_SCAN_ERR":{
+            "code":31902,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_PUBLISHER_QUERY_ERR":{
+            "code":31903,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_PUBLISHER_SCAN_ERR":{
+            "code":31904,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_GAME_DETAIL_QUERY_ERR":{
+            "code":31905,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_GAME_DETAIL_SCAN_ERR":{
+            "code":31906,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_SORTING_GAME_LIST_QUERY_ERR":{
+            "code":31907,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_SORTING_GAME_LIST_SCAN_ERR":{
+            "code":31908,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_CATEGORY_LIST_QUERY_ERR":{
+            "code":31909,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_CATEGORY_LIST_SCAN_ERR":{
+            "code":31910,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_CATEGORY_LIST_BY_GAME_ID_QUERY_ERR":{
+            "code":31911,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_CATEGORY_LIST_BY_GAME_ID_SCAN_ERR":{
+            "code":31912,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_GAME_LIST_IN_WISHLIST_QUERY_ERR":{
+            "code":31913,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_GAME_LIST_IN_WISHLIST_SCAN_ERR":{
+            "code":31914,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_GAME_LIST_IN_CART_QUERY_ERR":{
+            "code":31915,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_GAME_LIST_IN_CART_SCAN_ERR":{
+            "code":31916,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GET_PURCHASE_GAME_LIST_QUERY_ERR":{
+            "code":31917,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_PURCHASE_GAME_LIST_SCAN_ERR":{
+            "code":31918,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "POST_REIVEW_QUERY_ERR":{
+            "code":31919,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "PATCH_REVIEW_QUERY_ERR":{
+            "code":31920,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "DELETE_REVIEW_QUERY_ERR":{
+            "code":31921,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_WISHLIST_QUERY_ERR":{
+            "code":31922,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_WISHLIST_SCAN_ERR":{
+            "code":31923,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "POST_WISHLIST_QUERY_ERR":{
+            "code":31924,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "PATCH_WISHLIST_QUERY_ERR":{
+            "code":31925,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "DELETE_WISHLIST_QUERY_ERR":{
+            "code":31926,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },        
+        "GET_SEARCHING_GAMELIST_QUERY_ERR":{
+            "code":31927,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GET_SEARCHING_GAMELIST_SCAN_ERR":{
+            "code":31928,
+            "message":"값 파싱에 실패하였습니다.",
+            "description":"DB데이터 파싱 에러."
+        },
+        "GAME_INSTALL_QUERY_ERR":{
+            "code":31929,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "GAME_UNINSTALL_QUERY_ERR":{
+            "code":31930,
+            "message":"옳지 않은 쿼리를 입력하였습니다.",
+            "description":"의도하지 않은 쿼리 입력."
+        },
+        "NULL_TOKEN_ERR":{
+            "code":31801,
+            "message":"토큰값이 전달되지 않았습니다.",
+            "description":"메타데이터 파싱 에러."
+        },
+        "EMPTY_METADATA_ERR":{
+            "code":31802,
+            "message":"토큰의 메타데이터 중 빈 데이터가 존재합니다.",
+            "description":"메타데이터 파싱 에러."
+        },
+        "ALREADY_GAME_INSTALL_ERR":{
+            "code":31101,
+            "message":"이미 설치한 게임입니다.",
+            "description":"설치 값 변경 없음."
+        },
+        "ALREADY_GAME_UNINSTALL_ERR":{
+            "code":31102,
+            "message":"이미 삭제한 게임입니다.",
+            "description":"삭제 값 변경 없음."
+        }
+    },
+    "membership": {
+        "developer" : "한태현",
+        "developer_id": 7,
+        "server_id": 5,
+        "success_code": 10000,
+        "": {
+            "code": 75100,
+            "message": "요청 데이터가 유효하지 않습니다.",
+            "description": "Path Variable 혹은 Request Body 데이터의 검증 실패 에러"
+        },
+        "USER_NOT_FOUND": {
+            "code": 75101,
+            "message": "유저 데이터를 불러오지 못했습니다.",
+            "description": "로직 중 유저 데이터를 불러오지 못할 경우"
+        },
+        "REQUEST_DATA_NOT_FOUND": {
+            "code": 75102,
+            "message": "이미 삭제되었거나, 없는 데이터를 요청했습니다.",
+            "description": "데이터 조회 시 데이터가 없을 경우, 요청을 변조해 없는 데이터를 요청하거나, 이미 삭제된 데이터를 요청하는 경우"
+        },
+        "ALREADY_REQUESTED": {
+            "code": 75103,
+            "message": "이미 보낸 요청입니다.",
+            "description": "친구 신청을 여러번 보낼 경우에 발생"
+        },
+
+        "ALREADY_FRIEND": {
+            "code": 75201,
+            "message": "이미 친구 관계입니다.",
+            "description": "친구 수락을 여러번 할 경우, 친구 신청을 했는데 이미 친구일 경우"
+        },
+
+        "JSON_PARSE_EXCEPTION": {
+            "code": 75802,
+            "message": "JSON 파싱 중 오류가 발생했습니다. 관리자에게 문의해주세요",
+            "description": ""
+        },
+        "JWT_CLAIM_EXCEPTION": {
+            "code": 75803,
+            "message": "JWT 해석 중 오류가 발생했습니다. 관리자에게 문의해주세요",
+            "description": "JWT Payload가 서버 객체와 구성이 다를 경우"
+        },
+        "SERVER_ERROR": {
+            "code": 75999,
+            "message": "예상하지 못한 문제가 발생했습니다. 관리자에게 문의해주세요",
+            "description": ""
+        }
+    },
+    
+     "auth": {
+        "developer": "민지호",
+        "developer_id": 1,
+        "server_id": 0,
+        "description": "인증 서버 성공/실패 응답",
+        "EXISTED_EMAIL": {
+            "status_code": 10100,
+            "message": "Existed Email",
+            "description": "이미 존재하는 이메일입니다."
+        },
+        "EXISTED_NICKNAME": {
+            "status_code": 10101,
+            "message": "Existed Nickname",
+            "description": "이미 존재하는 닉네임입니다."
+        },
+        "NOT_EXITED_USER": {
+            "status_code": 10102,
+            "message": "Not Existed User",
+            "description": "유저가 존재하지 않습니다."
+        },
+        "PASSWORD_ERROR": {
+            "status_code": 10103,
+            "message": "Password Error",
+            "description": "비밀번호가 일치하지 않습니다."
+        },
+        "REFRESH_TOKEN_ERROR": {
+            "status_code": 10104,
+            "message": "RefreshToken Error",
+            "description": "refreshToken이 유효하지 않습니다. 다시 로그인해주세요."
+        },
+        "ACCESS_TOKEN_ERROR": {
+            "status_code": 10105,
+            "message": "AccessToken Error",
+            "description": "잘못된 accessToken 입니다."
+        }
+    }
+}

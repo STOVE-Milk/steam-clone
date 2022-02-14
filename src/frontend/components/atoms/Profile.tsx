@@ -2,11 +2,20 @@ import React from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 
-export interface ProfileProps {
+export interface IProfileProps {
   userImage: JSX.Element | typeof Image;
+  onClick?: () => void;
 }
 
-const ProfileStyle = styled.div`
+export default function Profile(props: IProfileProps) {
+  return (
+    <ProfileStyle click={props.onClick !== null ? true : false} onClick={props.onClick}>
+      {props.userImage}
+    </ProfileStyle>
+  );
+}
+
+const ProfileStyle = styled.div<{ click: boolean }>`
   min-width: 30px;
   height: 30px;
   border-radius: 30px;
@@ -14,8 +23,5 @@ const ProfileStyle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: ${(props) => (props.click ? 'pointer' : '')};
 `;
-
-export default function Profile(props: ProfileProps) {
-  return <ProfileStyle>{props.userImage}</ProfileStyle>;
-}

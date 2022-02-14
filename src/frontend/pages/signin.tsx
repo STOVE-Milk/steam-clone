@@ -1,34 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
+
+import { IState } from 'modules';
+import { saveUserInfo } from 'modules/user';
+import { doSignInAPI } from 'api/auth/api';
+import { parseToken } from 'util/parseToken';
+
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import AuthInput from 'components/molecules/AuthInput';
-import { doSignInAPI } from 'pages/api/user/api';
-
-import { IState } from 'modules';
-import { useSelector, useDispatch } from 'react-redux';
-import { saveUserInfo } from 'modules/user';
-import { parseToken } from 'util/parseToken';
-
-const SignInFormWrapper = styled.div`
-  width: 40rem;
-  margin: 0 auto;
-  padding: 2rem;
-  background: ${(props) => props.theme.colors.secondaryBg};
-  align-items: center;
-  border-radius: 10px;
-  padding-top: 2rem;
-  display: flex;
-  flex-direction: column;
-`;
-
-const SignInButton = styled(FilledButton)`
-  width: 85%;
-  margin-top: 1rem;
-`;
 
 const signin: NextPage<IState> = () => {
   //[info]: userInfo.data에 accessToken에서 온 정보들이 들어가 있습니다.
@@ -99,5 +83,22 @@ const signin: NextPage<IState> = () => {
     </SignInFormWrapper>
   );
 };
+
+const SignInFormWrapper = styled.div`
+  width: 40rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  align-items: center;
+  border-radius: 10px;
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+const SignInButton = styled(FilledButton)`
+  width: 85%;
+  margin-top: 1rem;
+`;
 
 export default signin;

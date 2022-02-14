@@ -1,5 +1,8 @@
 package com.steam.membership.controller;
 
+import com.steam.membership.dto.RequestId;
+import com.steam.membership.dto.UserDto;
+import com.steam.membership.dto.UserId;
 import com.steam.membership.service.FriendService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +33,14 @@ public class FriendController {
             @Valid
             @Min(value = 1, message = "요청 url의 최소값은 1입니다.")
             @Pattern(regexp = "^[0-9]+", message = "숫자만 입력 가능합니다")
-            @RequestParam("request_id") Integer requestId) {
+            @RequestBody RequestId request) {
 
         return ResponseEntity.ok(
-                friendService.acceptFriendRequest(requestId)
+                friendService.acceptFriendRequest(request.getRequestId())
         );
     }
 
-    @DeleteMapping("/friends/{firendId}")
+    @DeleteMapping("/friends/{friendId}")
     @ResponseBody
     public ResponseEntity<Object> deleteFriend(
             @Valid
@@ -67,21 +70,21 @@ public class FriendController {
             @Valid
             @Min(value = 1, message = "요청 url의 최소값은 1입니다.")
             @Pattern(regexp = "^[0-9]+", message = "숫자만 입력 가능합니다")
-            @RequestParam("user_id") Integer userId) {
+            @RequestBody UserId user) {
         return ResponseEntity.ok(
-                friendService.sendFriendRequest(userId)
+                friendService.sendFriendRequest(user.getUserId())
         );
     }
 
-    @DeleteMapping("/friend-requests/{requestId}")
+    @DeleteMapping("/friend-requests/{userId}")
     @ResponseBody
     public ResponseEntity<Object> rejectFriendRequest(
             @Valid
             @Min(value = 1, message = "요청 url의 최소값은 1입니다.")
             @Pattern(regexp = "^[0-9]+", message = "숫자만 입력 가능합니다")
-            @PathVariable("requestId") Integer requestId) {
+            @PathVariable("userId") Integer userId) {
         return ResponseEntity.ok(
-                friendService.rejectFriendRequest(requestId)
+                friendService.rejectFriendRequest(userId)
         );
     }
 
