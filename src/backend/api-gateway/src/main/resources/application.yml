@@ -12,7 +12,10 @@ spring:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000"
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://fortice.iptime.org:3000"
+              - "http://fortice.iptime.org"
             allow-credentials: true
             allowedHeaders:
               - x-requested-with
