@@ -10,6 +10,7 @@ import Dot from 'components/atoms/Dot';
 import Profile from 'components/atoms/Profile';
 
 export interface IFriend {
+  //친구 객체 타입
   id: number;
   nickname: string;
   profile: {
@@ -21,8 +22,7 @@ export interface IFriend {
 
 export interface IFriendBoxProps {
   friendInfo: IFriend;
-  open: boolean;
-  onClick: React.MouseEventHandler<HTMLDivElement>;
+  open: boolean; //아이콘만 보이는지(false), 이름과 온라인 상태까지 보이는지 (true)
 }
 
 export default function FriendBox(props: IFriendBoxProps) {
@@ -34,7 +34,7 @@ export default function FriendBox(props: IFriendBoxProps) {
         '실제 이미지'
       )}
       {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
-      <FriendStatus color={theme.colors.online} />
+      {props.open ? <FriendStatus color={theme.colors.online} /> : null}
     </FriendBoxWrapper>
   );
 }
@@ -43,6 +43,7 @@ const FriendBoxWrapper = styled.div`
   display: flex;
   height: 50px;
   align-items: center;
+  justify-content: center;
   border-radius: 10px;
   cursor: pointer;
   padding-left: 10px;

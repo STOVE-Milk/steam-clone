@@ -19,6 +19,7 @@ import CarouselComponent from 'components/organisms/SelectCarousel';
 import GameReview from 'components/organisms/GameReview';
 
 interface IReview {
+  //리뷰 객체 타입
   id: number;
   user_id: number;
   displayed_name: string;
@@ -29,11 +30,14 @@ interface IReview {
 }
 
 const Detail: NextPage<IState> = () => {
-  const [game, setGame] = useState({} as gameInfo);
-  const [reviews, setReviews] = useState([] as IReview[]); // TODO: API/resType으로 만들기, 다른 곳도 통일
-  const [userReview, setUserReview] = useState({ content: '', recommendation: true });
+  const [game, setGame] = useState({} as gameInfo); //하나의 게임에 대한 정보
+  // TODO: API/resType으로 만들기, 다른 곳도 통일
+  // 하나의 게임에 대한 리뷰
+  const [reviews, setReviews] = useState([] as IReview[]);
+  const [userReview, setUserReview] = useState({ content: '', recommendation: true }); //유저가 작성 중인 리뷰 내용
 
-  const gameId = 1; // query.gameId;
+  // TODO: url query에서 gameId 받아오기
+  const gameId = 1;
 
   const getGame = async () => {
     const res = (await GameAPI.getGameAPI(gameId)).data.game;
@@ -47,10 +51,12 @@ const Detail: NextPage<IState> = () => {
 
   const addReview = async () => {
     await ReviewAPI.addReviewAPI(gameId, { content: '', recommendation: false });
+    getReviews();
   };
 
   const modifyReview = async (id: number) => {
     await ReviewAPI.modifyReviewAPI(gameId, { review_id: id, content: '', recommendation: false });
+    getReviews();
   };
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -63,21 +69,28 @@ const Detail: NextPage<IState> = () => {
 
   useEffect(() => {
     getGame();
-    getReviews();
+    // getReviews();
   }, []);
 
   return (
     <DetailWrapper>
       <GameImageSection>
         <GameTitle types={'title'}>{game.name}</GameTitle>
-        <CarouselComponent
-          buttons={game.image.sub.map((img) => {
-            return <Image src={img} layout="fill" objectFit="cover"></Image>;
-          })}
-          slides={game.image.sub.map((img) => {
-            return <BigGameSlide key={game.id} {...game}></BigGameSlide>;
-          })}
-        ></CarouselComponent>
+        {/* TODO: Carousel component null 오류 해결 */}
+        {/* <CarouselComponent
+          buttons={
+            game.image &&
+            game.image.sub.map((img) => {
+              return <Image src={img} layout="fill" objectFit="cover"></Image>;
+            })
+          }
+          slides={
+            game.image &&
+            game.image.sub.map((img) => {
+              return <BigGameSlide key={game.id} {...game}></BigGameSlide>;
+            })
+          }
+        ></CarouselComponent> */}
       </GameImageSection>
       <GameIntroSection>
         <SnippetBox>
@@ -89,7 +102,9 @@ const Detail: NextPage<IState> = () => {
           <GameInfoTitle types="medium">평가</GameInfoTitle>
           <Evaluation>
             <div className="RecommendBox">
-              <Text types="large">{`${(game.recommend_count / game.review_count) * 100}%`}</Text>
+              <Text types="large">{`${
+                game.recommend_count && game.review_count && (game.recommend_count / game.review_count) * 100
+              }%`}</Text>
               <RecommendCount types="tiny">{`${game.review_count}명 중 ${game.recommend_count}명 추천`}</RecommendCount>
             </div>
             <WishButtonBox>
@@ -106,31 +121,33 @@ const Detail: NextPage<IState> = () => {
           </DescBox>
           <OSBox>
             <GameInfoTitle types="medium">지원 가능 OS</GameInfoTitle>
-            {game.os_list.map((eachOs: string) => {
-              return (
-                <div className="OSCol">
-                  <FontAwesomeIcon icon={eachOs === 'Window' ? faWindowMaximize : faAppleAlt} inverse />
-                  <Text types="small">{eachOs}</Text>
-                </div>
-              );
-            })}
+            {game.os_list &&
+              game.os_list.map((eachOs: string) => {
+                return (
+                  <div className="OSCol">
+                    <FontAwesomeIcon icon={eachOs === 'Window' ? faWindowMaximize : faAppleAlt} inverse />
+                    <Text types="small">{eachOs}</Text>
+                  </div>
+                );
+              })}
           </OSBox>
           <CategoryBox>
             <GameInfoTitle types="medium">게임 카테고리</GameInfoTitle>
             <div className="categories">
-              {game.category_list.map((category: string) => {
-                return (
-                  <span>
-                    <Text types="small">{`#${category}`}</Text>
-                  </span>
-                );
-              })}
+              {game.category_list &&
+                game.category_list.map((category: string) => {
+                  return (
+                    <span>
+                      <Text types="small">{`#${category}`}</Text>
+                    </span>
+                  );
+                })}
             </div>
           </CategoryBox>
           <GameBuyBox>
             <GameInfoTitle types="medium">구매 정보</GameInfoTitle>
             <div className="actionBox">
-              <Text types="medium"> {`${localePrice(game.price, 'KR')}`}</Text>
+              <Text types="medium"> {`${game.price && localePrice(game.price, 'KR')}`}</Text>
               <FilledButton types={'primary'}>구매</FilledButton>
               <FilledButton types={'primary'}>장바구니</FilledButton>
             </div>
@@ -157,7 +174,6 @@ const Detail: NextPage<IState> = () => {
         ></GameReview>
         {reviews.map((review: IReview) => {
           return (
-            // isMine: 로그인했을 때 내 리뷰면 true, 아니면 false
             <GameReview
               reviewId={review.id}
               isMine={true}

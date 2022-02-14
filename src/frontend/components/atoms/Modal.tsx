@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import styled, { css } from 'styled-components';
 
 export interface IModalProps {
-  show: boolean;
+  show: boolean; //모달 보여줌 여부
   onClose: () => void;
-  title?: string;
-  children: React.ReactChild;
+  title?: string; //모달 타이틀
+  children: React.ReactChild; //모달 안에 들어갈 내용
 }
 
 export default function Modal(props: IModalProps) {
@@ -59,6 +59,7 @@ export default function Modal(props: IModalProps) {
   ) : null;
 
   if (props.show && isBrowser) {
+    //createPortal을 이용해 모달 생성
     return ReactDOM.createPortal(modalContent, document.getElementById('portal')!!);
   } else {
     return null;

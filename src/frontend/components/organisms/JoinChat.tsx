@@ -44,7 +44,7 @@ const FriendList = styled.div`
 `;
 
 export default function JoinChat(props: IJoinChatProps) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(true); //채팅방 생성 모달 열림 여부
 
   useEffect(() => {}, []);
 

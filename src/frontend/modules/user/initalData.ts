@@ -1,5 +1,3 @@
-export const initialSingup = {};
-
 export const initalUserInfo = {
   country: '[TEST]KR',
   exp: 1644223290,

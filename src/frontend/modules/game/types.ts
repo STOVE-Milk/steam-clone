@@ -6,9 +6,9 @@ import * as actions from './actions';
 export interface gameInfo {
   category_list: string[];
   description_snippet: string;
-  recommend_count: number;
+  recommend_count?: number;
   download_count: number;
-  review_count: number;
+  review_count?: number;
   id: number;
   image: {
     main: string;
@@ -22,18 +22,9 @@ export interface gameInfo {
     main: string;
     sub: string[];
   };
-  description: string;
+  description?: string;
 }
 
-interface gameDetail extends gameInfo {
-  description: string;
-  publisher: {
-    id: number;
-    name: string;
-  };
-  review_count: number;
-  recommend_count: number;
-}
 interface IWish {
   success: Boolean;
 }
@@ -43,15 +34,7 @@ interface IUserData {
 }
 
 export interface gameState {
-  categories: AsyncState<string[], Error>;
-  gamesByCategory: AsyncState<gameInfo[], Error>;
-  game: AsyncState<gameDetail, Error>; // 상세 페이지에서 쓰일 1개 게임에 대한 정보
-  cartInfo: AsyncState<number[], Error>;
-  gamesByIdList: AsyncState<gameInfo[], Error>;
-  wish: AsyncState<IWish, Error>;
-  unWish: AsyncState<IWish, Error>;
   userData: AsyncState<IUserData, Error>;
-  wishList: AsyncState<gameInfo[], Error>;
 }
 
 export type gameAction = ActionType<typeof actions>;

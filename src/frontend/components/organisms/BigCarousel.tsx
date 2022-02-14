@@ -5,9 +5,10 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 
 interface ICarouselProps {
-  slides: Object;
+  slides: Object; //carousel에서 element로 쓰일 슬라이드
 }
 
+//carousel 반응형을 위해 breakpoint 지정
 export default function BigCarouselComponent(props: ICarouselProps) {
   const responsive = {
     large: {

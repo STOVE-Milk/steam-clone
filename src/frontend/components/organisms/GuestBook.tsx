@@ -25,16 +25,16 @@ export interface IGuestBook {
 
 export interface IGuestBookProps {
   guestBook: IGuestBook;
-  isMine?: boolean;
+  isMine?: boolean; //내가 등록한 방명록인가
   isAdd: boolean;
   addGuestBook?: (content: string) => Promise<void>;
   modifyGuestBook?: (id: number, content: string) => Promise<void>;
 }
 
 export default function GuestBook(props: IGuestBookProps) {
-  const [isEdited, setEdited] = useState(props.isAdd ? true : false);
+  const [isEdited, setEdited] = useState(props.isAdd ? true : false); //유저가 방명록을 작성중인지 
 
-  const [content, setContent] = useState(props.isAdd ? '' : props.guestBook.content);
+  const [content, setContent] = useState(props.isAdd ? '' : props.guestBook.content); //유저가 작성중인 방명록 내용
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
   };

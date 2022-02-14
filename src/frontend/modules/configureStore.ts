@@ -18,6 +18,7 @@ function configureStore() {
   return store;
 }
 
+//next에서 redux의 단일 스토어를 지키기 위해 wrapper로 스토어를 감싸줌
 const wrapper = createWrapper<Store<IState>>(configureStore);
 
 export default wrapper;

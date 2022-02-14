@@ -17,16 +17,13 @@ import {
 import LogoImage from 'public/steam_logo.png';
 
 import { theme } from 'styles/theme';
+import Text from 'components/atoms/Text';
 import MenuBox from 'components/molecules/MenuBox';
 import FriendBox from 'components/molecules/FriendBox';
 import { IFriend } from 'components/molecules/FriendBox';
 
-interface INavBarStyledProps {
-  open: boolean;
-}
-
 export default function NavBar() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(true); //NavBar가 열려있는가
   const router = useRouter();
 
   // TODO: 실제 친구 목록 가져오기
@@ -64,7 +61,7 @@ export default function NavBar() {
       </MenuSection>
       <SectionDivider />
       <SectionTitle>
-        Friends
+        {open ? <Text types="main">Friends</Text> : null}
         <Link href={'/friend'}>
           <FriendSettingBtn>
             <FontAwesomeIcon icon={faCog} inverse></FontAwesomeIcon>
@@ -72,8 +69,11 @@ export default function NavBar() {
         </Link>
       </SectionTitle>
       <FriendSection>
-        {friends.map((friend) => {
-          <FriendBox open={open} friendInfo={friend} />;
+        {[
+          { id: 1, nickname: 'user', profile: { image: '', description: 'abc' } },
+          { id: 2, nickname: 'user', profile: { image: '', description: 'abc' } },
+        ].map((friend) => {
+          return <FriendBox open={open} friendInfo={friend} />;
         })}
       </FriendSection>
     </NavBarWrapper>
@@ -104,7 +104,7 @@ const LogoSection = styled.section`
   padding: 1rem 1rem 1rem 1rem;
 `;
 
-const LogoBox = styled.div<INavBarStyledProps>`
+const LogoBox = styled.div<{ open: boolean }>`
   display: flex;
   flex-direction: row;
   display: ${(props) => (props.open ? '' : 'none')};
@@ -118,13 +118,14 @@ const LogoTitle = styled.div`
 `;
 
 const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
-  margin-left: ${(props) => (props.open ? '1.5rem' : '1rem')};
+  margin-left: ${(props) => (props.open ? '1.5rem' : '2rem')};
   margin-right: ${(props) => (props.open ? '2.5rem' : '1.7rem')};
+  margin-top: 0.5rem;
 `;
 
 const SectionTitle = styled.div`
   color: ${(props) => props.theme.colors.secondaryText};
-  padding: 30px 20px 0px 20px;
+  padding: 30px 20px 0px 27px;
   display: flex;
 `;
 
@@ -138,10 +139,6 @@ const SectionDivider = styled.div`
   background: ${(props) => props.theme.colors.divider};
 `;
 
-const FriendModalBtn = styled.div`
-  
-`;
-
 const FriendSection = styled.div`
   padding: 20px 10px 20px 10px;
   flex: 1;
@@ -152,6 +149,6 @@ const FriendSection = styled.div`
 `;
 
 const FriendSettingBtn = styled.div`
-  margin-left: auto;
+  margin-left: 1rem;
   cursor: pointer;
 `;

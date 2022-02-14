@@ -6,10 +6,11 @@ import { ButtonGroupProps } from 'react-multi-carousel/lib/types';
 import 'react-multi-carousel/lib/styles.css';
 
 interface ICarouselProps {
-  slides: Object;
-  buttons: JSX.Element[];
+  slides: Object; //carousel에서 element로 쓰일 슬라이드
+  buttons: JSX.Element[]; //SelectCarousel에서 아래쪽에 있는 사진 4개
 }
 
+//carousel 반응형을 위해 breakpoint 지정
 export default function CarouselComponent(props: ICarouselProps) {
   const responsive = {
     large: {
@@ -29,9 +30,10 @@ export default function CarouselComponent(props: ICarouselProps) {
   const CustomButtonGroup = ({ goToSlide }: ButtonGroupProps) => {
     return (
       <ButtonGroup>
-        {props.buttons.map((img, i) => {
-          return <Button onClick={() => goToSlide && goToSlide(i)}>{img}</Button>;
-        })}
+        {props.buttons &&
+          props.buttons.map((img, i) => {
+            return <Button onClick={() => goToSlide && goToSlide(i)}>{img}</Button>;
+          })}
       </ButtonGroup>
     );
   };
@@ -42,8 +44,8 @@ export default function CarouselComponent(props: ICarouselProps) {
       slidesToSlide={1}
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
-      // autoPlay={true}
-      // autoPlaySpeed={2000}
+      autoPlay={true}
+      autoPlaySpeed={2000}
       infinite
       removeArrowOnDeviceType={['small']}
       customButtonGroup={<CustomButtonGroup />}

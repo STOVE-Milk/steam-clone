@@ -16,18 +16,16 @@ const UserPage: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
-
-  // TODO: url의 Id 가져와서 스토어의 Id와 비교하기
   */
-  const userId = 1; // default: query.userId
-  const [isMypage, setIsMypage] = useState(false); // query.userId === store.userId
+  const userId = 1; // TODO: url의 Id 가져와서 스토어의 Id와 비교하기
+  const [isMypage, setIsMypage] = useState(false); // 현재 보고 있는 페이지가 마이 페이지인지, 다른 유저의 페이지인지 여부
 
-  const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]);
-  const [userGuestBook, setUserGuestBook] = useState({} as IGuestBook);
+  const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]); // 현재 유저 페이지의 방명록
+  const [userGuestBook, setUserGuestBook] = useState({} as IGuestBook); // 유저가 작성중인 방명록의 내용
 
-  const [profile, setProfile] = useState({} as IUserInfo);
+  const [profile, setProfile] = useState({} as IUserInfo); // 현재 유저 페이지의 유저의 정보
 
-  const [withFriend, setWithFriend] = useState([] as IFriend[]);
+  const [withFriend, setWithFriend] = useState([] as IFriend[]); // 현재 유저 페이지의 유저와 함께 아는 친구. 마이페이지면 보이지 않음
 
   const getProfile = async () => {
     const res = (await UserAPI.getProfileAPI(userId)).data;
@@ -60,7 +58,6 @@ const UserPage: NextPage = () => {
   };
 
   useEffect(() => {
-    // (스토어의 userId !== 현재 url의 userId 일 때)
     getProfile();
     getGuestBooks();
     !isMypage && getWithFriend();
