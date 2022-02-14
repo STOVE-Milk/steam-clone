@@ -16,8 +16,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +45,7 @@ public class SocketDataService {
     */
     private static final Integer WAIT_TIME_OF_LOCK = 5;
     private static final Integer EXPIRE_TIME_OF_LOCK = 5;
-    private static final String PREFIX_OF_LOCK = "lock_robby";
+    private static final String PREFIX_OF_LOCK = "lock_lobby";
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
     /*
@@ -193,24 +196,30 @@ public class SocketDataService {
             }
         } catch (NullPointerException e) {
             log.info(mainKey + "." + hashKey);
-            log.info(hash.get(mainKey, hashKey).toString());
+            // log.info(hash.get(mainKey, hashKey).toString());
         }
     }
 
     //TODO: RedisTemplate execute가 필요
-    public void removeUserInRedis(String roomId, String leavedUserId) {
-        HashOperations<String, String, Integer> hash = redisTemplate.opsForHash();
+    public void removeUserInRedis(String roomId, String leaveUserId) {
         String mainKey = "library:" + roomId;
-        String hashKey = "users.[" + leavedUserId + "].";
+        String hashKey = "users.[" + leaveUserId + "].";
         RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
         try {
             roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
-            if(!hash.keys(mainKey).isEmpty()) {
-                hash.increment(mainKey, "userCount", -1);
-                hash.delete(mainKey, hashKey + 'x');
-                hash.delete(mainKey, hashKey + 'y');
-                hash.delete(mainKey, hashKey + "nickname");
-            }
+            redisTemplate.execute(new SessionCallback<Object>() {
+                @Override
+                public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
+                    operations.multi();
+                    HashOperations<K, String, Object> hash = operations.opsForHash();
+                    hash.increment((K) mainKey, "userCount", -1);
+                    hash.delete((K) mainKey, hashKey + 'x');
+                    hash.delete((K) mainKey, hashKey + 'y');
+                    hash.delete((K) mainKey, hashKey + "nickname");
+                    operations.exec();
+                    return null;
+                }
+            });
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {

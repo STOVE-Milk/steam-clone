@@ -11,7 +11,7 @@ import com.steam.library.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -58,7 +58,15 @@ public class SocketService {
         concurrency 옵션을 통해 소비하는 속도를 높여보려 했지만 concurrency 수 만큼 메세지를 중복으로 소비해서 방법을 찾고있습니다.
         동일한 채널에서 concurrency 수 만큼 구독하게 되는데, 채널이 같아서 구독한 목록 중 배분해서 소비할 줄 알았지만, 전체가 함께 소비합니다.
     */
-    @RabbitListener(queues = "lobby.queue", concurrency = "1")
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    value = @Queue(
+                            value = "lobby.queue",
+                            arguments = @Argument(name = "x-queue-type", value = "stream")
+                    ),
+                    exchange = @Exchange(value = "steam.lobby", type = "topic")
+            )
+    )
     public void receiveMessage(final Message message) {
         String messageStr = new String(message.getBody(), StandardCharsets.UTF_8);
         messageStr = messageStr.substring(1, messageStr.length() - 1).replace("\\", "");
@@ -95,6 +103,9 @@ public class SocketService {
         }
     }
 
+    /*
+        synchronized 참고자료 : https://jgrammer.tistory.com/entry/Java-%ED%98%BC%EB%8F%99%EB%90%98%EB%8A%94-synchronized-%EB%8F%99%EA%B8%B0%ED%99%94-%EC%A0%95%EB%A6%AC
+    */
     public synchronized Boolean enter(WebSocketSession session, EnterRequestMessage enterRequestMessage) throws NullPointerException{
         if(enterRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
@@ -255,12 +266,14 @@ public class SocketService {
         // sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
 
         // 떠나기
-        Integer userNum = lobby.get(roomId).leave(userId);
-        if(userNum.equals(0))
-            lobby.remove(roomId);
-        user_session.remove(userId);
-        userData.remove(sessionId);
-        session_room.remove(sessionId);
+        if(lobby.containsKey(roomId)) {
+            Integer userNum = lobby.get(roomId).leave(userId);
+            if (userNum.equals(0))
+                lobby.remove(roomId);
+            user_session.remove(userId);
+            userData.remove(sessionId);
+            session_room.remove(sessionId);
+        }
 
         socketDataService.removeUserInRedis(roomId, userId);
 
@@ -304,7 +317,8 @@ public class SocketService {
     public boolean sendMessageToMe(WebSocketSession session, TextMessage message) throws NullPointerException{
         try {
             synchronized (session) {
-                session.sendMessage(message);
+                if(session != null && session.isOpen())
+                    session.sendMessage(message);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -327,7 +341,8 @@ public class SocketService {
                 try {
                     if (!userData.get(session.getId()).getIdx().toString().equals(myId)) {
                         synchronized (session) {
-                            session.sendMessage(message);
+                            if(session != null && session.isOpen())
+                                session.sendMessage(message);
                         }
                     }
                 } catch (IOException e) {
@@ -351,7 +366,8 @@ public class SocketService {
             sessions.forEach( (sessionId, session) -> {
                 try {
                     synchronized (session) {
-                        session.sendMessage(message);
+                        if(session != null && session.isOpen())
+                            session.sendMessage(message);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

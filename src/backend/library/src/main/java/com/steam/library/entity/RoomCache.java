@@ -18,7 +18,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-@RedisHash(value = "library", timeToLive = 900)
+@RedisHash(value = "library", timeToLive = -1)
 public class RoomCache {
     @Id
     private String roomId;

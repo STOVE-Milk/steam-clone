@@ -43,7 +43,7 @@ public class Room {
     public synchronized Integer leave(String userId) {
         try {
             this.userCount--;
-            this.getUsers().remove(userId);
+            this.users.remove(userId);
             this.sessions.remove(userId);
         } catch (RuntimeException e) {
             e.printStackTrace();
