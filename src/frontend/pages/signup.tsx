@@ -9,7 +9,6 @@ import { IState } from 'modules';
 import * as AuthAPI from 'api/auth/api';
 
 import { doSignup } from 'modules/auth';
-import { checkEmailAPI, checkNicknameAPI } from 'api/auth/api';
 import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
 
 import Text from 'components/atoms/Text';
@@ -35,6 +34,7 @@ const signup: NextPage<IState> = () => {
     email: false,
     nickname: false,
   });
+  const [signupResult, setSignupResult] = useState({} as { code: number; message: string; data: any });
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -49,11 +49,11 @@ const signup: NextPage<IState> = () => {
     switch (type) {
       case 'email': {
         if (inputs.email.length === 0) {
-          alert(Object.values(errors));
+          alert('중복체크 전, 이메일을 입력해주세요.');
         } else if (Object.keys(errors).includes('email')) {
-          alert(Object.values(errors));
+          alert(Object.values(errors.email).toString().replaceAll(',', ''));
         } else {
-          const res = await checkEmailAPI({ email: inputs.email });
+          const res = await AuthAPI.checkEmailAPI({ email: inputs.email });
           alert(res.message);
 
           if (res.code === 10000) {
@@ -73,7 +73,7 @@ const signup: NextPage<IState> = () => {
         if (inputs.nickname.length === 0) {
           alert(Object.values(errors));
         } else {
-          const res = await checkNicknameAPI({ nickname: inputs.nickname });
+          const res = await AuthAPI.checkNicknameAPI({ nickname: inputs.nickname });
           alert(res.message);
 
           if (res.code === 10000) {
@@ -130,6 +130,13 @@ const signup: NextPage<IState> = () => {
     else if (name === 'password') checkPassword(inputs.password);
   };
 
+  const doSignUp = async () => {
+    const res = await AuthAPI.doSignupAPI({ ...inputs });
+    const data = await res.data;
+    console.log(data);
+    setSignupResult(data);
+  };
+
   const checkAllnSubmit = () => {
     // TO DO: alert비동기처리
     //[explain]: 회원가입을 위한 모든 input이 채워졌을 때 true
@@ -157,6 +164,7 @@ const signup: NextPage<IState> = () => {
         ...prev,
         dupChecks: '이메일과 닉네임 중복체크를 진행해주세요.',
       }));
+      alert(Object.values(errors));
     } else {
       setErrors((prev) => {
         const state = prev;
@@ -167,17 +175,14 @@ const signup: NextPage<IState> = () => {
 
     //[explain]: 에러 객체가 비어있고, 모든 input이 채워져있을 때 signup요청을 보냅니다.
     if (Object.keys(errors).length === 0 && nullChecker) {
-      dispatch(
-        doSignup.request({
-          ...inputs,
-        }),
-      );
-      // if (signup.data.code === 10000) {
+      doSignUp();
+      // if (signupResult.code === 10000) {
       alert('가입에 성공했습니다. 로그인페이지로 이동합니다.');
       router.push('/signin');
-      //TODO(양하): 에러처리
-      // } else {
-      //   alert(signup.data.message);
+      // }
+      //TODO(지호, BE에러): 에러처리
+      // else {
+      //   alert(signupResult.message);
       // }
     }
   };
