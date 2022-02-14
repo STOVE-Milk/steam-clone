@@ -22,12 +22,8 @@ import MenuBox from 'components/molecules/MenuBox';
 import FriendBox from 'components/molecules/FriendBox';
 import { IFriend } from 'components/molecules/FriendBox';
 
-interface INavBarStyledProps {
-  open: boolean; //NavBar가 열려있는가
-}
-
 export default function NavBar() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(true); //NavBar가 열려있는가
   const router = useRouter();
 
   // TODO: 실제 친구 목록 가져오기
@@ -108,7 +104,7 @@ const LogoSection = styled.section`
   padding: 1rem 1rem 1rem 1rem;
 `;
 
-const LogoBox = styled.div<INavBarStyledProps>`
+const LogoBox = styled.div<{ open: boolean }>`
   display: flex;
   flex-direction: row;
   display: ${(props) => (props.open ? '' : 'none')};
