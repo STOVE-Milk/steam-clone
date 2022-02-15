@@ -11,6 +11,7 @@ import FilledButton from 'components/atoms/FilledButton';
 import MsgBox from 'components/atoms/MsgBox';
 import Modal from 'components/atoms/Modal';
 import JoinChat from 'components/organisms/JoinChat';
+import user from 'modules/user';
 
 interface IServerMessage {
   //서버에서 받는 메세지 객체 타입
@@ -45,7 +46,6 @@ interface Log {
   sender_id: string;
   sender_nickname: string[];
   content: string;
-  send_time: string;
 }
 
 // interface Message {
@@ -89,15 +89,15 @@ const Chat: NextPage = () => {
               break;
             case 'room-get': // 유저 접속 시, 채팅방 목록 가져오기
               console.log('room-get', serverMessage.data);
-              setRooms(serverMessage.data);
+              serverMessage.data.forEach((room: IRoom) => {
+                // room
+                
+              })
+              
               break;
-            case 'room-joined': // 채팅방 접속
+            case 'room-joined': // 채팅방 생성
               console.log('room-joined', serverMessage.target);
-              if (serverMessage.target.private) {
-              }
-              let array = rooms;
-              array.push(serverMessage.target);
-              setRooms(array);
+              setRooms((rooms) => rooms.concat(serverMessage.target));
               break;
             case 'room-view': // 채팅방 접속 시, 채팅방에 관한 정보 가져오기
               console.log('room-view', serverMessage.data);
@@ -109,19 +109,21 @@ const Chat: NextPage = () => {
               setMessage({
                 sender_id: serverMessage.sender.id,
                 sender_nickname: serverMessage.sender.name,
-                send_time: '1시',
                 content: serverMessage.message,
               });
-              setMembers(serverMessage.data.members);
               let array2 = logs;
               message && array2?.push(message);
-              setLogs(array2);
+              setLogs((array2) => array2);
               break;
           }
         });
       };
     }
   }, []);
+
+  useEffect(() => {
+    console.log(message, logs);
+  }, [logs]);
 
   const inRoom = (roomId: string) => {
     // 클->서: 채팅방에 들어감
@@ -161,10 +163,11 @@ const Chat: NextPage = () => {
         }),
       );
     } else {
+      //user id: 14
       ws.current?.send(
         JSON.stringify({
           action: 'join-room-public',
-          message: `publicRoom${selectFriends.map((friend) => {
+          message: `publicRoom3-14-${selectFriends.map((friend) => {
             return `-${friend}`;
           })}`.toString(),
         }),

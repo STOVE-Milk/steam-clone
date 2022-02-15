@@ -1,5 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
-import type { NextPage } from 'next';
+import React from 'react';
+
+import styled from 'styled-components';
+
+import MsgBox from 'components/atoms/MsgBox';
 
 interface Log {
   //채팅방 메세지 객체 타입
@@ -10,17 +13,34 @@ interface Log {
 }
 
 export interface IChatRoomProps {
-  members: string[];
-  logs: Log[];
-  message: Log;
+  members: string[]; /// 채팅방 멤버들
+  logs: Log[]; // 채팅방 메세지들
 }
 
-const ChatRoom: NextPage = () => {
-  const [members, setMembers] = useState<string[]>(); // 채팅방 멤버들
-  const [logs, setLogs] = useState<Log[]>(); // 채팅방 메세지들
-  const [message, setMessage] = useState({} as Log); //현재 보낼 메세지, 받을 메세지
+export default function ChatRoom(props: IChatRoomProps) {
+  return (
+    <ChatViewBox>
+      <MsgBox isMine={true}>
+        {props.logs.map((text, key) => (
+          <p key={key}> {text} </p>
+        ))}
+      </MsgBox>
+      <MsgBox isMine={false}>
+        {props.logs.map((text, key) => (
+          <p key={key}> {text} </p>
+        ))}
+      </MsgBox>
+    </ChatViewBox>
+  );
+}
 
-  return <div></div>;
-};
-
-export default ChatRoom;
+const ChatViewBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1rem;
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
