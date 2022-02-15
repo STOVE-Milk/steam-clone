@@ -143,7 +143,6 @@ func (client *Client) disconnect() {
 	//가입된 방을 가져온다.
 	//가입된 방에 client가 등록 돼 있으면 제거한다.
 	client.wsServer.unregister <- client
-
 	close(client.send)
 	client.conn.Close()
 }

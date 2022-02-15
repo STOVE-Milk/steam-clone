@@ -49,7 +49,7 @@ func main() {
 	wsServer := NewWebsocketServer(&repository.RoomMRepository{Db: mongo}, &repository.UserMRepository{Db: mongo}, &repository.UserRepository{Db: db})
 	go wsServer.Run()
 
-	serveMux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	serveMux.HandleFunc("/chat/ws", func(w http.ResponseWriter, r *http.Request) {
 		ServeWs(wsServer, w, r)
 	})
 	fs := http.FileServer(http.Dir("./public"))
