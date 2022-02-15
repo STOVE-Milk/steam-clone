@@ -67,6 +67,24 @@ func (repo *RoomMRepository) GetRoomViewData(roomId string) models.RoomViewData 
 	return roomViewData
 }
 
+func (repo *RoomMRepository) FindRoomById(id string) models.Room {
+	var room Room
+	// var logList []models.ChatLogData
+	chatCollection := repo.Db.Database("chat").Collection("rooms")
+	findFilter := bson.D{{"id", id}}
+	var roomB bson.M
+	chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomB)
+	if roomB == nil {
+		return nil
+	}
+	room = Room{
+		Id:      roomB["id"].(string),
+		Name:    roomB["name"].(string),
+		Private: roomB["private"].(bool),
+	}
+	return &room
+}
+
 func (repo *RoomMRepository) FindRoomByName(name string) models.Room {
 	var room Room
 	// var logList []models.ChatLogData
@@ -84,6 +102,7 @@ func (repo *RoomMRepository) FindRoomByName(name string) models.Room {
 	}
 	return &room
 }
+
 func (repo *RoomMRepository) AddMembers(room models.Room, members []string) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	updateFilter := bson.D{{"id", room.GetId()}}

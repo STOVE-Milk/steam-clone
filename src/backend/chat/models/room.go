@@ -16,7 +16,7 @@ type RoomRepository interface {
 	AddRoom(room Room)
 	AddMembers(room Room, members []string)
 	DeleteMember(room Room, userId string)
-	FindRoomByName(name string) Room
+	FindRoomById(id string) Room
 	LoggingChat(chatLogData ChatLogData, content string)
 	GetRoomViewData(roomId string) RoomViewData
 }
@@ -30,9 +30,9 @@ type RoomsMongo struct {
 	CreatedAt time.Time `bson:"created_at"`
 }
 type RoomMongo struct {
-	ID      string `bson:"id"`
-	Name    string `bosn:"name"`
-	Private bool   `bson:"private"`
+	ID      string `bson:"id" json:"id"`
+	Name    string `bosn:"name" json:"name"`
+	Private bool   `bson:"private" json:"private"`
 }
 type ChatLogData struct {
 	SenderId       string    `bson:"sender_id" json:"sender_id"`

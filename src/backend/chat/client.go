@@ -93,6 +93,7 @@ func (client *Client) readPump() {
 			break
 		}
 		client.handleNewMessage(jsonMessage)
+		fmt.Println("클라이언트 : " + string(jsonMessage))
 	}
 
 }
@@ -106,7 +107,7 @@ func (client *Client) writePump() {
 	for {
 		select {
 		case message, ok := <-client.send:
-			// fmt.Println("서버 : " + string(message))
+			fmt.Println("서버 : " + string(message))
 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The WsServer closed the channel.
@@ -120,7 +121,6 @@ func (client *Client) writePump() {
 			}
 			w.Write(message)
 
-			// Attach queued chat messages to the current websocket message.
 			n := len(client.send)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
@@ -181,7 +181,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		log.Printf("Error on unmarshal JSON message %s", err)
 		return
 	}
-	fmt.Println(message.encode())
 
 	message.Sender = client
 	switch message.Action {
@@ -209,8 +208,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 
 // 채팅 방을 클릭하면 채팅방의 정보를 보여 줌.
 func (client *Client) handleRoomViewMessage(message Message) {
-	room := client.wsServer.findRoomByName(message.Target.Name)
-
+	room := client.wsServer.findRoomByID(message.Target.ID)
 	// 채팅 방을 클릭했을 때 그 방에
 	if !client.isInRoom(room) {
 		client.rooms[room] = true

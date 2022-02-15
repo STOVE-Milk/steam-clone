@@ -26,7 +26,6 @@ type WsServer struct {
 	register        chan *Client     // 클라이언트 등록
 	unregister      chan *Client     // 클라이언트 제거
 	rooms           map[*Room]bool   // 룸 저장
-	broadcast       chan []byte      // 클라이언트 찾을 때.
 	users           []models.User    // db에 등록된 유저 읽어 오기
 	roomMRepository models.RoomRepository
 	userMRepository models.UserMRepository
@@ -142,7 +141,6 @@ func (server *WsServer) listenPubSubChannel() {
 			log.Printf("Error on unmarshal JSON message %s", err)
 			return
 		}
-
 		switch message.Action {
 		case UserJoinedAction:
 			server.handleUserJoined(message)
@@ -188,6 +186,7 @@ func (server *WsServer) handleUserJoined(message Message) {
 
 	friends := server.getUserFriends(message.Sender.GetId())
 	clients := server.friendsToClient(friends)
+	message.Data = nil
 	server.broadcastToClients(message.encode(), clients)
 }
 
@@ -195,6 +194,7 @@ func (server *WsServer) handleUserLeft(message Message) {
 
 	friends := server.getUserFriends(message.Sender.GetId())
 	clients := server.friendsToClient(friends)
+	message.Data = nil
 	server.broadcastToClients(message.encode(), clients)
 }
 
@@ -212,9 +212,11 @@ func (server *WsServer) listOnlineClients(client *Client) {
 // 서버에 등록된 클라이언트들에게 메세지를 전송.
 // 클라이언트가 웹 소켓을 연결할 때나 연결을 끊을 때.
 func (server *WsServer) broadcastToClients(message []byte, friends []*Client) {
-
 	for _, client := range friends {
-		client.send <- message
+		if _, ok := server.clients[client]; ok {
+			client.send <- message
+
+		}
 	}
 }
 
@@ -234,17 +236,13 @@ func (server *WsServer) findRoomByName(name string) *Room {
 		}
 	}
 
-	if foundRoom == nil {
-		foundRoom = server.runRoomFromRepository(name)
-	}
-
 	return foundRoom
 }
 
 // 만약 방이 웹 소캣 서버에 등록돼 있지 않다면 등록 후 thread 등록
-func (server *WsServer) runRoomFromRepository(name string) *Room {
+func (server *WsServer) runRoomFromRepository(id string) *Room {
 	var room *Room
-	dbRoom := server.roomMRepository.FindRoomByName(name)
+	dbRoom := server.roomMRepository.FindRoomById(id)
 	if dbRoom != nil {
 		room = NewRoom(dbRoom.GetName(), dbRoom.GetPrivate())
 		room.ID = dbRoom.GetId()
@@ -268,13 +266,16 @@ func (server *WsServer) findClientByID(ID string) *Client {
 	return foundClient
 }
 
-func (server *WsServer) findRoomByID(ID string) *Room {
+func (server *WsServer) findRoomByID(id string) *Room {
 	var foundRoom *Room
 	for room := range server.rooms {
-		if room.GetId() == ID {
+		if room.GetId() == id {
 			foundRoom = room
 			break
 		}
+	}
+	if foundRoom == nil {
+		foundRoom = server.runRoomFromRepository(id)
 	}
 
 	return foundRoom

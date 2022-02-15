@@ -25,3 +25,5 @@ func MongoConn() *mongo.Client {
 	fmt.Println("MongoDB Connection Made")
 	return conn
 }
+
+// room get , room view 안됨

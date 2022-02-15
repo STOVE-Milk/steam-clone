@@ -27,7 +27,12 @@ type UserRepository struct {
 func (repo *UserRepository) GetUserFriends(ID string) []models.User {
 	var friends []models.User
 
-	rows, err := repo.Db.Query("SELECT idx, nickname FROM user")
+	rows, err := repo.Db.Query(`
+	SELECT u.idx, u.nickname FROM steam.friend as f
+	join steam.user as u
+	on f.friend_id = u.idx
+	where f.user_id = ?;
+	`, ID)
 	if err == sql.ErrNoRows {
 		log.Println("등록된 친구가 없습니다.")
 		return nil
@@ -40,6 +45,7 @@ func (repo *UserRepository) GetUserFriends(ID string) []models.User {
 		rows.Scan(&friend.Id, &friend.Name)
 		friends = append(friends, &friend)
 	}
+
 	return friends
 }
 
