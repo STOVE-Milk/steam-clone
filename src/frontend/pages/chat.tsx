@@ -79,43 +79,46 @@ const Chat: NextPage = () => {
       // 서버 -> 클라이언트
       // 웹 소켓 통신 과정에서 서버로부터 받는 메세지들을 action에 따라 처리. 아직 개발중!
       ws.current.onmessage = (e: MessageEvent) => {
-        const serverMessage = e.data;
+        const events = e.data.split('\n');
+        events.forEach((event: string) => {
+          const serverMessage = JSON.parse(event);
 
-        switch (serverMessage.action) {
-          case 'user-join': // 유저 접속
-            console.log('user-join', serverMessage.data);
-            break;
-          case 'room-get': // 유저 접속 시, 채팅방 목록 가져오기
-            console.log('room-get', serverMessage.data);
-            setRooms(serverMessage.data);
-            break;
-          case 'room-joined': // 채팅방 접속
-            console.log('room-joined', serverMessage.target);
-            if (serverMessage.target.private) {
-            }
-            let array = rooms;
-            array.push(serverMessage.target);
-            setRooms(array);
-            break;
-          case 'room-view': // 채팅방 접속 시, 채팅방에 관한 정보 가져오기
-            console.log('room-view', serverMessage.data);
-            setMembers(serverMessage.data.members);
-            setLogs(serverMessage.data.log);
-            break;
-          case 'send-message': // 메세지를 받음
-            console.log('send-message', serverMessage);
-            setMessage({
-              sender_id: serverMessage.sender.id,
-              sender_nickname: serverMessage.sender.name,
-              send_time: '1시',
-              content: serverMessage.message,
-            });
-            setMembers(serverMessage.data.members);
-            let array2 = logs;
-            message && array2?.push(message);
-            setLogs(array2);
-            break;
-        }
+          switch (serverMessage.action) {
+            case 'user-join': // 유저 접속
+              console.log('user-join', serverMessage.sender);
+              break;
+            case 'room-get': // 유저 접속 시, 채팅방 목록 가져오기
+              console.log('room-get', serverMessage.data);
+              setRooms(serverMessage.data);
+              break;
+            case 'room-joined': // 채팅방 접속
+              console.log('room-joined', serverMessage.target);
+              if (serverMessage.target.private) {
+              }
+              let array = rooms;
+              array.push(serverMessage.target);
+              setRooms(array);
+              break;
+            case 'room-view': // 채팅방 접속 시, 채팅방에 관한 정보 가져오기
+              console.log('room-view', serverMessage.data);
+              setMembers(serverMessage.data.members);
+              setLogs(serverMessage.data.log);
+              break;
+            case 'send-message': // 메세지를 받음
+              console.log('send-message', serverMessage);
+              setMessage({
+                sender_id: serverMessage.sender.id,
+                sender_nickname: serverMessage.sender.name,
+                send_time: '1시',
+                content: serverMessage.message,
+              });
+              setMembers(serverMessage.data.members);
+              let array2 = logs;
+              message && array2?.push(message);
+              setLogs(array2);
+              break;
+          }
+        });
       };
     }
   }, []);
