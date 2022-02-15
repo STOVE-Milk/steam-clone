@@ -69,6 +69,7 @@ const Detail: NextPage<IState> = () => {
 
   useEffect(() => {
     getGame();
+
     // getReviews();
   }, []);
 
@@ -76,21 +77,16 @@ const Detail: NextPage<IState> = () => {
     <DetailWrapper>
       <GameImageSection>
         <GameTitle types={'title'}>{game.name}</GameTitle>
-        {/* TODO: Carousel component null 오류 해결 */}
-        {/* <CarouselComponent
-          buttons={
-            game.image &&
-            game.image.sub.map((img) => {
+        {game.image !== undefined && (
+          <CarouselComponent
+            buttons={game.image.sub.map((img) => {
               return <Image src={img} layout="fill" objectFit="cover"></Image>;
-            })
-          }
-          slides={
-            game.image &&
-            game.image.sub.map((img) => {
+            })}
+            slides={game.image.sub.map((img) => {
               return <BigGameSlide key={game.id} {...game}></BigGameSlide>;
-            })
-          }
-        ></CarouselComponent> */}
+            })}
+          ></CarouselComponent>
+        )}
       </GameImageSection>
       <GameIntroSection>
         <SnippetBox>
@@ -137,7 +133,7 @@ const Detail: NextPage<IState> = () => {
               {game.category_list &&
                 game.category_list.map((category: string) => {
                   return (
-                    <span>
+                    <span key={category}>
                       <Text types="small">{`#${category}`}</Text>
                     </span>
                   );
@@ -175,6 +171,7 @@ const Detail: NextPage<IState> = () => {
         {reviews.map((review: IReview) => {
           return (
             <GameReview
+              key={review.id}
               reviewId={review.id}
               isMine={true}
               name={review.displayed_name}

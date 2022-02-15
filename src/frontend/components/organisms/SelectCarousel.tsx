@@ -44,8 +44,6 @@ export default function CarouselComponent(props: ICarouselProps) {
       slidesToSlide={1}
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
-      autoPlay={true}
-      autoPlaySpeed={2000}
       infinite
       removeArrowOnDeviceType={['small']}
       customButtonGroup={<CustomButtonGroup />}
