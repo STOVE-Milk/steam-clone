@@ -6,7 +6,7 @@ import { IState } from 'modules';
 import dynamic from 'next/dynamic';
 
 import styled from 'styled-components';
-
+import { vToken } from '../util/vToken';
 import { GameListLibrary, TitleStyle } from 'components/organisms/GameListLibrary';
 import Text from 'components/atoms/Text';
 
@@ -59,7 +59,8 @@ const library: NextPage<IState> = () => {
   //     "authorization": ${token},
   //     "room_id": ${'1'},
   //   }`;
-  const wsUri = 'ws://localhost:8210/library';
+  const wsUri = `${process.env.NEXT_PUBLIC_BASE_URL_WS}`;
+  // const wsUri = 'ws://fortice.iptime.org:8080/library';
   let websocket: any;
   let output;
   let map;
@@ -115,6 +116,7 @@ const library: NextPage<IState> = () => {
     }
   }
   useEffect(() => {
+    vToken();
     connect();
   }, []);
   return (

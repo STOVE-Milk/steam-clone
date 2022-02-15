@@ -40,7 +40,7 @@ interface IGameListLibararyProps {
 export const GameListLibrary = (props: IGameListLibararyProps) => {
   const { userData } = useSelector((state: IState) => state.game);
   const [gamesByIdList, setGamesByIdList] = useState([] as gameInfo[]);
-  const [purchaseList, setPurchaseList] = useState([]);
+  // const [purchaseList, setPurchaseList] = useState([]);
   const { onSelect } = props;
   const router = useRouter();
 
@@ -48,18 +48,18 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getUserData();
+    // getUserData();
     // dispatch(getUserData.request({}));
     getGamesByIdList();
   }, []);
   // const getUserData = async () => {
 
   // }
-  const getUserData = async () => {
-    const res = await GameAPI.getUserDataAPI();
-    const puchase_list = await res.data.purchase_list;
-    setPurchaseList(puchase_list);
-  };
+  // const getUserData = async () => {
+  //   const res = await GameAPI.getUserDataAPI();
+  //   const puchase_list = await res.data.purchase_list;
+  //   setPurchaseList(puchase_list);
+  // };
 
   const getGamesByIdList = async () => {
     if (!isEmpty(userData.data.purchase_list)) {
