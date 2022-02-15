@@ -28,6 +28,24 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/*
+    나중에 상태 관리 개선 필요
+
+    공부할 것
+        Dispatcher Servlet의 처리는 어떻게 하는지 공부
+        소켓을 사용하는 서버가 얼마나 소켓을 받을 수 있는지 공부 --> Thread Pool은 어떻게 생기지?
+        Thread Pool은 얼마나 생성하고, 어떻게 처리하지? --> 소켓의 연결 방식 설명 추가 공부
+        연결이 점유되는 상황인 소켓의 경우 어떻게 처리하지? + 소켓에 NIO는 왜 같이 언급하지 ?
+
+    서버 간 통신 통합, 동시성 처리 -
+        상태 관리 서버를 Java Socket(TCP)를 통해 연결하는데, BIO의 문제점 때문에 NIO를 사용하여 개선하면 되겠다.
+        Smooth 팀은 어떻게 처리했을까? --> Spring Integration 사용 (내부적으로 Java Socket 사용)
+
+    참고 자료:
+        Thread Pool, BIO, NIO 방식 : https://velog.io/@sihyung92/how-does-springboot-handle-multiple-requests
+        NIO, Java Socket: https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=beanpole2020&logNo=221466876314
+*/
+
 @RequiredArgsConstructor
 @Slf4j
 @Service
@@ -135,16 +153,18 @@ public class SocketDataService {
         입장 요청에 따른 Redis에 유저 정보 업데이트
         방 ID를 기준으로 다른 유저가 입장중이라면 대기하도록 락
     */
-    public Room addUserToRedis(String roomId, String enteredUserId, UserDetails enteredUser) {
+    public Room addUserToRedis(String roomId, String enteredUserId, UserDto enteredUser) {
         RoomCache roomCache;
         RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
         try {
             roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
 
-            Optional<RoomCache> opRoomCache = roomCacheRepository.findById(roomId);
             // TODO: UserMap 두번 select 하게됨 로직 고민 필요
-            roomCache = opRoomCache.orElseGet(() -> Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash());
-            roomCache.addUser(enteredUserId, UserDto.of(enteredUser));
+            roomCache = roomCacheRepository.findById(roomId)
+                    .orElseGet(() ->
+                            Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash()
+                    );
+            roomCache.addUser(enteredUserId, enteredUser);
             roomCacheRepository.save(roomCache);
             return Room.of(roomCache);
         } catch (InterruptedException e) {
@@ -156,6 +176,10 @@ public class SocketDataService {
         return null;
     }
 
+    public void addUserSessionToRedis(String userId, String sessionId) {
+        HashOperations<String, String, String> hash = redisTemplate.opsForHash();
+        hash.put(REDIS_LIBRARY_SESSION_KEY, userId, sessionId);
+    }
     /*
         유저의 이동에 따른 Redis의 유저 정보 업데이트
         입장, 퇴장과 다르게 본인의 데이터만 수정하므로 분산 락 처리는 하지 않았습니다.

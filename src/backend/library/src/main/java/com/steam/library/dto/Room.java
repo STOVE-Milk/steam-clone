@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentMap;
 
 @Builder
 @Data
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Room {
     private Integer roomId;
     private Integer userCount;

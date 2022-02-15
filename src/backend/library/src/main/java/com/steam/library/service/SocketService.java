@@ -2,6 +2,7 @@ package com.steam.library.service;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.Room;
+import com.steam.library.dto.UserDto;
 import com.steam.library.global.common.Behavior;
 import com.steam.library.global.common.UserDetails;
 import com.steam.library.dto.messages.*;
@@ -119,8 +120,8 @@ public class SocketService {
         String sessionId = session.getId();
 
         /*
-           한 유저가 재접속, 다른방 입장, 새 창으로 접속 시 기존 데이터가 남아있는 문제가 발생할 수 있습니다.
-           유저-세션 정보를 유지해놓고, 유저 데이터가 남아있는 경우 세션 종료를 시킵니다.
+           한 유저가 새 창으로 재접속, 다른방 입장 시 기존 데이터가 남아있는 문제가 발생할 수 있습니다.
+           유저-세션 정보를 유지해놓고, 기존 유저 세션이 남아있는 경우 기존 세션을 종료 시킵니다.
 
            TODO: 유저가 다른 서버에 등록되어 있을 경우 처리 필요.
         */
@@ -157,7 +158,7 @@ public class SocketService {
         // sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
 
         // Redis 갱신 & 데이터 동기화
-        Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, userDetails);
+        Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, UserDto.of(userDetails));
         SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(cachedRoom);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
 
@@ -337,7 +338,7 @@ public class SocketService {
     public synchronized boolean sendMessageToRoom(String roomId, String myId, TextMessage message) throws NullPointerException{
         if(lobby.containsKey(roomId)) {
             final Map<String, WebSocketSession> sessions = lobby.get(roomId).getSessions();
-            sessions.forEach( (sessionId, session) -> {
+            sessions.forEach( (userId, session) -> {
                 try {
                     if (!userData.get(session.getId()).getIdx().toString().equals(myId)) {
                         synchronized (session) {
@@ -363,7 +364,7 @@ public class SocketService {
     public synchronized boolean sendMessageToAll(String roomId, TextMessage message) throws NullPointerException{
         if(lobby.containsKey(roomId)) {
             final Map<String, WebSocketSession> sessions = lobby.get(roomId).getSessions();
-            sessions.forEach( (sessionId, session) -> {
+            sessions.forEach( (userId, session) -> {
                 try {
                     synchronized (session) {
                         if(session != null && session.isOpen())
