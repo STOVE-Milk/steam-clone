@@ -6,6 +6,8 @@ import useWindowSize from 'util/Hooks/useWindowDimensions';
 
 import EachGame from 'components/organisms/EachGame';
 import { commandType } from 'pages/library';
+import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
+import { parseToken } from 'util/parseToken';
 
 const absoluteVal = 500;
 
@@ -25,7 +27,6 @@ const StageStyled = styled.div`
 interface IMapProps {
   installedGame: any;
   resetSelect: () => void;
-  sendData: (command: number, data: any) => void;
 }
 interface IMoveProps {
   [index: string]: number;
@@ -39,7 +40,7 @@ const moveType: IMoveProps = {
 };
 
 const Map = (props: IMapProps) => {
-  const { installedGame, resetSelect, sendData } = props;
+  const { installedGame, resetSelect } = props;
 
   const windowSize = useWindowSize();
   const width = windowSize.width;
@@ -58,6 +59,71 @@ const Map = (props: IMapProps) => {
   const shapeRef = React.useRef(null);
 
   const delta = 50;
+
+  // 웹소켓 코드 시작
+  const token = getItemFromLocalStorage('accessToken');
+
+  const wsUri = `${process.env.NEXT_PUBLIC_BASE_URL_WS}`;
+
+  let websocket: any;
+  let output;
+  let map;
+  let textID: any;
+
+  function onOpen(evt: any) {
+    console.log('Connected to Endpoint!');
+  }
+
+  function onMessage(evt: any) {
+    console.log(evt.data);
+    //updateMap(JSON.parse(evt.data))
+  }
+
+  function onError(evt: any) {
+    console.log('ERROR: ' + evt.data);
+  }
+  function disconnect() {
+    if (!websocket) websocket.close();
+  }
+
+  function send_message() {
+    var message = textID.value;
+    console.log('Message Sent: ' + message);
+    websocket.send(message);
+  }
+
+  function sendData(command: number, data: any) {
+    console.log('SEND DATA', data);
+    websocket.send(command + JSON.stringify(data));
+  }
+
+  function connect() {
+    if (!websocket) {
+      websocket = new WebSocket(wsUri);
+      websocket.onopen = function (evt: any) {
+        onOpen(evt);
+        console.log('서버와 웹 소켓 연결됨');
+        let roomId = '1'; //테스트를 위해 1로 고정
+        let access = {
+          room_id: roomId, //누구의 library에 들어가는지
+          authorization: token, //내가 누군지
+        };
+        console.log('websocket=======', websocket);
+        const initData = sendData(commandType.INIT, access);
+        console.log(initData);
+      };
+      websocket.onmessage = function (evt: any) {
+        onMessage(evt);
+      };
+      websocket.onerror = function (evt: any) {
+        onError(evt);
+      };
+    }
+  }
+  useEffect(() => {
+    connect();
+  }, []);
+  //끝
 
   const focusRef = () => {
     focus();

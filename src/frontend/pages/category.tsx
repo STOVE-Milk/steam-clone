@@ -13,7 +13,7 @@ import CategoryList from 'components/molecules/CategoryList';
 import GameInfo from 'components/organisms/GameInfo';
 
 const Category: NextPage<IState> = () => {
-  const { userInfo } = useSelector((state: IState) => state.user);
+  const { userInfo } = useSelector((state: IState) => state.user); //유저 정보
 
   //현재 선택된 카테고리를 체크하기 위한 옵션 -> 초기값은 ALL
   const [curSelectedCategory, setCurSelectedCategory] = useState('ALL');

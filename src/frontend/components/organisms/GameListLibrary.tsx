@@ -34,11 +34,11 @@ const EachGameInfoBox = styled(FilledButton)`
 
 interface IGameListLibararyProps {
   onSelect: (e: any) => void;
-  sendData: (command: number, data: any) => void;
 }
 
 export const GameListLibrary = (props: IGameListLibararyProps) => {
-  const { userData } = useSelector((state: IState) => state.game);
+  const { userInfo } = useSelector((state: IState) => state.user);
+  const { userData } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)
   const [gamesByIdList, setGamesByIdList] = useState([] as gameInfo[]);
   // const [purchaseList, setPurchaseList] = useState([]);
   const { onSelect } = props;

@@ -3,6 +3,6 @@ export const initalUserInfo = {
   exp: 1644223290,
   iat: 1644219690,
   idx: 46,
-  nickname: '[TEST]yanghakim',
+  nickname: '',
   role: 1,
 };
