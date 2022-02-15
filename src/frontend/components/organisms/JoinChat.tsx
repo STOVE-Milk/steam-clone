@@ -20,6 +20,7 @@ interface IJoinChatProps {
 
 export default function JoinChat(props: IJoinChatProps) {
   const [selectFriends, setSelectFriends] = useState<number[]>([]); // 채팅방 생성 시 선택한 친구들
+  const [roomName, setRoomName] = useState('');
 
   useEffect(() => {}, [selectFriends]);
 
@@ -31,6 +32,10 @@ export default function JoinChat(props: IJoinChatProps) {
       //선택 추가
       setSelectFriends((friends) => friends.concat(id));
     }
+  };
+
+  const onChange = (e: any) => {
+    setRoomName(e.target.value);
   };
 
   return (
@@ -51,6 +56,7 @@ export default function JoinChat(props: IJoinChatProps) {
             );
           })}
         </FriendList>
+        <RoomNameInput value={roomName} onChange={(e) => onChange(e)}></RoomNameInput>
       </Content>
       <FilledButton onClick={() => props.onSubmit(selectFriends)} types="primary">
         완료
@@ -86,4 +92,10 @@ const FriendList = styled.div`
 
 const FriendItem = styled(FriendBox)`
   margin: 1rem 0;
+`;
+
+const RoomNameInput = styled.input`
+  border: none;
+  border-bottom: 1px solid white;
+  padding: 0.1rem;
 `;

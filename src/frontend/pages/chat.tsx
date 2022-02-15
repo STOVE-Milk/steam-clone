@@ -70,6 +70,7 @@ const Chat: NextPage = () => {
   // 소켓 통신 시 임시로 사용하는 토큰
   const token =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHgiOjE0LCJuaWNrbmFtZSI6Im5pY2sxNCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiIsImlhdCI6MTY0NDEzNzUyOCwiZXhwIjoxNjQ0MTQxMTI4fQ.rgF0cR0dhqLOY3yhDuYPHJss4exAeTIfw2H1yAKf_78';
+  const userId = 14;
 
   useEffect(() => {
     if (!ws.current) {
@@ -91,9 +92,8 @@ const Chat: NextPage = () => {
               console.log('room-get', serverMessage.data);
               serverMessage.data.forEach((room: IRoom) => {
                 // room
-                
-              })
-              
+                setRooms((rooms) => rooms.concat(room));
+              });
               break;
             case 'room-joined': // 채팅방 생성
               console.log('room-joined', serverMessage.target);
@@ -163,13 +163,15 @@ const Chat: NextPage = () => {
         }),
       );
     } else {
-      //user id: 14
+      let roomName = `publicRoom7-${userId}`;
+      selectFriends.forEach((friend) => {
+        roomName += `-${friend.toString()}`;
+      });
+
       ws.current?.send(
         JSON.stringify({
           action: 'join-room-public',
-          message: `publicRoom3-14-${selectFriends.map((friend) => {
-            return `-${friend}`;
-          })}`.toString(),
+          message: roomName,
         }),
       );
     }
