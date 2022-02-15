@@ -175,11 +175,11 @@ public class SocketDataService {
 
         return null;
     }
-
-    public void addUserSessionToRedis(String userId, String sessionId) {
-        HashOperations<String, String, String> hash = redisTemplate.opsForHash();
-        hash.put(REDIS_LIBRARY_SESSION_KEY, userId, sessionId);
-    }
+//
+//    public void addUserSessionToRedis(String userId, String sessionId) {
+//        HashOperations<String, String, String> hash = redisTemplate.opsForHash();
+//        hash.put(REDIS_LIBRARY_SESSION_KEY, userId, sessionId);
+//    }
     /*
         유저의 이동에 따른 Redis의 유저 정보 업데이트
         입장, 퇴장과 다르게 본인의 데이터만 수정하므로 분산 락 처리는 하지 않았습니다.

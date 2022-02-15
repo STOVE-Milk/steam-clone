@@ -125,16 +125,16 @@ public class SocketService {
 
            TODO: 유저가 다른 서버에 등록되어 있을 경우 처리 필요.
         */
-        if(user_session.containsKey(userId)) {
-            String preSessionId = user_session.get(userId);
-            String preRoomId = session_room.get(preSessionId);
-            WebSocketSession preSession = lobby.get(preRoomId).getSessionBySessionId(userId);
-            log.info("이전 세션, 방: " + preSessionId + "|" + preRoomId + "|" + (preSession == null));
-            if(preSession != null) {
-                sendErrorMessage(preSession, ErrorCode.CONNECT_TO_OTHER_ROOM);
-                closeConnection(preSession);
-            }
-        }
+//        if(user_session.containsKey(userId)) {
+//            String preSessionId = user_session.get(userId);
+//            String preRoomId = session_room.get(preSessionId);
+//            WebSocketSession preSession = lobby.get(preRoomId).getSessionBySessionId(userId);
+//            log.info("이전 세션, 방: " + preSessionId + "|" + preRoomId + "|" + (preSession == null));
+//            if(preSession != null) {
+//                sendErrorMessage(preSession, ErrorCode.CONNECT_TO_OTHER_ROOM);
+//                closeConnection(preSession);
+//            }
+//        }
 
         // 방 생성
         Room room;
