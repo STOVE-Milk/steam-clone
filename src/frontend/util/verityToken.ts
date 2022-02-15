@@ -1,5 +1,3 @@
-// import { useRouter } from 'next/router';
-
 import { parseToken } from 'util/parseToken';
 import { reIssueTokenAPI } from 'api/auth/api';
 
@@ -16,7 +14,7 @@ export const verifyToken = async () => {
 
     //refreshToken이 만료되었다면 로그인 페이지로 이동
     if (refreshTokenTime < Date.now()) {
-      // router.push('/signin');
+      window.location.href = '/signin';
     }
 
     // //accessToken이 만료되었다면 accessToken 재발급하여 다시 저장
