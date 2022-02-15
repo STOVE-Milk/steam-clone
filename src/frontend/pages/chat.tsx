@@ -71,6 +71,7 @@ const Chat: NextPage = () => {
   const token =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHgiOjE0LCJuaWNrbmFtZSI6Im5pY2sxNCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiIsImlhdCI6MTY0NDEzNzUyOCwiZXhwIjoxNjQ0MTQxMTI4fQ.rgF0cR0dhqLOY3yhDuYPHJss4exAeTIfw2H1yAKf_78';
   const userId = 14;
+  const nickname = 'nick14';
 
   useEffect(() => {
     if (!ws.current) {
@@ -125,7 +126,7 @@ const Chat: NextPage = () => {
     console.log(message, logs);
   }, [logs]);
 
-  const inRoom = (roomId: string) => {
+  const enterRoom = (roomId: string) => {
     // 클->서: 채팅방에 들어감
     ws.current?.send(
       JSON.stringify({
@@ -145,6 +146,16 @@ const Chat: NextPage = () => {
         target: {
           id: curRoom,
         },
+      }),
+    );
+  };
+
+  const leaveRoom = () => {
+    // 클->서: 채팅방을 나감
+    ws.current?.send(
+      JSON.stringify({
+        action: 'leave-room',
+        message: curRoom,
       }),
     );
   };
@@ -194,7 +205,7 @@ const Chat: NextPage = () => {
       <ChatListSection>
         {rooms.map((room) => {
           return (
-            <ChatListBox key={room.id} onClick={() => inRoom(room.id)}>
+            <ChatListBox key={room.id} onClick={() => enterRoom(room.id)}>
               <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
               <ChatListName types={'medium'}>{room.name}</ChatListName>
             </ChatListBox>
@@ -248,6 +259,7 @@ const Chat: NextPage = () => {
             ))}
           </MsgBox>
         </ChatViewBox>
+        <button onClick={leaveRoom}>방 떠나기</button>
         <ChatInputBox>
           <ChatInput
             value={message?.content}
