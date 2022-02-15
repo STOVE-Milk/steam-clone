@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import * as FriendAPI from 'api/friend/api';
+import { verifyToken } from 'util/verifyToken';
 
 import Text from 'components/atoms/Text';
 import { TextTheme } from 'components/atoms/Text';
@@ -91,6 +92,7 @@ const Friend: NextPage = () => {
   };
 
   useEffect(() => {
+    verifyToken();
     getFriends();
   }, []);
 
