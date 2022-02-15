@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import styled, { css } from 'styled-components';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
@@ -23,11 +23,17 @@ export interface IFriend {
 export interface IFriendBoxProps {
   friendInfo: IFriend;
   open: boolean; //아이콘만 보이는지(false), 이름과 온라인 상태까지 보이는지 (true)
+  selected?: boolean; //채팅방 생성 시 친구가 선택되었는지
+  onClick?: (id: number) => void; //채팅방 생성 시 친구 선택
 }
 
 export default function FriendBox(props: IFriendBoxProps) {
   return (
-    <FriendBoxWrapper>
+    <FriendBoxWrapper
+      onClick={() => {
+        props.onClick && props.onClick(props.friendInfo.id);
+      }}
+    >
       {props.friendInfo.profile.image === '' ? (
         <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
       ) : (
@@ -39,7 +45,7 @@ export default function FriendBox(props: IFriendBoxProps) {
   );
 }
 
-const FriendBoxWrapper = styled.div`
+const FriendBoxWrapper = styled.div<{ selected?: boolean }>`
   display: flex;
   height: 50px;
   align-items: center;
@@ -48,6 +54,11 @@ const FriendBoxWrapper = styled.div`
   cursor: pointer;
   padding-left: 10px;
   width: 100%;
+  ${(props) =>
+    props.selected &&
+    css`
+      background: ${props.theme.colors.activeBg};
+    `}
 
   :hover {
     background: ${(props) => props.theme.colors.activeBg};

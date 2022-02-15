@@ -57,7 +57,6 @@ interface Log {
 const Chat: NextPage = () => {
   const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n'); // temp message
   const [showModal, setShowModal] = useState(false); // 채팅방 생성 모달을 띄우는가
-  const [selectFriends, setSelectFriends] = useState<number[]>([]); // 채팅방 생성 시 선택한 친구들
   const [rooms, setRooms] = useState<IRoom[]>([]); // 채팅방 목록
 
   // TODO: 밑에 값들을 props로 가지는 채팅 컴포넌트 organism으로 컴포넌트화 하기
@@ -86,6 +85,7 @@ const Chat: NextPage = () => {
           switch (serverMessage.action) {
             case 'user-join': // 유저 접속
               console.log('user-join', serverMessage.sender);
+              // TODO: 친구 온라인 상태 처리
               break;
             case 'room-get': // 유저 접속 시, 채팅방 목록 가져오기
               console.log('room-get', serverMessage.data);
@@ -147,31 +147,31 @@ const Chat: NextPage = () => {
     );
   };
 
-  const onSubmit = () => {
+  const onSubmit = (selectFriends: number[]) => {
     // 클->서: 채팅방 생성
     // TODO: 개인채팅인지 단체채팅인지 선택하는 뷰랑 로직 추가
     // TODO: 단체채팅일 경우 채팅방 이름 입력 받기
-    ws.current?.send(
-      JSON.stringify({
-        action: 'join-room-private',
-        message: selectFriends[0].toString(),
-      }),
-    );
+    console.log('submit', selectFriends);
 
-    ws.current?.send(
-      JSON.stringify({
-        action: 'join-room-public',
-        message: `publicRoom${selectFriends.map((friend) => {
-          return `-${friend}`;
-        })}`.toString(),
-      }),
-    );
-  };
+    if (selectFriends.length === 1) {
+      ws.current?.send(
+        JSON.stringify({
+          action: 'join-room-private',
+          message: selectFriends[0].toString(),
+        }),
+      );
+    } else {
+      ws.current?.send(
+        JSON.stringify({
+          action: 'join-room-public',
+          message: `publicRoom${selectFriends.map((friend) => {
+            return `-${friend}`;
+          })}`.toString(),
+        }),
+      );
+    }
 
-  const onSelect = (id: number) => {
-    let array = selectFriends;
-    array.push(id);
-    setSelectFriends(array);
+    setShowModal(false);
   };
 
   const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -200,11 +200,31 @@ const Chat: NextPage = () => {
           {/* TODO: 실제 친구 불러오기 */}
           <JoinChat
             friends={[
-              { name: 'user1', id: 1 },
-              { name: 'user2', id: 2 },
-              { name: 'user3', id: 3 },
+              {
+                id: 59,
+                nickname: 'algorithm',
+                profile: {
+                  image: '',
+                  description: '',
+                },
+              },
+              {
+                id: 54,
+                nickname: 'lococo',
+                profile: {
+                  image: '',
+                  description: '',
+                },
+              },
+              {
+                id: 49,
+                nickname: 'minjyo',
+                profile: {
+                  image: '',
+                  description: '',
+                },
+              },
             ]}
-            onSelect={onSelect}
             onSubmit={onSubmit}
           ></JoinChat>
         </Modal>
