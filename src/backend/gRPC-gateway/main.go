@@ -78,7 +78,7 @@ func main() {
 	registerServiceHandlers(ctx, mux)
 
 	log.Printf("start HTTP server on %s port", gRPCGatewayPortNumber)
-	if err := http.ListenAndServe(":"+gRPCGatewayPortNumber, allowCORS(mux)); err != nil {
+	if err := http.ListenAndServe(":"+gRPCGatewayPortNumber, mux); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 }
