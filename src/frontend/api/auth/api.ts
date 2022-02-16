@@ -26,7 +26,6 @@ export async function doSignInAPI(param: IDoSignInReqType) {
   const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_AUTH}/auth/signin`, param);
   return response.data;
 }
-
 export async function reIssueTokenAPI(param: reIssueTokenReqType) {
   const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_AUTH}/auth/token`, param);
   return response.data;
