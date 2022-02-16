@@ -23,7 +23,6 @@ import (
 // 현재는 초대가 방을 생성할 때 밖에 되지 않습니다. 이후 방이 만들어 진 후에도 초대가 가능하도록 기능을 추가할 예정입니다.
 
 const (
-	//
 	writeWait = 10 * time.Second
 
 	// 응답 대기 시간
@@ -107,7 +106,6 @@ func (client *Client) writePump() {
 	for {
 		select {
 		case message, ok := <-client.send:
-			fmt.Println("서버 : " + string(message))
 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The WsServer closed the channel.
@@ -157,12 +155,17 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	// 토큰에서 유저의 정보를 가져옴
 	loginUser, _ := models.ExtractMetadata(r)
-	for _, u := range wsServer.users {
-		if u.GetName() == loginUser.Nickname {
-			user = u
-			break
-		}
+	user = &Client{
+		ID:   string(loginUser.UserId),
+		Name: loginUser.Nickname,
 	}
+	wsServer.setUser(user)
+	// for _, u := range wsServer.users {
+	// 	if u.GetName() == loginUser.Nickname {
+	// 		user = u
+	// 		break
+	// 	}
+	// }
 	client := newClient(conn, wsServer, user)
 
 	go client.writePump()
@@ -240,10 +243,6 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	target := client.wsServer.findUserByID(message.Message)
 
-	if target == nil {
-		return
-	}
-
 	// 1:1 대화에 참여하는 유저 아이디를 오름차순 소팅하여 룸 이름으로 사용.
 	userA, _ := strconv.Atoi(message.Message)
 	userB, _ := strconv.Atoi(client.ID)
@@ -254,6 +253,12 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 
 	// Join room
 	joinedRoom := client.joinRoom(roomName, target, []string{client.ID, message.Message})
+
+	// 접속 중인 회원이 아니라면 방 까지만 만들고 상대방에게 방을 보이게 할 필요는 없다.
+	if target == nil {
+		return
+	}
+
 	// Invite target user
 	if joinedRoom != nil {
 		client.invitePrivateRoom(target, joinedRoom)

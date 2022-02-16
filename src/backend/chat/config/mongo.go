@@ -34,7 +34,8 @@ func makeMongoConfig() string {
 
 func MongoConn() *mongo.Client {
 
-	clientOptions := options.Client().ApplyURI("mongodb://milk:milk@fortice.iptime.org:27017/chat")
+	// clientOptions := options.Client().ApplyURI("mongodb://milk:milk@fortice.iptime.org:27017/chat")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	conn, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)

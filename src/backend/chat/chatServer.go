@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 
@@ -26,7 +27,7 @@ type WsServer struct {
 	register        chan *Client     // 클라이언트 등록
 	unregister      chan *Client     // 클라이언트 제거
 	rooms           map[*Room]bool   // 룸 저장
-	users           []models.User    // db에 등록된 유저 읽어 오기
+	users           map[string]models.User
 	roomMRepository models.RoomRepository
 	userMRepository models.UserMRepository
 	userRepository  models.UserRepository
@@ -38,11 +39,11 @@ func NewWebsocketServer(roomMRepository models.RoomRepository, userMRepository m
 		register:        make(chan *Client),
 		unregister:      make(chan *Client),
 		rooms:           make(map[*Room]bool),
+		users:           make(map[string]models.User),
 		roomMRepository: roomMRepository,
 		userMRepository: userMRepository,
 		userRepository:  userRepository,
 	}
-	wsServer.users = userRepository.GetAllUsers()
 
 	return wsServer
 }
@@ -56,7 +57,6 @@ func (server *WsServer) Run() {
 
 		case client := <-server.unregister:
 			server.unregisterClient(client)
-
 		}
 	}
 }
@@ -151,6 +151,7 @@ func (server *WsServer) listenPubSubChannel() {
 		case JoinRoomPublicAction:
 			server.handleUserJoinPublic(message)
 		}
+		fmt.Println("서버 : " + string(message.encode()))
 
 	}
 }
@@ -173,11 +174,8 @@ func (server *WsServer) handleUserJoinPrivate(message Message) {
 
 func (server *WsServer) findUserByID(ID string) models.User {
 	var foundUser models.User
-	for _, client := range server.users {
-		if string(client.GetId()) == ID {
-			foundUser = client
-			break
-		}
+	if _, ok := server.users[ID]; ok {
+		foundUser = server.users[ID]
 	}
 
 	return foundUser
@@ -187,7 +185,11 @@ func (server *WsServer) handleUserJoined(message Message) {
 	friends := server.getUserFriends(message.Sender.GetId())
 	clients := server.friendsToClient(friends)
 	message.Data = nil
-	server.broadcastToClients(message.encode(), clients)
+	server.users[message.Sender.GetId()] = message.Sender
+	for k, v := range server.users {
+		fmt.Println("key : " + k + "ID : " + v.GetId() + v.GetName())
+	}
+	server.noticeToFriends(message.encode(), clients)
 }
 
 func (server *WsServer) handleUserLeft(message Message) {
@@ -195,7 +197,9 @@ func (server *WsServer) handleUserLeft(message Message) {
 	friends := server.getUserFriends(message.Sender.GetId())
 	clients := server.friendsToClient(friends)
 	message.Data = nil
-	server.broadcastToClients(message.encode(), clients)
+	server.users[message.Sender.GetId()] = message.Sender
+	delete(server.users, message.Sender.GetId())
+	server.noticeToFriends(message.encode(), clients)
 }
 
 //해당 클라이언트에게 접속 중인 클라이언트들의 정보를 줌.
@@ -211,11 +215,10 @@ func (server *WsServer) listOnlineClients(client *Client) {
 
 // 서버에 등록된 클라이언트들에게 메세지를 전송.
 // 클라이언트가 웹 소켓을 연결할 때나 연결을 끊을 때.
-func (server *WsServer) broadcastToClients(message []byte, friends []*Client) {
+func (server *WsServer) noticeToFriends(message []byte, friends []*Client) {
 	for _, client := range friends {
 		if _, ok := server.clients[client]; ok {
 			client.send <- message
-
 		}
 	}
 }
@@ -331,4 +334,7 @@ func (server *WsServer) friendsToClient(friends []models.User) []*Client {
 		clients = append(clients, client)
 	}
 	return clients
+}
+func (server *WsServer) setUser(user models.User) {
+	server.users[user.GetId()] = user
 }
