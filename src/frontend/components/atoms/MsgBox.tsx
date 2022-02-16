@@ -1,6 +1,5 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { isPropertySignature } from 'typescript';
 
 export interface MsgBoxProps {
   isMine: boolean; //내가 보낸 메세지인지 여부

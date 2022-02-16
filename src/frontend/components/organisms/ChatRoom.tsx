@@ -4,12 +4,11 @@ import styled from 'styled-components';
 
 import MsgBox from 'components/atoms/MsgBox';
 
-interface Log {
+export interface Log {
   //채팅방 메세지 객체 타입
   sender_id: string;
-  sender_nickname: string[];
+  sender_nickname: string;
   content: string;
-  send_time: string;
 }
 
 export interface IChatRoomProps {
@@ -20,16 +19,15 @@ export interface IChatRoomProps {
 export default function ChatRoom(props: IChatRoomProps) {
   return (
     <ChatViewBox>
-      <MsgBox isMine={true}>
-        {props.logs.map((text, key) => (
-          <p key={key}> {text} </p>
-        ))}
-      </MsgBox>
-      <MsgBox isMine={false}>
-        {props.logs.map((text, key) => (
-          <p key={key}> {text} </p>
-        ))}
-      </MsgBox>
+      {props.logs.map((log, key) => {
+        return (
+          <MsgBox key={key} isMine={true} name={log.sender_nickname}>
+            {log.content.split('\n').map((text, key) => (
+              <p key={key}> {text} </p>
+            ))}
+          </MsgBox>
+        );
+      })}
     </ChatViewBox>
   );
 }

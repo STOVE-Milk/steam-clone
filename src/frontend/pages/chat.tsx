@@ -8,25 +8,9 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
-import MsgBox from 'components/atoms/MsgBox';
 import Modal from 'components/atoms/Modal';
 import JoinChat from 'components/organisms/JoinChat';
-import user from 'modules/user';
-
-interface IServerMessage {
-  //서버에서 받는 메세지 객체 타입
-  action: string;
-  message: string;
-  target: null | IRoom;
-  sender: null | IUser;
-  data: null | IRoom | IRoomIn;
-}
-
-interface IUser {
-  //채팅 유저 객체 타입
-  id: string;
-  name: string;
-}
+import ChatRoom, { Log } from 'components/organisms/ChatRoom';
 
 interface IRoom {
   //채팅 방 객체 타입
@@ -35,25 +19,6 @@ interface IRoom {
   private: boolean; //개인 채팅방이면 true, 단체 채팅방이면 false
 }
 
-interface IRoomIn {
-  //채팅 방안 정보 객체 타입
-  members: string[]; //채팅방 멤버들
-  log: Log[]; //채팅방 메세지들
-}
-
-interface Log {
-  //채팅방 메세지 객체 타입
-  sender_id: string;
-  sender_nickname: string[];
-  content: string;
-}
-
-// interface Message {
-//   id: string;
-//   name: string;
-//   message: string;
-// }
-
 const Chat: NextPage = () => {
   const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n'); // temp message
   const [showModal, setShowModal] = useState(false); // 채팅방 생성 모달을 띄우는가
@@ -61,8 +26,8 @@ const Chat: NextPage = () => {
 
   // TODO: 밑에 값들을 props로 가지는 채팅 컴포넌트 organism으로 컴포넌트화 하기
   const [curRoom, setCurRoom] = useState(''); // 현재 채팅방 이름
-  const [members, setMembers] = useState<string[]>(); // 채팅방 멤버들
-  const [logs, setLogs] = useState<Log[]>(); // 채팅방 메세지들
+  const [members, setMembers] = useState<string[]>([]); // 채팅방 멤버들
+  const [logs, setLogs] = useState<Log[]>([]); // 채팅방 메세지들
   const [message, setMessage] = useState({} as Log); //현재 보낼 메세지, 받을 메세지
 
   let ws = useRef<WebSocket>(); // 웹 소켓 사용
@@ -92,7 +57,6 @@ const Chat: NextPage = () => {
             case 'room-get': // 유저 접속 시, 채팅방 목록 가져오기
               console.log('room-get', serverMessage.data);
               serverMessage.data.forEach((room: IRoom) => {
-                // room
                 setRooms((rooms) => rooms.concat(room));
               });
               break;
@@ -103,7 +67,7 @@ const Chat: NextPage = () => {
             case 'room-view': // 채팅방 접속 시, 채팅방에 관한 정보 가져오기
               console.log('room-view', serverMessage.data);
               setMembers(serverMessage.data.members);
-              setLogs(serverMessage.data.log);
+              setLogs(serverMessage.data.log || []);
               break;
             case 'send-message': // 메세지를 받음
               console.log('send-message', serverMessage);
@@ -124,7 +88,7 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     console.log(message, logs);
-  }, [logs]);
+  }, [logs, message]);
 
   const enterRoom = (roomId: string) => {
     // 클->서: 채팅방에 들어감
@@ -247,17 +211,7 @@ const Chat: NextPage = () => {
       </ChatListSection>
       <ChatRoomSection>
         <ChatViewBox>
-          {/* TODO: 채팅 컴포넌트 oragnism 만들어서 빼기. msg가 Logs로 대체될 예정 */}
-          <MsgBox isMine={true}>
-            {msg.map((text, key) => (
-              <p key={key}> {text} </p>
-            ))}
-          </MsgBox>
-          <MsgBox isMine={false}>
-            {msg.map((text, key) => (
-              <p key={key}> {text} </p>
-            ))}
-          </MsgBox>
+          <ChatRoom members={members} logs={logs}></ChatRoom>{' '}
         </ChatViewBox>
         <button onClick={leaveRoom}>방 떠나기</button>
         <ChatInputBox>
