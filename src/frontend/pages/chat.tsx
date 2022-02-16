@@ -165,7 +165,7 @@ const Chat: NextPage = () => {
   return (
     <ChatWrapper>
       <ChatListSection>
-        <CreateChatRoomBtn types={'active'} onClick={() => setShowModal(true)}>
+        <CreateChatRoomBtn types={'primary'} onClick={() => setShowModal(true)}>
           채팅방 생성
         </CreateChatRoomBtn>
         {rooms.map((room) => {
@@ -219,9 +219,8 @@ const Chat: NextPage = () => {
       </ChatListSection>
       <ChatRoomSection>
         <ChatViewBox>
-          <ChatRoom members={members} logs={logs}></ChatRoom>{' '}
+          <ChatRoom userId={userId} members={members} logs={logs} leaveRoom={leaveRoom}></ChatRoom>
         </ChatViewBox>
-        <button onClick={leaveRoom}>방 떠나기</button>
         <ChatInputBox>
           <ChatInput
             value={message?.content}
@@ -262,7 +261,7 @@ const CreateChatRoomBtn = styled(FilledButton)`
 const ChatListBox = styled.div`
   width: 100%;
   min-height: 5rem;
-  border-top: 1px solid ${(props) => props.theme.colors.divider};
+  border-bottom: 1px solid ${(props) => props.theme.colors.divider};
   display: flex;
   align-items: center;
   padding: 0 1rem;
@@ -279,14 +278,7 @@ const ChatRoomSection = styled.div`
 `;
 
 const ChatViewBox = styled.div`
-  display: flex;
-  flex-direction: column;
   flex: 1;
-  padding: 1rem;
-  overflow-y: scroll;
-  ::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const ChatInputBox = styled.div`
