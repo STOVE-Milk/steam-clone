@@ -21,6 +21,7 @@ export const verifyToken = async () => {
     //accessToken이 만료되었다면 accessToken 재발급하여 다시 저장
     else if (accessTokenTime < Date.now()) {
       const newAccessToken = (await reIssueTokenAPI({ accessToken, refreshToken, isUpdated: false })).data.accessToken;
+      console.log('newAccessToken', newAccessToken);
       localStorage.setItem('accessToken', newAccessToken);
     }
   }

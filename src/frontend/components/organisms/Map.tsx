@@ -5,9 +5,10 @@ import styled from 'styled-components';
 import useWindowSize from 'util/Hooks/useWindowDimensions';
 
 import EachGame from 'components/organisms/EachGame';
-import { commandType } from 'pages/library';
+import { commandType } from 'pages/library/[id]';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import { parseToken } from 'util/parseToken';
+import UserObject from './UserObject';
 
 const absoluteVal = 500;
 
@@ -46,13 +47,13 @@ const Map = (props: IMapProps) => {
   const width = windowSize.width;
   const height = windowSize.height;
 
+  // const [userOffset, setUserOffset] = useState({x:250, y:250})
   const [userX, setUserX] = useState(250); //지금은 항상 가운데 나오게 설정된듯
   const [userY, setUserY] = useState(250);
   //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
 
   console.log('height', height);
-  const [game1X, setGame1X] = useState(0);
-  const [game1Y, setGame1Y] = useState(0);
+  const [gameOffset, setGameOffset] = useState({ x: 0, y: 0 });
 
   // const [game1Y, setGame1Y] = useState(height - (height - 400));
 
@@ -103,7 +104,7 @@ const Map = (props: IMapProps) => {
       websocket.onopen = function (evt: any) {
         onOpen(evt);
         console.log('서버와 웹 소켓 연결됨');
-        let roomId = '1'; //테스트를 위해 1로 고정
+        let roomId = '1'; //테스트를 위해 1로 고정 -> navbar 친구기능 추가되면 옮기면 됨
         let access = {
           room_id: roomId, //누구의 library에 들어가는지
           authorization: token, //내가 누군지
@@ -157,7 +158,7 @@ const Map = (props: IMapProps) => {
       });
     }
     //업데이트된 위치를 보내야하는데 또 setState 비동기 문제 생길듯
-
+    //방 끝으로 가면 direction으로 요청을 보내면 안됨
     sendData(commandType.MOVE, { direction: moveType[event.key] });
   };
 
@@ -183,14 +184,15 @@ const Map = (props: IMapProps) => {
         onClick={focusRef}
       >
         <Layer>
-          <Circle x={userX} y={userY} radius={50} width={absoluteVal / 5} fill="#989899" />
+          <Circle x={userX} y={userY} radius={50} width={absoluteVal / 10} fill="#989899" />
+          {/* <UserObject x={userX} y={userY} width={absoluteVal / 5} /> */}
           {installedGame ? (
             <EachGame
               onChange={(e) => console.log(e)}
               resetSelect={resetSelect}
               installedGame={installedGame}
-              position={{ x: game1X, y: game1Y }}
-              // setGamePosFunc={{ setGame1X, setGame1Y }}
+              gameOffset={gameOffset}
+              setGameOffset={setGameOffset}
             />
           ) : null}
         </Layer>

@@ -54,7 +54,7 @@ export default function NavBar() {
       <SectionTitle>Menus</SectionTitle>
       <MenuSection>
         <MenuBox open={open} page="category" icon={<FontAwesomeIcon icon={faBook} inverse />} name={'카테고리'} />
-        <MenuBox open={open} page="library" icon={<FontAwesomeIcon icon={faGamepad} inverse />} name={'라이브러리'} />
+        <MenuBox open={open} page="library/1" icon={<FontAwesomeIcon icon={faGamepad} inverse />} name={'라이브러리'} />
         <MenuBox open={open} page="wishlist" icon={<FontAwesomeIcon icon={faHeart} inverse />} name={'위시리스트'} />
         <MenuBox open={open} page="cart" icon={<FontAwesomeIcon icon={faShoppingCart} inverse />} name={'장바구니'} />
         <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} inverse />} name={'채팅'} />
