@@ -56,7 +56,12 @@ export default function JoinChat(props: IJoinChatProps) {
             );
           })}
         </FriendList>
-        <RoomNameInput value={roomName} onChange={(e) => onChange(e)}></RoomNameInput>
+        <RoomNameInput
+          placeholder={selectFriends.length < 2 ? '단체 채팅방만 이름 입력이 가능합니다.' : '채팅방 이름을 입력하세요'}
+          value={roomName}
+          onChange={(e) => onChange(e)}
+          disabled={selectFriends.length < 2}
+        ></RoomNameInput>
       </Content>
       <SubmitBtn onClick={() => props.onSubmit(selectFriends)} types="primary">
         완료
@@ -99,9 +104,10 @@ const FriendItem = styled(FriendBox)`
 const RoomNameInput = styled.input`
   border: none;
   border-bottom: 1px solid white;
-  border-radius: 7px;
   padding: 1rem;
   margin: 1rem 0 2rem 0;
+  background: transparent;
+  color: ${(props) => props.theme.colors.primaryText};
 `;
 
 const SubmitBtn = styled(FilledButton)`
