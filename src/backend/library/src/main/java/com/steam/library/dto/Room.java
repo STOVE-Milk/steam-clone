@@ -21,7 +21,9 @@ public class Room {
     private Integer roomId;
     private Integer userCount;
     @JsonIgnore
+    //sessionId: session
     private ConcurrentMap<String, WebSocketSession> sessions;
+    //userId: userDto
     private Map<String, UserDto> users;
     private MapDto map;
 
@@ -32,18 +34,20 @@ public class Room {
                 this.users.put(userId, UserDto.of(userDetails));
                 this.userCount++;
             }
-            this.sessions.put(userId, session);
+            this.sessions.put(session.getId(), session);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
-    public synchronized Integer leave(String userId) {
+    public synchronized Integer leave(String userId, String sessionId) {
         try {
-            this.userCount--;
-            this.users.remove(userId);
-            this.sessions.remove(userId);
+            if(users.containsKey(userId)) {
+                this.userCount--;
+                this.users.remove(userId);
+                this.sessions.remove(sessionId);
+            }
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
@@ -64,8 +68,8 @@ public class Room {
         this.map = map;
     }
 
-    public WebSocketSession getSessionBySessionId(String userId) {
-        return sessions.get(userId);
+    public WebSocketSession getSessionBySessionId(String sessionId) {
+        return sessions.get(sessionId);
     }
 
     public RoomCache toHash() {

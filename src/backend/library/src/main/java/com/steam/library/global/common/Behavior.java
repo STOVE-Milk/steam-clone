@@ -25,6 +25,8 @@ public enum Behavior {
     MOVE(20),
     // 맵 업데이트 (오브젝트 건설)
     BUILD(40),
+    // 같은 방 중복 연결로 인한 기존 세션 끊기
+    CLOSE_PRE_SESSION(98),
     // 에러
     ERROR(99)
     ;
@@ -47,6 +49,8 @@ public enum Behavior {
                 return MOVE;
             case 40:
                 return BUILD;
+            case 98:
+                return CLOSE_PRE_SESSION;
             case 99:
                 return ERROR;
         }

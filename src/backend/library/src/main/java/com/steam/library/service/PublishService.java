@@ -1,5 +1,6 @@
 package com.steam.library.service;
 
+import com.steam.library.dto.messages.ClosePreConnectionMessage;
 import com.steam.library.dto.messages.EnterUserMessage;
 import com.steam.library.dto.messages.LeaveUserMessage;
 import com.steam.library.dto.messages.MoveUserMessage;
@@ -45,4 +46,10 @@ public class PublishService {
         rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, message);
         return true;
     }
+    public boolean publishClosePreConnection(String roomId, ClosePreConnectionMessage closePreConnectionMessage) {
+        String message = roomId + "|" + Behavior.CLOSE_PRE_SESSION.getValue() + "|" + JsonUtil.toJson(closePreConnectionMessage);
+        log.info(message);
+        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, message);
+        return true;
+    };
 }

@@ -2,15 +2,18 @@ package com.steam.library.service;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.Room;
+import com.steam.library.dto.UserConnection;
 import com.steam.library.dto.UserDto;
 import com.steam.library.entity.Library;
 import com.steam.library.entity.RoomCache;
 import com.steam.library.entity.User;
+import com.steam.library.entity.UserConnectionCache;
 import com.steam.library.global.common.Direction;
 import com.steam.library.global.common.UserDetails;
 import com.steam.library.global.util.JsonUtil;
 import com.steam.library.repository.LibraryRepository;
 import com.steam.library.repository.RoomCacheRepository;
+import com.steam.library.repository.UserConnectionCacheRepository;
 import com.steam.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,11 @@ import java.util.stream.Collectors;
         소켓을 사용하는 서버가 얼마나 소켓을 받을 수 있는지 공부 --> Thread Pool은 어떻게 생기지?
         Thread Pool은 얼마나 생성하고, 어떻게 처리하지? --> 소켓의 연결 방식 설명 추가 공부
         연결이 점유되는 상황인 소켓의 경우 어떻게 처리하지? + 소켓에 NIO는 왜 같이 언급하지 ?
+
+
+        추가 ( 2022-02-16 )
+            Thread가 점유되지 않는다면 ThreadLocal은 어떻게 처리가 될까?
+            참고자료 : https://shanta.tistory.com/3
 
     서버 간 통신 통합, 동시성 처리 -
         상태 관리 서버를 Java Socket(TCP)를 통해 연결하는데, BIO의 문제점 때문에 NIO를 사용하여 개선하면 되겠다.
@@ -64,6 +72,7 @@ public class SocketDataService {
     private static final Integer WAIT_TIME_OF_LOCK = 5;
     private static final Integer EXPIRE_TIME_OF_LOCK = 5;
     private static final String PREFIX_OF_LOCK = "lock_lobby";
+    private static final String PREFIX_OF_CONNECTION_CHECK_LOCK = "lock_connection_check";
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
     /*
@@ -77,6 +86,7 @@ public class SocketDataService {
     private final UserRepository userRepository;
     private final LibraryRepository libraryRepository;
     private final RoomCacheRepository roomCacheRepository;
+    private final UserConnectionCacheRepository userConnectionCacheRepository;
 
     /*
         TODO: 전체 트랜잭션 처리 RedisTemplate.execute() or Transactional or TransactionManager
@@ -147,6 +157,41 @@ public class SocketDataService {
             List<Library> libraries = libraryRepository.findAllByUserIdAndGameIdIn(userId, gameIds);
             return gameIds.size() == libraries.size();
         }
+    }
+
+    public String getPreSessionIdByRoomId(String userId, String roomId) {
+        RLock roomLock = redissonClient.getLock(PREFIX_OF_CONNECTION_CHECK_LOCK + userId);
+        try {
+            roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+            Optional<UserConnectionCache> userConnectionCache = userConnectionCacheRepository.findById(userId);
+            if(userConnectionCache.isEmpty()) {
+                return null;
+            } else {
+                return userConnectionCache.get().getConnections().get(roomId);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            roomLock.unlock();
+        }
+    }
+
+    public boolean addUserConnectionToRedis(String userId, String roomId, String sessionId) {
+        RLock roomLock = redissonClient.getLock(PREFIX_OF_CONNECTION_CHECK_LOCK + userId);
+        try {
+            roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+            UserConnectionCache userConnectionCache = userConnectionCacheRepository.findById(userId)
+                    .orElseGet(() -> UserConnectionCache.createEmptyCacheById(userId));
+            userConnectionCache.getConnections().put(roomId, sessionId);
+            userConnectionCacheRepository.save(userConnectionCache);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            roomLock.unlock();
+        }
+        return true;
     }
 
     /*
@@ -251,6 +296,23 @@ public class SocketDataService {
         }
     }
 
+    public boolean removeUserConnectionToRedis(String userId, String roomId) {
+        RLock roomLock = redissonClient.getLock(PREFIX_OF_CONNECTION_CHECK_LOCK + userId);
+        try {
+            roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
+            UserConnectionCache userConnectionCache = userConnectionCacheRepository.findById(userId)
+                    .orElseGet(() -> UserConnectionCache.createEmptyCacheById(userId));
+            userConnectionCache.getConnections().remove(roomId);
+            userConnectionCacheRepository.save(userConnectionCache);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            roomLock.unlock();
+        }
+        return true;
+    }
+
     public Room getRoomCache(String roomId) {
         Optional<RoomCache> roomCache = roomCacheRepository.findById(roomId);
         if(roomCache.isEmpty())
@@ -292,3 +354,4 @@ public class SocketDataService {
         return true;
     }
 }
+
