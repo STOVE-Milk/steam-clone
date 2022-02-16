@@ -15,7 +15,7 @@ import { select } from 'redux-saga/effects';
 
 interface IJoinChatProps {
   friends: Array<IFriend>;
-  onSubmit: (selectFriends: number[]) => void;
+  onSubmit: (selectFriends: number[], roomName?: string) => void;
 }
 
 export default function JoinChat(props: IJoinChatProps) {
@@ -58,9 +58,9 @@ export default function JoinChat(props: IJoinChatProps) {
         </FriendList>
         <RoomNameInput value={roomName} onChange={(e) => onChange(e)}></RoomNameInput>
       </Content>
-      <FilledButton onClick={() => props.onSubmit(selectFriends)} types="primary">
+      <SubmitBtn onClick={() => props.onSubmit(selectFriends)} types="primary">
         완료
-      </FilledButton>
+      </SubmitBtn>
     </Wrapper>
   );
 }
@@ -87,7 +87,9 @@ const FriendList = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 2rem 0;
+  margin: 1rem 0;
+  border-radius: 10px;
+  border: 1px solid ${(props) => props.theme.colors.divider};
 `;
 
 const FriendItem = styled(FriendBox)`
@@ -97,5 +99,11 @@ const FriendItem = styled(FriendBox)`
 const RoomNameInput = styled.input`
   border: none;
   border-bottom: 1px solid white;
-  padding: 0.1rem;
+  border-radius: 7px;
+  padding: 1rem;
+  margin: 1rem 0 2rem 0;
+`;
+
+const SubmitBtn = styled(FilledButton)`
+  align-self: center;
 `;

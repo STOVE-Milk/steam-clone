@@ -124,7 +124,7 @@ const Chat: NextPage = () => {
     );
   };
 
-  const onSubmit = (selectFriends: number[]) => {
+  const onSubmit = (selectFriends: number[], roomName?: string) => {
     // 클->서: 채팅방 생성
     // TODO: 개인채팅인지 단체채팅인지 선택하는 뷰랑 로직 추가
     // TODO: 단체채팅일 경우 채팅방 이름 입력 받기
@@ -138,15 +138,15 @@ const Chat: NextPage = () => {
         }),
       );
     } else {
-      let roomName = `publicRoom7-${userId}`;
+      let room = `${roomName}-${userId}`;
       selectFriends.forEach((friend) => {
-        roomName += `-${friend.toString()}`;
+        room += `-${friend.toString()}`;
       });
 
       ws.current?.send(
         JSON.stringify({
           action: 'join-room-public',
-          message: roomName,
+          message: room,
         }),
       );
     }
