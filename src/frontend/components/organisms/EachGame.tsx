@@ -45,4 +45,4 @@ const EachGame = (props: IEachGameProps) => {
   };
   return <GameImage />;
 };
-export default EachGame;
+export default React.memo(EachGame);
