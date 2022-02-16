@@ -12,12 +12,15 @@ import (
 )
 
 type mongoConfig struct {
-	mongoHost string
-	mongoPort string
+	mongoHost   string
+	mongoPort   string
+	mongoUser   string
+	mongoPwd    string
+	mongoDbName string
 }
 
 func (cfg mongoConfig) String() string {
-	return fmt.Sprintf("mongodb://%s:%s", cfg.mongoHost, cfg.mongoPort)
+	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s", cfg.mongoUser, cfg.mongoPwd, cfg.mongoHost, cfg.mongoPort, cfg.mongoDbName)
 }
 
 func makeMongoConfig() string {
@@ -26,16 +29,19 @@ func makeMongoConfig() string {
 		log.Panic(err)
 	}
 	cfg := &mongoConfig{
-		mongoHost: os.Getenv("MONGOHOST"),
-		mongoPort: os.Getenv("MONGOPORT"),
+		mongoHost:   os.Getenv("MONGOHOST"),
+		mongoPort:   os.Getenv("MONGOPORT"),
+		mongoUser:   os.Getenv("MONGOUSER"),
+		mongoPwd:    os.Getenv("MONGOPWD"),
+		mongoDbName: os.Getenv("MONGODBNAME"),
 	}
 	return string(cfg.String())
 }
 
 func MongoConn() *mongo.Client {
 
-	// clientOptions := options.Client().ApplyURI("mongodb://milk:milk@fortice.iptime.org:27017/chat")
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://milk:milk@fortice.iptime.org:27017/chat")
+	// clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	conn, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
