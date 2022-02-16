@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import styled from 'styled-components';
 
@@ -36,8 +37,8 @@ const Detail: NextPage<IState> = () => {
   const [reviews, setReviews] = useState([] as IReview[]);
   const [userReview, setUserReview] = useState({ content: '', recommendation: true }); //유저가 작성 중인 리뷰 내용
 
-  // TODO: url query에서 gameId 받아오기
-  const gameId = 1;
+  const router = useRouter();
+  const gameId = Number(router.query.id) || 1;
 
   const getGame = async () => {
     const res = (await GameAPI.getGameAPI(gameId)).data.game;
