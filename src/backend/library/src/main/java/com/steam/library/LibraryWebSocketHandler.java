@@ -39,6 +39,7 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
                 switch (behavior) {
                     case ENTER:
                         EnterRequestMessage enterRequestMessage = JsonUtil.toObject(jsonData, EnterRequestMessage.class);
+                        socketService.checkMultiConnectionToSameRoom(session, enterRequestMessage);
                         isSuccessed = socketService.enter(session, enterRequestMessage);
                     case SYNC:
                         isSuccessed = socketService.synchronizeRoom(session);

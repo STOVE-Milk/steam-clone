@@ -2,6 +2,7 @@ package com.steam.library.service;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.Room;
+import com.steam.library.dto.UserConnection;
 import com.steam.library.dto.UserDto;
 import com.steam.library.global.common.Behavior;
 import com.steam.library.global.common.UserDetails;
@@ -33,8 +34,8 @@ public class SocketService {
         여러 스레드에서 동시에 객체에 접근하다보니 동시성 문제가 발생했고,
         이에 따라 Concurrent 패키지를 이용해 동시성 처리를 했습니다.
     */
-    // userId : sessionId
-    private static final Map<String, String> user_session = new ConcurrentHashMap<>();
+    // userId : UserConnection(roomId, sessionId)
+    // private static final Map<String, List<UserConnection>> userConnections = new ConcurrentHashMap<>();
     // sessionId : UserDetails
     private static final Map<String, UserDetails> userData = new ConcurrentHashMap<>();
     // sessionId : roomId
@@ -70,6 +71,11 @@ public class SocketService {
     )
     public void receiveMessage(final Message message) {
         String messageStr = new String(message.getBody(), StandardCharsets.UTF_8);
+        if(messageStr.isBlank()) {
+            log.info("consume no message");
+            return;
+        }
+
         messageStr = messageStr.substring(1, messageStr.length() - 1).replace("\\", "");
         String[] messages = messageStr.split("\\|");
         String roomId = messages[0];
@@ -96,12 +102,90 @@ public class SocketService {
                         MoveUserMessage moveUserMessage = JsonUtil.toObject(messages[2], MoveUserMessage.class);
                         sendMessageToRoom(roomId, moveUserMessage.getUserId(), Behavior.MOVE, moveUserMessage);
                         break;
+                    case CLOSE_PRE_SESSION:
+                        ClosePreConnectionMessage closePreConnectionMessage = JsonUtil.toObject(messages[2], ClosePreConnectionMessage.class);
+                        String preSessionId = closePreConnectionMessage.getPreSessionId();
+                        log.info("session close multi enter... ");
+                        if(session_room.containsKey(preSessionId)) {
+                            session_room.remove(preSessionId);
+                            userData.remove(preSessionId);
+                            WebSocketSession preSession = lobby.get(roomId).getSessionBySessionId(preSessionId);
+                            /*
+                                만약 새로 접속한 세션의 Id가 서버 내 변수에 등록되어 있다면 같은 로비 서버에 접근한 것이고,
+                                입장 메소드에서 갱신되므로. 유저 데이터는 삭제가 필요 없음
+                            */
+                            if(!session_room.containsKey(closePreConnectionMessage.getPostSessionId())) {
+                                lobby.get(roomId).leave(closePreConnectionMessage.getUserId(), preSessionId);
+                            } else {
+                                // session 정보는 삭제해줘야함
+                                lobby.get(roomId).getSessions().remove(preSessionId);
+                            }
+
+                            sendMessageToMe(preSession, Behavior.CLOSE_PRE_SESSION, ErrorMessage.of(ErrorCode.ENTER_SAME_ROOM));
+                            preSession.close(CloseStatus.NORMAL);
+                        }
+                        break;
                 }
             } catch (NullPointerException e) {
                 e.printStackTrace();
                 log.info("subscribe failed");
+            } catch (IOException e) {
+                log.info("session close failed when multi enter in same room");
             }
         }
+    }
+
+    /*
+            한 유저가 새 창으로 재접속, 다른방 입장 시 기존 데이터가 남아있는 문제가 발생할 수 있습니다.
+            유저-세션 정보를 유지해놓고, 기존 유저 세션이 남아있는 경우 기존 세션을 종료 시킵니다.
+
+            TODO: 유저가 다른 서버에 등록되어 있을 경우 처리 필요.
+            Session Storage 이용 - Redis
+            입장 시 Redis에 userId-sessionId,roomId를 저장해 놓는다
+            유저가 입장하면 userId를 키로 Redis에서 값을 가져온다.
+            이미 유저가 세션이 등록되어 있다면, 세션 클로징 메세지를 발행한다.
+            세션 클로징 메세지 내용
+                postRoomId|USER_MULTI_ENTER|data
+                data
+                    {
+                        preSessionId,
+                        postSessionId,
+                        preRoomId
+                    }
+            세션 클로징 단계
+                userId-sessionId
+                    preSessionId value가 있다면 삭제
+                sessionId-userDetails
+                    preSessionId key가 있다면 삭제
+                sessionId-roomId
+                    preSessionId key가 있다면 삭제
+                roomId-room
+                    sessionId-session
+                        preSessionId가 있다면 session 클로즈 & 삭제
+                    userId-userDto
+                        sessionId-session에 postSessionId가 Key로 없으면 삭제
+        */
+    public synchronized Boolean checkMultiConnectionToSameRoom(WebSocketSession session, EnterRequestMessage enterRequestMessage) {
+        if(enterRequestMessage == null)
+            return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
+
+        UserDetails userDetails = JwtUtil.getPayload(enterRequestMessage.getAuthorization());
+        if(userDetails == null)
+            return sendErrorMessage(session, ErrorCode.UNAUTHORIZED);
+
+        // roomId:sessionId 로 roomId를 가지고 이전 sessionId를 가져옴
+        String preSessionId = socketDataService.getPreSessionIdByRoomId(userDetails.getIdx().toString(), enterRequestMessage.getRoomId());
+        // 이전 세션이 존재한다는 것이 중복 접근이라는 것, null일 경우는 같은 방에 접속한 것이 아니라는 것
+        if(preSessionId != null) {
+            ClosePreConnectionMessage closePreConnectionMessage = ClosePreConnectionMessage.builder()
+                    .userId(userDetails.getIdx().toString())
+                    .preSessionId(preSessionId)
+                    .postSessionId(session.getId())
+                    .build();
+
+            publishService.publishClosePreConnection(enterRequestMessage.getRoomId(), closePreConnectionMessage);
+        }
+        return true;
     }
 
     /*
@@ -119,23 +203,6 @@ public class SocketService {
         String userId = userDetails.getIdx().toString();
         String sessionId = session.getId();
 
-        /*
-           한 유저가 새 창으로 재접속, 다른방 입장 시 기존 데이터가 남아있는 문제가 발생할 수 있습니다.
-           유저-세션 정보를 유지해놓고, 기존 유저 세션이 남아있는 경우 기존 세션을 종료 시킵니다.
-
-           TODO: 유저가 다른 서버에 등록되어 있을 경우 처리 필요.
-        */
-//        if(user_session.containsKey(userId)) {
-//            String preSessionId = user_session.get(userId);
-//            String preRoomId = session_room.get(preSessionId);
-//            WebSocketSession preSession = lobby.get(preRoomId).getSessionBySessionId(userId);
-//            log.info("이전 세션, 방: " + preSessionId + "|" + preRoomId + "|" + (preSession == null));
-//            if(preSession != null) {
-//                sendErrorMessage(preSession, ErrorCode.CONNECT_TO_OTHER_ROOM);
-//                closeConnection(preSession);
-//            }
-//        }
-
         // 방 생성
         Room room;
         if(!lobby.containsKey(roomId)) {
@@ -147,7 +214,6 @@ public class SocketService {
 
         // 방 입장
         room.enter(userDetails, session);
-        user_session.put(userId, sessionId);
         userData.put(sessionId, userDetails);
         session_room.put(sessionId, roomId);
 
@@ -158,6 +224,7 @@ public class SocketService {
         // sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
 
         // Redis 갱신 & 데이터 동기화
+        socketDataService.addUserConnectionToRedis(userId, roomId, sessionId);
         Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, UserDto.of(userDetails));
         SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(cachedRoom);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
@@ -268,14 +335,14 @@ public class SocketService {
 
         // 떠나기
         if(lobby.containsKey(roomId)) {
-            Integer userNum = lobby.get(roomId).leave(userId);
+            Integer userNum = lobby.get(roomId).leave(userId, sessionId);
             if (userNum.equals(0))
                 lobby.remove(roomId);
-            user_session.remove(userId);
             userData.remove(sessionId);
             session_room.remove(sessionId);
         }
 
+        socketDataService.removeUserConnectionToRedis(userId, roomId);
         socketDataService.removeUserInRedis(roomId, userId);
 
         try {

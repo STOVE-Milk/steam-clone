@@ -44,5 +44,5 @@ logging:
     com.steam.library: debug
     root: info
   file:
-    path: /home/ubuntu/library_log/
+    path: /home/fortice/library_log/
     name: library.log
