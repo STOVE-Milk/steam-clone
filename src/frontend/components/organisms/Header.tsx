@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 
+import { IState } from 'modules';
+
+import Text from 'components/atoms/Text';
 import Profile from 'components/atoms/Profile';
 import SearchBox from 'components/molecules/SearchBox';
 
 export default function Header() {
+  const { userInfo } = useSelector((state: IState) => state.user);
+
   const [option, setOption] = useState('name');
   const [inputText, setInputText] = useState('');
   const router = useRouter();
@@ -21,6 +27,7 @@ export default function Header() {
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
         {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
+        <Text>{userInfo.data.nickname}님 🙂</Text>
         <Profile onClick={() => router.push('/user/1')} userImage={<FontAwesomeIcon icon={faUser} inverse />} />
       </AlertUserWrapper>
     </HeaderStyle>
