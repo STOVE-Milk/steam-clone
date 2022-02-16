@@ -61,7 +61,7 @@ export async function getUserDataAPI(param: IGetUserDataReqType) {
 }
 export async function getGameInfoByIdListAPI(param: IGetGameInfoByIdListReqType) {
   const convertedParam = param.idList.join(',');
-  const response = await axios.get<IResType>(`${NEXT_PUBLIC_BASE_URL}/store/cart/${convertedParam}`);
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/cart/${convertedParam}`);
 
   return response.data;
 }
