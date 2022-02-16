@@ -204,12 +204,16 @@ func (server *WsServer) handleUserLeft(message Message) {
 
 //해당 클라이언트에게 접속 중인 클라이언트들의 정보를 줌.
 func (server *WsServer) listOnlineClients(client *Client) {
-	for _, user := range server.users {
-		message := &Message{
-			Action: UserJoinedAction,
-			Sender: user,
+
+	for _, user := range client.friends {
+		if _, ok := server.users[user.GetId()]; ok {
+			message := &Message{
+				Action: UserJoinedAction,
+				Sender: user,
+			}
+			client.send <- message.encode()
 		}
-		client.send <- message.encode()
+
 	}
 }
 
