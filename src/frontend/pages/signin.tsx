@@ -34,6 +34,11 @@ const signin: NextPage<IState> = () => {
     }));
   }, []);
 
+  const onKeyPress = (e: any) => {
+    if (e.key === 'Enter') {
+      doSignIn();
+    }
+  };
   const doSignIn = async () => {
     //[explain]: 회원가입을 위한 모든 input이 채워졌을 때 true
     let nullChecker = true;
@@ -78,8 +83,22 @@ const signin: NextPage<IState> = () => {
   return (
     <SignInFormWrapper>
       <Text types="large">로그인</Text>
-      <AuthInput title="EMAIL" name="email" type="email" placeholder="EMAIL" onChange={onChangeSetInfo} />
-      <AuthInput title="PASSWORD" name="password" type="password" placeholder="PASSWORD" onChange={onChangeSetInfo} />
+      <AuthInput
+        title="EMAIL"
+        name="email"
+        type="email"
+        placeholder="EMAIL"
+        onChange={onChangeSetInfo}
+        onKeyPress={onKeyPress}
+      />
+      <AuthInput
+        title="PASSWORD"
+        name="password"
+        type="password"
+        placeholder="PASSWORD"
+        onChange={onChangeSetInfo}
+        onKeyPress={onKeyPress}
+      />
       <SignInButton types="active" onClick={() => doSignIn()}>
         로그인
       </SignInButton>

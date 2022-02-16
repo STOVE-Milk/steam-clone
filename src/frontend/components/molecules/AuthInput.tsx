@@ -11,6 +11,7 @@ export interface IAuthInputProps {
   onChange?: React.ChangeEventHandler;
   checkValidation?: (e: any) => void;
   warningMsg?: string;
+  onKeyPress?: (e: any) => void;
 }
 
 export default function AuthInput({
@@ -21,12 +22,13 @@ export default function AuthInput({
   onChange,
   checkValidation,
   warningMsg,
+  onKeyPress,
 }: IAuthInputProps) {
   return (
     <InputWrapper>
       <InputTitleText>{title}</InputTitleText>
       <InputBoxWrapper>
-        <InputBox name={name} type={type} placeholder={placeholder} onChange={onChange} />
+        <InputBox name={name} type={type} placeholder={placeholder} onChange={onChange} onKeyPress={onKeyPress} />
         {checkValidation && (
           <ValidateBtnStyle types="primary" onClick={checkValidation}>
             중복확인
