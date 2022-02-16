@@ -1,25 +1,40 @@
-import { axiosClient } from 'api/axiosClient';
+import axios from 'axios';
 import { IResType } from 'api/game/type';
 import { IGetGiftCardListReqType, IDoChargeReqType, IDoApprovalChargeReqType } from './type';
 
 export async function getGiftCardListAPI(param: IGetGiftCardListReqType) {
-  const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/giftcards/KR`);
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/giftcards/KR`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 }
 
 export async function doChargeAPI(param: IDoChargeReqType) {
-  const response = await axiosClient.post<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/charge/ready`,
-    param,
-  );
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/charge/ready`, param, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 }
 
 export async function doApprovalChargeAPI(param: IDoApprovalChargeReqType) {
-  const response = await axiosClient.post<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_CHARGE}/payment/charge/approve`,
-    param,
-  );
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/charge/approve`, param, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 }

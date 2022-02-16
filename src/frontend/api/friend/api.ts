@@ -1,65 +1,109 @@
+import axios from 'axios';
+
 import { IAcceptFriendReqType, ISendFriendReqType, IResType } from './type';
-import { axiosClient } from 'api/axiosClient';
 
 export async function searchFriendAPI(nickname: string) {
-  const response = await axiosClient.get<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/search/users?nickname=${nickname}`,
+  const response = await axios.get<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/membership/search/users?nickname=${nickname}`,
   );
 
   return response.data;
 }
 
-
 export async function getFriendsAPI() {
-  const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends`);
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/membership/friends`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 }
 
 export async function acceptFriendAPI(param: IAcceptFriendReqType) {
-  const response = await axiosClient.post<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends`,
-    param,
-  );
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/membership/friends`, param, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 }
 
 export async function deleteFriendAPI(id: number) {
-  const response = await axiosClient.delete<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends/${id}`,
-  );
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.delete<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/membership/friends/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 }
 
 export async function getReceivedFriendsAPI() {
-  const response = await axiosClient.get<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friend-requests?type=received`,
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.get<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/membership/friend-requests?type=received`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
   );
 
   return response.data;
 }
 
 export async function getSendedFriendAPI() {
-  const response = await axiosClient.get<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friend-requests?type=sended`,
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.get<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/membership/friend-requests?type=sended`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
   );
 
   return response.data;
 }
 
 export async function deleteFriendRequestAPI(id: number) {
-  const response = await axiosClient.delete<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friend-requests/${id}`,
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.delete<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/membership/friend-requests/${id}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
   );
 
   return response.data;
 }
 
 export async function sendFriendRequestAPI(param: ISendFriendReqType) {
-  const response = await axiosClient.post<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friend-requests`,
-    param,
-  );
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/membership/friend-requests`, param, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }

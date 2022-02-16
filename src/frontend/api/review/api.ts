@@ -1,30 +1,46 @@
 import axios from 'axios';
-import { axiosClient } from 'api/axiosClient';
 
 import { IResType } from 'api/review/type';
 import { IAddReviewReqType, IModifyReviewReqType } from 'api/review/type';
 
 export async function getReviewAPI(gameId: number) {
-  const response = await axiosClient.get<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/games/${gameId}/reviews`,
-  );
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.get<IResType>(`${NEXT_PUBLIC_BASE_URL}/store/games/${gameId}/reviews`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 }
 
 export async function addReviewAPI(gameId: number, param: IAddReviewReqType) {
-  const response = await axiosClient.post<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/games/${gameId}/reviews`,
-    param,
-  );
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.post<IResType>(`${NEXT_PUBLIC_BASE_URL}/store/games/${gameId}/reviews`, param, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 }
 
 export async function modifyReviewAPI(gameId: number, param: IModifyReviewReqType) {
-  const response = await axiosClient.patch<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL_STORE}/store/games/${gameId}/reviews/${param.review_id}`,
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.patch<IResType>(
+    `${NEXT_PUBLIC_BASE_URL}/store/games/${gameId}/reviews/${param.review_id}`,
     param,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
   );
 
   return response.data;
