@@ -92,7 +92,7 @@ public class SocketService {
                         String userId = messages[2];
                         lobby.get(roomId).updateMap(socketDataService.getUserMap(Integer.parseInt(userId)));
                         lobby.get(roomId).resetUserLocation();
-                        synchronizeRoom(roomId, userId);
+                        synchronizeRoom(roomId);
                         break;
                     case LEAVE:
                         LeaveUserMessage leaveUserMessage = JsonUtil.toObject(messages[2], LeaveUserMessage.class);
@@ -103,6 +103,7 @@ public class SocketService {
                         sendMessageToRoom(roomId, moveUserMessage.getUserId(), Behavior.MOVE, moveUserMessage);
                         break;
                     case CLOSE_PRE_SESSION:
+                        // 같은 방에 중복 입장 시 기존 연결을 끊는 메세지
                         ClosePreConnectionMessage closePreConnectionMessage = JsonUtil.toObject(messages[2], ClosePreConnectionMessage.class);
                         String preSessionId = closePreConnectionMessage.getPreSessionId();
                         log.info("session close multi enter... ");
@@ -135,36 +136,6 @@ public class SocketService {
         }
     }
 
-    /*
-            한 유저가 새 창으로 재접속, 다른방 입장 시 기존 데이터가 남아있는 문제가 발생할 수 있습니다.
-            유저-세션 정보를 유지해놓고, 기존 유저 세션이 남아있는 경우 기존 세션을 종료 시킵니다.
-
-            TODO: 유저가 다른 서버에 등록되어 있을 경우 처리 필요.
-            Session Storage 이용 - Redis
-            입장 시 Redis에 userId-sessionId,roomId를 저장해 놓는다
-            유저가 입장하면 userId를 키로 Redis에서 값을 가져온다.
-            이미 유저가 세션이 등록되어 있다면, 세션 클로징 메세지를 발행한다.
-            세션 클로징 메세지 내용
-                postRoomId|USER_MULTI_ENTER|data
-                data
-                    {
-                        preSessionId,
-                        postSessionId,
-                        preRoomId
-                    }
-            세션 클로징 단계
-                userId-sessionId
-                    preSessionId value가 있다면 삭제
-                sessionId-userDetails
-                    preSessionId key가 있다면 삭제
-                sessionId-roomId
-                    preSessionId key가 있다면 삭제
-                roomId-room
-                    sessionId-session
-                        preSessionId가 있다면 session 클로즈 & 삭제
-                    userId-userDto
-                        sessionId-session에 postSessionId가 Key로 없으면 삭제
-        */
     public synchronized Boolean checkMultiConnectionToSameRoom(WebSocketSession session, EnterRequestMessage enterRequestMessage) {
         if(enterRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
@@ -288,14 +259,13 @@ public class SocketService {
         }
     }
 
-    public Boolean synchronizeRoom(String roomId, String userId) throws NullPointerException{
+    public Boolean synchronizeRoom(String roomId) throws NullPointerException{
         Room room = socketDataService.getRoomCache(roomId);
         logObjectJson(room);
 
         if(room != null) {
-            return sendMessageToRoom(
+            return sendMessageToAll(
                     roomId,
-                    userId,
                     Behavior.SYNC,
                     SyncRoomMessage.of(room)
             );

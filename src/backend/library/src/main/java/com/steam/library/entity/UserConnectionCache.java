@@ -24,7 +24,7 @@ public class UserConnectionCache {
     @Id
     private String userId;
     // roomId, sessionid
-    private Map<String, String> connections;
+    private Map<String, String> connections = new HashMap<>();
 
     public static UserConnectionCache createEmptyCacheById(String userId) {
         return UserConnectionCache.builder()
