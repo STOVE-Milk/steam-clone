@@ -282,7 +282,7 @@ const ChatWrapper = styled.div`
 `;
 
 const ChatListSection = styled.div`
-  width: 20%;
+  min-width: 200px;
   display: flex;
   flex-direction: column;
   border-right: 1px solid ${(props) => props.theme.colors.divider};
