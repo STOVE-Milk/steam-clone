@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
@@ -45,7 +46,7 @@ func (repo *UserRepository) GetUserFriends(ID string) []models.User {
 		rows.Scan(&friend.Id, &friend.Name)
 		friends = append(friends, &friend)
 	}
-
+	fmt.Println(friends)
 	return friends
 }
 

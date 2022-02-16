@@ -4,12 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
 type TokenMetaData struct {
-	UserId   int32
+	UserId   string
 	Nickname string
 	Role     int32
 	Country  string
@@ -48,7 +49,7 @@ func ExtractMetadata(r *http.Request) (*TokenMetaData, error) {
 	if !ok {
 		return nil, errors.New("no role")
 	}
-	metadata.UserId = int32(userId.(float64))
+	metadata.UserId = strconv.Itoa(int(userId.(float64)))
 	metadata.Nickname = nickname
 	metadata.Role = int32(role.(float64))
 	metadata.Country = country
