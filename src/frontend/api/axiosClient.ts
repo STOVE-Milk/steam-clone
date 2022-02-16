@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { verifyToken } from '../util/verityToken';
+import { verifyToken } from 'util/verifyToken';
 
 let token: string | null = '';
 if (typeof window !== 'undefined') {
