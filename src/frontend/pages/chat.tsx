@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
@@ -124,10 +124,8 @@ const Chat: NextPage = () => {
     );
   };
 
-  const onSubmit = (selectFriends: number[], roomName?: string) => {
+  const createRoom = (selectFriends: number[], roomName?: string) => {
     // 클->서: 채팅방 생성
-    // TODO: 개인채팅인지 단체채팅인지 선택하는 뷰랑 로직 추가
-    // TODO: 단체채팅일 경우 채팅방 이름 입력 받기
     console.log('submit', selectFriends);
 
     if (selectFriends.length === 1) {
@@ -167,15 +165,25 @@ const Chat: NextPage = () => {
   return (
     <ChatWrapper>
       <ChatListSection>
+        <CreateChatRoomBtn types={'active'} onClick={() => setShowModal(true)}>
+          채팅방 생성
+        </CreateChatRoomBtn>
         {rooms.map((room) => {
           return (
             <ChatListBox key={room.id} onClick={() => enterRoom(room.id)}>
-              <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-              <ChatListName types={'medium'}>{room.name}</ChatListName>
+              <Profile
+                userImage={
+                  room.private ? (
+                    <FontAwesomeIcon icon={faUser} inverse width={30} height={30} />
+                  ) : (
+                    <FontAwesomeIcon icon={faUsers} inverse width={30} height={30} />
+                  )
+                }
+              />
+              <ChatListName types={'medium'}>{room.private ? room.name.split('-')[1] : room.name}</ChatListName>
             </ChatListBox>
           );
         })}
-        <button onClick={() => setShowModal(true)}>채팅방 생성</button>
         <Modal onClose={() => setShowModal(false)} show={showModal}>
           {/* TODO: 실제 친구 불러오기 */}
           <JoinChat
@@ -205,7 +213,7 @@ const Chat: NextPage = () => {
                 },
               },
             ]}
-            onSubmit={onSubmit}
+            onSubmit={createRoom}
           ></JoinChat>
         </Modal>
       </ChatListSection>
@@ -246,10 +254,15 @@ const ChatListSection = styled.div`
   }
 `;
 
+const CreateChatRoomBtn = styled(FilledButton)`
+  margin: 1rem 0;
+  align-self: center;
+`;
+
 const ChatListBox = styled.div`
   width: 100%;
   min-height: 5rem;
-  border-bottom: 1px solid ${(props) => props.theme.colors.divider};
+  border-top: 1px solid ${(props) => props.theme.colors.divider};
   display: flex;
   align-items: center;
   padding: 0 1rem;

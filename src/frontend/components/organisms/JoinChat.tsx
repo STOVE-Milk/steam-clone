@@ -63,7 +63,7 @@ export default function JoinChat(props: IJoinChatProps) {
           disabled={selectFriends.length < 2}
         ></RoomNameInput>
       </Content>
-      <SubmitBtn onClick={() => props.onSubmit(selectFriends)} types="primary">
+      <SubmitBtn onClick={() => props.onSubmit(selectFriends, roomName)} types="primary">
         완료
       </SubmitBtn>
     </Wrapper>
