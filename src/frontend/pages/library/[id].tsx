@@ -8,6 +8,7 @@ import { IState } from 'modules';
 import { saveUserInfo } from 'modules/user';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import { parseToken } from 'util/parseToken';
+import { makeUniqueArr } from 'util/makeUniqueArr';
 
 import styled from 'styled-components';
 import { GameListLibrary, TitleStyle } from 'components/organisms/GameListLibrary';
@@ -25,16 +26,53 @@ export const commandType = {
   MOVE: 20,
   BUILD: 40,
 };
+export interface IMapInfo {
+  side: number;
+  gameList: number[];
+  objectList?: number[];
+  games: {
+    [id: number]: { name: string; x: number; y: number };
+  };
+  objects?: {
+    name?: string;
+    x?: number;
+    y?: number;
+  };
+}
 
 const library: NextPage<IState> = () => {
   const [installedGame, setInstalledGame] = useState(null);
+  const [gameOffset, setGameOffset] = useState({ x: 0, y: 0 });
+
+  const [mapInfo, setMapInfo] = useState({
+    side: 20,
+    gameList: [2],
+    objectList: [],
+    games: {
+      2: { name: 'PUBG: BATTLEGROUNDS', x: 0, y: 0 },
+    },
+    objects: {},
+  } as IMapInfo);
   const { userInfo } = useSelector((state: IState) => state.user);
   const [count, setCount] = useState(0);
   const dispatch = useDispatch();
   const router = useRouter();
   const token = getItemFromLocalStorage('accessToken');
 
-  const onFinishSetGameOffset = () => {
+  const onFinishSetGameOffset = (installedGame: any) => {
+    console.log(installedGame);
+    // newMapInfo: IMapInfo
+    // console.log(newMapInfo);
+    const game_id: number = installedGame['id'];
+    setMapInfo((prev) => ({
+      ...prev,
+      gameList: makeUniqueArr([...prev.gameList], game_id),
+      games: {
+        ...prev.games,
+        [game_id]: { name: installedGame.name, x: gameOffset.x, y: gameOffset.y },
+      },
+      // newMapInfo,
+    }));
     // 1. 게임 offset설정을 완료하기위함 -> isDragging=false
     // 2. 건물 설치(40) 요청보내기
     //40{
@@ -50,6 +88,7 @@ const library: NextPage<IState> = () => {
     //   "objects":{}
     // }
   };
+
   const onSelect = (installedGame: any) => {
     console.log(installedGame);
     setInstalledGame(installedGame);
@@ -66,10 +105,16 @@ const library: NextPage<IState> = () => {
   return (
     <LibraryWrapper>
       {console.log(userInfo.data)}
+      {console.log(mapInfo)}
       <TitleStyle types="large">{`${userInfo.data.nickname}의 라이브러리(구매 게임 목록)`}</TitleStyle>
       <LibraryContentWrapper>
-        <NoSSRMap installedGame={installedGame} />
-        <GameListLibrary onSelect={onSelect} resetSelect={resetSelect} />
+        <NoSSRMap
+          installedGame={installedGame}
+          mapInfo={mapInfo}
+          gameOffset={gameOffset}
+          setGameOffset={setGameOffset}
+        />
+        <GameListLibrary onSelect={onSelect} resetSelect={resetSelect} onFinishSetGameOffset={onFinishSetGameOffset} />
         {/* <button onClick={() => setCount(count + 1)}>add user</button> */}
       </LibraryContentWrapper>
     </LibraryWrapper>

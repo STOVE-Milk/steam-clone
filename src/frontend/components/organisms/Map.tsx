@@ -5,25 +5,21 @@ import styled from 'styled-components';
 import useWindowSize from 'util/Hooks/useWindowDimensions';
 
 import EachGame from 'components/organisms/EachGame';
-import { commandType } from 'pages/library/[id]';
+import { commandType, IMapInfo } from 'pages/library/[id]';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import { parseToken } from 'util/parseToken';
 import UserObject from './UserObject';
 
 const absoluteVal = 500;
 
-const StageStyled = styled.div`
-  height: ${absoluteVal}px;
-  width: ${absoluteVal}px;
-
-  background-image: linear-gradient(45deg, #754 25%, transparent 26%, transparent 75%, #754 75%, #754),
-    linear-gradient(45deg, #754 25%, transparent 26%, transparent 75%, #754 75%, #754);
-  background-size: calc(50px * 2) calc(50px * 2);
-  background-position: 0 0, 50px 50px;
-  margin: auto;
-`;
 interface IMapProps {
   installedGame: any;
+  mapInfo: IMapInfo;
+  gameOffset: {
+    x: number;
+    y: number;
+  };
+  setGameOffset: (e: any) => void;
 }
 interface IMoveProps {
   [index: string]: number;
@@ -37,7 +33,7 @@ const moveType: IMoveProps = {
 };
 
 const Map = (props: IMapProps) => {
-  const { installedGame, resetSelect } = props;
+  const { installedGame, mapInfo, gameOffset, setGameOffset } = props;
 
   const windowSize = useWindowSize();
   const width = windowSize.width;
@@ -49,7 +45,7 @@ const Map = (props: IMapProps) => {
   //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
 
   console.log('height', height);
-  const [gameOffset, setGameOffset] = useState({ x: 0, y: 0 });
+  // const [gameOffset, setGameOffset] = useState({ x: 0, y: 0 });
 
   // const [game1Y, setGame1Y] = useState(height - (height - 400));
 
@@ -100,14 +96,13 @@ const Map = (props: IMapProps) => {
       websocket.onopen = function (evt: any) {
         onOpen(evt);
         console.log('서버와 웹 소켓 연결됨');
-        let roomId = '1'; //테스트를 위해 1로 고정 -> navbar 친구기능 추가되면 옮기면 됨
+        let roomId = '52'; //테스트를 위해 1로 고정 -> navbar 친구기능 추가되면 옮기면 됨
         let access = {
           room_id: roomId, //누구의 library에 들어가는지
           authorization: token, //내가 누군지
         };
         console.log('websocket=======', websocket);
-        const initData = sendData(commandType.INIT, access);
-        console.log(initData);
+        sendData(commandType.INIT, access);
       };
       websocket.onmessage = function (evt: any) {
         onMessage(evt);
@@ -157,20 +152,25 @@ const Map = (props: IMapProps) => {
     //방 끝으로 가면 direction으로 요청을 보내면 안됨
     sendData(commandType.MOVE, { direction: moveType[event.key] });
   };
+  const handleBuildEvt = () => {
+    sendData(commandType.BUILD, { map: mapInfo });
+  };
 
   useEffect(() => {
     // console.log(shapeRef.current);
     window.addEventListener('keydown', handleKeyDown);
-
+    document.querySelector('#btn') && document.querySelector('#btn')!.addEventListener('click', handleBuildEvt);
     // cleanup this component
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      document.querySelector('#btn') && document.querySelector('#btn')!.removeEventListener('click', handleBuildEvt);
     };
   }, []);
 
   return (
     <StageStyled>
       {console.log(userX, userY)}
+      {console.log('mapInfo from library', mapInfo)}
       <Stage
         id="canvas"
         width={absoluteVal}
@@ -187,8 +187,27 @@ const Map = (props: IMapProps) => {
           ) : null}
         </Layer>
       </Stage>
+      <button
+        id="btn"
+        onClick={() => {
+          handleBuildEvt();
+        }}
+      >
+        게임 좌표 저장하기
+      </button>
     </StageStyled>
   );
 };
+
+const StageStyled = styled.div`
+  height: ${absoluteVal}px;
+  width: ${absoluteVal}px;
+
+  background-image: linear-gradient(45deg, #754 25%, transparent 26%, transparent 75%, #754 75%, #754),
+    linear-gradient(45deg, #754 25%, transparent 26%, transparent 75%, #754 75%, #754);
+  background-size: calc(50px * 2) calc(50px * 2);
+  background-position: 0 0, 50px 50px;
+  margin: auto;
+`;
 
 export default Map;
