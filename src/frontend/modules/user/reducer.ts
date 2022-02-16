@@ -31,7 +31,7 @@ const reducer = createReducer<IUserState>(initialState, {
   }),
   [GET_FRIEND_SUCCESS]: (state, action) => ({
     ...state,
-    friends: asyncState.success(action.payload),
+    friends: asyncState.success(action.payload.data.friends),
   }),
   [GET_FRIEND_FAIL]: (state, action) => ({
     ...state,

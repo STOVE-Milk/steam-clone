@@ -53,8 +53,9 @@ const Friend: NextPage = () => {
 
   // 친구 신청을  위해 유저 검색
   const searchFriend = async () => {
-    const res = (await FriendAPI.searchFriendAPI(searchInput)).data;
+    const res = (await FriendAPI.searchFriendAPI(searchInput)).data.users;
     setFriends(res);
+    
   };
 
   // 친구 신청

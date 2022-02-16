@@ -1,5 +1,6 @@
 import { IAcceptFriendReqType, ISendFriendReqType, IResType } from './type';
 import { axiosClient } from 'api/axiosClient';
+import axios from 'axios';
 
 export async function searchFriendAPI(nickname: string) {
   const response = await axiosClient.get<IResType>(
@@ -9,9 +10,15 @@ export async function searchFriendAPI(nickname: string) {
   return response.data;
 }
 
-
 export async function getFriendsAPI() {
-  const response = await axiosClient.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends`);
+  const token = localStorage.getItem('accessToken');
+
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL_MEMBERSHIP}/membership/friends`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 }
