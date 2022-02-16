@@ -57,11 +57,12 @@ const Map = (props: IMapProps) => {
   const token = getItemFromLocalStorage('accessToken');
 
   const wsUri = `${process.env.NEXT_PUBLIC_BASE_URL_WS}`;
+  let ws = useRef<WebSocket>(); // 웹 소켓 사용
 
-  let websocket: any;
-  let output;
-  let map;
-  let textID: any;
+  // let websocket: any;
+  // let output;
+  // let map;
+  // let textID: any;
 
   function onOpen(evt: any) {
     console.log('Connected to Endpoint!');
@@ -75,25 +76,25 @@ const Map = (props: IMapProps) => {
   function onError(evt: any) {
     console.log('ERROR: ' + evt.data);
   }
-  function disconnect() {
-    if (!websocket) websocket.close();
-  }
+  // function disconnect() {
+  //   if (!ws.current) ws.current.close();
+  // }
 
-  function send_message() {
-    var message = textID.value;
-    console.log('Message Sent: ' + message);
-    websocket.send(message);
-  }
+  // function send_message() {
+  //   var message = textID.value;
+  //   console.log('Message Sent: ' + message);
+  //   ws.current.send(message);
+  // }
 
   function sendData(command: number, data: any) {
     console.log('SEND DATA', data);
-    websocket.send(command + JSON.stringify(data));
+    ws.current && ws.current.send(command + JSON.stringify(data));
   }
 
   function connect() {
-    if (!websocket) {
-      websocket = new WebSocket(wsUri);
-      websocket.onopen = function (evt: any) {
+    if (!ws.current) {
+      ws.current = new WebSocket(wsUri);
+      ws.current.onopen = function (evt: any) {
         onOpen(evt);
         console.log('서버와 웹 소켓 연결됨');
         let roomId = '52'; //테스트를 위해 1로 고정 -> navbar 친구기능 추가되면 옮기면 됨
@@ -101,13 +102,13 @@ const Map = (props: IMapProps) => {
           room_id: roomId, //누구의 library에 들어가는지
           authorization: token, //내가 누군지
         };
-        console.log('websocket=======', websocket);
+        console.log('ws.current=======', ws.current);
         sendData(commandType.INIT, access);
       };
-      websocket.onmessage = function (evt: any) {
+      ws.current.onmessage = function (evt: any) {
         onMessage(evt);
       };
-      websocket.onerror = function (evt: any) {
+      ws.current.onerror = function (evt: any) {
         onError(evt);
       };
     }
@@ -163,7 +164,7 @@ const Map = (props: IMapProps) => {
     // cleanup this component
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      document.querySelector('#btn') && document.querySelector('#btn')!.removeEventListener('click', handleBuildEvt);
+      // document.querySelector('#btn') && document.querySelector('#btn')!.removeEventListener('click', handleBuildEvt);
     };
   }, []);
 
