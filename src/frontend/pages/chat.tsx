@@ -189,7 +189,7 @@ const Chat: NextPage = () => {
           <JoinChat
             friends={[
               {
-                id: 59,
+                id: 35,
                 nickname: 'algorithm',
                 profile: {
                   image: '',
