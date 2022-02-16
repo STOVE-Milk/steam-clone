@@ -4,16 +4,15 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
+import styled from 'styled-components';
+
 import { IState } from 'modules';
 import { saveUserInfo } from 'modules/user';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import { parseToken } from 'util/parseToken';
 import { makeUniqueArr } from 'util/makeUniqueArr';
 
-import styled from 'styled-components';
 import { GameListLibrary, TitleStyle } from 'components/organisms/GameListLibrary';
-import Text from 'components/atoms/Text';
-import { Router } from 'react-router-dom';
 
 const NoSSRMap = dynamic(() => import('components/organisms/Map'), {
   ssr: false,
@@ -60,9 +59,9 @@ const library: NextPage<IState> = () => {
   const token = getItemFromLocalStorage('accessToken');
 
   const onFinishSetGameOffset = (installedGame: any) => {
-    console.log(installedGame);
-    // newMapInfo: IMapInfo
-    // console.log(newMapInfo);
+    // (TO DO) 1. 게임 offset설정을 완료하기위함(게임을 map 에 설치 완료한 후) -> isDragging=false
+
+    // (DONE) 2. 건물 설치(40) 요청보내기
     const game_id: number = installedGame['id'];
     setMapInfo((prev) => ({
       ...prev,
@@ -71,22 +70,7 @@ const library: NextPage<IState> = () => {
         ...prev.games,
         [game_id]: { name: installedGame.name, x: gameOffset.x, y: gameOffset.y },
       },
-      // newMapInfo,
     }));
-    // 1. 게임 offset설정을 완료하기위함 -> isDragging=false
-    // 2. 건물 설치(40) 요청보내기
-    //40{
-    // "map": {
-    //   "side":20,
-    //   "gameList":["1"],
-    //   "objectList":[],
-    //   "games":{
-    //      "name": "skull",
-    //      "x": 1,
-    //      "y": 5
-    //    },
-    //   "objects":{}
-    // }
   };
 
   const onSelect = (installedGame: any) => {
