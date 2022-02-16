@@ -19,6 +19,7 @@ export const TitleStyle = styled(Text)`
 
 const GameListWrapper = styled.div`
   border: 1px solid black;
+  width: 100%;
 `;
 
 const EachGameInfoBox = styled(FilledButton)`
@@ -34,6 +35,7 @@ const EachGameInfoBox = styled(FilledButton)`
 
 interface IGameListLibararyProps {
   onSelect: (e: any) => void;
+  resetSelect: () => void;
 }
 
 export const GameListLibrary = (props: IGameListLibararyProps) => {
@@ -41,7 +43,7 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
   const { userData } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)
   const [gamesByIdList, setGamesByIdList] = useState([] as gameInfo[]);
   // const [purchaseList, setPurchaseList] = useState([]);
-  const { onSelect } = props;
+  const { onSelect, resetSelect } = props;
   const router = useRouter();
 
   // userData
@@ -49,7 +51,7 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
 
   useEffect(() => {
     // getUserData();
-    // dispatch(getUserData.request({}));
+    dispatch(getUserData.request({}));
     getGamesByIdList();
   }, []);
   // const getUserData = async () => {
@@ -70,7 +72,7 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
     } else {
       // alert('구매한 게임이 없습니다.');
       let html = document.querySelector('#libraryBox');
-      !isEmpty(html) ? (html!.innerHTML = '구매한 게임이 없습니다') : null;
+      !isEmpty(html) ? (html!.innerHTML = '구매한 게임이 없습니다') : '';
     }
     // const game_list = await res.data!.game_list;
     // setGamesByIdList(game_list);
@@ -88,6 +90,7 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
               <div id="libraryBox">{}</div>
             </EachGameInfoBox>
             <button onClick={() => onSelect(eachGame)}>Select</button>
+            <button onClick={() => resetSelect()}>Remove</button>
           </div>
         );
       })}

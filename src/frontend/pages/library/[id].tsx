@@ -34,6 +34,22 @@ const library: NextPage<IState> = () => {
   const router = useRouter();
   const token = getItemFromLocalStorage('accessToken');
 
+  const onFinishSetGameOffset = () => {
+    // 1. 게임 offset설정을 완료하기위함 -> isDragging=false
+    // 2. 건물 설치(40) 요청보내기
+    //40{
+    // "map": {
+    //   "side":20,
+    //   "gameList":["1"],
+    //   "objectList":[],
+    //   "games":{
+    //      "name": "skull",
+    //      "x": 1,
+    //      "y": 5
+    //    },
+    //   "objects":{}
+    // }
+  };
   const onSelect = (installedGame: any) => {
     console.log(installedGame);
     setInstalledGame(installedGame);
@@ -52,8 +68,8 @@ const library: NextPage<IState> = () => {
       {console.log(userInfo.data)}
       <TitleStyle types="large">{`${userInfo.data.nickname}의 라이브러리(구매 게임 목록)`}</TitleStyle>
       <LibraryContentWrapper>
-        <NoSSRMap installedGame={installedGame} resetSelect={resetSelect} />
-        <GameListLibrary onSelect={onSelect} />
+        <NoSSRMap installedGame={installedGame} />
+        <GameListLibrary onSelect={onSelect} resetSelect={resetSelect} />
         {/* <button onClick={() => setCount(count + 1)}>add user</button> */}
       </LibraryContentWrapper>
     </LibraryWrapper>

@@ -22,12 +22,8 @@ const StageStyled = styled.div`
   background-position: 0 0, 50px 50px;
   margin: auto;
 `;
-{
-  /* <img alt="lion" src="https://konvajs.org/assets/lion.png" draggable="true" /> */
-}
 interface IMapProps {
   installedGame: any;
-  resetSelect: () => void;
 }
 interface IMoveProps {
   [index: string]: number;
@@ -76,7 +72,7 @@ const Map = (props: IMapProps) => {
   }
 
   function onMessage(evt: any) {
-    console.log(evt.data);
+    console.log(evt.data); // 이게 response data네 !
     //updateMap(JSON.parse(evt.data))
   }
 
@@ -124,7 +120,7 @@ const Map = (props: IMapProps) => {
   useEffect(() => {
     connect();
   }, []);
-  //끝
+  //소켓 코드 끝
 
   const focusRef = () => {
     focus();
@@ -187,13 +183,7 @@ const Map = (props: IMapProps) => {
           <Circle x={userX} y={userY} radius={50} width={absoluteVal / 10} fill="#989899" />
           {/* <UserObject x={userX} y={userY} width={absoluteVal / 5} /> */}
           {installedGame ? (
-            <EachGame
-              onChange={(e) => console.log(e)}
-              resetSelect={resetSelect}
-              installedGame={installedGame}
-              gameOffset={gameOffset}
-              setGameOffset={setGameOffset}
-            />
+            <EachGame installedGame={installedGame} gameOffset={gameOffset} setGameOffset={setGameOffset} />
           ) : null}
         </Layer>
       </Stage>
