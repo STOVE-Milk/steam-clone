@@ -10,8 +10,8 @@ export interface MsgBoxProps {
 export default function MsgBox(props: MsgBoxProps) {
   return (
     <Wrapper>
-      <Name>{props.name}</Name>
-      <MsgBoxStyle {...props}>{props.children}</MsgBoxStyle>;
+      <Name isMine={props.isMine}>{props.name}</Name>
+      <MsgBoxStyle isMine={props.isMine}>{props.children}</MsgBoxStyle>;
     </Wrapper>
   );
 }
@@ -19,13 +19,15 @@ export default function MsgBox(props: MsgBoxProps) {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  margin: 0.7rem 0;
 `;
 
-const Name = styled.div`
+const Name = styled.div<{ isMine: boolean }>`
   color: ${(props) => props.theme.colors.primaryText};
+  align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
 `;
 
-const MsgBoxStyle = styled.span<MsgBoxProps>`
+const MsgBoxStyle = styled.span<{ isMine: boolean }>`
   display: inline-block;
   position: relative;
   background: ${(props) => (props.isMine ? props.theme.colors.primaryText : props.theme.colors.activeBg)};
@@ -33,7 +35,7 @@ const MsgBoxStyle = styled.span<MsgBoxProps>`
   width: fit-content;
   border-radius: 10px;
   padding: 1rem;
-  margin: 1rem 0;
+  margin-top: 0.5rem;
   line-height: 1.3rem;
   align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
 
