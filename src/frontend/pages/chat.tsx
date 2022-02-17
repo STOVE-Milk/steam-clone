@@ -5,7 +5,9 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
 
-import { verifyToken } from 'util/verifyToken';
+import { parseToken } from 'util/parseToken';
+import { IState } from 'modules';
+import user, { saveUserInfo } from 'modules/user';
 
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
@@ -13,6 +15,7 @@ import FilledButton from 'components/atoms/FilledButton';
 import Modal from 'components/atoms/Modal';
 import JoinChat from 'components/organisms/JoinChat';
 import ChatRoom, { Log } from 'components/organisms/ChatRoom';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface IRoom {
   //채팅 방 객체 타입
@@ -22,35 +25,41 @@ interface IRoom {
 }
 
 const Chat: NextPage = () => {
-  const msg = '첫번째 줄\n두번째 줄\n세번째 줄'.split('\n'); // temp message
+  const userInfo = useSelector((state: IState) => state.user.userInfo.data);
+  const token = localStorage.getItem('accessToken');
+
   const [showModal, setShowModal] = useState(false); // 채팅방 생성 모달을 띄우는가
   const [rooms, setRooms] = useState<IRoom[]>([]); // 채팅방 목록
 
-  // TODO: 밑에 값들을 props로 가지는 채팅 컴포넌트 organism으로 컴포넌트화 하기
   const [curRoom, setCurRoom] = useState(''); // 현재 채팅방 이름
   const [members, setMembers] = useState<string[]>([]); // 채팅방 멤버들
   const [logs, setLogs] = useState<Log[]>([]); // 채팅방 메세지들
   const [message, setMessage] = useState({} as Log); //현재 보낼 메세지, 받을 메세지
 
+  const dispatch = useDispatch();
+
   let ws = useRef<WebSocket>(); // 웹 소켓 사용
 
   // 소켓 통신 시 임시로 사용하는 토큰
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHgiOjE0LCJuaWNrbmFtZSI6Im5pY2sxNCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiIsImlhdCI6MTY0NDEzNzUyOCwiZXhwIjoxNjQ0MTQxMTI4fQ.rgF0cR0dhqLOY3yhDuYPHJss4exAeTIfw2H1yAKf_78';
-  const userId = 14;
-  const nickname = 'nick14';
+  // const token =
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHgiOjE0LCJuaWNrbmFtZSI6Im5pY2sxNCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiIsImlhdCI6MTY0NDEzNzUyOCwiZXhwIjoxNjQ0MTQxMTI4fQ.rgF0cR0dhqLOY3yhDuYPHJss4exAeTIfw2H1yAKf_78';
+  // const userId = 14;
+  // const nickname = 'nick14';
+
+  useEffect(() => {
+    const result = token && parseToken(token);
+    dispatch(saveUserInfo.request(result));
+  }, []);
 
   useEffect(() => {
     if (!ws.current) {
       ws.current = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
-
       // 서버 -> 클라이언트
       // 웹 소켓 통신 과정에서 서버로부터 받는 메세지들을 action에 따라 처리. 아직 개발중!
       ws.current.onmessage = (e: MessageEvent) => {
         const events = e.data.split('\n');
         events.forEach((event: string) => {
           const serverMessage = JSON.parse(event);
-
           switch (serverMessage.action) {
             case 'user-join': // 유저 접속
               console.log('user-join', serverMessage.sender);
@@ -138,7 +147,7 @@ const Chat: NextPage = () => {
         }),
       );
     } else {
-      let room = `${roomName}-${userId}`;
+      let room = `${roomName}-${userInfo.idx}`;
       selectFriends.forEach((friend) => {
         room += `-${friend.toString()}`;
       });
@@ -221,7 +230,7 @@ const Chat: NextPage = () => {
       </ChatListSection>
       <ChatRoomSection>
         <ChatViewBox>
-          <ChatRoom userId={userId} members={members} logs={logs} leaveRoom={leaveRoom}></ChatRoom>
+          <ChatRoom userId={userInfo.idx} members={members} logs={logs} leaveRoom={leaveRoom}></ChatRoom>
         </ChatViewBox>
         <ChatInputBox>
           <ChatInput
