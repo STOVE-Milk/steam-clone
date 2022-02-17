@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "ON (f.user_id = :userId AND u.idx = f.friend_id) " +
             "LEFT JOIN friend_request fr " +
             "ON (fr.user_id = :userId AND u.idx = fr.requester_id) " +
-            "WHERE u.nickname LIKE CONCAT(:nickname ,'%') AND u.deleted_at IS NULL AND u.idx != :userId" +
+            "WHERE u.nickname LIKE CONCAT(:nickname ,'%') AND u.deleted_at IS NULL AND u.idx != :userId " +
             "ORDER BY u.nickname " +
             "LIMIT :start ,:size", nativeQuery = true)
     List<UserWithIsFriend> findAllByNicknameStartsWith(@Param("userId") Integer userId, @Param("nickname") String nickname, @Param("start") Integer start, @Param("size") Integer size);
