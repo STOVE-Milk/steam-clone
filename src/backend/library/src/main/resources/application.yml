@@ -1,7 +1,0 @@
-server:
-  port: 8210
-spring:
-  profiles:
-    active: local
-  application:
-    name: robby-service
