@@ -181,22 +181,34 @@ const Map = (props: IMapProps) => {
     if (event.key === 'ArrowUp') {
       setUserLocation((prev) => ({
         ...prev,
-        [userInfo.data.idx]: { x: prev[userInfo.data.idx].x, y: prev[userInfo.data.idx].y - delta },
+        [userInfo.data.idx]: {
+          x: prev[userInfo.data.idx].x,
+          y: prev[userInfo.data.idx].y - delta < 50 ? 50 : prev[userInfo.data.idx].y - delta,
+        },
       }));
     } else if (event.key === 'ArrowRight') {
       setUserLocation((prev) => ({
         ...prev,
-        [userInfo.data.idx]: { x: prev[userInfo.data.idx].x + delta, y: prev[userInfo.data.idx].y },
+        [userInfo.data.idx]: {
+          x: prev[userInfo.data.idx].x + delta > 450 ? 450 : prev[userInfo.data.idx].x + delta,
+          y: prev[userInfo.data.idx].y,
+        },
       }));
     } else if (event.key === 'ArrowDown') {
       setUserLocation((prev) => ({
         ...prev,
-        [userInfo.data.idx]: { x: prev[userInfo.data.idx].x, y: prev[userInfo.data.idx].y + delta },
+        [userInfo.data.idx]: {
+          x: prev[userInfo.data.idx].x,
+          y: prev[userInfo.data.idx].y + delta > 450 ? 450 : prev[userInfo.data.idx].y + delta,
+        },
       }));
     } else if (event.key === 'ArrowLeft') {
       setUserLocation((prev) => ({
         ...prev,
-        [userInfo.data.idx]: { x: prev[userInfo.data.idx].x - delta, y: prev[userInfo.data.idx].y },
+        [userInfo.data.idx]: {
+          x: prev[userInfo.data.idx].x - delta < 50 ? 50 : prev[userInfo.data.idx].x - delta,
+          y: prev[userInfo.data.idx].y,
+        },
       }));
     }
     //업데이트된 위치를 보내야하는데 또 setState 비동기 문제 생길듯
