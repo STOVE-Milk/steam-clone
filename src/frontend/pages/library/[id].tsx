@@ -42,14 +42,15 @@ export interface IMapInfo {
 
 const library: NextPage<IState> = () => {
   const [installedGame, setInstalledGame] = useState(null);
+  const [installedGameList, setInstalledGameList] = useState([]);
   const [gameOffset, setGameOffset] = useState({ x: 0, y: 0 });
 
   const [mapInfo, setMapInfo] = useState({
-    side: 20,
+    side: 9,
     gameList: [2],
     objectList: [],
     games: {
-      2: { name: 'PUBG: BATTLEGROUNDS', x: 0, y: 0 },
+      2: { name: 'PUBG: BATTLEGROUNDS', x: 0, y: 0 }, //dummy
     },
     objects: {},
   } as IMapInfo);
@@ -72,6 +73,15 @@ const library: NextPage<IState> = () => {
         [game_id]: { name: installedGame.name, x: gameOffset.x, y: gameOffset.y },
       },
     }));
+  };
+  const onInstallGame = (installedGame: any) => {
+    console.log(installedGame);
+    setInstalledGameList(installedGame);
+  };
+  const onUnInstallGame = (game_id: number) => {
+    //배열에서 해당 애들 삭제해야하는데, 그럴려면 인자가 뭐가 필요하려나? 게임id? 게임 id 가 같은 거 삭제
+    console.log(game_id);
+    // setInstalledGameList()
   };
 
   const onSelect = (installedGame: any) => {

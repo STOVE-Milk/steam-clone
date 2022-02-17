@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import useWindowSize from 'util/Hooks/useWindowDimensions';
+import { isEmpty } from 'util/isEmpty';
 import { IState } from 'modules';
 
 import EachGame from 'components/organisms/EachGame';
@@ -42,6 +43,38 @@ interface ILocationData {
   };
 }
 
+interface IUserInfo {
+  [index: string]: {
+    nickname: string;
+    x: number;
+    y: number;
+  };
+}
+
+interface IGameInfo {
+  [index: string]: {
+    name: string;
+    x: number;
+    y: number;
+  };
+}
+
+interface IGlobalState {
+  room: {
+    roomId: number;
+    userCount?: number;
+    users: {
+      [idx: number]: { nickname: string; x: number; y: number };
+    };
+    map: {
+      side: number;
+      gameList: [];
+      objectList: [];
+      games: { [idx: number]: { name: string; x: number; y: number } };
+      objects: {};
+    };
+  };
+}
 const Map = (props: IMapProps) => {
   const { installedGame, mapInfo, gameOffset, setGameOffset } = props;
   const { userInfo } = useSelector((state: IState) => state.user);
@@ -50,9 +83,28 @@ const Map = (props: IMapProps) => {
   const width = windowSize.width;
   const height = windowSize.height;
 
-  const [globalData, setGlobalData] = useState();
+  // const [globalData, setGlobalData] = useState({} as IGlobalState);
+  const [globalData, setGlobalData] = useState({
+    //쌩 초기 더미값
+    room: {
+      roomId: 52,
+      userCount: 62,
+      users: {
+        // '59': { nickname: 'algorithm', x: 0, y: 0 },
+        '52': { nickname: 'yasmin', x: 50, y: 50 },
+      },
+      map: {
+        side: 20,
+        gameList: [],
+        objectList: [],
+        games: { '2': { name: 'PUBG: BATTLEGROUNDS', x: 196, y: 50 } },
+        objects: {},
+      },
+    },
+  });
 
-  const [userLocation, setUserLocation] = useState({ 52: { x: 50, y: 50 }, 59: { x: 450, y: 450 } } as ILocationData); //지금은 항상 가운데 나오게 설정된듯
+  // const [userLocation, setUserLocation] = useState({ 52: { x: 50, y: 50 }, 59: { x: 450, y: 450 } } as ILocationData); //나는 무조건 있고, 맵에서 유저를 받아와서 그 첫 정보를 넣을 수 있도록 해야됨
+  const [userLocation, setUserLocation] = useState({ 52: { x: 50, y: 50 } } as ILocationData);
 
   const [user2Y, setUser2Y] = useState(50);
   //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
@@ -70,36 +122,57 @@ const Map = (props: IMapProps) => {
   const token = getItemFromLocalStorage('accessToken');
 
   const wsUri = `${process.env.NEXT_PUBLIC_BASE_URL_WS}`;
-  let ws = useRef<WebSocket>(); // 웹 소켓 사용
+  let ws = useRef<WebSocket>();
 
   function onOpen(evt: any) {
     console.log('Connected to Endpoint!');
   }
 
+  //   function disconnect() {
+  //   if (!ws.current)  ws.current && ws.current.close();
+  // }
+
+  // function send_message() {
+  //   var message = textID.value;
+  //   console.log('Message Sent: ' + message);
+  //   ws.current&& ws.current.send(message);
+  // }
+
   function onMessage(evt: any) {
     console.log(evt.data); // 이게 response data네 !
     //updateMap(JSON.parse(evt.data))
     const res = evt.data;
+    const code = res.slice(0, 2);
     const data = JSON.parse(res.slice(2, res.length));
-    if (res.slice(0, 2) == '11') {
+    if (code == '11') {
+      //동기화 -> 1. 맨 처음 입장할 때 / 2. 맵에 게임이 설치될 때
       setGlobalData(data);
-    } else if (res.slice(0, 2) == '20') {
+    } else if (code == '20') {
+      //다른유저 움직임
       handleMovement(data);
+    } else if (code == '10') {
+      //다른유저 방 입장
+      setUserLocation((prev) => ({ ...prev, [data.user_id]: { x: 50, y: 50 } })); // 처음 들어오는 유저는 좌상단으로 입장
+    } else if (code == '19') {
+      //19{"user_id":"67"}
+      //setUserLocation delete 그 유저 -> 잘 되는지 콘솔로 확인 해봐야함, 남아있는 듯
+      setUserLocation((prev: any) => {
+        for (let key in prev) {
+          const state = prev;
+          console.log(key, data.user_id);
+          if (key == data.user_id) {
+            delete state.key;
+            return { ...state };
+          }
+        }
+        // if (!isEmpty(ws.current))  ws.current && ws.current.close();
+      });
     }
   }
 
   function onError(evt: any) {
     console.log('ERROR: ' + evt.data);
   }
-  // function disconnect() {
-  //   if (!ws.current) ws.current.close();
-  // }
-
-  // function send_message() {
-  //   var message = textID.value;
-  //   console.log('Message Sent: ' + message);
-  //   ws.current.send(message);
-  // }
 
   function sendData(command: number, data: any) {
     console.log('SEND DATA', data);
@@ -239,20 +312,47 @@ const Map = (props: IMapProps) => {
     return userArr;
   };
 
+  //전체정보에서 유저정보 갱신
+  useEffect(() => {
+    //현재 있는 나의 유저 정보 prev에서 갱신해야됨 globalData 로 위치 주기
+    const userObj: IUserInfo = globalData.room.users;
+    for (let key in userObj) {
+      setUserLocation((prev) => ({
+        ...prev,
+        [key]: {
+          x: userObj[key].x == 0 ? delta : userObj[key].x * delta,
+          y: userObj[key].y == 0 ? delta : userObj[key].y * delta,
+        },
+      }));
+    }
+  }, [globalData.room.users]);
+
+  // //전체정보에서 game 정보 갱신
+  // useEffect(() => {
+  //   //현재 있는 나의 게임 정보 prev에서 갱신해야됨 globalData 로 위치 주기
+  //   const gameObj: IGameInfo = globalData.room.map.games;
+  //   for (let key in gameObj) {
+  //     setGameOffset((prev: any) => ({
+  //       ...prev,
+  //       [key]: {
+  //         x: gameObj[key].x == 0 ? delta : gameObj[key].x,
+  //         y: gameObj[key].y == 0 ? delta : gameObj[key].y,
+  //       },
+  //     }));
+  //   }
+  // }, [globalData.room.map.games]);
+
+  useEffect(() => {
+    setGlobalData(globalData);
+  }, []);
+
   return (
     <StageStyled>
-      {console.log('mapInfo from library', mapInfo)}
+      {/* {console.log('mapInfo from library', mapInfo)} */}
       {console.log('global data', globalData)}
       {console.log('userLocation', userLocation)}
-      {console.log('userInfo', userInfo)}
-      <Stage
-        id="canvas"
-        width={absoluteVal}
-        height={absoluteVal}
-        ref={shapeRef}
-        style={{ border: '1px solid black' }}
-        onClick={focusRef}
-      >
+      {/* {console.log('userInfo', userInfo)} */}
+      <Stage id="canvas" width={absoluteVal} height={absoluteVal} ref={shapeRef} style={{}} onClick={focusRef}>
         <Layer>
           {userObjects(userLocation).map((eachUser, i) => {
             if (eachUser == userInfo.data.idx) {
@@ -280,7 +380,9 @@ const Map = (props: IMapProps) => {
           })}
 
           {/* <UserObject x={userX} y={userY} width={absoluteVal / 5} /> */}
-          {installedGame ? (
+          {/* "games":{"2":{"name":"PUBG: BATTLEGROUNDS","x":196,"y":50}},"objects":{}}} */}
+          {console.log(installedGame)}
+          {gameOffset.x != 0 && installedGame ? (
             <EachGame installedGame={installedGame} gameOffset={gameOffset} setGameOffset={setGameOffset} />
           ) : null}
         </Layer>
