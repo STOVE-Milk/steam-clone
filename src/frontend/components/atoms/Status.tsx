@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 export interface IUserStatusProps {
-  online: boolean;
+  online?: boolean;
 }
 
 export default function UserStatus(props: IUserStatusProps) {
