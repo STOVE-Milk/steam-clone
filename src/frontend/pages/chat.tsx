@@ -196,7 +196,9 @@ const Chat: NextPage = () => {
                   )
                 }
               />
-              <ChatListName types={'medium'}>{room.private ? room.name.split('-')[1] : room.name}</ChatListName>
+              <ChatListName types={'medium'}>
+                {room.private ? room.name.split('-').filter((t) => t !== userInfo.data.idx.toString())[0] : room.name}
+              </ChatListName>
             </ChatListBox>
           );
         })}
