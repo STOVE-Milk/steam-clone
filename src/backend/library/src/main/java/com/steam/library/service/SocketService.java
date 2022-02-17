@@ -106,8 +106,8 @@ public class SocketService {
                         // 같은 방에 중복 입장 시 기존 연결을 끊는 메세지
                         ClosePreConnectionMessage closePreConnectionMessage = JsonUtil.toObject(messages[2], ClosePreConnectionMessage.class);
                         String preSessionId = closePreConnectionMessage.getPreSessionId();
-                        log.info("session close multi enter... ");
                         if(session_room.containsKey(preSessionId)) {
+                            log.info("session close multi enter... " + closePreConnectionMessage.getUserId());
                             session_room.remove(preSessionId);
                             userData.remove(preSessionId);
                             WebSocketSession preSession = lobby.get(roomId).getSessionBySessionId(preSessionId);

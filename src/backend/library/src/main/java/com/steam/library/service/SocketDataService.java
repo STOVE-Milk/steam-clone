@@ -269,7 +269,6 @@ public class SocketDataService {
         }
     }
 
-    //TODO: RedisTemplate execute가 필요
     public void removeUserInRedis(String roomId, String leaveUserId) {
         String mainKey = "library:" + roomId;
         String hashKey = "users.[" + leaveUserId + "].";
