@@ -21,3 +21,8 @@ export interface IDoSignupReqType {
 export interface ICheckEmailReqtype {
   email: string;
 }
+export interface reIssueTokenReqType {
+  accessToken: string;
+  refreshToken: string;
+  isUpdated: boolean;
+}

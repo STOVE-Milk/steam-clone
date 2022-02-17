@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import * as UserAPI from 'api/user/api';
 import * as guestAPI from 'api/guestbook/api';
+import { verifyToken } from 'util/verifyToken';
 
 import Text from 'components/atoms/Text';
 import FriendBox, { IFriend } from 'components/molecules/FriendBox';
@@ -58,6 +59,7 @@ const UserPage: NextPage = () => {
   };
 
   useEffect(() => {
+    verifyToken();
     getProfile();
     getGuestBooks();
     !isMypage && getWithFriend();

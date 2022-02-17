@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import * as FriendAPI from 'api/friend/api';
+import { verifyToken } from 'util/verifyToken';
 
 import Text from 'components/atoms/Text';
 import { TextTheme } from 'components/atoms/Text';
@@ -52,8 +53,9 @@ const Friend: NextPage = () => {
 
   // 친구 신청을  위해 유저 검색
   const searchFriend = async () => {
-    const res = (await FriendAPI.searchFriendAPI(searchInput)).data;
+    const res = (await FriendAPI.searchFriendAPI(searchInput)).data.users;
     setFriends(res);
+    
   };
 
   // 친구 신청
@@ -91,6 +93,7 @@ const Friend: NextPage = () => {
   };
 
   useEffect(() => {
+    verifyToken();
     getFriends();
   }, []);
 

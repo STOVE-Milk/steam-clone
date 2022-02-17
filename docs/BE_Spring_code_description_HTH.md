@@ -148,9 +148,9 @@
     - [행위](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/global/common/Behavior.java)
     - [메세지 디렉토리](https://github.com/STOVE-Milk/steam-clone/tree/develop/src/backend/library/src/main/java/com/steam/library/dto/messages)
   - 소켓 핸들러
-    - [핸들러 클래스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/service/SocketService.java)
+    - [핸들러 클래스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/LibraryWebSocketHandler.java)
   - 비즈니스 로직(서비스)
-    - [소켓의 메세지에 따라 세부 로직을 수행하는 클래스, 메세지 큐의 메세지를 소비하는 클래스]()
+    - [소켓의 메세지에 따라 세부 로직을 수행하는 클래스, 메세지 큐의 메세지를 소비하는 클래스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/service/SocketService.java)
     - [트랜잭션 로직들을 처리하는 클래스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/service/SocketDataService.java)
     - [메세지를 다른 서버에 발행하는 클래스](https://github.com/STOVE-Milk/steam-clone/blob/develop/src/backend/library/src/main/java/com/steam/library/service/PublishService.java)
 - 멤버십 서버
