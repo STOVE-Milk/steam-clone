@@ -25,8 +25,10 @@ interface IRoom {
 }
 
 const Chat: NextPage = () => {
-  const userInfo = useSelector((state: IState) => state.user.userInfo.data);
   const token = localStorage.getItem('accessToken');
+
+  const userInfo = useSelector((state: IState) => state.user.userInfo);
+  const friends = useSelector((state: IState) => state.user.friends.data);
 
   const [showModal, setShowModal] = useState(false); // 채팅방 생성 모달을 띄우는가
   const [rooms, setRooms] = useState<IRoom[]>([]); // 채팅방 목록
@@ -49,7 +51,7 @@ const Chat: NextPage = () => {
   useEffect(() => {
     const result = token && parseToken(token);
     dispatch(saveUserInfo.request(result));
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (!ws.current) {
@@ -91,6 +93,9 @@ const Chat: NextPage = () => {
               message && array2?.push(message);
               setLogs((array2) => array2);
               break;
+            case 'user-left': // 유저 활동 종료
+              console.log('user-left', serverMessage);
+              break;
           }
         });
       };
@@ -98,7 +103,7 @@ const Chat: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    console.log(message, logs);
+    // console.log(message, logs);
   }, [logs, message]);
 
   const enterRoom = (roomId: string) => {
@@ -147,7 +152,7 @@ const Chat: NextPage = () => {
         }),
       );
     } else {
-      let room = `${roomName}-${userInfo.idx}`;
+      let room = `${roomName}-${userInfo.data.idx}`;
       selectFriends.forEach((friend) => {
         room += `-${friend.toString()}`;
       });
@@ -196,41 +201,16 @@ const Chat: NextPage = () => {
           );
         })}
         <Modal onClose={() => setShowModal(false)} show={showModal}>
-          {/* TODO: 실제 친구 불러오기 */}
-          <JoinChat
-            friends={[
-              {
-                id: 35,
-                nickname: 'algorithm',
-                profile: {
-                  image: '',
-                  description: '',
-                },
-              },
-              {
-                id: 54,
-                nickname: 'lococo',
-                profile: {
-                  image: '',
-                  description: '',
-                },
-              },
-              {
-                id: 49,
-                nickname: 'minjyo',
-                profile: {
-                  image: '',
-                  description: '',
-                },
-              },
-            ]}
-            onSubmit={createRoom}
-          ></JoinChat>
+          <JoinChat friends={friends} onSubmit={createRoom}></JoinChat>
         </Modal>
       </ChatListSection>
       <ChatRoomSection>
         <ChatViewBox>
-          <ChatRoom userId={userInfo.idx} members={members} logs={logs} leaveRoom={leaveRoom}></ChatRoom>
+          {curRoom ? (
+            <ChatRoom userId={userInfo.data.idx} members={members} logs={logs} leaveRoom={leaveRoom}></ChatRoom>
+          ) : (
+            <ChatRoomPlaceholder>방을 선택해주세요</ChatRoomPlaceholder>
+          )}
         </ChatViewBox>
         <ChatInputBox>
           <ChatInput
@@ -290,6 +270,11 @@ const ChatRoomSection = styled.div`
 
 const ChatViewBox = styled.div`
   flex: 1;
+`;
+
+const ChatRoomPlaceholder = styled.div`
+  color: ${(props) => props.theme.colors.primaryText};
+  text-align: center;
 `;
 
 const ChatInputBox = styled.div`
