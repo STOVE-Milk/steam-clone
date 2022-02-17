@@ -28,6 +28,7 @@ import FriendBox from 'components/molecules/FriendBox';
 export default function NavBar() {
   const [open, setOpen] = useState(true); //NavBar가 열려있는가
   const router = useRouter();
+  const { userInfo } = useSelector((state: IState) => state.user);
 
   const friends = useSelector((state: IState) => state.user.friends.data);
 
@@ -58,9 +59,10 @@ export default function NavBar() {
         <MenuBox open={open} page="category" icon={<FontAwesomeIcon icon={faBook} inverse />} name={'카테고리'} />
         <MenuBox
           open={open}
+          // page={`library/${userInfo.data.idx}`}
           page="library/52"
           icon={<FontAwesomeIcon icon={faGamepad} inverse />}
-          name={'라이브러리'}
+          name={'나의 라이브러리'}
         />
         <MenuBox open={open} page="wishlist" icon={<FontAwesomeIcon icon={faHeart} inverse />} name={'위시리스트'} />
         <MenuBox open={open} page="cart" icon={<FontAwesomeIcon icon={faShoppingCart} inverse />} name={'장바구니'} />

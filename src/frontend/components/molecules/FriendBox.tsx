@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,15 +28,17 @@ export interface IFriendBoxProps {
 
 export default function FriendBox(props: IFriendBoxProps) {
   return (
-    <FriendBoxWrapper>
-      {props.friendInfo.profile.image === '' ? (
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-      ) : (
-        '실제 이미지'
-      )}
-      {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
-      {props.open ? <FriendStatus color={theme.colors.online} /> : null}
-    </FriendBoxWrapper>
+    <Link href={`library/${props.friendInfo.id}`}>
+      <FriendBoxWrapper>
+        {props.friendInfo.profile.image === '' ? (
+          <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
+        ) : (
+          '실제 이미지'
+        )}
+        {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
+        {props.open ? <FriendStatus color={theme.colors.online} /> : null}
+      </FriendBoxWrapper>
+    </Link>
   );
 }
 

@@ -45,7 +45,7 @@ const cart: NextPage<IState> = (props) => {
       const game_list = await res.data.game_list;
       setGameList(game_list);
     } else {
-      alert('카트에 담긴 게임이 없습니다.');
+      // alert('카트에 담긴 게임이 없습니다.');
       // router.push('/category');
     }
   };
