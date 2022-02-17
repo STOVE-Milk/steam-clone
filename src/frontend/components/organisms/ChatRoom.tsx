@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 
 import styled from 'styled-components';
 
@@ -20,19 +20,31 @@ export interface IChatRoomProps {
 }
 
 export default function ChatRoom(props: IChatRoomProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 메세지 추가 시, 스크롤 내리기
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    }
+  }, [props.logs]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [props.logs]);
+
   return (
     <Wrapper>
       <RoomInfoBox>
-        {props.members
-          .filter((member) => props.userId.toString() !== member)
-          .map((member, key) => {
-            return <Member key={key}>{member}</Member>;
-          })}
+        {props.members.map((member, key) => {
+          return <Member key={key}>{member}</Member>;
+        })}
         <LeaveRoomBtn types="primary" onClick={props.leaveRoom}>
           방 나가기
         </LeaveRoomBtn>
       </RoomInfoBox>
-      <RoomViewBox>
+      <div></div>
+      <RoomViewBox ref={scrollRef}>
         {props.logs.map((log, key) => {
           return (
             <MsgBox key={key} isMine={log.sender_id === props.userId.toString()} name={log.sender_nickname}>

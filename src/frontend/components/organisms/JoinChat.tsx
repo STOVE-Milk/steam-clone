@@ -95,6 +95,7 @@ const FriendList = styled.div`
   margin: 1rem 0;
   border-radius: 10px;
   border: 1px solid ${(props) => props.theme.colors.divider};
+  padding: 1rem;
 `;
 
 const FriendItem = styled(FriendBox)`

@@ -42,12 +42,6 @@ const Chat: NextPage = () => {
 
   let ws = useRef<WebSocket>(); // 웹 소켓 사용
 
-  // 소켓 통신 시 임시로 사용하는 토큰
-  // const token =
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHgiOjE0LCJuaWNrbmFtZSI6Im5pY2sxNCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiIsImlhdCI6MTY0NDEzNzUyOCwiZXhwIjoxNjQ0MTQxMTI4fQ.rgF0cR0dhqLOY3yhDuYPHJss4exAeTIfw2H1yAKf_78';
-  // const userId = 14;
-  // const nickname = 'nick14';
-
   useEffect(() => {
     const result = token && parseToken(token);
     dispatch(saveUserInfo.request(result));
@@ -104,6 +98,11 @@ const Chat: NextPage = () => {
       };
     }
   }, []);
+
+  // 유저 아이디로 유저 닉네임 찾기
+  const findNickname = (id: string) => {
+    return friends.filter((f) => f.id.toString() === id)[0].nickname.toString();
+  };
 
   const enterRoom = (roomId: string) => {
     // 클->서: 채팅방에 들어감
@@ -197,7 +196,9 @@ const Chat: NextPage = () => {
                 }
               />
               <ChatListName types={'medium'}>
-                {room.private ? room.name.split('-').filter((t) => t !== userInfo.data.idx.toString())[0] : room.name}
+                {room.private
+                  ? findNickname(room.name.split('-').filter((t) => t !== userInfo.data.idx.toString())[0])
+                  : room.name}
               </ChatListName>
             </ChatListBox>
           );
@@ -209,7 +210,16 @@ const Chat: NextPage = () => {
       <ChatRoomSection>
         <ChatViewBox>
           {curRoom ? (
-            <ChatRoom userId={userInfo.data.idx} members={members} logs={logs} leaveRoom={leaveRoom}></ChatRoom>
+            <ChatRoom
+              userId={userInfo.data.idx}
+              members={members
+                .filter((member) => userInfo.data.idx.toString() !== member)
+                .map((member) => {
+                  return findNickname(member);
+                })}
+              logs={logs}
+              leaveRoom={leaveRoom}
+            ></ChatRoom>
           ) : (
             <ChatRoomPlaceholder>방을 선택해주세요</ChatRoomPlaceholder>
           )}
