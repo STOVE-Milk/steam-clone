@@ -115,6 +115,23 @@ func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.
 	}, nil
 }
 
+func (store *storeServer) GetGameIdListByUserId(ctx context.Context, req *pb.UserIdQueryParamRequest) (*pb.GameIdListResponse, error) {
+	defer utils.Recover()
+	ctx = context.WithValue(ctx, "userId", req.UserId)
+	res, err := store.GameCtr.GetGameIdListByUserId(ctx)
+	if err != nil {
+		return &pb.GameIdListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.GameIdListResponse{
+		Code:    31000,
+		Message: "game list in libarary",
+		Data:    res,
+	}, nil
+}
+
 func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Empty) (*pb.GameSimpleListResponse, error) {
 	defer utils.Recover()
 	userMetaData, err := token.ExtractMetadata(ctx)
