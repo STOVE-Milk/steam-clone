@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faUsers, faComments } from '@fortawesome/free-solid-svg-icons';
 
 import { parseToken } from 'util/parseToken';
 import { IState } from 'modules';
@@ -221,7 +221,10 @@ const Chat: NextPage = () => {
               leaveRoom={leaveRoom}
             ></ChatRoom>
           ) : (
-            <ChatRoomPlaceholder>방을 선택해주세요</ChatRoomPlaceholder>
+            <ChatRoomPlaceholder>
+              <FontAwesomeIcon icon={faComments} inverse size={'2x'} />
+              <Text types="medium">채팅방을 선택해주세요</Text>
+            </ChatRoomPlaceholder>
           )}
         </ChatViewBox>
         <ChatInputBox>
@@ -285,8 +288,11 @@ const ChatViewBox = styled.div`
 `;
 
 const ChatRoomPlaceholder = styled.div`
-  color: ${(props) => props.theme.colors.primaryText};
-  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 `;
 
 const ChatInputBox = styled.div`
