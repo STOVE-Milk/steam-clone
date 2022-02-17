@@ -88,6 +88,8 @@ const library: NextPage<IState> = () => {
 
   return (
     <LibraryWrapper>
+      {/* 지금 url에 있는 id 가져와서 유저 구매 게임 정보 및 정보들 가져와야함 */}
+      {console.log(router.query.id)}
       {console.log(userInfo.data)}
       {console.log(mapInfo)}
       <TitleStyle types="large">{`${userInfo.data.nickname}의 라이브러리(구매 게임 목록)`}</TitleStyle>
