@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Circle } from 'react-konva';
+import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
 
 import useWindowSize from 'util/Hooks/useWindowDimensions';
+import { IState } from 'modules';
 
 import EachGame from 'components/organisms/EachGame';
 import { commandType, IMapInfo } from 'pages/library/[id]';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import UserObject from './UserObject';
+import { colorPalette } from 'util/colorPalette';
 
 const absoluteVal = 500;
 
@@ -41,6 +44,7 @@ interface ILocationData {
 
 const Map = (props: IMapProps) => {
   const { installedGame, mapInfo, gameOffset, setGameOffset } = props;
+  const { userInfo } = useSelector((state: IState) => state.user);
 
   const windowSize = useWindowSize();
   const width = windowSize.width;
@@ -48,13 +52,7 @@ const Map = (props: IMapProps) => {
 
   const [globalData, setGlobalData] = useState();
 
-  // const [userOffset, setUserOffset] = useState({x:250, y:250})
-  const [userX, setUserX] = useState(250); //지금은 항상 가운데 나오게 설정된듯
-  const [userY, setUserY] = useState(250);
-
   const [userLocation, setUserLocation] = useState({ 52: { x: 50, y: 50 }, 59: { x: 450, y: 450 } } as ILocationData); //지금은 항상 가운데 나오게 설정된듯
-
-  const [moveEvent, setMoveEvent] = useState();
 
   const [user2Y, setUser2Y] = useState(50);
   //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
@@ -178,31 +176,28 @@ const Map = (props: IMapProps) => {
 
   const handleKeyDown = (event: KeyboardEvent) => {
     console.log('A key was pressed', event.key);
-    if (event.key === 'ArrowLeft') {
-      setUserX((prev) => {
-        prev = prev - delta;
-        prev < 50 ? (prev = 50) : prev;
-        return prev;
-      });
-    } else if (event.key === 'ArrowDown') {
-      setUserY((prev) => {
-        prev = prev + delta;
-        prev > 450 ? (prev = 450) : prev;
-        return prev;
-      });
-    } else if (event.key === 'ArrowUp') {
-      setUserY((prev) => {
-        prev = prev - delta;
-        prev < 50 ? (prev = 50) : prev;
+    // 유저의 id를 넣어줘야하는데, 어떻게 고정값을 넣을것인가
 
-        return prev;
-      });
+    if (event.key === 'ArrowUp') {
+      setUserLocation((prev) => ({
+        ...prev,
+        [userInfo.data.idx]: { x: prev[userInfo.data.idx].x, y: prev[userInfo.data.idx].y - delta },
+      }));
     } else if (event.key === 'ArrowRight') {
-      setUserX((prev) => {
-        prev = prev + delta;
-        prev > 450 ? (prev = 450) : prev;
-        return prev;
-      });
+      setUserLocation((prev) => ({
+        ...prev,
+        [userInfo.data.idx]: { x: prev[userInfo.data.idx].x + delta, y: prev[userInfo.data.idx].y },
+      }));
+    } else if (event.key === 'ArrowDown') {
+      setUserLocation((prev) => ({
+        ...prev,
+        [userInfo.data.idx]: { x: prev[userInfo.data.idx].x, y: prev[userInfo.data.idx].y + delta },
+      }));
+    } else if (event.key === 'ArrowLeft') {
+      setUserLocation((prev) => ({
+        ...prev,
+        [userInfo.data.idx]: { x: prev[userInfo.data.idx].x - delta, y: prev[userInfo.data.idx].y },
+      }));
     }
     //업데이트된 위치를 보내야하는데 또 setState 비동기 문제 생길듯
     //방 끝으로 가면 direction으로 요청을 보내면 안됨
@@ -213,31 +208,31 @@ const Map = (props: IMapProps) => {
   };
 
   useEffect(() => {
-    // console.log(shapeRef.current);
     window.addEventListener('keydown', handleKeyDown);
-    // window.addEventListener('keydown', handle2ndKeyDown);
 
     document.querySelector('#btn') && document.querySelector('#btn')!.addEventListener('click', handleBuildEvt);
     // cleanup this component
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      // window.addEventListener('keydown', handle2ndKeyDown);
-
-      // document.querySelector('#btn') && document.querySelector('#btn')!.removeEventListener('click', handleBuildEvt);
     };
   }, []);
 
-  // useEffect(() => {
-  //   set
-  // }, []);
+  const userObjects = (userLocation: ILocationData) => {
+    let userArr: number[] = [];
+    for (let key in userLocation) {
+      if (userLocation.hasOwnProperty(key)) {
+        userArr.push(Number(key));
+      }
+    }
+    return userArr;
+  };
+
   return (
     <StageStyled>
-      {console.log(userX, userY)}
       {console.log('mapInfo from library', mapInfo)}
       {console.log('global data', globalData)}
-      {/* {console.log('movement', moveEvent)} */}
       {console.log('userLocation', userLocation)}
-
+      {console.log('userInfo', userInfo)}
       <Stage
         id="canvas"
         width={absoluteVal}
@@ -247,22 +242,30 @@ const Map = (props: IMapProps) => {
         onClick={focusRef}
       >
         <Layer>
-          <Circle x={userX} y={userY} radius={50} width={absoluteVal / 10} fill="#989899" />
-          {/* // 20{"user_id":"59","direction":0} */}
-          <Circle
-            x={userLocation['52'].x}
-            y={userLocation['52'].y}
-            radius={50}
-            width={absoluteVal / 10}
-            fill="#934749"
-          />
-          <Circle
-            x={userLocation['59'].x}
-            y={userLocation['59'].y}
-            radius={50}
-            width={absoluteVal / 10}
-            fill="#313bc9"
-          />
+          {userObjects(userLocation).map((eachUser, i) => {
+            if (eachUser == userInfo.data.idx) {
+              //나
+              return (
+                <Circle
+                  x={userLocation[userInfo.data.idx].x}
+                  y={userLocation[userInfo.data.idx].y}
+                  radius={50}
+                  width={absoluteVal / 10}
+                  fill={`${colorPalette[Math.round(100 % eachUser)]}`}
+                />
+              );
+            } else {
+              return (
+                <Circle
+                  x={userLocation[eachUser].x}
+                  y={userLocation[eachUser].y}
+                  radius={50}
+                  width={absoluteVal / 10}
+                  fill={`${colorPalette[Math.round(100 % eachUser)]}`}
+                />
+              );
+            }
+          })}
 
           {/* <UserObject x={userX} y={userY} width={absoluteVal / 5} /> */}
           {installedGame ? (

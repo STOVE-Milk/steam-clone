@@ -11,6 +11,7 @@ import { saveUserInfo } from 'modules/user';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import { parseToken } from 'util/parseToken';
 import { makeUniqueArr } from 'util/makeUniqueArr';
+import { colorPalette } from 'util/colorPalette';
 
 import { GameListLibrary, TitleStyle } from 'components/organisms/GameListLibrary';
 
@@ -92,7 +93,10 @@ const library: NextPage<IState> = () => {
       {console.log(router.query.id)}
       {console.log(userInfo.data)}
       {console.log(mapInfo)}
-      <TitleStyle types="large">{`${userInfo.data.nickname}의 라이브러리(구매 게임 목록)`}</TitleStyle>
+      <TitleWrapeer>
+        <TitleStyle types="large">{`${userInfo.data.nickname}의 라이브러리(구매 게임 목록), 내 색깔 `}</TitleStyle>
+        <MyColor color={`${colorPalette[Math.round(100 % userInfo.data.idx)]}`}></MyColor>
+      </TitleWrapeer>
       <LibraryContentWrapper>
         <NoSSRMap
           installedGame={installedGame}
@@ -106,6 +110,16 @@ const library: NextPage<IState> = () => {
     </LibraryWrapper>
   );
 };
+const TitleWrapeer = styled.section`
+  display: flex;
+`;
+
+const MyColor = styled.div<{ color: string }>`
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background: ${(props) => props.color};
+`;
 
 const LibraryWrapper = styled.section`
   width: fit-content;
