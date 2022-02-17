@@ -45,9 +45,12 @@ export default function ChatRoom(props: IChatRoomProps) {
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  height: 100%;
+`;
 
 const RoomInfoBox = styled.div`
+  width: 100%;
   display: flex;
   border-bottom: 1px solid ${(props) => props.theme.colors.divider};
   align-items: center;
@@ -64,12 +67,10 @@ const LeaveRoomBtn = styled(FilledButton)`
 `;
 
 const RoomViewBox = styled.div`
+  width: 100%;
+  height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
-  flex: 1;
   padding: 1rem;
   overflow-y: scroll;
-  ::-webkit-scrollbar {
-    display: none;
-  }
 `;

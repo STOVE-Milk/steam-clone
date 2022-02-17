@@ -269,7 +269,7 @@ const ChatRoomSection = styled.div`
 `;
 
 const ChatViewBox = styled.div`
-  flex: 1;
+  height: calc(100% - 5rem);
 `;
 
 const ChatRoomPlaceholder = styled.div`

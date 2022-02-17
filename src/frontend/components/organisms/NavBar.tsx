@@ -117,7 +117,7 @@ const LogoTitle = styled.div`
   margin-left: 1rem;
 `;
 
-const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
+const OpenBar = styled(FontAwesomeIcon)<{open: boolean}>`
   margin-left: ${(props) => (props.open ? '1.5rem' : '2rem')};
   margin-right: ${(props) => (props.open ? '2.5rem' : '1.7rem')};
   margin-top: 0.5rem;
