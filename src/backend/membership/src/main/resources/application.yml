@@ -1,7 +1,0 @@
-server:
-  port: 8201
-spring:
-  profiles:
-    active: local
-  application:
-    name: membership-service
