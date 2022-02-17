@@ -7,7 +7,7 @@ import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import { parseToken } from 'util/parseToken';
 import { IState } from 'modules';
-import user, { saveUserInfo } from 'modules/user';
+import { saveUserInfo } from 'modules/user';
 
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
@@ -32,11 +32,11 @@ const Chat: NextPage = () => {
 
   const [showModal, setShowModal] = useState(false); // 채팅방 생성 모달을 띄우는가
   const [rooms, setRooms] = useState<IRoom[]>([]); // 채팅방 목록
+  const [chatInput, setChatInput] = useState(''); //채팅 입력
 
   const [curRoom, setCurRoom] = useState(''); // 현재 채팅방 이름
   const [members, setMembers] = useState<string[]>([]); // 채팅방 멤버들
   const [logs, setLogs] = useState<Log[]>([]); // 채팅방 메세지들
-  const [message, setMessage] = useState({} as Log); //현재 보낼 메세지, 받을 메세지
 
   const dispatch = useDispatch();
 
@@ -69,9 +69,13 @@ const Chat: NextPage = () => {
               break;
             case 'room-get': // 유저 접속 시, 채팅방 목록 가져오기
               console.log('room-get', serverMessage.data);
-              serverMessage.data.forEach((room: IRoom) => {
-                setRooms((rooms) => rooms.concat(room));
-              });
+              if (serverMessage.data === null) {
+                setRooms([]);
+              } else {
+                serverMessage.data.forEach((room: IRoom) => {
+                  setRooms((rooms) => rooms.concat(room));
+                });
+              }
               break;
             case 'room-joined': // 채팅방 생성
               console.log('room-joined', serverMessage.target);
@@ -84,14 +88,13 @@ const Chat: NextPage = () => {
               break;
             case 'send-message': // 메세지를 받음
               console.log('send-message', serverMessage);
-              setMessage({
-                sender_id: serverMessage.sender.id,
-                sender_nickname: serverMessage.sender.name,
-                content: serverMessage.message,
-              });
-              let array2 = logs;
-              message && array2?.push(message);
-              setLogs((array2) => array2);
+              setLogs((logs) =>
+                logs.concat({
+                  sender_id: serverMessage.sender.id,
+                  sender_nickname: serverMessage.sender.name,
+                  content: serverMessage.message,
+                }),
+              );
               break;
             case 'user-left': // 유저 활동 종료
               console.log('user-left', serverMessage);
@@ -101,10 +104,6 @@ const Chat: NextPage = () => {
       };
     }
   }, []);
-
-  useEffect(() => {
-    // console.log(message, logs);
-  }, [logs, message]);
 
   const enterRoom = (roomId: string) => {
     // 클->서: 채팅방에 들어감
@@ -122,12 +121,13 @@ const Chat: NextPage = () => {
     ws.current?.send(
       JSON.stringify({
         action: 'send-message',
-        message: message.content,
+        message: chatInput,
         target: {
           id: curRoom,
         },
       }),
     );
+    setChatInput('');
   };
 
   const leaveRoom = () => {
@@ -214,8 +214,8 @@ const Chat: NextPage = () => {
         </ChatViewBox>
         <ChatInputBox>
           <ChatInput
-            value={message?.content}
-            onChange={(e) => setMessage((prev) => ({ ...prev, content: e.target.value }))}
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
             onKeyPress={(e) => onKeyPress(e)}
           ></ChatInput>
           <ChatButton types="primary" onClick={sendMessage}>

@@ -11,7 +11,7 @@ export default function MsgBox(props: MsgBoxProps) {
   return (
     <Wrapper>
       <Name isMine={props.isMine}>{props.name}</Name>
-      <MsgBoxStyle isMine={props.isMine}>{props.children}</MsgBoxStyle>;
+      <MsgBoxStyle isMine={props.isMine}>{props.children}</MsgBoxStyle>
     </Wrapper>
   );
 }
@@ -40,7 +40,6 @@ const MsgBoxStyle = styled.span<{ isMine: boolean }>`
   align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
 
   :after {
-    content: '';
     position: absolute;
     ${(props) =>
       props.isMine
