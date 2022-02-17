@@ -1,6 +1,6 @@
 {
     "proxy": {
-        "port": "8102"
+        "port": "8103"
     },
     "backends": [
         {
@@ -11,9 +11,6 @@
         },
         {
             "url": "http://localhost:8113/"
-        },
-        {
-            "url": "http://localhost:8114/"
         }
     ]
 }
