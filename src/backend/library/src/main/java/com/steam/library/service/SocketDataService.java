@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class SocketDataService {
-    private static final Integer MAX_SIDE_OF_MAP = 100000; //20;
+    private static final Integer MAX_SIDE_OF_MAP = 20;
 
     /*
         Redis에 여러 서버가 접근할 경우 동시성 문제
@@ -240,8 +240,9 @@ public class SocketDataService {
         String hashKey = "users.[" + movedUserId + "].";
         try {
             if (Boolean.TRUE.equals(hash.hasKey(mainKey, hashKey + 'x'))) {
+                // 아래를 누를 때 y가 늘어나는 이유는 왼쪽 위가 0,0
                 switch (direction) {
-                    case UP:
+                    case DOWN:
                         hashKey += 'y';
                         if (hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
                             hash.increment(mainKey, hashKey, 1);
@@ -251,7 +252,7 @@ public class SocketDataService {
                         if (hash.get(mainKey, hashKey) < MAX_SIDE_OF_MAP)
                             hash.increment(mainKey, hashKey, 1);
                         break;
-                    case DOWN:
+                    case UP:
                         hashKey += 'y';
                         if (hash.get(mainKey, hashKey) > 0)
                             hash.increment(mainKey, hashKey, -1);
