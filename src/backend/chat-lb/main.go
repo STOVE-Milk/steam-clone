@@ -18,6 +18,7 @@ func serveBackend(name string, port string) {
 	http.ListenAndServe(port, mux)
 }
 
+// 고루틴을 이용해 load balancing
 func main() {
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
