@@ -221,6 +221,36 @@ func (r *Repo) GetCategoryListByGameId(ctx context.Context) ([]*models.Category,
 	return categoryList, nil
 }
 
+func (r *Repo) GetGameListByUserId(ctx context.Context) ([]*models.GameSimple, *models.Error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	userId := ctx.Value("userId")
+	var gameSimpleList []*models.GameSimple
+	rows, err := r.db.QueryContext(ctx, `	
+	SELECT g.idx, g.name, g.description_snippet, g.price, g.sale, g.image, g.video, g.os, g.download_count
+	FROM library AS l
+	JOIN game AS g
+	ON l.game_id=g.idx
+	WHERE l.user_id=?
+	`, userId)
+	if err == sql.ErrNoRows {
+		return nil, utils.ErrorHandler(storeErr.EmptyGameDataErr, err)
+	}
+	if err != nil {
+		return nil, utils.ErrorHandler(storeErr.GetGameListInWishlistQueryErr, err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var game models.GameSimple
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
+		if err != nil {
+			return nil, utils.ErrorHandler(storeErr.GetGameListInWishlistScanErr, err)
+		}
+		gameSimpleList = append(gameSimpleList, &game)
+	}
+	return gameSimpleList, nil
+}
+
 func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*models.GameSimple, *models.Error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()

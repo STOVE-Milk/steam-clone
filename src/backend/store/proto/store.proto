@@ -48,7 +48,7 @@ service Store {
             get: "/store/wishes"
         };
     }
-    rpc GetGameIdListByUserId(UserIdQueryParamRequest) returns (GameIdListResponse){
+    rpc GetGameListByUserId(UserIdQueryParamRequest) returns (GameSimpleListResponse){
         option (google.api.http) = {
             get: "/store/users/{user_id}/games"
         };
@@ -111,14 +111,7 @@ message UserDataResponse{
         repeated int32 purchase_list = 2 [json_name = "purchase_list"];
     }
 }
-message GameIdListResponse{
-    int32 code = 1;
-    string message = 2;
-    GameIdList data = 3;
-    message GameIdList{
-        repeated int32 game_id_list = 2 [json_name = "game_id_list"];
-    }
-}
+
 
 message ReviewListResponse{
     int32 code = 1;

@@ -56,17 +56,6 @@ func (gc *GameService) GetUserData(ctx context.Context) (*pb.UserDataResponse_Us
 	pbUserData.PurchaseList = library
 	return &pbUserData, nil
 }
-func (gc *GameService) GetGameIdListByUserId(ctx context.Context) (*pb.GameIdListResponse_GameIdList, *models.Error) {
-	gameIdList, err := gc.r.GetPurchaseList(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	var pbGameIdList pb.GameIdListResponse_GameIdList
-	pbGameIdList.GameIdList = gameIdList
-
-	return &pbGameIdList, nil
-}
 
 func (gc *GameService) GetGameDetail(ctx context.Context) (*pb.GameDetailResponse_Game, *models.Error) {
 	gameDetail, err := gc.r.GetGameDetail(ctx)
@@ -169,7 +158,18 @@ func (gc *GameService) GetGameListInWishlist(ctx context.Context) (*pb.GameSimpl
 	}
 	return pbGameSimpleList, nil
 }
+func (gc *GameService) GetGameListByUserId(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
+	gameSimpleList, err := gc.r.GetGameListByUserId(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pbGameSimpleList, err := gc.parsingGameSimpleList(ctx, gameSimpleList)
+	if err != nil {
+		return nil, err
+	}
 
+	return pbGameSimpleList, nil
+}
 func (gc *GameService) PostWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
 	isSuccess, err := gc.r.PostWishlist(ctx)
 	if err != nil {
