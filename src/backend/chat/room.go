@@ -76,7 +76,7 @@ func (room *Room) broadcastToClientsInRoom(message []byte) {
 }
 
 func (room *Room) publishRoomMessage(message []byte) {
-	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
+	err := config.Redis.Publish(ctx, room.GetId(), message).Err()
 	if err != nil {
 		log.Println(err)
 	}
@@ -93,7 +93,7 @@ func (room *Room) notifyClientLeave(client *Client) {
 }
 
 func (room *Room) subscribeToRoomMessages() {
-	pubsub := config.Redis.Subscribe(ctx, room.GetName())
+	pubsub := config.Redis.Subscribe(ctx, room.GetId())
 
 	ch := pubsub.Channel()
 

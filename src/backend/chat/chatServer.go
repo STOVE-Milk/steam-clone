@@ -63,20 +63,10 @@ func (server *WsServer) Run() {
 
 // 클라이언트를 서버에 등록하는 로직
 func (server *WsServer) registerClient(client *Client) {
-	rooms := server.getAllJoinedRoom(client.ID)
-	if rooms == nil {
-		// 처음 채팅을 시도하는 유저 MongoDB에 저장
-		server.userMRepository.AddUser(client.ID)
-	}
+
 	server.listOnlineClients(client)
 	server.publishClientJoined(client)
 	server.clients[client] = true
-
-	message := &Message{
-		Action: RoomGetAction,
-		Data:   rooms,
-	}
-	client.send <- message.encode()
 
 }
 
@@ -150,6 +140,7 @@ func (server *WsServer) listenPubSubChannel() {
 			server.handleUserJoinPrivate(message)
 		case JoinRoomPublicAction:
 			server.handleUserJoinPublic(message)
+
 		}
 		fmt.Println("서버 : " + string(message.encode()))
 
@@ -158,17 +149,19 @@ func (server *WsServer) listenPubSubChannel() {
 
 // 클라이언트가 이 웹 소캣 서버에 존재한다면 그룹 방 참여
 func (server *WsServer) handleUserJoinPublic(message Message) {
+	fmt.Println(string(message.encode()))
 	targetClient := server.findClientByID(message.Message)
 	if targetClient != nil {
-		targetClient.joinRoom(message.Target.GetName(), message.Sender, nil)
+		targetClient.joinRoom(message.Target.ID, message.Target.GetName(), message.Sender, nil)
 	}
 }
 
 // 1:1방 참여
 func (server *WsServer) handleUserJoinPrivate(message Message) {
+	fmt.Println(string(message.encode()))
 	targetClient := server.findClientByID(message.Message)
 	if targetClient != nil {
-		targetClient.joinRoom(message.Target.GetName(), message.Sender, nil)
+		targetClient.joinRoom(message.Target.ID, message.Target.GetName(), message.Sender, nil)
 	}
 }
 
@@ -240,13 +233,35 @@ func (server *WsServer) findRoomByName(name string) *Room {
 		}
 	}
 
+	if foundRoom == nil {
+		foundRoom = server.runRoomFromRepository("", name)
+	}
+	return foundRoom
+}
+func (server *WsServer) findRoomByID(id string) *Room {
+	var foundRoom *Room
+	for room := range server.rooms {
+		if room.GetId() == id {
+			foundRoom = room
+			break
+		}
+	}
+	if foundRoom == nil {
+		foundRoom = server.runRoomFromRepository(id, "")
+	}
+
 	return foundRoom
 }
 
 // 만약 방이 웹 소캣 서버에 등록돼 있지 않다면 등록 후 thread 등록
-func (server *WsServer) runRoomFromRepository(id string) *Room {
+func (server *WsServer) runRoomFromRepository(id, name string) *Room {
 	var room *Room
-	dbRoom := server.roomMRepository.FindRoomById(id)
+	var dbRoom models.Room
+	if id == "" {
+		dbRoom = server.roomMRepository.FindRoomByName(name)
+	} else {
+		dbRoom = server.roomMRepository.FindRoomById(id)
+	}
 	if dbRoom != nil {
 		room = NewRoom(dbRoom.GetName(), dbRoom.GetPrivate())
 		room.ID = dbRoom.GetId()
@@ -270,21 +285,6 @@ func (server *WsServer) findClientByID(ID string) *Client {
 	return foundClient
 }
 
-func (server *WsServer) findRoomByID(id string) *Room {
-	var foundRoom *Room
-	for room := range server.rooms {
-		if room.GetId() == id {
-			foundRoom = room
-			break
-		}
-	}
-	if foundRoom == nil {
-		foundRoom = server.runRoomFromRepository(id)
-	}
-
-	return foundRoom
-}
-
 // 새로운 룸 생성
 func (server *WsServer) createRoom(name string, private bool, members []string) *Room {
 	room := NewRoom(name, private)
@@ -302,8 +302,8 @@ func (server *WsServer) createRoom(name string, private bool, members []string) 
 	return room
 }
 
-func (server *WsServer) getAllJoinedRoom(clientId string) []models.RoomMongo {
-	return server.userMRepository.GetAllJoinedRoom(clientId)
+func (server *WsServer) getAllJoinedRoom(client models.User) []models.RoomMongo {
+	return server.userMRepository.GetAllJoinedRoom(client.GetId())
 }
 
 func (server *WsServer) getUserFriends(clientId string) []models.User {

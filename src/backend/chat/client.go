@@ -160,12 +160,7 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 		Name: loginUser.Nickname,
 	}
 	wsServer.setUser(user)
-	// for _, u := range wsServer.users {
-	// 	if u.GetName() == loginUser.Nickname {
-	// 		user = u
-	// 		break
-	// 	}
-	// }
+
 	client := newClient(conn, wsServer, user)
 
 	go client.writePump()
@@ -204,8 +199,21 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 
 	case RoomViewAction:
 		client.handleRoomViewMessage(message)
+
+	case RoomGetAction:
+		client.handleRoomGetAction(message)
 	}
 
+}
+
+func (client *Client) handleRoomGetAction(message Message) {
+	rooms := client.wsServer.getAllJoinedRoom(client)
+
+	message = Message{
+		Action: RoomGetAction,
+		Data:   rooms,
+	}
+	client.send <- message.encode()
 }
 
 // 채팅 방을 클릭하면 채팅방의 정보를 보여 줌.
@@ -252,7 +260,7 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	roomName := fmt.Sprintf("%v-%v", userA, userB)
 
 	// Join room
-	joinedRoom := client.joinRoom(roomName, target, []string{client.ID, message.Message})
+	joinedRoom := client.joinRoom("", roomName, target, []string{client.ID, message.Message})
 
 	// 접속 중인 회원이 아니라면 방 까지만 만들고 상대방에게 방을 보이게 할 필요는 없다.
 	if target == nil {
@@ -266,19 +274,26 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 
 }
 
-func (client *Client) handleJoinRoomMessage(message Message) {
+func (client *Client) handleJoinRoomMessage(message Message) { //메세지밖에엄슴
 	strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
 	roomName := strArr[0]
 	members := strArr[1:]
-	joinedRoom := client.joinRoom(roomName, nil, members)
+	joinedRoom := client.joinRoom("public", roomName, nil, members)
 	if joinedRoom != nil {
 		client.invitePublicRoom(members, joinedRoom)
 	}
 
 }
 
-func (client *Client) joinRoom(roomName string, sender models.User, members []string) *Room {
-	room := client.wsServer.findRoomByName(roomName)
+func (client *Client) joinRoom(roomId, roomName string, sender models.User, members []string) *Room {
+	var room *Room
+	if roomId == "" {
+		//그룹 채팅방
+		room = client.wsServer.findRoomByName(roomName)
+	} else {
+		//1:1 채팅방
+		room = client.wsServer.findRoomByID(roomId)
+	}
 	if room == nil {
 		room = client.wsServer.createRoom(roomName, sender != nil, members)
 	}
