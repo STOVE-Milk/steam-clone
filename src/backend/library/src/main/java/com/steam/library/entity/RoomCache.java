@@ -45,8 +45,6 @@ public class RoomCache {
     }
 
     public void resetUserLocation() {
-        this.users.forEach((key, user) -> {
-            user.resetLocation();
-        });
+        this.users.forEach((key, user) -> user.resetLocation());
     }
 }

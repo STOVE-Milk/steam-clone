@@ -209,6 +209,11 @@ public class SocketDataService {
                     .orElseGet(() ->
                             Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash()
                     );
+
+            // 오류때문에 유저 카운트가 0보다 작을 경우 룸 리셋
+            if(roomCache.getUserCount() < 0)
+                roomCache = Room.withMap(roomId, getUserMap(Integer.parseInt(roomId))).toHash();
+
             roomCache.addUser(enteredUserId, enteredUser);
             roomCacheRepository.save(roomCache);
             return Room.of(roomCache);
@@ -276,19 +281,21 @@ public class SocketDataService {
         RLock roomLock = redissonClient.getLock(PREFIX_OF_LOCK + roomId);
         try {
             roomLock.lockInterruptibly(EXPIRE_TIME_OF_LOCK, TIME_UNIT);
-            redisTemplate.execute(new SessionCallback<Object>() {
-                @Override
-                public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
-                    operations.multi();
-                    HashOperations<K, String, Object> hash = operations.opsForHash();
-                    hash.increment((K) mainKey, "userCount", -1);
-                    hash.delete((K) mainKey, hashKey + 'x');
-                    hash.delete((K) mainKey, hashKey + 'y');
-                    hash.delete((K) mainKey, hashKey + "nickname");
-                    operations.exec();
-                    return null;
-                }
-            });
+            if(Boolean.TRUE.equals(redisTemplate.opsForHash().hasKey(mainKey, hashKey + "nickname"))) {
+                redisTemplate.execute(new SessionCallback<Object>() {
+                    @Override
+                    public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
+                        operations.multi();
+                        HashOperations<K, String, Object> hash = operations.opsForHash();
+                        hash.increment((K) mainKey, "userCount", -1);
+                        hash.delete((K) mainKey, hashKey + 'x');
+                        hash.delete((K) mainKey, hashKey + 'y');
+                        hash.delete((K) mainKey, hashKey + "nickname");
+                        operations.exec();
+                        return null;
+                    }
+                });
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {

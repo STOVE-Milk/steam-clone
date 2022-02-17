@@ -81,8 +81,10 @@ public class LibraryWebSocketHandler extends TextWebSocketHandler {
         /*
             오류에 의한 비정상 종료의 경우 유저 세션에 대한 정보가 남아있는 문제가 있습니다.
             이를 해결하기 위해 종료 상태에 따라 정보를 삭제할 수 있도록 분기 처리를 해주었습니다.
+
+            유저가 입장해 있는지 확인하고 연결을 끊도록 조건절 추가
         */
-        if(!status.equals(CloseStatus.NORMAL)) {
+        if(!status.equals(CloseStatus.NORMAL) && socketService.isEnteredUserSession(session.getId())) {
             log.info("CloseStatus of " + session.getId() + " : " + status);
             socketService.closeConnection(session);
         }

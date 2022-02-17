@@ -159,6 +159,9 @@ public class SocketService {
         return true;
     }
 
+    public boolean isEnteredUserSession(String sessionId) {
+        return session_room.containsKey(sessionId);
+    }
     /*
         synchronized 참고자료 : https://jgrammer.tistory.com/entry/Java-%ED%98%BC%EB%8F%99%EB%90%98%EB%8A%94-synchronized-%EB%8F%99%EA%B8%B0%ED%99%94-%EC%A0%95%EB%A6%AC
     */
@@ -219,9 +222,6 @@ public class SocketService {
         MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
         publishService.publishMoveUser(roomId, moveUserMessage);
 
-        // 본인이 발행한 메세지까지 소비해서 주석처리
-        // sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
-
         return true;
     }
 
@@ -251,8 +251,6 @@ public class SocketService {
             lobby.get(roomId).resetUserLocation();
             publishService.publishResetUserLocationAndSync(roomId, userId);
             socketDataService.resetUserLocationAndUpdateMap(roomId, buildRequestMessage.getMap());
-            // 본인이 발행한 메세지까지 소비해서 주석처리
-            //sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, lobby.get(roomId));
             return true;
         } else {
             return sendErrorMessage(session, ErrorCode.SERVER_ERROR);
@@ -293,27 +291,25 @@ public class SocketService {
     public synchronized Boolean closeConnection(WebSocketSession session) {
         String sessionId = session.getId();
         String roomId = session_room.get(sessionId);
-        String userId = userData.get(sessionId).getIdx().toString();
 
-        log.info("Close Connection : "  + sessionId + " " +userId);
-
-        LeaveUserMessage leaveUserMessage = LeaveUserMessage.of(userId);
-        publishService.publishLeaveUser(roomId, leaveUserMessage);
-
-        // 본인이 발행한 메세지까지 소비해서 주석처리
-        // sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
-
-        // 떠나기
         if(lobby.containsKey(roomId)) {
+            String userId = userData.get(sessionId).getIdx().toString();
+
+            log.info("Close Connection : "  + sessionId + " " +userId);
+
+            // 떠나기
             Integer userNum = lobby.get(roomId).leave(userId, sessionId);
             if (userNum.equals(0))
                 lobby.remove(roomId);
             userData.remove(sessionId);
             session_room.remove(sessionId);
-        }
 
-        socketDataService.removeUserConnectionToRedis(userId, roomId);
-        socketDataService.removeUserInRedis(roomId, userId);
+            socketDataService.removeUserConnectionToRedis(userId, roomId);
+            socketDataService.removeUserInRedis(roomId, userId);
+
+            LeaveUserMessage leaveUserMessage = LeaveUserMessage.of(userId);
+            publishService.publishLeaveUser(roomId, leaveUserMessage);
+        }
 
         try {
             session.close(CloseStatus.NORMAL);
