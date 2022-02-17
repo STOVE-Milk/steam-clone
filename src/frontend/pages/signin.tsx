@@ -62,9 +62,12 @@ const signin: NextPage<IState> = () => {
         localStorage.setItem('refreshToken', res.data.refreshToken);
         const result = parseToken(res.data.accessToken);
         dispatch(saveUserInfo.request(result));
-        router.push('/');
+
         //친구 목록 불러와서 API에 저장
         dispatch(getFriend.request({}));
+        
+        router.push('/');
+        
       }
     }
   };

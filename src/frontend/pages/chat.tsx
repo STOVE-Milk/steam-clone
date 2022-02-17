@@ -49,9 +49,8 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     if (!ws.current) {
-      ws.current = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
+      ws.current = new WebSocket(`ws://fortice.iptime.org:8113/chat/ws?token=${token}`); //웹 소켓 연결
       // 서버 -> 클라이언트
-      // 웹 소켓 통신 과정에서 서버로부터 받는 메세지들을 action에 따라 처리. 아직 개발중!
       ws.current.onmessage = (e: MessageEvent) => {
         const events = e.data.split('\n');
         events.forEach((event: string) => {
