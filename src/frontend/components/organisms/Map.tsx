@@ -86,27 +86,7 @@ const Map = (props: IMapProps) => {
     if (res.slice(0, 2) == '11') {
       setGlobalData(data);
     } else if (res.slice(0, 2) == '20') {
-      if (data.direction == 0) {
-        setUserLocation((prev) => ({
-          ...prev,
-          [data.user_id]: { x: prev[data.user_id].x, y: prev[data.user_id].y - delta },
-        }));
-      } else if (data.direction == 1) {
-        setUserLocation((prev) => ({
-          ...prev,
-          [data.user_id]: { x: prev[data.user_id].x + delta, y: prev[data.user_id].y },
-        }));
-      } else if (data.direction == 2) {
-        setUserLocation((prev) => ({
-          ...prev,
-          [data.user_id]: { x: prev[data.user_id].x, y: prev[data.user_id].y + delta },
-        }));
-      } else if (data.direction == 3) {
-        setUserLocation((prev) => ({
-          ...prev,
-          [data.user_id]: { x: prev[data.user_id].x - delta, y: prev[data.user_id].y },
-        }));
-      }
+      handleMovement(data);
     }
   }
 
@@ -159,26 +139,42 @@ const Map = (props: IMapProps) => {
   const focusRef = () => {
     focus();
   };
-  // const handleMovement = (direction: number) => {
-  //   console.log('where is he going? ', direction);
-  //   if (direction == 0) {
-  //     return {x: }
-  //   } else if (direction == 1) {
-
-  //   } else if (direction == 2) {
-  //     setUserY((prev) => {
-  //       prev = prev - delta;
-  //       prev < 50 ? (prev = 50) : prev;
-
-  //       return prev;
-  //     });
-  //   } else if (direction == 3) {
-  //     setUserX((prev) => {
-  //       prev = prev + delta;
-  //       prev > 450 ? (prev = 450) : prev;
-  //       return prev;
-  //     });
-  //   }
+  const handleMovement = (data: { user_id: number; direction: number }) => {
+    console.log('where is he going? ', data.direction);
+    if (data.direction == 0) {
+      setUserLocation((prev) => ({
+        ...prev,
+        [data.user_id]: {
+          x: prev[data.user_id].x,
+          y: prev[data.user_id].y - delta < 50 ? 50 : prev[data.user_id].y - delta,
+        },
+      }));
+    } else if (data.direction == 1) {
+      setUserLocation((prev) => ({
+        ...prev,
+        [data.user_id]: {
+          x: prev[data.user_id].x + delta > 450 ? 450 : prev[data.user_id].x + delta,
+          y: prev[data.user_id].y,
+        },
+      }));
+    } else if (data.direction == 2) {
+      setUserLocation((prev) => ({
+        ...prev,
+        [data.user_id]: {
+          x: prev[data.user_id].x,
+          y: prev[data.user_id].y + delta > 450 ? 450 : prev[data.user_id].y + delta,
+        },
+      }));
+    } else if (data.direction == 3) {
+      setUserLocation((prev) => ({
+        ...prev,
+        [data.user_id]: {
+          x: prev[data.user_id].x - delta < 50 ? 50 : prev[data.user_id].x - delta,
+          y: prev[data.user_id].y,
+        },
+      }));
+    }
+  };
 
   const handleKeyDown = (event: KeyboardEvent) => {
     console.log('A key was pressed', event.key);
