@@ -186,9 +186,6 @@ func (server *WsServer) handleUserJoined(message Message) {
 	clients := server.friendsToClient(friends)
 	message.Data = nil
 	server.users[message.Sender.GetId()] = message.Sender
-	for k, v := range server.users {
-		fmt.Println("key : " + k + "ID : " + v.GetId() + v.GetName())
-	}
 	server.noticeToFriends(message.encode(), clients)
 }
 
