@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 
+import { parseToken } from 'util/parseToken';
 import { gameInfo } from 'modules/game';
+import { saveUserInfo } from 'modules/user';
 import { getGameListAPI } from 'api/game/api';
 
 import Text from 'components/atoms/Text';
@@ -12,6 +15,8 @@ import CarouselComponent from 'components/organisms/Carousel';
 import BigCarouselComponent from 'components/organisms/BigCarousel';
 
 const Main: NextPage = () => {
+  // const token = localStorage.getItem('accessToken');
+
   const [rankGames, setRankGames] = useState([] as gameInfo[]); // 다운로드 높은 게임들
   const [saleGames, setSaleGames] = useState([] as gameInfo[]); // 할인률 높은 게임들
 
@@ -19,6 +24,24 @@ const Main: NextPage = () => {
     setRankGames((await getGameListAPI('category=ALL&page=1&size=5&sort=download_count,desc')).data.game_list);
     setSaleGames((await getGameListAPI('category=ALL&page=1&size=5&sort=sale,desc')).data.game_list);
   };
+
+  const dispatch = useDispatch();
+
+  // let ws = useRef<WebSocket>(); // 웹 소켓 사용
+
+  // useEffect(() => {
+  //   const result = token && parseToken(token);
+  //   dispatch(saveUserInfo.request(result));
+  // }, [token]);
+
+  // useEffect(() => {
+  //   if (!ws.current) {
+  //     ws.current = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
+  //     // 서버 -> 클라이언트
+
+  //     //join 까지만?
+  //   }
+  // }, []);
 
   useEffect(() => {
     getGames();

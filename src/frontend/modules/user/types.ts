@@ -19,7 +19,7 @@ export interface IFriendInfo {
     description: string;
   };
   is_friend?: number;
-  online?: boolean;
+  status?: boolean;
 }
 
 export interface IUserState {

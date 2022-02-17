@@ -31,7 +31,7 @@ export default function FriendBox(props: IFriendBoxProps) {
         '실제 이미지'
       )}
       {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
-      {props.open ? <FriendStatus online={props.friendInfo.online} /> : null}
+      {props.open ? <FriendStatus status={props.friendInfo.status} /> : null}
     </FriendBoxWrapper>
   );
 }

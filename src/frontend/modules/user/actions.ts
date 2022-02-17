@@ -21,3 +21,5 @@ export const getFriend = createAsyncAction(GET_FRIEND, GET_FRIEND_SUCCESS, GET_F
   IResType,
   AxiosError
 >();
+
+export const [SET_FRIEND_STATUS] = 'SET_FRIEND_STATUS';

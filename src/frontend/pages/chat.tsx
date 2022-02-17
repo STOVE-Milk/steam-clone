@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import type { NextPage } from 'next';
 
 import styled from 'styled-components';
@@ -15,7 +16,6 @@ import FilledButton from 'components/atoms/FilledButton';
 import Modal from 'components/atoms/Modal';
 import JoinChat from 'components/organisms/JoinChat';
 import ChatRoom, { Log } from 'components/organisms/ChatRoom';
-import { useDispatch, useSelector } from 'react-redux';
 
 interface IRoom {
   //채팅 방 객체 타입
@@ -26,7 +26,6 @@ interface IRoom {
 
 const Chat: NextPage = () => {
   const token = localStorage.getItem('accessToken');
-
   const userInfo = useSelector((state: IState) => state.user.userInfo);
   const friends = useSelector((state: IState) => state.user.friends.data);
 
@@ -49,7 +48,7 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     if (!ws.current) {
-      ws.current = new WebSocket(`ws://fortice.iptime.org:8113/chat/ws?token=${token}`); //웹 소켓 연결
+      ws.current = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
       // 서버 -> 클라이언트
       ws.current.onmessage = (e: MessageEvent) => {
         const events = e.data.split('\n');
@@ -209,16 +208,7 @@ const Chat: NextPage = () => {
       <ChatRoomSection>
         <ChatViewBox>
           {curRoom ? (
-            <ChatRoom
-              userId={userInfo.data.idx}
-              members={members
-                .filter((member) => userInfo.data.idx.toString() !== member)
-                .map((member) => {
-                  return findNickname(member);
-                })}
-              logs={logs}
-              leaveRoom={leaveRoom}
-            ></ChatRoom>
+            <ChatRoom userId={userInfo.data.idx} members={members} logs={logs} leaveRoom={leaveRoom}></ChatRoom>
           ) : (
             <ChatRoomPlaceholder>
               <FontAwesomeIcon icon={faComments} inverse size={'2x'} />
