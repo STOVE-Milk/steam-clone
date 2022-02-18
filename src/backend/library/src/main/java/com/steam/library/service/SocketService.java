@@ -136,13 +136,17 @@ public class SocketService {
         }
     }
 
-    public synchronized Boolean checkMultiConnectionToSameRoom(WebSocketSession session, EnterRequestMessage enterRequestMessage) {
-        if(enterRequestMessage == null)
-            return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
+    public synchronized boolean checkMultiConnectionToSameRoom(WebSocketSession session, EnterRequestMessage enterRequestMessage) {
+        if(enterRequestMessage == null) {
+            sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
+            return false;
+        }
 
         UserDetails userDetails = JwtUtil.getPayload(enterRequestMessage.getAuthorization());
-        if(userDetails == null)
-            return sendErrorMessage(session, ErrorCode.UNAUTHORIZED);
+        if(userDetails == null) {
+            sendErrorMessage(session, ErrorCode.UNAUTHORIZED);
+            return false;
+        }
 
         // roomId:sessionId 로 roomId를 가지고 이전 sessionId를 가져옴
         String preSessionId = socketDataService.getPreSessionIdByRoomId(userDetails.getIdx().toString(), enterRequestMessage.getRoomId());
@@ -155,8 +159,10 @@ public class SocketService {
                     .build();
 
             publishService.publishClosePreConnection(enterRequestMessage.getRoomId(), closePreConnectionMessage);
+            return true;
+        } else {
+            return false;
         }
-        return true;
     }
 
     public boolean isEnteredUserSession(String sessionId) {
@@ -165,7 +171,7 @@ public class SocketService {
     /*
         synchronized 참고자료 : https://jgrammer.tistory.com/entry/Java-%ED%98%BC%EB%8F%99%EB%90%98%EB%8A%94-synchronized-%EB%8F%99%EA%B8%B0%ED%99%94-%EC%A0%95%EB%A6%AC
     */
-    public synchronized Boolean enter(WebSocketSession session, EnterRequestMessage enterRequestMessage) throws NullPointerException{
+    public synchronized Boolean enter(WebSocketSession session, EnterRequestMessage enterRequestMessage, boolean isAlreadyEntered) throws NullPointerException{
         if(enterRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
 
@@ -191,15 +197,19 @@ public class SocketService {
         userData.put(sessionId, userDetails);
         session_room.put(sessionId, roomId);
 
-        // 입장 메세지 발행
-        EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
-        publishService.publishEnterUser(roomId, enterUserMessage);
-        // 본인이 발행한 메세지까지 소비해서 주석처리
-        // sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
-
         // Redis 갱신 & 데이터 동기화
         socketDataService.addUserConnectionToRedis(userId, roomId, sessionId);
-        Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, UserDto.of(userDetails));
+        Room cachedRoom;
+
+        if(!isAlreadyEntered) {
+            cachedRoom = socketDataService.addUserToRedis(roomId, userId, UserDto.of(userDetails));
+            // 입장 메세지 발행
+            EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
+            publishService.publishEnterUser(roomId, enterUserMessage);
+        } else {
+            cachedRoom = socketDataService.getRoomCache(roomId);
+        }
+
         SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(cachedRoom);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
 
