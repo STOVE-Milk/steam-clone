@@ -1,6 +1,7 @@
 package com.steam.payment.controller;
 
 import com.steam.payment.dto.PurchaseGamesRequest;
+import com.steam.payment.dto.PurchaseGamesResponse;
 import com.steam.payment.global.common.Body;
 import com.steam.payment.service.PurchaseService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,10 @@ public class PurchaseController {
     @PostMapping("/cart/purchase")
     @ResponseBody
     public ResponseEntity<Body<Object>> purchase(@Valid @RequestBody PurchaseGamesRequest request) {
+        PurchaseGamesResponse response = purchaseService.purchaseGames(request);
+        purchaseService.deletePurchasedGamesInWishlist(response.getGameIds());
         return ResponseEntity.ok(
-                Body.success(purchaseService.purchaseGames(request))
+                Body.success(response)
         );
     }
 }
