@@ -103,7 +103,7 @@ func (repo *RoomMRepository) FindRoomByName(name string) models.Room {
 	return &room
 }
 
-func (repo *RoomMRepository) AddMembers(room models.Room, members []string) {
+func (repo *RoomMRepository) AddMembers(room models.Room, members []models.User) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	updateFilter := bson.D{{"id", room.GetId()}}
 	updateBson := bson.D{{"$push", bson.D{{"members", bson.D{{"$each", members}}}}}}

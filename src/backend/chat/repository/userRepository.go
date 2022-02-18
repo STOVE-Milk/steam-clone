@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
@@ -25,9 +24,8 @@ type UserRepository struct {
 	Db *sql.DB
 }
 
-func (repo *UserRepository) GetUserFriends(ID string) []models.User {
-	var friends []models.User
-
+func (repo *UserRepository) GetFriends(ID string) map[string]models.User {
+	friends := make(map[string]models.User)
 	rows, err := repo.Db.Query(`
 	SELECT u.idx, u.nickname FROM steam.friend as f
 	join steam.user as u
@@ -44,9 +42,8 @@ func (repo *UserRepository) GetUserFriends(ID string) []models.User {
 	for rows.Next() {
 		var friend User
 		rows.Scan(&friend.Id, &friend.Name)
-		friends = append(friends, &friend)
+		friends[friend.GetId()] = &friend
 	}
-	fmt.Println(friends)
 	return friends
 }
 
@@ -65,22 +62,4 @@ func (repo *UserRepository) FindUserById(ID string) models.User {
 
 	return &user
 
-}
-
-func (repo *UserRepository) GetAllUsers() []models.User {
-
-	rows, err := repo.Db.Query("SELECT idx, nickname FROM user")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	var users []models.User
-	defer rows.Close()
-	for rows.Next() {
-		var user User
-		rows.Scan(&user.Id, &user.Name)
-		users = append(users, &user)
-	}
-
-	return users
 }

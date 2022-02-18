@@ -14,7 +14,7 @@ type Room interface {
 
 type RoomRepository interface {
 	AddRoom(room Room)
-	AddMembers(room Room, members []string)
+	AddMembers(room Room, members []User)
 	DeleteMember(room Room, userId string)
 	FindRoomById(id string) Room
 	FindRoomByName(name string) Room
@@ -43,7 +43,7 @@ type ChatLogData struct {
 }
 
 type RoomViewData struct {
-	Members []string      `bson:"members" json:"members"`
+	Members []UserMongo   `bson:"members" json:"members"`
 	Log     []ChatLogData `bson:"chat_log" json:"log"`
 }
 

@@ -7,8 +7,7 @@ type User interface {
 
 type UserRepository interface {
 	FindUserById(ID string) User
-	GetAllUsers() []User
-	GetUserFriends(clientId string) []User
+	GetFriends(clientId string) map[string]User
 }
 
 type UserMRepository interface {
@@ -20,5 +19,6 @@ type UserMRepository interface {
 
 type UserMongo struct {
 	Id    string      `bson:"id"`
+	Name  string      `bson:"name"`
 	Rooms []RoomMongo `bson:"rooms"`
 }

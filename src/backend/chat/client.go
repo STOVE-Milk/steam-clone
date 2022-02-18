@@ -54,7 +54,7 @@ type Client struct {
 	send     chan []byte
 	ID       string `json:"id"`
 	Name     string `json:"name"`
-	friends  []models.User
+	friends  map[string]models.User
 	rooms    map[*Room]bool
 }
 
@@ -68,7 +68,7 @@ func newClient(conn *websocket.Conn, wsServer *WsServer, user models.User) *Clie
 		send:     make(chan []byte, 256),
 		rooms:    make(map[*Room]bool),
 	}
-	client.friends = wsServer.getUserFriends(user.GetId())
+	client.friends = wsServer.getFriends(user.GetId())
 	return client
 
 }
@@ -259,8 +259,10 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	}
 	roomName := fmt.Sprintf("%v-%v", userA, userB)
 
+	members := []models.User{client, client.friends[message.Message]}
+
 	// Join room
-	joinedRoom := client.joinRoom("", roomName, target, []string{client.ID, message.Message})
+	joinedRoom := client.joinRoom("", roomName, target, members)
 
 	// 접속 중인 회원이 아니라면 방 까지만 만들고 상대방에게 방을 보이게 할 필요는 없다.
 	if target == nil {
@@ -275,9 +277,15 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 }
 
 func (client *Client) handleJoinRoomMessage(message Message) { //메세지밖에엄슴
+	var members []models.User
 	strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
 	roomName := strArr[0]
-	members := strArr[1:]
+	friends := strArr[2:]
+	fmt.Println(client.friends)
+	members = append(members, client)
+	for _, friend := range friends {
+		members = append(members, client.friends[friend])
+	}
 	joinedRoom := client.joinRoom("public", roomName, nil, members)
 	if joinedRoom != nil {
 		client.invitePublicRoom(members, joinedRoom)
@@ -285,7 +293,10 @@ func (client *Client) handleJoinRoomMessage(message Message) { //메세지밖에
 
 }
 
-func (client *Client) joinRoom(roomId, roomName string, sender models.User, members []string) *Room {
+func (client *Client) joinRoom(roomId, roomName string, sender models.User, members []models.User) *Room {
+	for i, mem := range members {
+		fmt.Println(i, mem)
+	}
 	var room *Room
 	if roomId == "" {
 		//그룹 채팅방
@@ -331,11 +342,11 @@ func (client *Client) invitePrivateRoom(target models.User, room *Room) {
 	}
 }
 
-func (client *Client) invitePublicRoom(members []string, room *Room) {
+func (client *Client) invitePublicRoom(members []models.User, room *Room) {
 	for _, member := range members {
 		inviteMessage := &Message{
 			Action:  JoinRoomPublicAction,
-			Message: member,
+			Message: member.GetId(),
 			Target:  room,
 			Sender:  client,
 		}

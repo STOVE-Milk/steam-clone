@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/STOVE-Milk/steam-clone/chat/config"
@@ -31,6 +32,7 @@ type WsServer struct {
 	roomMRepository models.RoomRepository
 	userMRepository models.UserMRepository
 	userRepository  models.UserRepository
+	mu              sync.Mutex
 }
 
 func NewWebsocketServer(roomMRepository models.RoomRepository, userMRepository models.UserMRepository, userRepository models.UserRepository) *WsServer {
@@ -149,7 +151,6 @@ func (server *WsServer) listenPubSubChannel() {
 
 // 클라이언트가 이 웹 소캣 서버에 존재한다면 그룹 방 참여
 func (server *WsServer) handleUserJoinPublic(message Message) {
-	fmt.Println(string(message.encode()))
 	targetClient := server.findClientByID(message.Message)
 	if targetClient != nil {
 		targetClient.joinRoom(message.Target.ID, message.Target.GetName(), message.Sender, nil)
@@ -158,7 +159,6 @@ func (server *WsServer) handleUserJoinPublic(message Message) {
 
 // 1:1방 참여
 func (server *WsServer) handleUserJoinPrivate(message Message) {
-	fmt.Println(string(message.encode()))
 	targetClient := server.findClientByID(message.Message)
 	if targetClient != nil {
 		targetClient.joinRoom(message.Target.ID, message.Target.GetName(), message.Sender, nil)
@@ -175,7 +175,7 @@ func (server *WsServer) findUserByID(ID string) models.User {
 }
 func (server *WsServer) handleUserJoined(message Message) {
 
-	friends := server.getUserFriends(message.Sender.GetId())
+	friends := server.getFriends(message.Sender.GetId())
 	clients := server.friendsToClient(friends)
 	message.Data = nil
 	server.users[message.Sender.GetId()] = message.Sender
@@ -184,7 +184,7 @@ func (server *WsServer) handleUserJoined(message Message) {
 
 func (server *WsServer) handleUserLeft(message Message) {
 
-	friends := server.getUserFriends(message.Sender.GetId())
+	friends := server.getFriends(message.Sender.GetId())
 	clients := server.friendsToClient(friends)
 	message.Data = nil
 	server.users[message.Sender.GetId()] = message.Sender
@@ -286,7 +286,7 @@ func (server *WsServer) findClientByID(ID string) *Client {
 }
 
 // 새로운 룸 생성
-func (server *WsServer) createRoom(name string, private bool, members []string) *Room {
+func (server *WsServer) createRoom(name string, private bool, members []models.User) *Room {
 	room := NewRoom(name, private)
 	// MongoDB에 룸 정보 저장
 	server.roomMRepository.AddRoom(room)
@@ -294,7 +294,7 @@ func (server *WsServer) createRoom(name string, private bool, members []string) 
 	server.roomMRepository.AddMembers(room, members)
 	// MongoDB에 user 마다 참여한 룸 정보 저장.
 	for _, member := range members {
-		server.userMRepository.AddRoom(room, member)
+		server.userMRepository.AddRoom(room, member.GetId())
 	}
 	go room.RunRoom()
 	server.rooms[room] = true
@@ -306,8 +306,8 @@ func (server *WsServer) getAllJoinedRoom(client models.User) []models.RoomMongo 
 	return server.userMRepository.GetAllJoinedRoom(client.GetId())
 }
 
-func (server *WsServer) getUserFriends(clientId string) []models.User {
-	return server.userRepository.GetUserFriends(clientId)
+func (server *WsServer) getFriends(clientId string) map[string]models.User {
+	return server.userRepository.GetFriends(clientId)
 }
 
 func (server *WsServer) deleteMember(room models.Room, userId string) {
@@ -328,14 +328,17 @@ func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content st
 	server.roomMRepository.LoggingChat(chatLogData, roomId)
 }
 
-func (server *WsServer) friendsToClient(friends []models.User) []*Client {
+// findMembers
+func (server *WsServer) friendsToClient(friends map[string]models.User) []*Client {
 	var clients []*Client
-	for _, friend := range friends {
-		client := server.findClientByID(friend.GetId())
+	for friendId, _ := range friends {
+		client := server.findClientByID(friendId)
 		clients = append(clients, client)
 	}
 	return clients
 }
 func (server *WsServer) setUser(user models.User) {
+	server.mu.Lock()
 	server.users[user.GetId()] = user
+	server.mu.Unlock()
 }
