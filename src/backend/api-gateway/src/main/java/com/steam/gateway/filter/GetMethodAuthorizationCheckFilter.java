@@ -23,7 +23,7 @@ public class GetMethodAuthorizationCheckFilter extends AbstractGatewayFilterFact
         access token이 있을 경우에는 체크해주고 없으면 넘어가야 합니다.
         있을 경우에는 유저의 친구 여부를 따로 표현해주기 위해 분기 처리를 해주었습니다.
 
-        이상적인 로직이라고 생각하지는 않고, 검사 없이 통과시키지만
+        이상적인 로직이라고 생각하지는 않고, 개선한다면 검증 없이 통과시키면서
         클라이언트 측에서 친구 목록을 유저 ID 리스트를 로그인 시에만 따로 받아와서 처리하도록 개선할 수 있을 것 같습니다.
 
         토큰 검증 - JwtValidator
