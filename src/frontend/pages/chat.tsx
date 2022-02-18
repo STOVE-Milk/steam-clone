@@ -69,9 +69,10 @@ const Chat: NextPage = () => {
               if (serverMessage.data === null) {
                 setRooms([]);
               } else {
-                serverMessage.data.forEach((room: IRoom) => {
-                  setRooms((rooms) => rooms.concat(room));
-                });
+                setRooms(serverMessage.data);
+                // serverMessage.data.forEach((room: IRoom) => {
+                //   setRooms((rooms) => rooms.concat(room));
+                // });
               }
               break;
             case 'room-joined': // 채팅방 생성
@@ -99,7 +100,6 @@ const Chat: NextPage = () => {
                   },
                 ]);
               }
-
               break;
             case 'send-message': // 메세지를 받음
               console.log('send-message', serverMessage);
@@ -114,6 +114,8 @@ const Chat: NextPage = () => {
                 );
               } else {
                 // 유저가 단체 채팅방을 나간 경우
+                // TODO: 서버에서 닉네임 보내주면 나간 유저 없애기
+                setMembers([]) 
                 setLogs((logs) =>
                   logs.concat({
                     sender_id: '-1',

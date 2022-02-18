@@ -5,7 +5,6 @@ import { initalUserInfo, initalFriendInfo } from 'modules/user/initalData';
 import { IUserState } from './types';
 import { SAVE_USERINFO, SAVE_USERINFO_SUCCESS, SAVE_USERINFO_FAIL } from './actions';
 import { GET_FRIEND, GET_FRIEND_SUCCESS, GET_FRIEND_FAIL, SET_ONLINE, SET_OFFLINE, SET_WEBSOCKET } from './actions';
-import { getFriendsAPI } from 'api/friend/api';
 
 const initialState: IUserState = {
   userInfo: asyncState.initial(initalUserInfo),
