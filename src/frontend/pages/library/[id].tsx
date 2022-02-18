@@ -12,6 +12,7 @@ import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import { parseToken } from 'util/parseToken';
 import { makeUniqueArr } from 'util/makeUniqueArr';
 import { colorPalette } from 'util/colorPalette';
+import { getUserData } from 'modules/game';
 
 import { GameListLibrary, TitleStyle } from 'components/organisms/GameListLibrary';
 
@@ -55,6 +56,8 @@ const library: NextPage<IState> = () => {
     objects: {},
   } as IMapInfo);
   const { userInfo } = useSelector((state: IState) => state.user);
+  const { userData } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)
+
   const [count, setCount] = useState(0);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -95,6 +98,7 @@ const library: NextPage<IState> = () => {
   useEffect(() => {
     console.log('token here=========', token);
     dispatch(saveUserInfo.request(parseToken(token)));
+    dispatch(getUserData.request({}));
   }, []);
 
   return (
@@ -114,7 +118,12 @@ const library: NextPage<IState> = () => {
           gameOffset={gameOffset}
           setGameOffset={setGameOffset}
         />
-        <GameListLibrary onSelect={onSelect} resetSelect={resetSelect} onFinishSetGameOffset={onFinishSetGameOffset} />
+        <GameListLibrary
+          purchaseList={userData.data.purchase_list}
+          onSelect={onSelect}
+          resetSelect={resetSelect}
+          onFinishSetGameOffset={onFinishSetGameOffset}
+        />
         {/* <button onClick={() => setCount(count + 1)}>add user</button> */}
       </LibraryContentWrapper>
     </LibraryWrapper>

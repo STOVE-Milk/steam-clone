@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { IState } from 'modules';
 import * as GameAPI from 'api/game/api'; //getGameInfoByIdListAPI
 import { gameInfo } from 'modules/game/types';
-import { getUserData } from 'modules/game';
+// import { getUserData } from 'modules/game';
 import { isEmpty } from 'util/isEmpty';
 
 import Text from 'components/atoms/Text';
@@ -37,6 +37,7 @@ interface IGameListLibararyProps {
   onSelect: (e: any) => void;
   resetSelect: () => void;
   onFinishSetGameOffset: (e: any) => void;
+  purchaseList: number[];
 }
 
 export const GameListLibrary = (props: IGameListLibararyProps) => {
@@ -44,7 +45,7 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
   const { userData } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)
   const [gamesByIdList, setGamesByIdList] = useState([] as gameInfo[]);
   // const [purchaseList, setPurchaseList] = useState([]);
-  const { onSelect, resetSelect, onFinishSetGameOffset } = props;
+  const { onSelect, resetSelect, onFinishSetGameOffset, purchaseList } = props;
   const router = useRouter();
 
   // userData
@@ -52,9 +53,9 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
 
   useEffect(() => {
     // getUserData();
-    dispatch(getUserData.request({}));
+    // dispatch(getUserData.request({}));
     getGamesByIdList();
-  }, []);
+  }, [purchaseList]);
   // const getUserData = async () => {
 
   // }
@@ -65,8 +66,8 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
   // };
 
   const getGamesByIdList = async () => {
-    if (!isEmpty(userData.data.purchase_list)) {
-      const convertedIdList = '/' + userData.data.purchase_list.join(',');
+    if (!isEmpty(purchaseList)) {
+      const convertedIdList = '/' + purchaseList.join(',');
       const res = await GameAPI.getGameInfoByIdListAPI({ idList: convertedIdList });
       const game_list = await res.data.game_list;
       setGamesByIdList(game_list);
@@ -82,7 +83,7 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
   return (
     <GameListWrapper>
       {/* 게임의 설치 상태에 따라서 button types를 다르게 */}
-      {console.log(userData.data.purchase_list, gamesByIdList)}
+      {console.log(purchaseList, gamesByIdList)}
       {gamesByIdList.map((eachGame, i) => {
         return (
           <div>
