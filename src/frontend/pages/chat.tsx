@@ -52,7 +52,6 @@ const Chat: NextPage = () => {
     ws.current = socket;
     console.log(ws.current);
     if (ws.current !== undefined) {
-      // ws.current = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
       //서버 -> 클라이언트
       ws.current.onmessage = (e: MessageEvent) => {
         const events = e.data.split('\n');

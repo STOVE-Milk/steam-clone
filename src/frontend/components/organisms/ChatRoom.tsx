@@ -24,8 +24,10 @@ export default function ChatRoom(props: IChatRoomProps) {
 
   // 메세지 추가 시, 스크롤 내리기
   const scrollToBottom = useCallback(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    console.log('scroll');
+    if (scrollRef.current !== null) {
+      console.log('scroll');
+      scrollRef.current.scrollIntoView({ behavior: 'auto', block: 'end', inline: 'nearest' });
     }
   }, [props.logs]);
 
@@ -44,7 +46,7 @@ export default function ChatRoom(props: IChatRoomProps) {
         </LeaveRoomBtn>
       </RoomInfoBox>
       <div></div>
-      <RoomViewBox ref={scrollRef}>
+      <RoomViewBox>
         {props.logs.map((log, key) => {
           return (
             <MsgBox key={key} isMine={log.sender_id === props.userId.toString()} name={log.sender_nickname}>
@@ -52,6 +54,7 @@ export default function ChatRoom(props: IChatRoomProps) {
             </MsgBox>
           );
         })}
+        <div ref={scrollRef} />
       </RoomViewBox>
     </Wrapper>
   );
