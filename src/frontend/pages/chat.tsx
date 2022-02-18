@@ -15,7 +15,7 @@ import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import Modal from 'components/atoms/Modal';
 import JoinChat from 'components/organisms/JoinChat';
-import ChatRoom, { Log } from 'components/organisms/ChatRoom';
+import ChatRoom, { Log, Member } from 'components/organisms/ChatRoom';
 
 interface IRoom {
   //채팅 방 객체 타입
@@ -35,7 +35,7 @@ const Chat: NextPage = () => {
   const [chatInput, setChatInput] = useState(''); //채팅 입력
 
   const [curRoom, setCurRoom] = useState(''); // 현재 채팅방 이름
-  const [members, setMembers] = useState<string[]>([]); // 채팅방 멤버들
+  const [members, setMembers] = useState<Member[]>([]); // 채팅방 멤버들
   const [logs, setLogs] = useState<Log[]>([]); // 채팅방 메세지들
 
   const dispatch = useDispatch();
@@ -80,13 +80,14 @@ const Chat: NextPage = () => {
               setRooms((rooms) => rooms.concat(serverMessage.target));
               break;
             case 'room-view': // 채팅방 접속 시, 채팅방에 관한 정보 가져오기
-              console.log('room-view', serverMessage.data);
+              console.log('room-view', serverMessage);
               const data = serverMessage.data;
               setMembers(data.members);
               if (data.log) {
                 // 이전 채팅 기록이 있는 경우
                 setLogs(data.log);
               } else {
+                //TODO: 입장하셨습니다 메세지 처리 -> 서버에서 개발 완료 하고 시작
                 // 이전 채팅 기록이 없는 경우 -> ~님이 입장하셨습니다
                 const notMe = data.members.filter((m: string) => m !== userInfo.data.idx.toString());
 
@@ -114,8 +115,8 @@ const Chat: NextPage = () => {
                 );
               } else {
                 // 유저가 단체 채팅방을 나간 경우
-                // TODO: 서버에서 닉네임 보내주면 나간 유저 없애기
-                setMembers([]) 
+                // TODO: 서버에서 퇴장 메세지 보내주면 나간 유저 없애기
+                setMembers([]);
                 setLogs((logs) =>
                   logs.concat({
                     sender_id: '-1',
@@ -271,11 +272,7 @@ const Chat: NextPage = () => {
           {curRoom ? (
             <ChatRoom
               userId={userInfo.data.idx}
-              members={members
-                .filter((member) => member !== userInfo.data.idx.toString())
-                .map((member) => {
-                  return findNickname(member);
-                })}
+              members={members.filter((member) => member.id !== userInfo.data.idx.toString())}
               logs={logs}
               leaveRoom={leaveRoom}
             ></ChatRoom>
