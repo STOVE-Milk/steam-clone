@@ -50,7 +50,6 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     ws.current = socket;
-    console.log(ws.current);
     if (ws.current !== undefined) {
       //서버 -> 클라이언트
       ws.current.onmessage = (e: MessageEvent) => {
@@ -74,7 +73,6 @@ const Chat: NextPage = () => {
                   setRooms((rooms) => rooms.concat(room));
                 });
               }
-              console.log(friends);
               break;
             case 'room-joined': // 채팅방 생성
               console.log('room-joined', serverMessage.target);
@@ -114,7 +112,11 @@ const Chat: NextPage = () => {
 
   // 유저 아이디로 유저 닉네임 찾기
   const findNickname = (id: string) => {
-    return friends.filter((f) => f.id.toString() === id)[0].nickname.toString();
+    const user = friends.filter((f) => f.id.toString() === id);
+    if (user.length > 0) {
+      return user[0].nickname.toString();
+    }
+    return 'user';
   };
 
   const getRooms = () => {
@@ -232,7 +234,16 @@ const Chat: NextPage = () => {
       <ChatRoomSection>
         <ChatViewBox>
           {curRoom ? (
-            <ChatRoom userId={userInfo.data.idx} members={members} logs={logs} leaveRoom={leaveRoom}></ChatRoom>
+            <ChatRoom
+              userId={userInfo.data.idx}
+              members={members
+                .filter((member) => member !== userInfo.data.idx.toString())
+                .map((member) => {
+                  return findNickname(member);
+                })}
+              logs={logs}
+              leaveRoom={leaveRoom}
+            ></ChatRoom>
           ) : (
             <ChatRoomPlaceholder>
               <FontAwesomeIcon icon={faComments} inverse size={'2x'} />
