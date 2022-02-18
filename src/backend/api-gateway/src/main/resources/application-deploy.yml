@@ -66,6 +66,10 @@ spring:
           uri: lb://MEMBERSHIP-SERVICE
           predicates:
             - Path=/membership/**
+          filters:
+            - name: GetMethodAuthorizationCheckFilter
+              args:
+                baseMessage: Membership AuthCheckFilter if AccessToken is Present
         - id: robby-http-svc
           uri: lb://LOBBY-SERVICE
           predicates:
