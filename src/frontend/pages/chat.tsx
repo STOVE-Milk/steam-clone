@@ -80,18 +80,49 @@ const Chat: NextPage = () => {
               break;
             case 'room-view': // 채팅방 접속 시, 채팅방에 관한 정보 가져오기
               console.log('room-view', serverMessage.data);
-              setMembers(serverMessage.data.members);
-              setLogs(serverMessage.data.log || []);
+              const data = serverMessage.data;
+              setMembers(data.members);
+              if (data.log) {
+                // 이전 채팅 기록이 있는 경우
+                setLogs(data.log);
+              } else {
+                // 이전 채팅 기록이 없는 경우 -> ~님이 입장하셨습니다
+                const notMe = data.members.filter((m: string) => m !== userInfo.data.idx.toString());
+
+                setLogs([
+                  {
+                    sender_id: '-1',
+                    sender_nickname: serverMessage.message.split(' ')[0],
+                    content: `${notMe[0]}${notMe.slice(1).map((m: string) => {
+                      return `, ${m}`;
+                    })}님이 방에 입장하셨습니다.`,
+                  },
+                ]);
+              }
+
               break;
             case 'send-message': // 메세지를 받음
               console.log('send-message', serverMessage);
-              setLogs((logs) =>
-                logs.concat({
-                  sender_id: serverMessage.sender.id,
-                  sender_nickname: serverMessage.sender.name,
-                  content: serverMessage.message,
-                }),
-              );
+              if (serverMessage.sender) {
+                // 실제 채팅을 보낸 경우
+                setLogs((logs) =>
+                  logs.concat({
+                    sender_id: serverMessage.sender.id,
+                    sender_nickname: serverMessage.sender.name,
+                    content: serverMessage.message,
+                  }),
+                );
+              } else {
+                // 유저가 단체 채팅방을 나간 경우
+                setLogs((logs) =>
+                  logs.concat({
+                    sender_id: '-1',
+                    sender_nickname: serverMessage.message.split(' ')[0],
+                    content: `${serverMessage.message.split(' ')[0]}님이 방을 나갔습니다.`,
+                  }),
+                );
+              }
+
               break;
             case 'user-left': // 유저 활동 종료
               console.log('user-left', serverMessage);
@@ -161,6 +192,8 @@ const Chat: NextPage = () => {
         message: curRoom,
       }),
     );
+    getRooms();
+    setCurRoom('');
   };
 
   const createRoom = (selectFriends: number[], roomName?: string) => {

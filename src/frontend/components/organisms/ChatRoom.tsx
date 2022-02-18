@@ -3,6 +3,7 @@ import React, { useRef, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 
 import MsgBox from 'components/atoms/MsgBox';
+import AlertMsgBox from 'components/atoms/AlertMsgBox';
 import FilledButton from 'components/atoms/FilledButton';
 
 export interface Log {
@@ -48,7 +49,11 @@ export default function ChatRoom(props: IChatRoomProps) {
       <div></div>
       <RoomViewBox>
         {props.logs.map((log, key) => {
-          return (
+          return log.sender_id === '-1' ? (
+            <AlertMsgBox>
+              {log.content}
+            </AlertMsgBox>
+          ) : (
             <MsgBox key={key} isMine={log.sender_id === props.userId.toString()} name={log.sender_nickname}>
               {log.content && log.content.split('\n').map((text, key) => <p key={key}> {text} </p>)}
             </MsgBox>
