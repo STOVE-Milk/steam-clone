@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { IGetGameReqType, IResType, IGetGamesByCategoryReqType, IGetGameInfoByIdListReqType } from './type';
+import {
+  IGetGameReqType,
+  IResType,
+  IGetGamesByCategoryReqType,
+  IGetGameInfoByIdListReqType,
+  IGetGameInfoByUser,
+} from './type';
 
 export async function getCategoriesAPI() {
   const token = localStorage.getItem('accessToken');
@@ -47,6 +53,13 @@ export async function getUserDataAPI() {
       Authorization: `Bearer ${token}`,
     },
   });
+
+  return response.data;
+}
+
+///store/userdata -> wish_list, purchase_list 관련임 (유저정보 x)
+export async function getGameInfoByUserAPI(param: IGetGameInfoByUser) {
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/users/${param.user_id}/games`);
 
   return response.data;
 }

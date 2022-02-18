@@ -22,16 +22,20 @@ export interface IGetGameInfoByIdListReqType {
 export interface IAddGameOffsetToStore {
   prev: {
     [idx: number]: {
-      name: string
+      name: string;
       x: number;
       y: number;
     };
   };
   newGameOffset: {
     [idx: number]: {
-      name: string
+      name: string;
       x: number;
       y: number;
     };
   };
+}
+
+export interface IGetGameInfoByUser {
+  user_id: string;
 }
