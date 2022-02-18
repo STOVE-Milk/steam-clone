@@ -5,9 +5,10 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import { IState } from 'modules';
-import { saveUserInfo } from 'modules/user';
+import { saveUserInfo, getFriend } from 'modules/user';
 import { doSignInAPI } from 'api/auth/api';
 import { parseToken } from 'util/parseToken';
+import { getFriendsAPI } from 'api/friend/api';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
@@ -56,12 +57,16 @@ const signin: NextPage<IState> = () => {
       const res = await doSignInAPI(signInInfo);
       alert(res.message);
       if (res.code === 10000) {
+        //친구 목록 불러와서 API에 저장
+        dispatch(getFriend.request({}));
+
         //성공
         localStorage.setItem('accessToken', res.data.accessToken);
         localStorage.setItem('refreshToken', res.data.refreshToken);
         const result = parseToken(res.data.accessToken);
         dispatch(saveUserInfo.request(result));
-        router.push('/category'); // TO DO(양하): 메인으로 redirect 변경, 지금 메인페이지 오류나서 일단 카테고리 페이지로 redirect
+
+        router.push('/');
       }
     }
   };

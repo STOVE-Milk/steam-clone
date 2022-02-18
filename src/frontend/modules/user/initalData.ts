@@ -6,3 +6,14 @@ export const initalUserInfo = {
   nickname: '[TEST]yanghakim',
   role: 1,
 };
+
+export const initalFriendInfo = [
+  {
+    id: 1,
+    nickname: '[TEST]nick',
+    profile: {
+      image: '',
+      description: '[TEST]desc',
+    },
+  },
+];

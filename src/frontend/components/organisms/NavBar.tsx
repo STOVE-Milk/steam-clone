@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -16,18 +17,20 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import LogoImage from 'public/steam_logo.png';
 
+import { IState } from 'modules';
+import { IFriendInfo } from 'modules/user';
 import { theme } from 'styles/theme';
+
 import Text from 'components/atoms/Text';
 import MenuBox from 'components/molecules/MenuBox';
 import FriendBox from 'components/molecules/FriendBox';
-import { IFriend } from 'components/molecules/FriendBox';
 
 export default function NavBar() {
   const [open, setOpen] = useState(true); //NavBar가 열려있는가
   const router = useRouter();
 
-  // TODO: 실제 친구 목록 가져오기
-  const [friends, setFriends] = useState([] as IFriend[]);
+  const friends = useSelector((state: IState) => state.user.friends.data);
+  const onlines = useSelector((state: IState) => state.user.onlines.data);
 
   useEffect(() => {
     const media = window.matchMedia(theme.breakpoints.medium.slice(7));
@@ -70,11 +73,8 @@ export default function NavBar() {
         </Link>
       </SectionTitle>
       <FriendSection>
-        {[
-          { id: 1, nickname: 'user', profile: { image: '', description: 'abc' } },
-          { id: 2, nickname: 'user', profile: { image: '', description: 'abc' } },
-        ].map((friend) => {
-          return <FriendBox open={open} friendInfo={friend} />;
+        {friends.map((friend) => {
+          return <FriendBox key={friend.id} open={open} friendInfo={friend} online={onlines.includes(friend.id)} />;
         })}
       </FriendSection>
     </NavBarWrapper>
@@ -118,7 +118,7 @@ const LogoTitle = styled.div`
   margin-left: 1rem;
 `;
 
-const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
+const OpenBar = styled(FontAwesomeIcon)<{ open: boolean }>`
   margin-left: ${(props) => (props.open ? '1.5rem' : '2rem')};
   margin-right: ${(props) => (props.open ? '2.5rem' : '1.7rem')};
   margin-top: 0.5rem;

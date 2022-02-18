@@ -56,6 +56,17 @@ func (gc *GameService) GetUserData(ctx context.Context) (*pb.UserDataResponse_Us
 	pbUserData.PurchaseList = library
 	return &pbUserData, nil
 }
+func (gc *GameService) GetGameIdListByUserId(ctx context.Context) (*pb.GameIdListResponse_GameIdList, *models.Error) {
+	gameIdList, err := gc.r.GetPurchaseList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var pbGameIdList pb.GameIdListResponse_GameIdList
+	pbGameIdList.GameIdList = gameIdList
+
+	return &pbGameIdList, nil
+}
 
 func (gc *GameService) GetGameDetail(ctx context.Context) (*pb.GameDetailResponse_Game, *models.Error) {
 	gameDetail, err := gc.r.GetGameDetail(ctx)

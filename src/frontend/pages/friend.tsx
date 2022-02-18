@@ -5,13 +5,13 @@ import styled, { css } from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 
+import { IFriendInfo } from 'modules/user';
 import * as FriendAPI from 'api/friend/api';
 import { verifyToken } from 'util/verifyToken';
 
 import Text from 'components/atoms/Text';
 import { TextTheme } from 'components/atoms/Text';
 import FriendBox from 'components/molecules/FriendBox';
-import { IFriend } from 'components/molecules/FriendBox';
 
 const Friend: NextPage = () => {
   // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
@@ -19,7 +19,7 @@ const Friend: NextPage = () => {
   // const dispatch = useDispatch();
 
   const [tab, setTab] = useState(0); //탭 number
-  const [friends, setFriends] = useState([] as IFriend[]); //각 탭에서 보일 친구 목록들. 친구 객체 타입이 동일하므로 같은 state 사용
+  const [friends, setFriends] = useState([] as IFriendInfo[]); //각 탭에서 보일 친구 목록들. 친구 객체 타입이 동일하므로 같은 state 사용
   const [searchInput, setSearchInput] = useState(''); // 친구 검색 input 값
 
   // 화면에서 탭 전환 함수
@@ -53,7 +53,7 @@ const Friend: NextPage = () => {
 
   // 친구 신청을  위해 유저 검색
   const searchFriend = async () => {
-    const res = (await FriendAPI.searchFriendAPI(searchInput)).data;
+    const res = (await FriendAPI.searchFriendAPI(searchInput)).data.users;
     setFriends(res);
   };
 
