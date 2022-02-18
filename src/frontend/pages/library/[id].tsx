@@ -42,9 +42,12 @@ export interface IMapInfo {
 }
 
 const library: NextPage<IState> = () => {
+  const { userInfo } = useSelector((state: IState) => state.user);
+  const { userData, gameOffsetData } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)
+
   const [installedGame, setInstalledGame] = useState(null);
   const [installedGameList, setInstalledGameList] = useState([]);
-  const [gameOffset, setGameOffset] = useState({ x: 0, y: 0 });
+  const [gameOffsetList, setGameOffsetList] = useState({ x: 0, y: 0 }); // {id :{x:0,y:0}}
 
   const [mapInfo, setMapInfo] = useState({
     side: 9,
@@ -55,8 +58,6 @@ const library: NextPage<IState> = () => {
     },
     objects: {},
   } as IMapInfo);
-  const { userInfo } = useSelector((state: IState) => state.user);
-  const { userData } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)
 
   const [count, setCount] = useState(0);
   const dispatch = useDispatch();
@@ -73,7 +74,7 @@ const library: NextPage<IState> = () => {
       gameList: makeUniqueArr([...prev.gameList], game_id),
       games: {
         ...prev.games,
-        [game_id]: { name: installedGame.name, x: gameOffset.x, y: gameOffset.y },
+        [game_id]: { name: installedGame.name, x: gameOffsetList.x, y: gameOffsetList.y },
       },
     }));
   };
@@ -101,6 +102,10 @@ const library: NextPage<IState> = () => {
     dispatch(getUserData.request({}));
   }, []);
 
+  useEffect(() => {
+    setInstalledGame(installedGame);
+  }, [installedGame]);
+
   return (
     <LibraryWrapper>
       {/* 지금 url에 있는 id 가져와서 유저 구매 게임 정보 및 정보들 가져와야함 */}
@@ -115,8 +120,8 @@ const library: NextPage<IState> = () => {
         <NoSSRMap
           installedGame={installedGame}
           mapInfo={mapInfo}
-          gameOffset={gameOffset}
-          setGameOffset={setGameOffset}
+          gameOffsetList={gameOffsetList}
+          setGameOffsetList={setGameOffsetList}
         />
         <GameListLibrary
           purchaseList={userData.data.purchase_list}

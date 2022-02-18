@@ -20,11 +20,11 @@ const absoluteVal = 500;
 interface IMapProps {
   installedGame: any;
   mapInfo: IMapInfo;
-  gameOffset: {
+  gameOffsetList: {
     x: number;
     y: number;
   };
-  setGameOffset: (e: any) => void;
+  setGameOffsetList: (e: any) => void;
 }
 interface IMoveProps {
   [index: string]: number;
@@ -76,7 +76,7 @@ interface IGlobalState {
   };
 }
 const Map = (props: IMapProps) => {
-  const { installedGame, mapInfo, gameOffset, setGameOffset } = props;
+  const { installedGame, mapInfo, gameOffsetList, setGameOffsetList } = props;
   const { userInfo } = useSelector((state: IState) => state.user);
 
   const windowSize = useWindowSize();
@@ -110,7 +110,7 @@ const Map = (props: IMapProps) => {
   //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
   const router = useRouter();
 
-  // const [gameOffset, setGameOffset] = useState({ x: 0, y: 0 });
+  // const [gameOffset, setGameOffsetList] = useState({ x: 0, y: 0 });
 
   // const [game1Y, setGame1Y] = useState(height - (height - 400));
 
@@ -320,8 +320,8 @@ const Map = (props: IMapProps) => {
       setUserLocation((prev) => ({
         ...prev,
         [key]: {
-          x: userObj[key].x == 0 ? delta : userObj[key].x * delta,
-          y: userObj[key].y == 0 ? delta : userObj[key].y * delta,
+          x: userObj[key].x == 0 ? delta : userObj[key].x * delta + delta,
+          y: userObj[key].y == 0 ? delta : userObj[key].y * delta + delta,
         },
       }));
     }
@@ -332,7 +332,7 @@ const Map = (props: IMapProps) => {
   //   //현재 있는 나의 게임 정보 prev에서 갱신해야됨 globalData 로 위치 주기
   //   const gameObj: IGameInfo = globalData.room.map.games;
   //   for (let key in gameObj) {
-  //     setGameOffset((prev: any) => ({
+  //     setGameOffsetList((prev: any) => ({
   //       ...prev,
   //       [key]: {
   //         x: gameObj[key].x == 0 ? delta : gameObj[key].x,
@@ -382,8 +382,12 @@ const Map = (props: IMapProps) => {
           {/* <UserObject x={userX} y={userY} width={absoluteVal / 5} /> */}
           {/* "games":{"2":{"name":"PUBG: BATTLEGROUNDS","x":196,"y":50}},"objects":{}}} */}
           {console.log(installedGame)}
-          {gameOffset.x != 0 && installedGame ? (
-            <EachGame installedGame={installedGame} gameOffset={gameOffset} setGameOffset={setGameOffset} />
+          {installedGame ? (
+            <EachGame
+              installedGame={installedGame}
+              gameOffsetList={gameOffsetList}
+              setGameOffsetList={setGameOffsetList}
+            />
           ) : null}
         </Layer>
       </Stage>

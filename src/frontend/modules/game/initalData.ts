@@ -48,3 +48,7 @@ export const initialGamesByIdList = [
     category_list: ['액션', '격투'],
   },
 ];
+
+export const initialGameOffset = {
+  2: { name: 'PUBG: BATTLEGROUNDS', x: 196, y: 50 },
+};

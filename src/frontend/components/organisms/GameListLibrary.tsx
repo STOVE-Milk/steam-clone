@@ -13,26 +13,6 @@ import { isEmpty } from 'util/isEmpty';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 
-export const TitleStyle = styled(Text)`
-  margin-bottom: 2rem;
-`;
-
-const GameListWrapper = styled.div`
-  border: 1px solid black;
-  width: 100%;
-`;
-
-const EachGameInfoBox = styled(FilledButton)`
-  max-width: 200px;
-  display: -webkit-box;
-  word-wrap: break-word;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  height: 54px;
-`;
-
 interface IGameListLibararyProps {
   onSelect: (e: any) => void;
   resetSelect: () => void;
@@ -106,3 +86,22 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
     </GameListWrapper>
   );
 };
+export const TitleStyle = styled(Text)`
+  margin-bottom: 2rem;
+`;
+
+const GameListWrapper = styled.div`
+  /* border: 1px solid black; */
+  width: 100%;
+`;
+
+const EachGameInfoBox = styled(FilledButton)`
+  max-width: 200px;
+  display: -webkit-box;
+  word-wrap: break-word;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 54px;
+`;

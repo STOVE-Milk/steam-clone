@@ -19,3 +19,19 @@ export interface IGetGamesByCategoryReqType {
 export interface IGetGameInfoByIdListReqType {
   idList: string;
 }
+export interface IAddGameOffsetToStore {
+  prev: {
+    [idx: number]: {
+      name: string
+      x: number;
+      y: number;
+    };
+  };
+  newGameOffset: {
+    [idx: number]: {
+      name: string
+      x: number;
+      y: number;
+    };
+  };
+}

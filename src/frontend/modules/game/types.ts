@@ -32,9 +32,17 @@ interface IUserData {
   wish_list: number[];
   purchase_list: number[];
 }
+interface IGameOffset {
+  [idx: number]: {
+    name: string;
+    x: number;
+    y: number;
+  };
+}
 
 export interface gameState {
   userData: AsyncState<IUserData, Error>;
+  gameOffsetData: AsyncState<IGameOffset, Error>;
 }
 
 export type gameAction = ActionType<typeof actions>;
