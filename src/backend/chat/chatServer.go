@@ -298,7 +298,11 @@ func (server *WsServer) createRoom(name string, private bool, members []models.U
 	}
 	go room.RunRoom()
 	server.rooms[room] = true
-
+	content := ""
+	for _, member := range members {
+		content = content + member.GetName() + " "
+	}
+	server.loggingChat(room.ID, "", "", content+"님이 대화에 참여하였습니다.")
 	return room
 }
 

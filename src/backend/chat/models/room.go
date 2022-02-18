@@ -18,7 +18,7 @@ type RoomRepository interface {
 	DeleteMember(room Room, userId string)
 	FindRoomById(id string) Room
 	FindRoomByName(name string) Room
-	LoggingChat(chatLogData ChatLogData, content string)
+	LoggingChat(chatLogData ChatLogData, roomId string)
 	GetRoomViewData(roomId string) RoomViewData
 }
 type RoomsMongo struct {

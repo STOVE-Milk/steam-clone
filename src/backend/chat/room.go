@@ -89,6 +89,8 @@ func (room *Room) notifyClientLeave(client *Client) {
 		Message: fmt.Sprintf(goodbyeMessage, client.GetName()),
 	}
 
+	client.wsServer.loggingChat(room.ID, "", "", fmt.Sprintf(goodbyeMessage, client.GetName()))
+
 	room.publishRoomMessage(message.encode())
 }
 
