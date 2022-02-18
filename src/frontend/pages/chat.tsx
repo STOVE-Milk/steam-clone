@@ -8,7 +8,7 @@ import { faUser, faUsers, faComments } from '@fortawesome/free-solid-svg-icons';
 
 import { parseToken } from 'util/parseToken';
 import { IState } from 'modules';
-import { saveUserInfo } from 'modules/user';
+import { saveUserInfo, SET_ONLINE, SET_OFFLINE } from 'modules/user';
 
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
@@ -28,6 +28,7 @@ const Chat: NextPage = () => {
   const token = localStorage.getItem('accessToken');
   const userInfo = useSelector((state: IState) => state.user.userInfo);
   const friends = useSelector((state: IState) => state.user.friends.data);
+  const socket = useSelector((state: IState) => state.user.socket.data);
 
   const [showModal, setShowModal] = useState(false); // 채팅방 생성 모달을 띄우는가
   const [rooms, setRooms] = useState<IRoom[]>([]); // 채팅방 목록
@@ -43,13 +44,16 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     const result = token && parseToken(token);
+
     dispatch(saveUserInfo.request(result));
   }, [token]);
 
   useEffect(() => {
-    if (!ws.current) {
-      ws.current = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
-      // 서버 -> 클라이언트
+    ws.current = socket;
+    console.log(ws.current);
+    if (ws.current !== undefined) {
+      // ws.current = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
+      //서버 -> 클라이언트
       ws.current.onmessage = (e: MessageEvent) => {
         const events = e.data.split('\n');
         events.forEach((event: string) => {
@@ -57,7 +61,10 @@ const Chat: NextPage = () => {
           switch (serverMessage.action) {
             case 'user-join': // 유저 접속
               console.log('user-join', serverMessage.sender);
-              // TODO: 친구 온라인 상태 처리
+              dispatch({
+                type: SET_ONLINE,
+                payload: Number(serverMessage.sender.id),
+              });
               break;
             case 'room-get': // 유저 접속 시, 채팅방 목록 가져오기
               console.log('room-get', serverMessage.data);
@@ -68,6 +75,7 @@ const Chat: NextPage = () => {
                   setRooms((rooms) => rooms.concat(room));
                 });
               }
+              console.log(friends);
               break;
             case 'room-joined': // 채팅방 생성
               console.log('room-joined', serverMessage.target);
@@ -90,6 +98,10 @@ const Chat: NextPage = () => {
               break;
             case 'user-left': // 유저 활동 종료
               console.log('user-left', serverMessage);
+              dispatch({
+                type: SET_OFFLINE,
+                payload: Number(serverMessage.sender.id),
+              });
               break;
           }
         });
@@ -97,9 +109,22 @@ const Chat: NextPage = () => {
     }
   }, []);
 
+  useEffect(() => {
+    getRooms();
+  }, []);
+
   // 유저 아이디로 유저 닉네임 찾기
   const findNickname = (id: string) => {
     return friends.filter((f) => f.id.toString() === id)[0].nickname.toString();
+  };
+
+  const getRooms = () => {
+    // 클->서: 채팅방을 불러옴
+    ws.current?.send(
+      JSON.stringify({
+        action: 'room-get',
+      }),
+    );
   };
 
   const enterRoom = (roomId: string) => {

@@ -8,7 +8,7 @@ import { IFriendInfo } from 'modules/user';
 
 import { theme } from 'styles/theme';
 import Text, { TextStyle } from 'components/atoms/Text';
-import Dot from 'components/atoms/Status';
+import Status from 'components/atoms/Status';
 import Profile from 'components/atoms/Profile';
 
 export interface IFriendBoxProps {
@@ -16,6 +16,7 @@ export interface IFriendBoxProps {
   open: boolean; //아이콘만 보이는지(false), 이름과 온라인 상태까지 보이는지 (true)
   selected?: boolean; //채팅방 생성 시 친구가 선택되었는지
   onClick?: (id: number) => void; //채팅방 생성 시 친구 선택
+  online: boolean;
 }
 
 export default function FriendBox(props: IFriendBoxProps) {
@@ -31,7 +32,7 @@ export default function FriendBox(props: IFriendBoxProps) {
         '실제 이미지'
       )}
       {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
-      {props.open ? <FriendStatus status={props.friendInfo.status} /> : null}
+      {props.open ? <FriendStatus status={props.online} /> : null}
     </FriendBoxWrapper>
   );
 }
@@ -65,7 +66,7 @@ const FriendName = styled(Text)`
   margin-top: 5px;
 `;
 
-const FriendStatus = styled(Dot)`
+const FriendStatus = styled(Status)`
   margin-left: 20px;
   margin-right: 30px;
 `;

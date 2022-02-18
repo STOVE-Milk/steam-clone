@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 export interface IUserStatusProps {
-  status?: boolean;
+  status: boolean;
 }
 
 export default function UserStatus(props: IUserStatusProps) {
@@ -10,10 +10,10 @@ export default function UserStatus(props: IUserStatusProps) {
 }
 
 const DotStyle = styled.div<IUserStatusProps>`
-  width: 7px;
-  height: 7px;
+  width: 10px;
+  height: 10px;
   border-radius: 30px;
-  background: ${(props) => (props.status ? props.theme.colors.online : props.theme.colors.offline)};
+  background: ${(props) => (props.status === false ? props.theme.colors.offline : props.theme.colors.online)};
   display: flex;
   align-items: center;
   justify-content: center;

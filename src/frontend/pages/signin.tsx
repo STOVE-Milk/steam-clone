@@ -57,17 +57,16 @@ const signin: NextPage<IState> = () => {
       const res = await doSignInAPI(signInInfo);
       alert(res.message);
       if (res.code === 10000) {
+        //친구 목록 불러와서 API에 저장
+        dispatch(getFriend.request({}));
+
         //성공
         localStorage.setItem('accessToken', res.data.accessToken);
         localStorage.setItem('refreshToken', res.data.refreshToken);
         const result = parseToken(res.data.accessToken);
         dispatch(saveUserInfo.request(result));
 
-        //친구 목록 불러와서 API에 저장
-        dispatch(getFriend.request({}));
-        
         router.push('/');
-        
       }
     }
   };

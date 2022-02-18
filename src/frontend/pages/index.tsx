@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 
 import { parseToken } from 'util/parseToken';
+import { IState } from 'modules';
 import { gameInfo } from 'modules/game';
-import { saveUserInfo } from 'modules/user';
+import { saveUserInfo, SET_WEBSOCKET, SET_ONLINE } from 'modules/user';
 import { getGameListAPI } from 'api/game/api';
 
 import Text from 'components/atoms/Text';
@@ -15,7 +16,10 @@ import CarouselComponent from 'components/organisms/Carousel';
 import BigCarouselComponent from 'components/organisms/BigCarousel';
 
 const Main: NextPage = () => {
-  // const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem('accessToken');
+  const friends = useSelector((state: IState) => state.user.friends.data);
+  // let token: string | null;
+  // const [token, setToken] = useState<string | null>();
 
   const [rankGames, setRankGames] = useState([] as gameInfo[]); // 다운로드 높은 게임들
   const [saleGames, setSaleGames] = useState([] as gameInfo[]); // 할인률 높은 게임들
@@ -27,21 +31,48 @@ const Main: NextPage = () => {
 
   const dispatch = useDispatch();
 
-  // let ws = useRef<WebSocket>(); // 웹 소켓 사용
+  let ws = useRef<WebSocket>(); // 웹 소켓 사용
 
-  // useEffect(() => {
-  //   const result = token && parseToken(token);
-  //   dispatch(saveUserInfo.request(result));
-  // }, [token]);
+  useEffect(() => {
+    // setToken(localStorage.getItem('accessToken'));
+    const result = token && parseToken(token);
 
-  // useEffect(() => {
-  //   if (!ws.current) {
-  //     ws.current = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
-  //     // 서버 -> 클라이언트
+    dispatch(saveUserInfo.request(result));
+  }, [token]);
 
-  //     //join 까지만?
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!ws.current) {
+      const websocket = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
+      ws.current = websocket;
+      dispatch({
+        type: SET_WEBSOCKET,
+        payload: websocket,
+      });
+      // 서버 -> 클라이언트
+      ws.current.onmessage = (e: MessageEvent) => {
+        const events = e.data.split('\n');
+        events.forEach((event: string) => {
+          const serverMessage = JSON.parse(event);
+          switch (serverMessage.action) {
+            case 'user-join': // 유저 접속
+              console.log('user-join', serverMessage.sender);
+              console.log(friends);
+              let temp = [...friends];
+              console.log(temp);
+              console.log(temp.filter((f) => f.id.toString() === serverMessage.sender.id));
+              temp.filter((f) => f.id.toString() === serverMessage.sender.id).forEach((f) => (f.status = true));
+              console.log(temp);
+              // dispatch({
+              //   type: SET_FRIEND_STATUS,
+              //   payload: Number(serverMessage.sender.id),
+              // });
+              break;
+          }
+        });
+      };
+    }
+    //join 까지만?
+  }, []);
 
   useEffect(() => {
     getGames();
