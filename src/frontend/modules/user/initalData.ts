@@ -9,7 +9,7 @@ export const initalUserInfo = {
 
 export const initalFriendInfo = [
   {
-    id: 1,
+    id: 52,
     nickname: '[TEST]nick',
     profile: {
       image: '',

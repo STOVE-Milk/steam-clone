@@ -12,9 +12,14 @@ import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import { parseToken } from 'util/parseToken';
 import { makeUniqueArr } from 'util/makeUniqueArr';
 import { colorPalette } from 'util/colorPalette';
-import { getUserData } from 'modules/game';
+import { getGameInfoByUser, getUserData } from 'modules/game';
 
 import { GameListLibrary, TitleStyle } from 'components/organisms/GameListLibrary';
+// import * as GameAPI from 'api/game/api'; //getGameInfoByIdListAPI
+
+// import { getGameInfoByUserAPI } from 'api/game/api';
+// import { gameInfo } from 'modules/game/types';
+// import { isEmpty } from '../../util/isEmpty';
 
 const NoSSRMap = dynamic(() => import('components/organisms/Map'), {
   ssr: false,
@@ -43,23 +48,46 @@ export interface IMapInfo {
 
 const library: NextPage<IState> = () => {
   const { userInfo } = useSelector((state: IState) => state.user);
-  const { userData, gameOffsetData } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)
+  const { userData, gameOffsetData, gameInfoByUser } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)
 
-  const [installedGame, setInstalledGame] = useState(null);
-  const [installedGameList, setInstalledGameList] = useState([]);
-  const [gameOffsetList, setGameOffsetList] = useState({ x: 0, y: 0 }); // {id :{x:0,y:0}}
+  const friends = useSelector((state: IState) => state.user.friends.data);
+
+  const [installedGame, setInstalledGame] = useState({
+    id: 2,
+    name: 'PUBG: BATTLEGROUNDS',
+    description_snippet:
+      'PUBG: BATTLEGROUNDS를 무료로 플레이 하세요. 다양한 전장에서 전략적 위치를 선점하고 무기와 장비를 확보해 최후의 1인이 되기 위한 생존의 사투를 펼칩니다. 친구들과 함께 팀을 만들어 배틀로얄 건플레이 장르의 선구자인 PUBG: BATTLEGROUNDS만이 선사하는 긴장감 넘치는 경험을 위해 도전하세요.',
+    price: 10000,
+    sale: 0,
+    image: {
+      main: 'https://cdn.akamai.steamstatic.com/steam/apps/578080/header.jpg?t=1642587532',
+      sub: [
+        'https://cdn.akamai.steamstatic.com/steam/apps/578080/ss_e2cbfefdff39b9cb8e080da8f30cc07223b041b9.116x65.jpg?t=1642587532',
+      ],
+    },
+    video: {
+      main: 'https://cdn.akamai.steamstatic.com/steam/apps/256864285/movie480_vp9.webm?t=1640223329',
+      sub: ['https://cdn.akamai.steamstatic.com/steam/apps/256864285/movie480_vp9.webm?t=1640223329'],
+    },
+    category_list: ['action', 'fighting'],
+    os_list: ['Window', 'macOs'],
+    download_count: 1200,
+  });
+  const [installedGameList, setInstalledGameList] = useState(gameInfoByUser.data);
+  const [gameOffsetList, setGameOffsetList] = useState(gameOffsetData.data); // {id :{x:0,y:0}}
 
   const [mapInfo, setMapInfo] = useState({
     side: 9,
     gameList: [2],
     objectList: [],
     games: {
-      2: { name: 'PUBG: BATTLEGROUNDS', x: 0, y: 0 }, //dummy
+      2: { name: 'PUBG: BATTLEGROUNDS', x: 50, y: 50 }, //dummy
     },
     objects: {},
   } as IMapInfo);
 
   const [count, setCount] = useState(0);
+
   const dispatch = useDispatch();
   const router = useRouter();
   const token = getItemFromLocalStorage('accessToken');
@@ -74,13 +102,13 @@ const library: NextPage<IState> = () => {
       gameList: makeUniqueArr([...prev.gameList], game_id),
       games: {
         ...prev.games,
-        [game_id]: { name: installedGame.name, x: gameOffsetList.x, y: gameOffsetList.y },
+        [game_id]: { name: installedGame.name, x: gameOffsetList['2'].x, y: gameOffsetList['2'].y },
       },
     }));
   };
   const onInstallGame = (installedGame: any) => {
     console.log(installedGame);
-    setInstalledGameList(installedGame);
+    setInstalledGameList((prev) => ({ ...prev, ...installedGame }));
   };
   const onUnInstallGame = (game_id: number) => {
     //배열에서 해당 애들 삭제해야하는데, 그럴려면 인자가 뭐가 필요하려나? 게임id? 게임 id 가 같은 거 삭제
@@ -95,6 +123,28 @@ const library: NextPage<IState> = () => {
   const resetSelect = () => {
     setInstalledGame(null);
   };
+
+  // useEffect(() => {
+  //   typeof router.query.id == 'string' ? dispatch(getGameInfoByUser.request({ user_id: router.query.id })) : null;
+  //   setInstalledGame(installedGameList);
+  // }, [router.query.id]);
+  // const userId = router.query.id;
+  // useEffect(() => {
+  //   getGameInfoByUser();
+  // }, [userId]);
+
+  // const getGameInfoByUser = async () => {
+  //   if (userId == 'string') {
+  //     const res = await GameAPI.getGameInfoByUserAPI({ user_id: userId });
+  //     const game_list = await res.data.game_list;
+  //     setInstalledGameList(game_list);
+  //   }
+  // };
+  //초기값(더미)으로 초기화되는 것을 막기 위함
+  useEffect(() => {
+    setGameOffsetList(gameOffsetList);
+    setMapInfo(mapInfo);
+  }, [mapInfo]);
 
   useEffect(() => {
     console.log('token here=========', token);
@@ -111,9 +161,15 @@ const library: NextPage<IState> = () => {
       {/* 지금 url에 있는 id 가져와서 유저 구매 게임 정보 및 정보들 가져와야함 */}
       {console.log(router.query.id)}
       {console.log(userInfo.data)}
-      {console.log(mapInfo)}
+      {console.log('mapInfo', mapInfo)}
+      {console.log('gameInfoByUser', gameInfoByUser)}
+      {console.log('gameOffsetList', gameOffsetList)}
+      {console.log('installedGameList', installedGameList)}
+      {console.log('installedGame', installedGame)}
+
       <TitleWrapeer>
         <TitleStyle types="large">{`${userInfo.data.nickname}의 라이브러리(구매 게임 목록), 내 색깔 `}</TitleStyle>
+        {/* friends.filter() */}
         <MyColor color={`${colorPalette[Math.round(100 % userInfo.data.idx)]}`}></MyColor>
       </TitleWrapeer>
       <LibraryContentWrapper>
@@ -121,14 +177,18 @@ const library: NextPage<IState> = () => {
           installedGame={installedGame}
           mapInfo={mapInfo}
           gameOffsetList={gameOffsetList}
+          installedGameList={installedGameList}
           setGameOffsetList={setGameOffsetList}
         />
-        <GameListLibrary
-          purchaseList={userData.data.purchase_list}
-          onSelect={onSelect}
-          resetSelect={resetSelect}
-          onFinishSetGameOffset={onFinishSetGameOffset}
-        />
+        {router.query.id == userInfo.data.idx.toString() && (
+          <GameListLibrary
+            purchaseList={userData.data.purchase_list}
+            onSelect={onSelect}
+            resetSelect={resetSelect}
+            onFinishSetGameOffset={onFinishSetGameOffset}
+          />
+        )}
+
         {/* <button onClick={() => setCount(count + 1)}>add user</button> */}
       </LibraryContentWrapper>
     </LibraryWrapper>

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
@@ -9,6 +10,7 @@ import { theme } from 'styles/theme';
 import Text, { TextStyle } from 'components/atoms/Text';
 import Dot from 'components/atoms/Dot';
 import Profile from 'components/atoms/Profile';
+import { getGameInfoByUser, getUserData } from 'modules/game';
 
 export interface IFriend {
   //친구 객체 타입
@@ -27,6 +29,12 @@ export interface IFriendBoxProps {
 }
 
 export default function FriendBox(props: IFriendBoxProps) {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getGameInfoByUser.request({ user_id: props.friendInfo.id.toString() }));
+  }, [props.friendInfo.id]);
+
   return (
     <Link href={`library/${props.friendInfo.id}`}>
       <FriendBoxWrapper>

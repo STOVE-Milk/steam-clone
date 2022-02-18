@@ -19,7 +19,7 @@ interface IGameListLibararyProps {
   onFinishSetGameOffset: (e: any) => void;
   purchaseList: number[];
 }
-
+//나 === url 위치가 같을 때만 부르면 됨
 export const GameListLibrary = (props: IGameListLibararyProps) => {
   const { userInfo } = useSelector((state: IState) => state.user);
   const { userData } = useSelector((state: IState) => state.game); //유저가 가지고있는 게임정보 (wishlist, purchase list)

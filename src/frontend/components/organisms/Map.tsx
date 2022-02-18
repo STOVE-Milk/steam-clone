@@ -14,6 +14,7 @@ import { commandType, IMapInfo } from 'pages/library/[id]';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import UserObject from './UserObject';
 import { colorPalette } from 'util/colorPalette';
+import { gameInfo, addGameOffset } from 'modules/game';
 
 const absoluteVal = 500;
 
@@ -21,9 +22,12 @@ interface IMapProps {
   installedGame: any;
   mapInfo: IMapInfo;
   gameOffsetList: {
-    x: number;
-    y: number;
+    [index: number]: {
+      x: number;
+      y: number;
+    };
   };
+  installedGameList?: any;
   setGameOffsetList: (e: any) => void;
 }
 interface IMoveProps {
@@ -76,8 +80,11 @@ interface IGlobalState {
   };
 }
 const Map = (props: IMapProps) => {
-  const { installedGame, mapInfo, gameOffsetList, setGameOffsetList } = props;
+  const { installedGame, mapInfo, gameOffsetList, setGameOffsetList, installedGameList } = props;
   const { userInfo } = useSelector((state: IState) => state.user);
+  const { gameOffsetData } = useSelector((state: IState) => state.game);
+
+  const dispatch = useDispatch();
 
   const windowSize = useWindowSize();
   const width = windowSize.width;
@@ -102,6 +109,10 @@ const Map = (props: IMapProps) => {
       },
     },
   });
+
+  const offsetFunc = (offsetInfo: IGameInfo) => {
+    dispatch(addGameOffset.request(offsetInfo));
+  };
 
   // const [userLocation, setUserLocation] = useState({ 52: { x: 50, y: 50 }, 59: { x: 450, y: 450 } } as ILocationData); //나는 무조건 있고, 맵에서 유저를 받아와서 그 첫 정보를 넣을 수 있도록 해야됨
   const [userLocation, setUserLocation] = useState({ 52: { x: 50, y: 50 } } as ILocationData);
@@ -145,8 +156,10 @@ const Map = (props: IMapProps) => {
     const code = res.slice(0, 2);
     const data = JSON.parse(res.slice(2, res.length));
     if (code == '11') {
-      //동기화 -> 1. 맨 처음 입장할 때 / 2. 맵에 게임이 설치될 때
+      //동기화 -> 1. 맨 처음 입장할 때
       setGlobalData(data);
+      // 2. 맵에 게임이 설치될 때
+      offsetFunc({ ...data.room.map.games });
     } else if (code == '20') {
       //다른유저 움직임
       handleMovement(data);
@@ -351,7 +364,7 @@ const Map = (props: IMapProps) => {
       {/* {console.log('mapInfo from library', mapInfo)} */}
       {console.log('global data', globalData)}
       {console.log('userLocation', userLocation)}
-      {/* {console.log('userInfo', userInfo)} */}
+      {console.log('gameOffsetData', gameOffsetData.data)}
       <Stage id="canvas" width={absoluteVal} height={absoluteVal} ref={shapeRef} style={{}} onClick={focusRef}>
         <Layer>
           {userObjects(userLocation).map((eachUser, i) => {
@@ -381,24 +394,27 @@ const Map = (props: IMapProps) => {
 
           {/* <UserObject x={userX} y={userY} width={absoluteVal / 5} /> */}
           {/* "games":{"2":{"name":"PUBG: BATTLEGROUNDS","x":196,"y":50}},"objects":{}}} */}
-          {console.log(installedGame)}
+          {console.log(installedGameList)}
           {installedGame ? (
             <EachGame
-              installedGame={installedGame}
+              installedGame={installedGame} //game_id받아와서 넣어야함, idx가 그것인것
+              mapInfo={mapInfo}
               gameOffsetList={gameOffsetList}
               setGameOffsetList={setGameOffsetList}
             />
           ) : null}
         </Layer>
       </Stage>
-      <button
-        id="btn"
-        onClick={() => {
-          handleBuildEvt();
-        }}
-      >
-        게임 좌표 저장하기
-      </button>
+      {router.query.id == userInfo.data.idx.toString() && (
+        <button
+          id="btn"
+          onClick={() => {
+            handleBuildEvt();
+          }}
+        >
+          게임 좌표 저장하기
+        </button>
+      )}
     </StageStyled>
   );
 };
