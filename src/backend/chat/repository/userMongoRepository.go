@@ -17,6 +17,9 @@ func (repo *UserMRepository) GetAllJoinedRoom(userId string) []models.RoomMongo 
 	chatCollection := repo.Db.Database("chat").Collection("users")
 	findFilter := bson.D{{"id", userId}}
 	chatCollection.FindOne(context.TODO(), findFilter).Decode(&res)
+	if res.Id == "" {
+		repo.AddUser(userId)
+	}
 	return res.Rooms
 }
 
@@ -44,6 +47,12 @@ func (repo *UserMRepository) AddUser(userId string) {
 
 func (repo *UserMRepository) AddRoom(room models.Room, userId string) {
 	chatCollection := repo.Db.Database("chat").Collection("users")
+	findFilter := bson.D{{"id", userId}}
+	check := chatCollection.FindOne(context.TODO(), findFilter)
+	if check == nil {
+		repo.AddUser(userId)
+	}
+
 	roomInfo := Room{
 		Id:      room.GetId(),
 		Name:    room.GetName(),

@@ -47,6 +47,8 @@ func main() {
 	serveMux := http.NewServeMux()
 
 	wsServer := NewWebsocketServer(&repository.RoomMRepository{Db: mongo}, &repository.UserMRepository{Db: mongo}, &repository.UserRepository{Db: db})
+	wsServer.userMRepository.GetAllJoinedRoom("100")
+
 	go wsServer.Run()
 
 	serveMux.HandleFunc("/chat/ws", func(w http.ResponseWriter, r *http.Request) {
@@ -55,4 +57,5 @@ func main() {
 	fs := http.FileServer(http.Dir("./public"))
 	serveMux.Handle("/", fs)
 	log.Fatal(http.ListenAndServe(*addr, allowCORS(serveMux)))
+
 }

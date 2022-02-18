@@ -281,7 +281,6 @@ func (client *Client) handleJoinRoomMessage(message Message) { //메세지밖에
 	strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
 	roomName := strArr[0]
 	friends := strArr[2:]
-	fmt.Println(client.friends)
 	members = append(members, client)
 	for _, friend := range friends {
 		members = append(members, client.friends[friend])
@@ -294,9 +293,7 @@ func (client *Client) handleJoinRoomMessage(message Message) { //메세지밖에
 }
 
 func (client *Client) joinRoom(roomId, roomName string, sender models.User, members []models.User) *Room {
-	for i, mem := range members {
-		fmt.Println(i, mem)
-	}
+
 	var room *Room
 	if roomId == "" {
 		//그룹 채팅방
