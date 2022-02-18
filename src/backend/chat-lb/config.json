@@ -1,0 +1,16 @@
+{
+    "proxy": {
+        "port": "8103"
+    },
+    "backends": [
+        {
+            "url": "http://localhost:8111/"
+        },
+        {
+            "url": "http://localhost:8112/"
+        },
+        {
+            "url": "http://localhost:8113/"
+        }
+    ]
+}
