@@ -11,10 +11,10 @@ import Layout from 'templates/Layout';
 import 'styles/globals.css';
 import 'styles/font.css';
 
-// interface IAppProps {
-//   Component: NextPage;
-//   ctx: NextPageContext;
-// }
+interface IAppProps {
+  Component: NextPage;
+  ctx: NextPageContext;
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -27,20 +27,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     </ThemeProvider>
   );
 }
-
-// 여기서 실행 안됨 일단은
-// MyApp.getInitialProps = async ({ Component, ctx }: IAppProps) => {
-//   let pageProps = {};
-
-//   // 실행하고자 하는 component에 getInitialprops가 있으면 실행하여 props를 받아올 수 있다.
-//   if (Component.getInitialProps) {
-//     pageProps = await Component.getInitialProps(ctx);
-//   }
-
-//   return {
-//     pageProps,
-//   };
-// };
 
 // export default wrapper.withRedux(withReduxSaga(MyApp));
 export default wrapper.withRedux(MyApp);

@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
 
+import { parseToken } from 'util/parseToken';
+import { IState } from 'modules';
 import { gameInfo } from 'modules/game';
+import { saveUserInfo, SET_WEBSOCKET, SET_ONLINE, SET_OFFLINE } from 'modules/user';
 import { getGameListAPI } from 'api/game/api';
 
 import Text from 'components/atoms/Text';
@@ -12,6 +16,9 @@ import CarouselComponent from 'components/organisms/Carousel';
 import BigCarouselComponent from 'components/organisms/BigCarousel';
 
 const Main: NextPage = () => {
+  const token = localStorage.getItem('accessToken');
+  const friends = useSelector((state: IState) => state.user.friends.data);
+
   const [rankGames, setRankGames] = useState([] as gameInfo[]); // 다운로드 높은 게임들
   const [saleGames, setSaleGames] = useState([] as gameInfo[]); // 할인률 높은 게임들
 
@@ -19,6 +26,51 @@ const Main: NextPage = () => {
     setRankGames((await getGameListAPI('category=ALL&page=1&size=5&sort=download_count,desc')).data.game_list);
     setSaleGames((await getGameListAPI('category=ALL&page=1&size=5&sort=sale,desc')).data.game_list);
   };
+
+  const dispatch = useDispatch();
+
+  let ws = useRef<WebSocket>(); // 웹 소켓 사용
+
+  useEffect(() => {
+    const result = token && parseToken(token);
+
+    dispatch(saveUserInfo.request(result));
+  }, [token]);
+
+  useEffect(() => {
+    if (!ws.current) {
+      const websocket = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
+      ws.current = websocket;
+      dispatch({
+        type: SET_WEBSOCKET,
+        payload: websocket,
+      });
+      // 서버 -> 클라이언트
+      ws.current.onmessage = (e: MessageEvent) => {
+        const events = e.data.split('\n');
+        events.forEach((event: string) => {
+          const serverMessage = JSON.parse(event);
+          switch (serverMessage.action) {
+            case 'user-join': // 유저 접속
+              console.log('user-join', serverMessage.sender);
+              dispatch({
+                type: SET_ONLINE,
+                payload: Number(serverMessage.sender.id),
+              });
+              break;
+            case 'user-left': // 유저 활동 종료
+              console.log('user-left', serverMessage);
+              dispatch({
+                type: SET_OFFLINE,
+                payload: Number(serverMessage.sender.id),
+              });
+              break;
+          }
+        });
+      };
+    }
+    //join 까지만?
+  }, []);
 
   useEffect(() => {
     getGames();

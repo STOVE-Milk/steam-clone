@@ -21,3 +21,8 @@ export const getFriend = createAsyncAction(GET_FRIEND, GET_FRIEND_SUCCESS, GET_F
   IResType,
   AxiosError
 >();
+
+export const SET_ONLINE = 'SET_ONLINE'; // 온라인 상태인 친구를 목록에 추가
+export const SET_OFFLINE = 'SET_OFFLINE'; // 오프라인 상태인 친구를 목록에 제거
+
+export const SET_WEBSOCKET = 'SET_WEBSOCKET'; // 웹 소켓 설정
