@@ -18,7 +18,7 @@ type UserMRepository interface {
 }
 
 type UserMongo struct {
-	Id    string      `bson:"id"`
-	Name  string      `bson:"name"`
-	Rooms []RoomMongo `bson:"rooms"`
+	Id    string      `bson:"id" json:"id"`
+	Name  string      `bson:"name" json:"name"`
+	Rooms []RoomMongo `bson:"rooms" json:"rooms,omitempty"`
 }
