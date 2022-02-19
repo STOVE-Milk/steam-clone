@@ -1,41 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import styled from 'styled-components';
 
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowMaximize, faAppleAlt } from '@fortawesome/free-solid-svg-icons';
 
+import { parseToken } from 'util/parseToken';
+import { localePrice } from 'util/localeString';
 import { IState } from 'modules';
 import { gameInfo } from 'modules/game/types';
 import * as GameAPI from 'api/game/api';
 import * as ReviewAPI from 'api/review/api';
-import { localePrice } from 'util/localeString';
+import { saveUserInfo, SET_ONLINE, SET_OFFLINE } from 'modules/user';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import BigGameSlide from 'components/molecules/BigGameSlide';
 import CarouselComponent from 'components/organisms/SelectCarousel';
-import GameReview from 'components/organisms/GameReview';
-
-interface IReview {
-  //리뷰 객체 타입
-  id: number;
-  user_id: number;
-  displayed_name: string;
-  content: string;
-  recommendation: boolean;
-  created_at: string;
-  updated_at: string;
-}
+import GameReview, { IReview } from 'components/organisms/GameReview';
 
 const Detail: NextPage<IState> = () => {
   const [game, setGame] = useState({} as gameInfo); //하나의 게임에 대한 정보
-  // TODO: API/resType으로 만들기, 다른 곳도 통일
-  // 하나의 게임에 대한 리뷰
+  const userInfo = useSelector((state: IState) => state.user.userInfo.data);
   const [reviews, setReviews] = useState([] as IReview[]);
-  const [userReview, setUserReview] = useState({ content: '', recommendation: true }); //유저가 작성 중인 리뷰 내용
+  const [userReview, setUserReview] = useState({} as IReview); //유저가 작성 중인 리뷰 내용
 
   const router = useRouter();
   const gameId = Number(router.query.id) || 1;
@@ -48,6 +39,11 @@ const Detail: NextPage<IState> = () => {
   const getReviews = async () => {
     const res = (await ReviewAPI.getReviewAPI(gameId)).data.review_list;
     setReviews(res);
+
+    const myReview = res.filter((r: IReview) => r.user_id === userInfo.idx);
+    if (myReview.length > 0) {
+      setUserReview(myReview[0]);
+    }
   };
 
   const addReview = async () => {
@@ -68,9 +64,14 @@ const Detail: NextPage<IState> = () => {
     setUserReview({ ...userReview, recommendation: r });
   };
 
-  useEffect(() => {
-    getGame();
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const result = token && parseToken(token);
+    dispatch(saveUserInfo.request(result));
+
+    getGame();
     // getReviews();
   }, []);
 
@@ -154,13 +155,8 @@ const Detail: NextPage<IState> = () => {
       <ReviewSection>
         <ReviewTitle types="large">사용자 리뷰</ReviewTitle>
         <GameReview
-          isMine={false}
-          name={'username'}
-          time={'1시'}
-          text={'abc'}
-          recommendation={true}
-          isFirst={true}
-          userReview={userReview}
+          review={userReview}
+          userInfo={userInfo}
           onChange={onChange}
           addReview={addReview}
           setRecommend={setRecommend}
@@ -168,15 +164,9 @@ const Detail: NextPage<IState> = () => {
         {reviews.map((review: IReview) => {
           return (
             <GameReview
+              userInfo={userInfo}
               key={review.id}
-              reviewId={review.id}
-              isMine={true}
-              name={review.displayed_name}
-              time={'1시'}
-              text={review.content}
-              recommendation={review.recommendation}
-              isFirst={false}
-              userReview={userReview}
+              review={userReview}
               onChange={onChange}
               modifyReview={modifyReview}
               setRecommend={setRecommend}

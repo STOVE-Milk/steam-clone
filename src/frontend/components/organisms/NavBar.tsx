@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';

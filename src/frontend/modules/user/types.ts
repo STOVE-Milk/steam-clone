@@ -3,7 +3,7 @@ import { ActionType } from 'typesafe-actions';
 import { AsyncState } from 'modules/utils/reducerUtils';
 import * as actions from './actions';
 
-interface IUserInfo {
+export interface IUserInfo {
   country: string;
   exp: number;
   iat: number;

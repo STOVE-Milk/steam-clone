@@ -3,49 +3,52 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 
+import { IUserInfo } from 'modules/user/types';
+
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 
+export interface IReview {
+  //리뷰 객체 타입
+  id: number;
+  user_id: number;
+  displayed_name: string;
+  content: string;
+  recommendation: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface IReviewProps {
-  reviewId?: number;
-  isMine: boolean; //내가 작성한 리뷰인지 여부
-  name: string;
-  time: string;
-  text: string;
-  recommendation: boolean; //게임 추천 여부
+  review: IReview;
+  userInfo: IUserInfo;
   addReview?: () => Promise<void>;
   modifyReview?: (id: number) => Promise<void>;
-  isFirst: boolean; //이 게임에 대해 처음으로 리뷰를 등록하는가
-  userReview?: {
-    //리뷰 등록/수정 시 유저가 입력한 정보
-    content: string;
-    recommendation: boolean;
-  };
   setRecommend: (r: boolean) => void;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 export default function GameReview(props: IReviewProps) {
-  const [isEdited, setEdited] = useState(props.isFirst ? true : false); //유저가 등록/수정 중인지 여부
+  const [isEdited, setEdited] = useState(props.review.id === undefined ? true : false); //유저가 등록/수정 중인지 여부
 
   return (
     <ReviewWrapper>
       <UserBox>
         <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-        <Name types="medium">{props.name}</Name>
+        <Name types="medium">{props.review.displayed_name}</Name>
         {isEdited ? (
           <>
             <ThumbsDown
               onClick={() => props.setRecommend(false)}
-              userReview={props.userReview}
+              userReview={props.review}
               isEdited={isEdited}
               icon={faThumbsDown}
               inverse
             />
             <ThumbsUp
               onClick={() => props.setRecommend(true)}
-              userReview={props.userReview}
+              userReview={props.review}
               isEdited={isEdited}
               icon={faThumbsUp}
               inverse
@@ -53,12 +56,14 @@ export default function GameReview(props: IReviewProps) {
           </>
         ) : (
           <>
-            {props.recommendation ? (
+            {props.review.recommendation ? (
               <ThumbsUp isEdited={false} icon={faThumbsUp} inverse />
             ) : (
               <ThumbsDown isEdited={false} icon={faThumbsDown} inverse />
             )}
-            <CreatedAt types="tiny">{props.time}</CreatedAt>
+            <CreatedAt types="tiny">{`${props.review.created_at} ${
+              props.review.created_at !== props.review.updated_at ? '(수정됨)' : ''
+            }`}</CreatedAt>
           </>
         )}
         {isEdited ? (
@@ -67,7 +72,7 @@ export default function GameReview(props: IReviewProps) {
               types="primary"
               onClick={() =>
                 isEdited
-                  ? props.modifyReview && props.reviewId && props.modifyReview(props.reviewId)
+                  ? props.modifyReview && props.modifyReview(props.review.id)
                   : props.addReview && props.addReview()
               }
             >
@@ -75,23 +80,20 @@ export default function GameReview(props: IReviewProps) {
             </FilledButton>
           </PostActionBox>
         ) : null}
-        {!isEdited && props.isMine ? (
+        {!isEdited && props.userInfo && props.userInfo.idx === props.review.user_id ? (
           <PostActionBox>
             <FilledButton types="primary" onClick={() => setEdited(true)}>
               수정
             </FilledButton>
-            <FilledButton types="primary">삭제</FilledButton>
           </PostActionBox>
         ) : null}
       </UserBox>
       <Divider />
-      {props.isFirst ? (
-        <EditBox value={props.userReview?.content} onChange={(e) => props.onChange && props.onChange(e)}></EditBox>
-      ) : isEdited ? (
-        <EditBox value={props.userReview?.content} onChange={(e) => props.onChange && props.onChange(e)}></EditBox>
+      {props.review.id === undefined || isEdited ? (
+        <EditBox value={props.review.content} onChange={(e) => props.onChange && props.onChange(e)}></EditBox>
       ) : (
         <TextBox>
-          {props.text.split('\n').map((text, key) => (
+          {props.review.content.split('\n').map((text, key) => (
             <p key={key}> {text} </p>
           ))}
         </TextBox>
