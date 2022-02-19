@@ -13,8 +13,13 @@ export interface Log {
   content: string;
 }
 
+export interface Member {
+  id: string;
+  name: string;
+}
+
 export interface IChatRoomProps {
-  members: string[]; // 채팅방 멤버들
+  members: Member[]; // 채팅방 멤버들
   logs: Log[]; // 채팅방 메세지들
   leaveRoom: () => void;
   userId: number; // 현재 로그인한 유저 아이디
@@ -38,16 +43,18 @@ export default function ChatRoom(props: IChatRoomProps) {
     <Wrapper>
       <RoomInfoBox>
         {props.members.map((member, key) => {
-          return <Member key={key}>{member}</Member>;
+          return <Member key={key}>{member.name}</Member>;
         })}
-        <LeaveRoomBtn types="primary" onClick={props.leaveRoom}>
-          방 나가기
-        </LeaveRoomBtn>
+        {props.members.length > 2 && (
+          <LeaveRoomBtn types="primary" onClick={props.leaveRoom}>
+            방 나가기
+          </LeaveRoomBtn>
+        )}
       </RoomInfoBox>
       <RoomViewBox>
         {props.logs.map((log, key) => {
-          return log.sender_id === '-1' ? (
-            <AlertMsgBox>{log.content}</AlertMsgBox>
+          return log.sender_id === '' ? (
+            <AlertMsgBox key={key}>{log.content}</AlertMsgBox>
           ) : (
             <MsgBox key={key} isMine={log.sender_id === props.userId.toString()} name={log.sender_nickname}>
               {log.content && log.content.split('\n').map((text, key) => <p key={key}> {text} </p>)}
@@ -66,6 +73,7 @@ const Wrapper = styled.div`
 
 const RoomInfoBox = styled.div`
   width: 100%;
+  height: 50px;
   display: flex;
   border-bottom: 1px solid ${(props) => props.theme.colors.divider};
   align-items: center;
