@@ -15,7 +15,7 @@ import BigGameSlide from 'components/molecules/BigGameSlide';
 import CarouselComponent from 'components/organisms/Carousel';
 import BigCarouselComponent from 'components/organisms/BigCarousel';
 
-const Main: NextPage = () => {
+const Main: NextPage<IState> = () => {
   const token = localStorage.getItem('accessToken');
   const friends = useSelector((state: IState) => state.user.friends.data);
 

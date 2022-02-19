@@ -24,7 +24,7 @@ interface IRoom {
   private: boolean; //개인 채팅방이면 true, 단체 채팅방이면 false
 }
 
-const Chat: NextPage = () => {
+const Chat: NextPage<IState> = () => {
   const token = localStorage.getItem('accessToken');
   const userInfo = useSelector((state: IState) => state.user.userInfo);
   const friends = useSelector((state: IState) => state.user.friends.data);
@@ -115,7 +115,7 @@ const Chat: NextPage = () => {
               } else {
                 // 유저가 단체 채팅방을 나간 경우
                 // TODO: 서버에서 닉네임 보내주면 나간 유저 없애기
-                setMembers([]) 
+                setMembers([]);
                 setLogs((logs) =>
                   logs.concat({
                     sender_id: '-1',
