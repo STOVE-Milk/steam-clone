@@ -22,6 +22,7 @@ import { RedirectBtn } from 'pages/wishlist';
 
 const cart: NextPage<IState> = (props) => {
   const { cartInfo } = useSelector((state: IState) => state.cart);
+  const { userData } = useSelector((state: IState) => state.game);
   const [gameList, setGameList] = useState([] as gameInfo[]);
   const [checkedGame, setCheckedGame] = useState([] as number[]); // 체크된 게임은 number[] 타입으로 관리
   const [walletInfo, setWalletInfo] = useState(0 as number);
@@ -72,8 +73,7 @@ const cart: NextPage<IState> = (props) => {
 
     alert(res.message);
     // code가 77203이면 잔액부족이므로 alert 해주고 충전페이지로 redirect
-    if (res.code === 77202) {
-      // 지금은 202인테 태현님이 수정 예정임 (계산오류 -> 잔액부족오류)
+    if (res.code === 77203) {
       router.push('/charge');
     } else {
       router.push('/category'); //일단 있는 페이지로 라우팅시킴
@@ -82,12 +82,13 @@ const cart: NextPage<IState> = (props) => {
 
   return (
     <CartInfoWrapper>
+      {console.log(gameList)}
       <TitleStyle types="large">장바구니에 담긴 게임 리스트</TitleStyle>
       <TitleStyle>{': 플레이를 원하는 게임을 선택해서 "구매하기"를 진행해보세요!'}</TitleStyle>
 
       <WalletInfoWrapper>
         <FontAwesomeIcon icon={faWallet} inverse />
-        <TitleStyle types="large">{`나의 잔액: ${localePrice(walletInfo, 'KR')} `}</TitleStyle>
+        <TitleStyle types="large">{`나의 잔액: ${localePrice(walletInfo, 'KR', 'charge')} `}</TitleStyle>
       </WalletInfoWrapper>
       {/* TO DO(양하): #1 전체선택(React에서 input태그의 checked처리 확인), #2 이미 구매목록에 있는 게임이면 카트에 담길수가 없음. */}
       {/* <SelectAllWrapper>
@@ -112,23 +113,24 @@ const cart: NextPage<IState> = (props) => {
           </TitleStyle>
         ) : (
           gameList.map((eachGame, i) => {
-            return (
-              <ChenknGameInfoWrapper key={eachGame + i.toString()}>
-                <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
-                <label htmlFor={eachGame.name}>
-                  <GameInfo key={eachGame.id} type={'cart'} {...eachGame} />
-                </label>
-              </ChenknGameInfoWrapper>
-            );
+            if (!userData.data.purchase_list.includes(eachGame.id)) {
+              return (
+                <>
+                  <ChenknGameInfoWrapper key={eachGame + i.toString()}>
+                    <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
+                    <label htmlFor={eachGame.name}>
+                      <GameInfo key={eachGame.id} type={'cart'} {...eachGame} />
+                    </label>
+                  </ChenknGameInfoWrapper>
+                  <Purchasebtn types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>
+                    구매하기
+                  </Purchasebtn>
+                </>
+              );
+            }
           })
         )}
       </div>
-
-      {gameList.length !== 0 && (
-        <Purchasebtn types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>
-          구매하기
-        </Purchasebtn>
-      )}
     </CartInfoWrapper>
   );
 };
