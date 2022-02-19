@@ -16,18 +16,22 @@ const search: NextPage<IState> = (props) => {
     // <div>ddd{console.log(searchData.data.inputText.trim() game_list)}</div>
     <>
       <SearchResultWrapper>
-        <TitleStyle types="large">검색결과</TitleStyle>
+        <TitleStyle types="large">{`검색결과`}</TitleStyle>
+        <Text>{`${searchData.data.length}개의 결과입니다.`}</Text>
 
-        {searchData.data &&
+        {searchData.data.length ? (
           searchData.data.map((eachGame, i) => {
             return <GameInfo key={eachGame.id + eachGame.name} {...eachGame} />;
-          })}
+          })
+        ) : (
+          <Text>일치하는 데이터가 없습니다</Text>
+        )}
       </SearchResultWrapper>
     </>
   );
 };
 const SearchResultWrapper = styled.div`
-  width: fit-content;
+  width: 60rem;
   display: flex;
   flex-direction: column;
   margin: 2rem auto;
