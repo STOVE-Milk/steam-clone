@@ -5,9 +5,10 @@ import styled from 'styled-components';
 import * as UserAPI from 'api/user/api';
 import * as guestAPI from 'api/guestbook/api';
 import { verifyToken } from 'util/verifyToken';
+import { IFriendInfo } from 'modules/user';
 
 import Text from 'components/atoms/Text';
-import FriendBox, { IFriend } from 'components/molecules/FriendBox';
+import FriendBox from 'components/molecules/FriendBox';
 import UserInfo, { IUserInfo } from 'components/organisms/UserInfo';
 import GuestBook, { IGuestBook } from 'components/organisms/GuestBook';
 
@@ -18,7 +19,7 @@ const UserPage: NextPage = () => {
   // const { user } = useSelector((state: IState) => state.user);
   // const dispatch = useDispatch();
   */
-  const userId = 1; // TODO: url의 Id 가져와서 스토어의 Id와 비교하기
+  const userId = 68; // TODO: url의 Id 가져와서 스토어의 Id와 비교하기
   const [isMypage, setIsMypage] = useState(false); // 현재 보고 있는 페이지가 마이 페이지인지, 다른 유저의 페이지인지 여부
 
   const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]); // 현재 유저 페이지의 방명록
@@ -26,7 +27,7 @@ const UserPage: NextPage = () => {
 
   const [profile, setProfile] = useState({} as IUserInfo); // 현재 유저 페이지의 유저의 정보
 
-  const [withFriend, setWithFriend] = useState([] as IFriend[]); // 현재 유저 페이지의 유저와 함께 아는 친구. 마이페이지면 보이지 않음
+  const [withFriend, setWithFriend] = useState([] as IFriendInfo[]); // 현재 유저 페이지의 유저와 함께 아는 친구. 마이페이지면 보이지 않음
 
   const getProfile = async () => {
     const res = (await UserAPI.getProfileAPI(userId)).data;
@@ -59,7 +60,7 @@ const UserPage: NextPage = () => {
   };
 
   useEffect(() => {
-    verifyToken();
+    // verifyToken();
     getProfile();
     getGuestBooks();
     !isMypage && getWithFriend();
@@ -83,17 +84,18 @@ const UserPage: NextPage = () => {
         <Text types={'large'}>방명록</Text>
         <GuestBookList>
           <GuestBook guestBook={userGuestBook} isAdd={true} addGuestBook={addGuestBook}></GuestBook>
-          {guestBooks.map((guestBook) => {
-            return (
-              <GuestBook
-                key={guestBook.id}
-                guestBook={guestBook}
-                isMine={userId === guestBook.guest_id}
-                isAdd={false}
-                modifyGuestBook={modifyGuestBook}
-              ></GuestBook>
-            );
-          })}
+          {guestBooks &&
+            guestBooks.map((guestBook) => {
+              return (
+                <GuestBook
+                  key={guestBook.id}
+                  guestBook={guestBook}
+                  isMine={userId === guestBook.guest_id}
+                  isAdd={false}
+                  modifyGuestBook={modifyGuestBook}
+                ></GuestBook>
+              );
+            })}
         </GuestBookList>
       </GuestBookSection>
     </Wrapper>

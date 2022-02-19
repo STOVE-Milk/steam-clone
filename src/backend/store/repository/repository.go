@@ -31,6 +31,9 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*models.Review, *models.Err
 	FROM revie
 	WHERE game_id=?
 	`, gameId)
+	if err == sql.ErrNoRows {
+		return nil, utils.ErrorHandler(storeErr.EmptyGameDataErr, err)
+	}
 	if err != nil {
 		return nil, utils.ErrorHandler(storeErr.GetReviewQueryErr, err)
 	}
@@ -83,6 +86,9 @@ func (r *Repo) GetGameDetail(ctx context.Context) (*models.GameDetail, *models.E
 	join steam.game AS g 
 	on gc.game_id=g.idx where g.idx = ?
 	`, gameId)
+	if err == sql.ErrNoRows {
+		return nil, utils.ErrorHandler(storeErr.EmptyGameDataErr, err)
+	}
 	if err != nil {
 		return nil, utils.ErrorHandler(storeErr.GetGameDetailQueryErr, err)
 	}
@@ -148,6 +154,9 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*models.GameSimple, *m
 		rows, err = r.db.QueryContext(ctx, queryBytes.String(), page*size, size)
 	} else {
 		rows, err = r.db.QueryContext(ctx, queryBytes.String(), category_name, page*size, size)
+	}
+	if err == sql.ErrNoRows {
+		return nil, utils.ErrorHandler(storeErr.EmptyGameDataErr, err)
 	}
 	if err != nil {
 		return nil, utils.ErrorHandler(storeErr.GetSotingGameListQueryErr, err)
@@ -224,6 +233,9 @@ func (r *Repo) GetGameListInWishlist(ctx context.Context) ([]*models.GameSimple,
 	ON w.game_id=g.idx
 	WHERE w.user_id=?
 	`, userId)
+	if err == sql.ErrNoRows {
+		return nil, utils.ErrorHandler(storeErr.EmptyGameDataErr, err)
+	}
 	if err != nil {
 		return nil, utils.ErrorHandler(storeErr.GetGameListInWishlistQueryErr, err)
 	}
@@ -243,8 +255,14 @@ func (r *Repo) GetGameListInCart(ctx context.Context) ([]*models.GameSimple, *mo
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	gameIdList := ctx.Value("gameIdList").(string)
+	if gameIdList == "" {
+		return nil, utils.ErrorHandler(storeErr.EmptyCartErr, errors.New("ID값 전달 안됨."))
+	}
 	var gameSimpleList []*models.GameSimple
 	rows, err := r.db.QueryContext(ctx, fmt.Sprintf("SELECT idx, name, description_snippet, price, sale, image, video, os, download_count FROM game WHERE idx In (%v)", gameIdList))
+	if err == sql.ErrNoRows {
+		return nil, utils.ErrorHandler(storeErr.EmptyGameDataErr, err)
+	}
 	if err != nil {
 		return nil, utils.ErrorHandler(storeErr.GetGameListInCartQueryErr, err)
 	}

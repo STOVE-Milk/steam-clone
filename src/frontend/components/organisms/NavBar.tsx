@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -30,7 +30,8 @@ export default function NavBar() {
   const [open, setOpen] = useState(true); //NavBar가 열려있는가
   const router = useRouter();
 
-  const friends = useSelector((state: IState) => state.user.friends.data);
+  const friends = useSelector((state: IState) => state.user.friends);
+  const onlines = useSelector((state: IState) => state.user.onlines);
 
   useEffect(() => {
     const media = window.matchMedia(theme.breakpoints.medium.slice(7));
@@ -73,9 +74,12 @@ export default function NavBar() {
         </Link>
       </SectionTitle>
       <FriendSection>
-        {friends.map((friend) => {
-          return <FriendBox open={open} friendInfo={friend} />;
-        })}
+        {friends.data &&
+          friends.data.map((friend) => {
+            return (
+              <FriendBox key={friend.id} open={open} friendInfo={friend} online={onlines.data.includes(friend.id)} />
+            );
+          })}
       </FriendSection>
     </NavBarWrapper>
   );
@@ -118,7 +122,7 @@ const LogoTitle = styled.div`
   margin-left: 1rem;
 `;
 
-const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
+const OpenBar = styled(FontAwesomeIcon)<{ open: boolean }>`
   margin-left: ${(props) => (props.open ? '1.5rem' : '2rem')};
   margin-right: ${(props) => (props.open ? '2.5rem' : '1.7rem')};
   margin-top: 0.5rem;

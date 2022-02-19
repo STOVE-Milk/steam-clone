@@ -5,6 +5,6 @@ module.exports = {
   },
   reactStrictMode: true,
   images: {
-    domains: ['cdn.akamai.steamstatic.com', 'cdn.cloudflare.steamstatic.com'],
+    domains: ['cdn.akamai.steamstatic.com', 'store.akamai.steamstatic.com', 'cdn.cloudflare.steamstatic.com'],
   },
 };
