@@ -149,10 +149,6 @@ const Detail: NextPage<IState> = () => {
               <FilledButton types={'primary'}>장바구니</FilledButton>
             </div>
           </GameBuyBox>
-          <DevInfoBox>
-            <GameInfoTitle types="medium">개발자 정보</GameInfoTitle>
-            <Text types="small">minjyo</Text>
-          </DevInfoBox>
         </GameDetailBox>
       </GameDetailSection>
       <ReviewSection>
@@ -320,8 +316,6 @@ const GameBuyBox = styled(GameInfoBox)`
     }
   }
 `;
-
-const DevInfoBox = styled(GameInfoBox)``;
 
 const ReviewSection = styled.div`
   width: 80%;
