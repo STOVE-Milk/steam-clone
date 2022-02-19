@@ -34,16 +34,14 @@ export default function GameInfo(props: IGameInfo) {
 
   // [explain]: 현재 like(찜)상태는 스토어에 저장된 userData의 wish_list 배열속에 존재하므로 그 정보와 비교합니다.
   // 마찬가지로, cart(장바구니) 또한 store와 비교합니다.
-  const likeStatus = userData.data.wish_list != undefined ? userData.data.wish_list.includes(gameData.id) : false;
-
-  const [like, setLike] = useState(likeStatus);
+  const [like, setLike] = useState(false);
   const [cart, setCart] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setLike(userData.data.wish_list.includes(gameData.id));
     setCart(cartInfo.data.includes(gameData.id));
-  }, []);
+  }, [userData.data.wish_list, cartInfo.data]);
 
   //[explain]: 찜 목록과 장바구니에 담는 액션 모두 store에서 관리하기 때문에 dispatch를 진행했습니다.
   const cartFunc = (game_id: number, curStatus: Boolean) => {
@@ -70,7 +68,7 @@ export default function GameInfo(props: IGameInfo) {
   };
 
   return (
-    <GameInfoBox type={gameData.type}>
+    <GameInfoBox types={gameData.type ? gameData.type : ''}>
       <ImageBox>
         {/* TO DO(양하): 이미지가 없을 때 디폴트 처리{image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
         <GameImage
@@ -148,8 +146,8 @@ export default function GameInfo(props: IGameInfo) {
   );
 }
 
-const GameInfoBox = styled.section<IGameInfo>`
-  margin-top: ${(props) => props.type === 'cart' && 0} !important;
+const GameInfoBox = styled.section<{ types: string }>`
+  margin-top: ${(props) => props.types === 'cart' && 0} !important;
   width: 60rem;
   height: 10rem;
   display: grid;
