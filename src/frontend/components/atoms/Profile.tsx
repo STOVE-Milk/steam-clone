@@ -60,22 +60,23 @@ export default function Profile(props: IProfileProps) {
     </div>
   );
 }
-const DropDownText = styled(Text)`
+export const DropDownText = styled(Text)`
   text-decoration: none;
   padding: 15px 20px;
   display: block;
 `;
-const DropDownUl = styled.ul`
+export const DropDownUl = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
 `;
-const DropDownli = styled.li`
+export const DropDownli = styled.li`
   :not(:last-child) {
     border-bottom: 1px solid ${(props) => props.theme.colors.divider};
   }
 `;
-const DropDownNav = styled.nav<{ active: string }>`
+export const DropDownNav = styled.nav<{ active: string }>`
+  cursor: pointer;
   background: ${(props) => props.theme.colors.secondaryBg};
   border-radius: 8px;
   position: absolute;

@@ -77,7 +77,13 @@ export default function NavBar() {
         {friends.data &&
           friends.data.map((friend) => {
             return (
-              <FriendBox key={friend.id} open={open} friendInfo={friend} online={onlines.data.includes(friend.id)} />
+              <FriendBox
+                key={friend.id}
+                open={open}
+                friendInfo={friend}
+                online={onlines.data.includes(friend.id)}
+                types={'navbar'}
+              />
             );
           })}
       </FriendSection>
