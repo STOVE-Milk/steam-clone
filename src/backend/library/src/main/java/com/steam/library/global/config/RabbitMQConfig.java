@@ -11,6 +11,9 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class RabbitMQConfig {
     private static final String EXCHANGE_NAME = "steam.lobby";
@@ -23,7 +26,11 @@ public class RabbitMQConfig {
     }
     @Bean
     Queue queue() {
-        return new Queue(QUEUE_NAME);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put( "x-queue-type" , "stream" ); // Stream 큐 사용을 위한 필수 인수
+        arguments.put("x-max-length-bytes", 20000000000L); // maximum stream size: 20 GB
+        arguments.put("x-stream-max-segment-size-bytes", 100000000); // size of segment files: 100 MB
+        return new Queue(QUEUE_NAME, true, false, false, arguments);
     }
     @Bean
     Binding binding (Queue queue, TopicExchange exchange) {
