@@ -44,7 +44,6 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     const result = token && parseToken(token);
-
     dispatch(saveUserInfo.request(result));
   }, [token]);
 
@@ -105,7 +104,6 @@ const Chat: NextPage = () => {
                   }),
                 );
               }
-
               break;
             case 'user-left': // 유저 활동 종료
               console.log('user-left', serverMessage);
@@ -117,6 +115,8 @@ const Chat: NextPage = () => {
           }
         });
       };
+
+      ws.current.onopen = () => ws.current?.send('hello');
     }
   }, []);
 

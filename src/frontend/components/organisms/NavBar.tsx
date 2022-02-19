@@ -29,8 +29,8 @@ export default function NavBar() {
   const [open, setOpen] = useState(true); //NavBar가 열려있는가
   const router = useRouter();
 
-  const friends = useSelector((state: IState) => state.user.friends.data);
-  const onlines = useSelector((state: IState) => state.user.onlines.data);
+  const friends = useSelector((state: IState) => state.user.friends);
+  const onlines = useSelector((state: IState) => state.user.onlines);
 
   useEffect(() => {
     const media = window.matchMedia(theme.breakpoints.medium.slice(7));
@@ -73,9 +73,12 @@ export default function NavBar() {
         </Link>
       </SectionTitle>
       <FriendSection>
-        {friends.map((friend) => {
-          return <FriendBox key={friend.id} open={open} friendInfo={friend} online={onlines.includes(friend.id)} />;
-        })}
+        {friends.data &&
+          friends.data.map((friend) => {
+            return (
+              <FriendBox key={friend.id} open={open} friendInfo={friend} online={onlines.data.includes(friend.id)} />
+            );
+          })}
       </FriendSection>
     </NavBarWrapper>
   );
