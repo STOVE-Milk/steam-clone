@@ -85,10 +85,10 @@ const cart: NextPage<IState> = (props) => {
       </SelectAllWrapper> */}
       {gameList.map((eachGame, i) => {
         return (
-          <ChenknGameInfoWrapper>
+          <ChenknGameInfoWrapper key={eachGame + i.toString()}>
             <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
             <label htmlFor={eachGame.name}>
-              <GameInfo key={i} type={'cart'} {...eachGame} />
+              <GameInfo key={eachGame.id} type={'cart'} {...eachGame} />
             </label>
           </ChenknGameInfoWrapper>
         );

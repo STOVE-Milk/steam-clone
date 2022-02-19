@@ -83,9 +83,10 @@ export default function GameInfo(props: IGameInfo) {
             <Text types="medium">{gameData.name}</Text>
           </span>
           <OsBox>
-            {gameData.os_list.map((eachOs: string) => {
+            {gameData.os_list.map((eachOs: string, i) => {
               return (
                 <FontAwesomeIcon
+                  key={eachOs + i}
                   icon={eachOs.toLocaleLowerCase().indexOf('window') ? faWindowMaximize : faAppleAlt}
                   inverse
                 />
@@ -96,8 +97,8 @@ export default function GameInfo(props: IGameInfo) {
           <span>
             {/* TO DO(성현 -> 양하): 디비에서 안오는 경우가 있어서 뺴놓음 && 처리해놓음*/}
             {gameData.category_list &&
-              gameData.category_list.map((each: string) => {
-                return <CategoryBox>{`#${each}`}</CategoryBox>;
+              gameData.category_list.map((each: string, i) => {
+                return <CategoryBox key={each + i}>{`#${each}`}</CategoryBox>;
               })}
           </span>
         </section>

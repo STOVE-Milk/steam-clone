@@ -68,13 +68,13 @@ const charge: NextPage<IState> = () => {
       <TitleStyle types="large">구매 가능한 GIFTCARDS</TitleStyle>
 
       <GiftCardWrapper>
-        {giftCards.map((eachGiftCard: any) => {
+        {giftCards.map((eachGiftCard: any, i) => {
           const gcDataObj = {
             ...eachGiftCard,
             checked: eachGiftCard.id === curCheckedPriceIdx ? true : false,
             onClick: setCurCheckedPriceIdx,
           };
-          return <GiftCard {...gcDataObj}></GiftCard>;
+          return <GiftCard key={eachGiftCard + i} {...gcDataObj}></GiftCard>;
         })}
       </GiftCardWrapper>
       <ChargeTypeSelectWrapper>

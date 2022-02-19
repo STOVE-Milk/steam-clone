@@ -1,5 +1,7 @@
 import React from 'react';
+import Text from 'components/atoms/Text';
 
-export const cancel = () => {
-  return <div>cancel</div>;
+const cancel = () => {
+  return <Text>cancel</Text>;
 };
+export default cancel;

@@ -56,7 +56,7 @@ const Category: NextPage<IState> = () => {
       <ContentWrapper>
         <TitleStyle types="large">{`${curSelectedCategory} 게임 리스트 (${gameList?.length})`}</TitleStyle>
         {gameList.map((eachGame, i) => {
-          return <GameInfo key={i} {...eachGame} />;
+          return <GameInfo key={eachGame.id + eachGame.name} {...eachGame} />;
         })}
       </ContentWrapper>
     </GameInfoWrapper>
