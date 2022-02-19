@@ -13,18 +13,22 @@ import { getUserData } from 'modules/game';
 import { addCartInfo, rmCartInfo } from 'modules/cart';
 import { doWish, doUnWish } from 'modules/wishlist';
 
+import { isEmpty } from 'util/isEmpty';
 import { localePrice } from 'util/localeString';
 
 import Text from 'components/atoms/Text';
 
 interface IGameInfo extends gameInfo {
   type?: string;
+  show?: boolean; // 찜 목록에서 삭제하면 안보여줄 때 사용하기 위함
 }
 
 export default function GameInfo(props: IGameInfo) {
   const gameData = props;
+  const { show } = props;
   const { userData } = useSelector((state: IState) => state.game);
   const { cartInfo } = useSelector((state: IState) => state.cart);
+  const [isLikeShown, setIsLikeShown] = useState(isEmpty(show) ? true : show);
 
   const dispatch = useDispatch();
 
@@ -34,16 +38,14 @@ export default function GameInfo(props: IGameInfo) {
 
   // [explain]: 현재 like(찜)상태는 스토어에 저장된 userData의 wish_list 배열속에 존재하므로 그 정보와 비교합니다.
   // 마찬가지로, cart(장바구니) 또한 store와 비교합니다.
-  const likeStatus = userData.data.wish_list != undefined ? userData.data.wish_list.includes(gameData.id) : false;
-
-  const [like, setLike] = useState(likeStatus);
+  const [like, setLike] = useState(false);
   const [cart, setCart] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setLike(userData.data.wish_list.includes(gameData.id));
     setCart(cartInfo.data.includes(gameData.id));
-  }, []);
+  }, [userData.data.wish_list, cartInfo.data]);
 
   //[explain]: 찜 목록과 장바구니에 담는 액션 모두 store에서 관리하기 때문에 dispatch를 진행했습니다.
   const cartFunc = (game_id: number, curStatus: Boolean) => {
@@ -54,13 +56,17 @@ export default function GameInfo(props: IGameInfo) {
       : dispatch(addCartInfo.request({ prev: [...cartInfo.data], game_id }));
   };
 
+  const doUnWishFunc = (game_id: number) => {
+    dispatch(
+      doUnWish.request({
+        game_id,
+      }),
+    );
+    !isEmpty(show) && setIsLikeShown(!isLikeShown);
+  };
   const wishFunc = (game_id: number, curStatus: Boolean) => {
     curStatus
-      ? dispatch(
-          doUnWish.request({
-            game_id,
-          }),
-        )
+      ? doUnWishFunc(game_id)
       : dispatch(
           doWish.request({
             game_id,
@@ -70,7 +76,7 @@ export default function GameInfo(props: IGameInfo) {
   };
 
   return (
-    <GameInfoBox type={gameData.type}>
+    <GameInfoBox types={gameData.type ? gameData.type : ''} show={!isLikeShown ? 'none' : ''}>
       <ImageBox>
         {/* TO DO(양하): 이미지가 없을 때 디폴트 처리{image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
         <GameImage
@@ -85,9 +91,10 @@ export default function GameInfo(props: IGameInfo) {
             <Text types="medium">{gameData.name}</Text>
           </span>
           <OsBox>
-            {gameData.os_list.map((eachOs: string) => {
+            {gameData.os_list.map((eachOs: string, i) => {
               return (
                 <FontAwesomeIcon
+                  key={eachOs + i}
                   icon={eachOs.toLocaleLowerCase().indexOf('window') ? faWindowMaximize : faAppleAlt}
                   inverse
                 />
@@ -98,8 +105,8 @@ export default function GameInfo(props: IGameInfo) {
           <span>
             {/* TO DO(성현 -> 양하): 디비에서 안오는 경우가 있어서 뺴놓음 && 처리해놓음*/}
             {gameData.category_list &&
-              gameData.category_list.map((each: string) => {
-                return <CategoryBox>{`#${each}`}</CategoryBox>;
+              gameData.category_list.map((each: string, i) => {
+                return <CategoryBox key={each + i}>{`#${each}`}</CategoryBox>;
               })}
           </span>
         </section>
@@ -119,37 +126,47 @@ export default function GameInfo(props: IGameInfo) {
             )}
           </div>
         </section>
-        <section>
-          <IconBox
-            onClick={(e) => {
-              //[explain]: 유저가 클릭할때, 카드에 담는 액션과 이벤트 버블링이 되는 경우를 막기위해 e.preventDefault()를 적용했습니다.
-              e.preventDefault();
-              wishFunc(gameData.id, like);
-              setLike(!like);
-            }}
-          >
-            <span>
-              <FontAwesomeIcon className={like ? 'pink-highlight' : ''} icon={faHeart} inverse />
-            </span>
-          </IconBox>
-          <IconBox
-            onClick={(e) => {
-              e.preventDefault();
-              console.log(gameData.id, cart);
-              cartFunc(gameData.id, cart);
-              setCart(!cart);
-            }}
-          >
-            <FontAwesomeIcon className={cart ? 'blue-highlight' : ''} icon={faShoppingCart} inverse />
-          </IconBox>
-        </section>
+        {/* userData.purchaseList에 해당하는 게임이면 아예 이부분이 이미 구매한 게임이라고 나오게 할거임 */}
+        {userData.data.purchase_list.includes(gameData.id) ? (
+          <PurchasedBadge>구매완료</PurchasedBadge>
+        ) : (
+          <section>
+            <IconBox
+              onClick={(e) => {
+                //[explain]: 유저가 클릭할때, 카드에 담는 액션과 이벤트 버블링이 되는 경우를 막기위해 e.preventDefault()를 적용했습니다.
+                e.preventDefault();
+                wishFunc(gameData.id, like);
+                setLike(!like);
+              }}
+            >
+              <span>
+                <FontAwesomeIcon className={like ? 'pink-highlight' : ''} icon={faHeart} inverse />
+              </span>
+            </IconBox>
+            <IconBox
+              onClick={(e) => {
+                e.preventDefault();
+                console.log(gameData.id, cart);
+                cartFunc(gameData.id, cart);
+                setCart(!cart);
+              }}
+            >
+              <FontAwesomeIcon className={cart ? 'blue-highlight' : ''} icon={faShoppingCart} inverse />
+            </IconBox>
+          </section>
+        )}
       </EtcInfoBox>
     </GameInfoBox>
   );
 }
-
-const GameInfoBox = styled.section<IGameInfo>`
-  margin-top: ${(props) => props.type === 'cart' && 0} !important;
+const PurchasedBadge = styled(Text)`
+  border: 1px solid ${(props) => props.theme.colors.divider};
+  border-radius: 10px;
+  padding: 0.5rem;
+  color: ${(props) => props.theme.colors.divider};
+`;
+const GameInfoBox = styled.section<{ types: string; show: string }>`
+  margin-top: ${(props) => props.types === 'cart' && 0} !important;
   width: 60rem;
   height: 10rem;
   display: grid;
@@ -169,6 +186,7 @@ const GameInfoBox = styled.section<IGameInfo>`
     grid-template-rows: 1fr 0.5fr 1.5fr;
     width: 20rem;
   }
+  display: ${(props) => props.show};
 `;
 const ImageBox = styled.div`
   margin: 1rem;

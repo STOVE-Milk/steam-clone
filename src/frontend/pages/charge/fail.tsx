@@ -1,5 +1,7 @@
 import React from 'react';
+import Text from 'components/atoms/Text';
 
-export const fail = () => {
-  return <div>fail</div>;
+const fail = () => {
+  return <Text>fail</Text>;
 };
+export default fail;

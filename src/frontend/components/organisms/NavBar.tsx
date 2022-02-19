@@ -14,6 +14,7 @@ import {
   faBook,
   faCog,
   faShoppingCart,
+  faDollarSign,
 } from '@fortawesome/free-solid-svg-icons';
 import LogoImage from 'public/steam_logo.png';
 
@@ -58,10 +59,10 @@ export default function NavBar() {
       <MenuSection>
         <MenuBox open={open} page="category" icon={<FontAwesomeIcon icon={faBook} inverse />} name={'카테고리'} />
         <MenuBox open={open} page="library" icon={<FontAwesomeIcon icon={faGamepad} inverse />} name={'라이브러리'} />
-        <MenuBox open={open} page="wishlist" icon={<FontAwesomeIcon icon={faHeart} inverse />} name={'위시리스트'} />
+        <MenuBox open={open} page="wishlist" icon={<FontAwesomeIcon icon={faHeart} inverse />} name={'찜한게임'} />
         <MenuBox open={open} page="cart" icon={<FontAwesomeIcon icon={faShoppingCart} inverse />} name={'장바구니'} />
         <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} inverse />} name={'채팅'} />
-        <MenuBox open={open} page="charge" icon={<FontAwesomeIcon icon={faComments} inverse />} name={'충전'} />
+        <MenuBox open={open} page="charge" icon={<FontAwesomeIcon icon={faDollarSign} inverse />} name={'충전'} />
       </MenuSection>
       <SectionDivider />
       <SectionTitle>

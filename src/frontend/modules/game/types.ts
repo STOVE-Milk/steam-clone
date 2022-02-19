@@ -35,6 +35,7 @@ interface IUserData {
 
 export interface gameState {
   userData: AsyncState<IUserData, Error>;
+  searchData: AsyncState<gameInfo[], Error>;
 }
 
 export type gameAction = ActionType<typeof actions>;

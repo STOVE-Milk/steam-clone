@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { IResType } from 'api/game/type';
 import { IGetGiftCardListReqType, IDoChargeReqType, IDoApprovalChargeReqType } from './type';
+import { verifyToken } from '../../util/verifyToken';
 
 export async function getGiftCardListAPI(param: IGetGiftCardListReqType) {
   const token = localStorage.getItem('accessToken');
@@ -28,6 +29,7 @@ export async function doChargeAPI(param: IDoChargeReqType) {
 }
 
 export async function doApprovalChargeAPI(param: IDoApprovalChargeReqType) {
+  verifyToken();
   const token = localStorage.getItem('accessToken');
 
   const response = await axios.post<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/charge/approve`, param, {
