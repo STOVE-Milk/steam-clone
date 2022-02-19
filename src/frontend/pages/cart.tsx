@@ -4,6 +4,8 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { IState } from 'modules';
 import * as GameAPI from 'api/game/api';
@@ -15,6 +17,7 @@ import { isEmpty } from 'util/isEmpty';
 import Text from 'components/atoms/Text';
 import DefaultButton from 'components/atoms/DefaultButton';
 import GameInfo from 'components/organisms/GameInfo';
+import { RedirectBtn } from 'pages/wishlist';
 
 const cart: NextPage<IState> = (props) => {
   const { cartInfo } = useSelector((state: IState) => state.cart);
@@ -34,8 +37,8 @@ const cart: NextPage<IState> = (props) => {
       const game_list = await res.data.game_list;
       setGameList(game_list);
     } else {
-      alert('카트에 담긴 게임이 없습니다.');
-      router.push('/category');
+      // alert('카트에 담긴 게임이 없습니다.');
+      // router.push('/category');
     }
   };
 
@@ -70,7 +73,9 @@ const cart: NextPage<IState> = (props) => {
 
   return (
     <CartInfoWrapper>
-      <TitleStyle types="large">카트에 담긴 게임 리스트</TitleStyle>
+      <TitleStyle types="large">장바구니에 담긴 게임 리스트</TitleStyle>
+      <TitleStyle>{': 플레이를 원하는 게임을 선택해서 "구매하기"를 진행해보세요!'}</TitleStyle>
+
       {/* TO DO(양하): #1 전체선택(React에서 input태그의 checked처리 확인), #2 이미 구매목록에 있는 게임이면 카트에 담길수가 없음. */}
       {/* <SelectAllWrapper>
         <input
@@ -83,28 +88,55 @@ const cart: NextPage<IState> = (props) => {
           <Text>전체선택</Text>
         </label>
       </SelectAllWrapper> */}
-      {gameList.map((eachGame, i) => {
-        return (
-          <ChenknGameInfoWrapper key={eachGame + i.toString()}>
-            <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
-            <label htmlFor={eachGame.name}>
-              <GameInfo key={eachGame.id} type={'cart'} {...eachGame} />
-            </label>
-          </ChenknGameInfoWrapper>
-        );
-      })}
-      <DefaultButton types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>
-        구매하기
-      </DefaultButton>
+      <div>
+        {gameList.length === 0 ? (
+          <TitleStyle>
+            <FontAwesomeIcon icon={faExclamationTriangle} inverse />
+            {'장바구니에 담긴 게임이 없습니다. '}
+            <RedirectBtn types={'primary'} onClick={() => router.push('/category')}>
+              {'게임 담으러 가기'}
+            </RedirectBtn>
+          </TitleStyle>
+        ) : (
+          gameList.map((eachGame, i) => {
+            return (
+              <ChenknGameInfoWrapper key={eachGame + i.toString()}>
+                <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
+                <label htmlFor={eachGame.name}>
+                  <GameInfo key={eachGame.id} type={'cart'} {...eachGame} />
+                </label>
+              </ChenknGameInfoWrapper>
+            );
+          })
+        )}
+      </div>
+
+      {gameList.length !== 0 && (
+        <Purchasebtn types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>
+          구매하기
+        </Purchasebtn>
+      )}
     </CartInfoWrapper>
   );
 };
 
+const Purchasebtn = styled(DefaultButton)`
+  position: sticky;
+  bottom: 20px;
+  width: 60rem;
+  margin: 2rem;
+  ${(props) => props.theme.breakpoints.medium} {
+    width: 40rem;
+  }
+  ${(props) => props.theme.breakpoints.small} {
+    width: 20rem;
+  }
+`;
 const CartInfoWrapper = styled.div`
-  width: fit-content;
   display: flex;
   flex-direction: column;
   margin: 2rem auto;
+  width: 80%;
 `;
 
 const TitleStyle = styled(Text)`

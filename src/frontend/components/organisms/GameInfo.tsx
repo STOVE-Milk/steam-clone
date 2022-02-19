@@ -13,18 +13,22 @@ import { getUserData } from 'modules/game';
 import { addCartInfo, rmCartInfo } from 'modules/cart';
 import { doWish, doUnWish } from 'modules/wishlist';
 
+import { isEmpty } from 'util/isEmpty';
 import { localePrice } from 'util/localeString';
 
 import Text from 'components/atoms/Text';
 
 interface IGameInfo extends gameInfo {
   type?: string;
+  show?: boolean; // 찜 목록에서 삭제하면 안보여줄 때 사용하기 위함
 }
 
 export default function GameInfo(props: IGameInfo) {
   const gameData = props;
+  const { show } = props;
   const { userData } = useSelector((state: IState) => state.game);
   const { cartInfo } = useSelector((state: IState) => state.cart);
+  const [isLikeShown, setIsLikeShown] = useState(isEmpty(show) ? true : show);
 
   const dispatch = useDispatch();
 
@@ -52,13 +56,17 @@ export default function GameInfo(props: IGameInfo) {
       : dispatch(addCartInfo.request({ prev: [...cartInfo.data], game_id }));
   };
 
+  const doUnWishFunc = (game_id: number) => {
+    dispatch(
+      doUnWish.request({
+        game_id,
+      }),
+    );
+    !isEmpty(show) && setIsLikeShown(!isLikeShown);
+  };
   const wishFunc = (game_id: number, curStatus: Boolean) => {
     curStatus
-      ? dispatch(
-          doUnWish.request({
-            game_id,
-          }),
-        )
+      ? doUnWishFunc(game_id)
       : dispatch(
           doWish.request({
             game_id,
@@ -68,7 +76,7 @@ export default function GameInfo(props: IGameInfo) {
   };
 
   return (
-    <GameInfoBox types={gameData.type ? gameData.type : ''}>
+    <GameInfoBox types={gameData.type ? gameData.type : ''} show={!isLikeShown ? 'none' : ''}>
       <ImageBox>
         {/* TO DO(양하): 이미지가 없을 때 디폴트 처리{image ? image : <FontAwesomeIcon icon={faImages} />No Image} */}
         <GameImage
@@ -147,7 +155,7 @@ export default function GameInfo(props: IGameInfo) {
   );
 }
 
-const GameInfoBox = styled.section<{ types: string }>`
+const GameInfoBox = styled.section<{ types: string; show: string }>`
   margin-top: ${(props) => props.types === 'cart' && 0} !important;
   width: 60rem;
   height: 10rem;
@@ -168,6 +176,7 @@ const GameInfoBox = styled.section<{ types: string }>`
     grid-template-rows: 1fr 0.5fr 1.5fr;
     width: 20rem;
   }
+  display: ${(props) => props.show};
 `;
 const ImageBox = styled.div`
   margin: 1rem;
