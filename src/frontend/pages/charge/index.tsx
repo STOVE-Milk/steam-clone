@@ -13,6 +13,7 @@ import GiftCard from 'components/molecules/GiftCard';
 import Text from 'components/atoms/Text';
 import CommonSelectBox from 'components/atoms/CommonSelectBox';
 import DefaultButton from 'components/atoms/DefaultButton';
+import { verifyToken } from 'util/verifyToken';
 
 const charge: NextPage<IState> = () => {
   const router = useRouter();
@@ -33,6 +34,7 @@ const charge: NextPage<IState> = () => {
     },
   };
   useEffect(() => {
+    verifyToken();
     getGiftCards();
   }, []);
 
