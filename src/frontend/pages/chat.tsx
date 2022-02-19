@@ -25,7 +25,6 @@ interface IRoom {
 }
 
 const Chat: NextPage = () => {
-  const token = localStorage.getItem('accessToken');
   const userInfo = useSelector((state: IState) => state.user.userInfo);
   const friends = useSelector((state: IState) => state.user.friends.data);
   const socket = useSelector((state: IState) => state.user.socket.data);
@@ -43,9 +42,11 @@ const Chat: NextPage = () => {
   let ws = useRef<WebSocket>(); // 웹 소켓 사용
 
   useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+
     const result = token && parseToken(token);
     dispatch(saveUserInfo.request(result));
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     ws.current = socket;

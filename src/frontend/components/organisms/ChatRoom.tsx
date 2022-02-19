@@ -54,7 +54,7 @@ export default function ChatRoom(props: IChatRoomProps) {
       <RoomViewBox>
         {props.logs.map((log, key) => {
           return log.sender_id === '' ? (
-            <AlertMsgBox>{log.content}</AlertMsgBox>
+            <AlertMsgBox key={key}>{log.content}</AlertMsgBox>
           ) : (
             <MsgBox key={key} isMine={log.sender_id === props.userId.toString()} name={log.sender_nickname}>
               {log.content && log.content.split('\n').map((text, key) => <p key={key}> {text} </p>)}
