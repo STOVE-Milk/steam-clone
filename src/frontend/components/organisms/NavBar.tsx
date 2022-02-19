@@ -18,7 +18,6 @@ import {
 import LogoImage from 'public/steam_logo.png';
 
 import { IState } from 'modules';
-import { IFriendInfo } from 'modules/user';
 import { theme } from 'styles/theme';
 
 import Text from 'components/atoms/Text';
@@ -29,8 +28,8 @@ export default function NavBar() {
   const [open, setOpen] = useState(true); //NavBar가 열려있는가
   const router = useRouter();
 
-  const friends = useSelector((state: IState) => state.user.friends.data);
-  const onlines = useSelector((state: IState) => state.user.onlines.data);
+  //const friends = useSelector((state: IState) => state.user.friends.data);
+  //const onlines = useSelector((state: IState) => state.user.onlines.data);
 
   useEffect(() => {
     const media = window.matchMedia(theme.breakpoints.medium.slice(7));
@@ -73,9 +72,9 @@ export default function NavBar() {
         </Link>
       </SectionTitle>
       <FriendSection>
-        {friends.map((friend) => {
+        {/* {friends.map((friend) => {
           return <FriendBox key={friend.id} open={open} friendInfo={friend} online={onlines.includes(friend.id)} />;
-        })}
+        })} */}
       </FriendSection>
     </NavBarWrapper>
   );
