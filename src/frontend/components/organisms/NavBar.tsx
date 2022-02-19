@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -14,6 +14,7 @@ import {
   faBook,
   faCog,
   faShoppingCart,
+  faDollarSign,
 } from '@fortawesome/free-solid-svg-icons';
 import LogoImage from 'public/steam_logo.png';
 
@@ -30,7 +31,8 @@ export default function NavBar() {
   const router = useRouter();
   const { userInfo } = useSelector((state: IState) => state.user);
 
-  const friends = useSelector((state: IState) => state.user.friends.data);
+  const friends = useSelector((state: IState) => state.user.friends);
+  const onlines = useSelector((state: IState) => state.user.onlines);
 
   useEffect(() => {
     const media = window.matchMedia(theme.breakpoints.medium.slice(7));
@@ -67,7 +69,7 @@ export default function NavBar() {
         <MenuBox open={open} page="wishlist" icon={<FontAwesomeIcon icon={faHeart} inverse />} name={'위시리스트'} />
         <MenuBox open={open} page="cart" icon={<FontAwesomeIcon icon={faShoppingCart} inverse />} name={'장바구니'} />
         <MenuBox open={open} page="chat" icon={<FontAwesomeIcon icon={faComments} inverse />} name={'채팅'} />
-        <MenuBox open={open} page="charge" icon={<FontAwesomeIcon icon={faComments} inverse />} name={'충전'} />
+        <MenuBox open={open} page="charge" icon={<FontAwesomeIcon icon={faDollarSign} inverse />} name={'충전'} />
       </MenuSection>
       <SectionDivider />
       <SectionTitle>
@@ -79,9 +81,18 @@ export default function NavBar() {
         </Link>
       </SectionTitle>
       <FriendSection>
-        {friends.map((friend) => {
-          return <FriendBox open={open} friendInfo={friend} />;
-        })}
+        {friends.data &&
+          friends.data.map((friend) => {
+            return (
+              <FriendBox
+                key={friend.id}
+                open={open}
+                friendInfo={friend}
+                online={onlines.data.includes(friend.id)}
+                types={'navbar'}
+              />
+            );
+          })}
       </FriendSection>
     </NavBarWrapper>
   );
@@ -124,7 +135,7 @@ const LogoTitle = styled.div`
   margin-left: 1rem;
 `;
 
-const OpenBar = styled(FontAwesomeIcon)<INavBarStyledProps>`
+const OpenBar = styled(FontAwesomeIcon)<{ open: boolean }>`
   margin-left: ${(props) => (props.open ? '1.5rem' : '2rem')};
   margin-right: ${(props) => (props.open ? '2.5rem' : '1.7rem')};
   margin-top: 0.5rem;

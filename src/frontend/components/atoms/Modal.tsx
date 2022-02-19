@@ -48,9 +48,7 @@ export default function Modal(props: IModalProps) {
     <ModalOverlay>
       <ModalWrapper show={props.show}>
         <ModalHeader>
-          <a href="#" onClick={handleCloseClick}>
-            x
-          </a>
+          <CloseBtn onClick={handleCloseClick}>x</CloseBtn>
         </ModalHeader>
         {props.title && <div>{props.title}</div>}
         <ModalBody>{props.children}</ModalBody>
@@ -129,7 +127,7 @@ const ModalHeader = styled.div`
 `;
 
 const CloseBtn = styled.span`
-  color: black;
+  color: white;
   cursor: pointer;
 `;
 

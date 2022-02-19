@@ -7,8 +7,6 @@ import styled from 'styled-components';
 
 import { IState } from 'modules';
 import * as AuthAPI from 'api/auth/api';
-
-import { doSignup } from 'modules/auth';
 import { countryOption, languageOption, validateEmail, validatePassWord } from 'util/validateSignupForm';
 
 import Text from 'components/atoms/Text';
@@ -41,7 +39,6 @@ const signup: NextPage<IState> = () => {
   useEffect(() => {
     setErrors((prev) => ({
       ...prev,
-      nullChecker: '빈칸을 채워주세요',
     }));
   }, []);
 
@@ -79,7 +76,7 @@ const signup: NextPage<IState> = () => {
           if (res.code === 10000) {
             setErrors((prev) => {
               const state = prev;
-              delete state.email;
+              delete state.nickname;
               return { ...state };
             });
             dupChecks.nickname = true;
@@ -164,7 +161,7 @@ const signup: NextPage<IState> = () => {
         ...prev,
         dupChecks: '이메일과 닉네임 중복체크를 진행해주세요.',
       }));
-      alert(Object.values(errors));
+      // alert(Object.values(errors));
     } else {
       setErrors((prev) => {
         const state = prev;
@@ -186,11 +183,15 @@ const signup: NextPage<IState> = () => {
       // }
     }
   };
+  const onKeyPress = (e: any) => {
+    if (e.key === 'Enter') {
+      checkAllnSubmit();
+    }
+  };
 
   return (
     <SignUpFormWrapper>
-      {console.log(errors)}
-      {/* {console.log(signup.data)} */}
+      {/* {console.log(errors)} */}
       <Text types="large">회원가입</Text>
       <AuthInput
         title="EMAIL"
@@ -200,6 +201,7 @@ const signup: NextPage<IState> = () => {
         checkValidation={() => duplicateCheck('email')}
         onChange={onChangeSetInfo}
         warningMsg={errors.email}
+        onKeyPress={onKeyPress}
       />
       <AuthInput
         title="PASSWORD"
@@ -208,8 +210,16 @@ const signup: NextPage<IState> = () => {
         name="password"
         onChange={onChangeSetInfo}
         warningMsg={errors.password}
+        onKeyPress={onKeyPress}
       />
-      <AuthInput title="USER NAME" type="text" placeholder="USER NAME" name="username" onChange={onChangeSetInfo} />
+      <AuthInput
+        title="USER NAME"
+        type="text"
+        placeholder="USER NAME"
+        name="username"
+        onChange={onChangeSetInfo}
+        onKeyPress={onKeyPress}
+      />
       <AuthInput
         title="NICK NAME"
         type="text"
@@ -217,12 +227,13 @@ const signup: NextPage<IState> = () => {
         checkValidation={() => duplicateCheck('nickname')}
         name="nickname"
         onChange={onChangeSetInfo}
+        onKeyPress={onKeyPress}
       />
       <InputAlign>
         <AuthSelectBox title="Country" option={countryOption} onChange={onChangeSetInfo} />
         <AuthSelectBox title="Language" option={languageOption} onChange={onChangeSetInfo} />
       </InputAlign>
-      <SignUpButton types="active" onClick={() => checkAllnSubmit()}>
+      <SignUpButton types="active" onClick={checkAllnSubmit}>
         가입하기
       </SignUpButton>
     </SignUpFormWrapper>

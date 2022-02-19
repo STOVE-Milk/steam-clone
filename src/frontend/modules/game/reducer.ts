@@ -12,6 +12,9 @@ import {
   ADD_GAMEINFOBYUSER,
   ADD_GAMEINFOBYUSER_SUCCESS,
   ADD_GAMEINFOBYUSER_FAIL,
+  GET_SEARCHRESULT,
+  GET_SEARCHRESULT_SUCCESS,
+  GET_SEARCHRESULT_FAIL,
 } from './actions';
 import { initialUserData, initialGameOffset, initialGameInfoByUser } from './initalData';
 
@@ -19,6 +22,7 @@ const initialState: gameState = {
   userData: asyncState.initial(initialUserData),
   gameOffsetData: asyncState.initial(initialGameOffset),
   gameInfoByUser: asyncState.initial(initialGameInfoByUser),
+  searchData: asyncState.initial([]),
 };
 
 const reducer = createReducer<gameState>(initialState, {
@@ -54,6 +58,18 @@ const reducer = createReducer<gameState>(initialState, {
   [ADD_GAMEINFOBYUSER_FAIL]: (state, action) => ({
     ...state,
     gameInfoByUser: asyncState.error(initialGameInfoByUser, action.payload),
+  }),
+  [GET_SEARCHRESULT]: (state, action) => ({
+    ...state,
+    searchData: asyncState.load([]),
+  }),
+  [GET_SEARCHRESULT_SUCCESS]: (state, action) => ({
+    ...state,
+    searchData: asyncState.success(action.payload.data.game_list),
+  }),
+  [GET_SEARCHRESULT_FAIL]: (state, action) => ({
+    ...state,
+    searchData: asyncState.error([], action.payload),
   }),
 });
 

@@ -5,6 +5,7 @@ import {
   IGetGamesByCategoryReqType,
   IGetGameInfoByIdListReqType,
   IGetGameInfoByUser,
+  IGetSearchContentReqType,
 } from './type';
 
 export async function getCategoriesAPI() {
@@ -21,7 +22,7 @@ export async function getCategoriesAPI() {
 
 export async function getGamesByCategoryAPI(param: IGetGamesByCategoryReqType) {
   const response = await axios.get<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/store/games?category=${param.category}&page=0&size=5&sort=sale,desc`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/store/games?category=${param.category}&page=0&size=100&sort=sale,desc`,
   );
   return response.data;
 }
@@ -60,6 +61,12 @@ export async function getUserDataAPI() {
 ///store/userdata -> wish_list, purchase_list 관련임 (유저정보 x)
 export async function getGameInfoByUserAPI(param: IGetGameInfoByUser) {
   const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/users/${param.user_id}/games`);
+  return response.data;
+}
 
+export async function getSearchContentAPI(param: IGetSearchContentReqType) {
+  const response = await axios.get<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/store/search?content=${param.keyword}`,
+  );
   return response.data;
 }

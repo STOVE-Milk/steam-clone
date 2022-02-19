@@ -11,9 +11,10 @@ interface IGameCategory {
 export default function CategoryList({ list, curSelectedCategory, setCurSelectedCategory }: IGameCategory) {
   return (
     <CategoryWrapper>
-      {list.map((eachCategory) => {
+      {list.map((eachCategory, i) => {
         return (
           <CategoryBox
+            key={eachCategory + i}
             className={eachCategory === curSelectedCategory ? 'checked' : ''}
             onClick={() => {
               setCurSelectedCategory && setCurSelectedCategory(eachCategory);

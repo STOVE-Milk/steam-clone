@@ -44,3 +44,6 @@ export interface IAddGameOffsetToStore {
 export interface IGetGameInfoByUser {
   user_id: string;
 }
+export interface IGetSearchContentReqType {
+  keyword: string;
+}

@@ -1,56 +1,106 @@
-import React, { useEffect } from 'react';
-import Link from 'next/link';
-import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/router';
+
+import styled, { css } from 'styled-components';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
+import { IFriendInfo } from 'modules/user';
+
 import { theme } from 'styles/theme';
 import Text, { TextStyle } from 'components/atoms/Text';
-import Dot from 'components/atoms/Dot';
+import Status from 'components/atoms/Status';
 import Profile from 'components/atoms/Profile';
-import { getGameInfoByUser, getUserData } from 'modules/game';
-
-export interface IFriend {
-  //친구 객체 타입
-  id: number;
-  nickname: string;
-  profile: {
-    image: string | JSX.Element;
-    description: string;
-  };
-  is_friend?: number;
-}
+import { DropDownText, DropDownUl, DropDownli } from 'components/atoms/Profile';
 
 export interface IFriendBoxProps {
-  friendInfo: IFriend;
+  friendInfo: IFriendInfo;
   open: boolean; //아이콘만 보이는지(false), 이름과 온라인 상태까지 보이는지 (true)
+  selected?: boolean; //채팅방 생성 시 친구가 선택되었는지
+  onClick?: (id: number) => void; //채팅방 생성 시 친구 선택
+  online: boolean;
+  types: string;
 }
 
 export default function FriendBox(props: IFriendBoxProps) {
-  const dispatch = useDispatch();
+  const dropdownRef = useRef<any>(null);
+  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    dispatch(getGameInfoByUser.request({ user_id: props.friendInfo.id.toString() }));
-  }, [props.friendInfo.id]);
+    const pageClickEvent = (e: any) => {
+      if (dropdownRef.current !== null && !dropdownRef.current.contains(e.target)) {
+        setIsActive(!isActive);
+      }
+    };
+
+    if (isActive) {
+      window.addEventListener('click', pageClickEvent);
+    }
+
+    return () => {
+      window.removeEventListener('click', pageClickEvent);
+    };
+  }, [isActive]);
+  const router = useRouter();
 
   return (
-    <Link href={`library/${props.friendInfo.id}`}>
-      <FriendBoxWrapper>
+    <div>
+      <FriendBoxWrapper
+        onClick={() => {
+          props.onClick && props.onClick(props.friendInfo.id);
+          setIsActive(!isActive);
+        }}
+      >
         {props.friendInfo.profile.image === '' ? (
           <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
         ) : (
           '실제 이미지'
         )}
         {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
-        {props.open ? <FriendStatus color={theme.colors.online} /> : null}
+        {props.open ? <FriendStatus status={props.online} /> : null}
       </FriendBoxWrapper>
-    </Link>
+      {props.types === 'navbar' && (
+        <FriednDropDownNav ref={dropdownRef} active={`${isActive ? 'active' : 'inactive'}`}>
+          <DropDownUl>
+            <DropDownli onClick={() => router.push(`/library/${props.friendInfo.id}`)}>
+              <DropDownText>친구 라이브러리</DropDownText>
+            </DropDownli>
+            <DropDownli onClick={() => router.push('/chat')}>
+              <DropDownText>채팅</DropDownText>
+            </DropDownli>
+            <DropDownli onClick={() => router.push(`/user/${props.friendInfo.id}`)}>
+              <DropDownText>친구 프로필</DropDownText>
+            </DropDownli>
+          </DropDownUl>
+        </FriednDropDownNav>
+      )}
+    </div>
   );
 }
+const FriednDropDownNav = styled.nav<{ active: string }>`
+  cursor: pointer;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  border-radius: 8px;
+  position: absolute;
+  left: 5rem;
+  width: 150px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility -3.5s;
+  ${(props) =>
+    props.active === 'active' && {
+      opacity: 1,
+      visibility: 'visible',
+      'margin-right': '57px',
+      transform: 'translateY(0)',
+      width: '150px',
+    }}
+`;
 
-const FriendBoxWrapper = styled.div`
+const FriendBoxWrapper = styled.div<{ selected?: boolean }>`
   display: flex;
   height: 50px;
   align-items: center;
@@ -59,6 +109,11 @@ const FriendBoxWrapper = styled.div`
   cursor: pointer;
   padding-left: 10px;
   width: 100%;
+  ${(props) =>
+    props.selected &&
+    css`
+      background: ${props.theme.colors.activeBg};
+    `}
 
   :hover {
     background: ${(props) => props.theme.colors.activeBg};
@@ -74,7 +129,7 @@ const FriendName = styled(Text)`
   margin-top: 5px;
 `;
 
-const FriendStatus = styled(Dot)`
+const FriendStatus = styled(Status)`
   margin-left: 20px;
   margin-right: 30px;
 `;

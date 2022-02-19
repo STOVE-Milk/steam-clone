@@ -4,6 +4,9 @@ import (
 	"github.com/STOVE-Milk/steam-clone/store/models"
 )
 
+// ERR를 관리하는 패키지 입니다.
+// 변수 Errors에 저장된 error 데이터를 모든 곳에서 사용하게 됩니다.
+
 const (
 	GetReviewQueryErr               = "GET_REVIEW_QUERY_ERR"
 	GetPublisherQueryErr            = "GET_PUBLISHER_QUERY_ERR"
@@ -44,6 +47,9 @@ const (
 
 	NullMetaDataErr = "NULL_TOKEN_METADATA_ERR"
 	NullTokenErr    = "NULL_TOKEN_ERR"
+
+	EmptyGameDataErr = "EMPTY_GAME_DATA_ERR"
+	EmptyCartErr     = "EMPTY_CART_ERR"
 )
 
 var Errors map[string]*models.Error

@@ -20,11 +20,11 @@ export async function purchaseGameAPI(param: IPurchaseGameReqType[]) {
 export async function getWalletInfoAPI() {
   const token = localStorage.getItem('accessToken');
 
-  const responnse = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/wallet`, {
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/wallet`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
   });
-  return responnse.data;
+  return response.data;
 }
