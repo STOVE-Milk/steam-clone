@@ -39,7 +39,7 @@ const wishlist: NextPage<IState> = () => {
         {wishList === undefined || wishList.length == 0 ? (
           <TitleStyle>
             <FontAwesomeIcon icon={faExclamationTriangle} inverse />
-            {'위시리스트에 담긴 게임이 없습니다. '}
+            {' 위시리스트에 담긴 게임이 없습니다. '}
             <RedirectBtn types={'primary'} onClick={() => router.push('/category')}>
               {'게임 담으러 가기'}
             </RedirectBtn>
@@ -62,7 +62,7 @@ const TitleStyle = styled(Text)`
 `;
 
 const WishListWrapper = styled.div`
-  width: 80%;
+  width: 60rem;
   margin: 2rem auto;
 `;
 

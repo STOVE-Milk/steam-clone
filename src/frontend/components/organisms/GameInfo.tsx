@@ -126,35 +126,45 @@ export default function GameInfo(props: IGameInfo) {
             )}
           </div>
         </section>
-        <section>
-          <IconBox
-            onClick={(e) => {
-              //[explain]: 유저가 클릭할때, 카드에 담는 액션과 이벤트 버블링이 되는 경우를 막기위해 e.preventDefault()를 적용했습니다.
-              e.preventDefault();
-              wishFunc(gameData.id, like);
-              setLike(!like);
-            }}
-          >
-            <span>
-              <FontAwesomeIcon className={like ? 'pink-highlight' : ''} icon={faHeart} inverse />
-            </span>
-          </IconBox>
-          <IconBox
-            onClick={(e) => {
-              e.preventDefault();
-              console.log(gameData.id, cart);
-              cartFunc(gameData.id, cart);
-              setCart(!cart);
-            }}
-          >
-            <FontAwesomeIcon className={cart ? 'blue-highlight' : ''} icon={faShoppingCart} inverse />
-          </IconBox>
-        </section>
+        {/* userData.purchaseList에 해당하는 게임이면 아예 이부분이 이미 구매한 게임이라고 나오게 할거임 */}
+        {userData.data.purchase_list.includes(gameData.id) ? (
+          <PurchasedBadge>구매완료</PurchasedBadge>
+        ) : (
+          <section>
+            <IconBox
+              onClick={(e) => {
+                //[explain]: 유저가 클릭할때, 카드에 담는 액션과 이벤트 버블링이 되는 경우를 막기위해 e.preventDefault()를 적용했습니다.
+                e.preventDefault();
+                wishFunc(gameData.id, like);
+                setLike(!like);
+              }}
+            >
+              <span>
+                <FontAwesomeIcon className={like ? 'pink-highlight' : ''} icon={faHeart} inverse />
+              </span>
+            </IconBox>
+            <IconBox
+              onClick={(e) => {
+                e.preventDefault();
+                console.log(gameData.id, cart);
+                cartFunc(gameData.id, cart);
+                setCart(!cart);
+              }}
+            >
+              <FontAwesomeIcon className={cart ? 'blue-highlight' : ''} icon={faShoppingCart} inverse />
+            </IconBox>
+          </section>
+        )}
       </EtcInfoBox>
     </GameInfoBox>
   );
 }
-
+const PurchasedBadge = styled(Text)`
+  border: 1px solid ${(props) => props.theme.colors.divider};
+  border-radius: 10px;
+  padding: 0.5rem;
+  color: ${(props) => props.theme.colors.divider};
+`;
 const GameInfoBox = styled.section<{ types: string; show: string }>`
   margin-top: ${(props) => props.types === 'cart' && 0} !important;
   width: 60rem;

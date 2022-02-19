@@ -47,6 +47,7 @@ const Category: NextPage<IState> = () => {
       {console.log(userInfo.data)}
       <ContentWrapper>
         <TitleStyle types="large">카테고리 리스트</TitleStyle>
+        <TitleStyle>{': 카테고리별 게임 목록을 확인해보세요!'}</TitleStyle>
         <CategoryList
           list={categoryList}
           curSelectedCategory={curSelectedCategory}
@@ -67,8 +68,7 @@ const GameInfoWrapper = styled.div`
   width: fit-content;
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
-  padding-top: 2rem;
+  margin: 2rem auto;
 `;
 const TitleStyle = styled(Text)`
   margin-bottom: 2rem;

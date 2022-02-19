@@ -92,7 +92,7 @@ const cart: NextPage<IState> = (props) => {
         {gameList.length === 0 ? (
           <TitleStyle>
             <FontAwesomeIcon icon={faExclamationTriangle} inverse />
-            {'장바구니에 담긴 게임이 없습니다. '}
+            {' 장바구니에 담긴 게임이 없습니다. '}
             <RedirectBtn types={'primary'} onClick={() => router.push('/category')}>
               {'게임 담으러 가기'}
             </RedirectBtn>
@@ -136,7 +136,7 @@ const CartInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin: 2rem auto;
-  width: 80%;
+  width: 60rem;
 `;
 
 const TitleStyle = styled(Text)`
