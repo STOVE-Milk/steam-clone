@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
+
+import { IState } from 'modules';
 
 import Profile from 'components/atoms/Profile';
 import SearchBox from 'components/molecules/SearchBox';
@@ -13,6 +16,8 @@ export default function Header() {
   const [inputText, setInputText] = useState('');
   const router = useRouter();
 
+  const userInfo = useSelector((state: IState) => state.user.userInfo);
+
   return (
     <HeaderStyle>
       <SearchBarWrapper>
@@ -21,7 +26,10 @@ export default function Header() {
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
         {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
-        <Profile onClick={() => router.push('/user/1')} userImage={<FontAwesomeIcon icon={faUser} inverse />} />
+        <Profile
+          onClick={() => router.push(`/user/${userInfo.data.idx}`)}
+          userImage={<FontAwesomeIcon icon={faUser} inverse />}
+        />
       </AlertUserWrapper>
     </HeaderStyle>
   );
