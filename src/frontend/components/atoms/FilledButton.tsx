@@ -10,7 +10,7 @@ export interface IButtonProps {
 
 export default function FilledButton(props: IButtonProps) {
   return (
-    <ButtonStyle {...props} onClick={props.onClick}>
+    <ButtonStyle {...props} onClick={props.onClick} disabled={props.disabled}>
       {props.children}
     </ButtonStyle>
   );
@@ -38,4 +38,10 @@ const ButtonStyle = styled.button<IButtonProps>`
     background: ${(props) => props.theme.colors['activeBg']};
     border: 1px solid ${(props) => props.theme.colors['activeBg']};
   }
+  ${(props) =>
+    props.disabled && {
+      // border: 1px solid props.theme.colors['secondaryBg'];
+      background: props.theme.colors['primaryBg'],
+      color: props.theme.colors['divider'],
+    }}
 `;
