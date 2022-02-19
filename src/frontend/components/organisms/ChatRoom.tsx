@@ -45,9 +45,11 @@ export default function ChatRoom(props: IChatRoomProps) {
         {props.members.map((member, key) => {
           return <Member key={key}>{member.name}</Member>;
         })}
-        <LeaveRoomBtn types="primary" onClick={props.leaveRoom}>
-          방 나가기
-        </LeaveRoomBtn>
+        {props.members.length > 2 && (
+          <LeaveRoomBtn types="primary" onClick={props.leaveRoom}>
+            방 나가기
+          </LeaveRoomBtn>
+        )}
       </RoomInfoBox>
       <RoomViewBox>
         {props.logs.map((log, key) => {
@@ -71,6 +73,7 @@ const Wrapper = styled.div`
 
 const RoomInfoBox = styled.div`
   width: 100%;
+  height: 50px;
   display: flex;
   border-bottom: 1px solid ${(props) => props.theme.colors.divider};
   align-items: center;
