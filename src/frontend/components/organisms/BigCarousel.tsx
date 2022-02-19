@@ -34,7 +34,7 @@ export default function BigCarouselComponent(props: ICarouselProps) {
       infinite
       showDots={true}
       arrows={false}
-      customDot={<DotBar />}
+      // customDot={<DotBar />}
     >
       {props.slides}
     </CustomCarousel>
@@ -44,11 +44,23 @@ export default function BigCarouselComponent(props: ICarouselProps) {
 const CustomCarousel = styled(Carousel)`
   width: 80%;
   margin: 0 auto;
+
+  .react-multi-carousel-dot button {
+    margin: 0 1rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    border: none;
+    background: ${(props) => props.theme.colors.divider};
+
+    :active {
+      background: ${(props) => props.theme.colors.activeBg};
+    }
+  }
 `;
 
 const DotBar = styled.div`
   width: 10%;
-  height: 3px;
+  height: 10px;
   margin: 0 1rem;
   border-radius: 10px;
   background: ${(props) => props.theme.colors.divider};
