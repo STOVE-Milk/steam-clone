@@ -16,9 +16,6 @@ import CarouselComponent from 'components/organisms/Carousel';
 import BigCarouselComponent from 'components/organisms/BigCarousel';
 
 const Main: NextPage<IState> = () => {
-  const token = localStorage.getItem('accessToken');
-  const friends = useSelector((state: IState) => state.user.friends.data);
-
   const [rankGames, setRankGames] = useState([] as gameInfo[]); // 다운로드 높은 게임들
   const [saleGames, setSaleGames] = useState([] as gameInfo[]); // 할인률 높은 게임들
 
@@ -32,14 +29,14 @@ const Main: NextPage<IState> = () => {
   let ws = useRef<WebSocket>(); // 웹 소켓 사용
 
   useEffect(() => {
+    const token = localStorage.getItem('accessToken');
     const result = token && parseToken(token);
 
     dispatch(saveUserInfo.request(result));
-  }, [token]);
 
-  useEffect(() => {
     if (!ws.current) {
       const websocket = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
+      console.log(websocket);
       ws.current = websocket;
       dispatch({
         type: SET_WEBSOCKET,
@@ -69,7 +66,6 @@ const Main: NextPage<IState> = () => {
         });
       };
     }
-    //join 까지만?
   }, []);
 
   useEffect(() => {

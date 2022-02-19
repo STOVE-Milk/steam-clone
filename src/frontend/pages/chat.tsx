@@ -15,7 +15,7 @@ import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import Modal from 'components/atoms/Modal';
 import JoinChat from 'components/organisms/JoinChat';
-import ChatRoom, { Log } from 'components/organisms/ChatRoom';
+import ChatRoom, { Log, Member } from 'components/organisms/ChatRoom';
 
 interface IRoom {
   //채팅 방 객체 타입
@@ -24,8 +24,7 @@ interface IRoom {
   private: boolean; //개인 채팅방이면 true, 단체 채팅방이면 false
 }
 
-const Chat: NextPage<IState> = () => {
-  const token = localStorage.getItem('accessToken');
+const Chat: NextPage = () => {
   const userInfo = useSelector((state: IState) => state.user.userInfo);
   const friends = useSelector((state: IState) => state.user.friends.data);
   const socket = useSelector((state: IState) => state.user.socket.data);
@@ -35,7 +34,7 @@ const Chat: NextPage<IState> = () => {
   const [chatInput, setChatInput] = useState(''); //채팅 입력
 
   const [curRoom, setCurRoom] = useState(''); // 현재 채팅방 이름
-  const [members, setMembers] = useState<string[]>([]); // 채팅방 멤버들
+  const [members, setMembers] = useState<Member[]>([]); // 채팅방 멤버들
   const [logs, setLogs] = useState<Log[]>([]); // 채팅방 메세지들
 
   const dispatch = useDispatch();
@@ -43,10 +42,11 @@ const Chat: NextPage<IState> = () => {
   let ws = useRef<WebSocket>(); // 웹 소켓 사용
 
   useEffect(() => {
-    const result = token && parseToken(token);
+    const token = localStorage.getItem('accessToken');
 
+    const result = token && parseToken(token);
     dispatch(saveUserInfo.request(result));
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     ws.current = socket;
@@ -70,9 +70,6 @@ const Chat: NextPage<IState> = () => {
                 setRooms([]);
               } else {
                 setRooms(serverMessage.data);
-                // serverMessage.data.forEach((room: IRoom) => {
-                //   setRooms((rooms) => rooms.concat(room));
-                // });
               }
               break;
             case 'room-joined': // 채팅방 생성
@@ -80,26 +77,10 @@ const Chat: NextPage<IState> = () => {
               setRooms((rooms) => rooms.concat(serverMessage.target));
               break;
             case 'room-view': // 채팅방 접속 시, 채팅방에 관한 정보 가져오기
-              console.log('room-view', serverMessage.data);
+              console.log('room-view', serverMessage);
               const data = serverMessage.data;
               setMembers(data.members);
-              if (data.log) {
-                // 이전 채팅 기록이 있는 경우
-                setLogs(data.log);
-              } else {
-                // 이전 채팅 기록이 없는 경우 -> ~님이 입장하셨습니다
-                const notMe = data.members.filter((m: string) => m !== userInfo.data.idx.toString());
-
-                setLogs([
-                  {
-                    sender_id: '-1',
-                    sender_nickname: serverMessage.message.split(' ')[0],
-                    content: `${notMe[0]}${notMe.slice(1).map((m: string) => {
-                      return `, ${m}`;
-                    })}님이 방에 입장하셨습니다.`,
-                  },
-                ]);
-              }
+              setLogs(data.log);
               break;
             case 'send-message': // 메세지를 받음
               console.log('send-message', serverMessage);
@@ -114,17 +95,16 @@ const Chat: NextPage<IState> = () => {
                 );
               } else {
                 // 유저가 단체 채팅방을 나간 경우
-                // TODO: 서버에서 닉네임 보내주면 나간 유저 없애기
-                setMembers([]);
+                const leaveUser = serverMessage.message.split(' ')[0];
+                setMembers(serverMessage.data.members);
                 setLogs((logs) =>
                   logs.concat({
-                    sender_id: '-1',
-                    sender_nickname: serverMessage.message.split(' ')[0],
-                    content: `${serverMessage.message.split(' ')[0]}님이 방을 나갔습니다.`,
+                    sender_id: '',
+                    sender_nickname: leaveUser,
+                    content: `${leaveUser}님이 방을 나갔습니다.`,
                   }),
                 );
               }
-
               break;
             case 'user-left': // 유저 활동 종료
               console.log('user-left', serverMessage);
@@ -136,6 +116,8 @@ const Chat: NextPage<IState> = () => {
           }
         });
       };
+
+      ws.current.onopen = () => ws.current?.send('hello');
     }
   }, []);
 
@@ -271,11 +253,7 @@ const Chat: NextPage<IState> = () => {
           {curRoom ? (
             <ChatRoom
               userId={userInfo.data.idx}
-              members={members
-                .filter((member) => member !== userInfo.data.idx.toString())
-                .map((member) => {
-                  return findNickname(member);
-                })}
+              members={members.filter((member) => member.id !== userInfo.data.idx.toString())}
               logs={logs}
               leaveRoom={leaveRoom}
             ></ChatRoom>
