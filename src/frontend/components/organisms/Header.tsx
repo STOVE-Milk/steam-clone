@@ -16,7 +16,7 @@ export default function Header() {
   const [inputText, setInputText] = useState('');
   const router = useRouter();
 
-  const userInfo = useSelector((state: IState) => state.user.userInfo);
+  const { userInfo } = useSelector((state: IState) => state.user);
 
   return (
     <HeaderStyle>
