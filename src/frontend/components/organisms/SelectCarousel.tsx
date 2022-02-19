@@ -44,7 +44,6 @@ export default function CarouselComponent(props: ICarouselProps) {
       slidesToSlide={1}
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
-      infinite
       removeArrowOnDeviceType={['small']}
       customButtonGroup={<CustomButtonGroup />}
       renderButtonGroupOutside={true}
@@ -71,4 +70,8 @@ const Button = styled.div`
   border-radius: 10px;
   height: calc(100vw / 12);
   position: relative;
+
+  :hover {
+    border: 1px solid white;
+  }
 `;

@@ -6,11 +6,16 @@ import styled from 'styled-components';
 
 import { gameInfo } from 'modules/game';
 
-export default function BigGameSlide(props: gameInfo) {
+export interface BigGameSlideProps {
+  id: number;
+  src: string;
+}
+
+export default function BigGameSlide(props: BigGameSlideProps) {
   return (
     <Link href={`/game/${props.id}`}>
       <SlideWrapper>
-        <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
+        <Image src={props.src} layout="fill" objectFit="cover"></Image>
         {/* image={<Image src={data % 2 ? gameImage1 : gameImage2} layout="responsive" />} */}
       </SlideWrapper>
     </Link>

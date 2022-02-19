@@ -80,11 +80,11 @@ const Detail: NextPage<IState> = () => {
         <GameTitle types={'title'}>{game.name}</GameTitle>
         {game.image !== undefined && (
           <CarouselComponent
-            buttons={game.image.sub.map((img) => {
+            buttons={game.image.sub.slice(0, 4).map((img) => {
               return <Image src={img} layout="fill" objectFit="cover"></Image>;
             })}
-            slides={game.image.sub.map((img) => {
-              return <BigGameSlide key={game.id} {...game}></BigGameSlide>;
+            slides={game.image.sub.slice(0, 4).map((img) => {
+              return <BigGameSlide key={game.id} id={game.id} src={img}></BigGameSlide>;
             })}
           ></CarouselComponent>
         )}

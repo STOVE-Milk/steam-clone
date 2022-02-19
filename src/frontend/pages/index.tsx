@@ -83,7 +83,7 @@ const Main: NextPage = () => {
         <CarouselBox>
           <BigCarouselComponent
             slides={rankGames.map((data) => {
-              return <BigGameSlide key={data.id} {...data}></BigGameSlide>;
+              return <BigGameSlide key={data.id} id={data.id} src={data.image.main}></BigGameSlide>;
             })}
           ></BigCarouselComponent>
         </CarouselBox>
