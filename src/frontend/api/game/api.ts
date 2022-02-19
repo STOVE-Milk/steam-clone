@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { IGetGameReqType, IResType, IGetGamesByCategoryReqType, IGetGameInfoByIdListReqType } from './type';
+import {
+  IGetGameReqType,
+  IResType,
+  IGetGamesByCategoryReqType,
+  IGetGameInfoByIdListReqType,
+  IGetSearchContentReqType,
+} from './type';
 
 export async function getCategoriesAPI() {
   const token = localStorage.getItem('accessToken');
@@ -48,5 +54,12 @@ export async function getUserDataAPI() {
     },
   });
 
+  return response.data;
+}
+
+export async function getSearchContentAPI(param: IGetSearchContentReqType) {
+  const response = await axios.get<IResType>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/store/search?content=${param.keyword}`,
+  );
   return response.data;
 }

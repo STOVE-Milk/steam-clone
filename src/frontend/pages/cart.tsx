@@ -19,6 +19,7 @@ import Text from 'components/atoms/Text';
 import DefaultButton from 'components/atoms/DefaultButton';
 import GameInfo from 'components/organisms/GameInfo';
 import { RedirectBtn } from 'pages/wishlist';
+import { verifyToken } from 'util/verifyToken';
 
 const cart: NextPage<IState> = (props) => {
   const { cartInfo } = useSelector((state: IState) => state.cart);
@@ -30,6 +31,7 @@ const cart: NextPage<IState> = (props) => {
   const router = useRouter();
 
   useEffect(() => {
+    verifyToken();
     getWalletInfo();
     getGamesByIdList();
   }, []);

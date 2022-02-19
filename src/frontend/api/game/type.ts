@@ -19,3 +19,6 @@ export interface IGetGamesByCategoryReqType {
 export interface IGetGameInfoByIdListReqType {
   idList: string;
 }
+export interface IGetSearchContentReqType {
+  keyword: string;
+}

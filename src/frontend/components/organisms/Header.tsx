@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
@@ -7,11 +7,18 @@ import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import Profile from 'components/atoms/Profile';
 import SearchBox from 'components/molecules/SearchBox';
+import { getSearchData } from 'modules/game/actions';
 
 export default function Header() {
   const [option, setOption] = useState('name');
   const [inputText, setInputText] = useState('');
   const router = useRouter();
+
+  // const getSearchResult = async () => {
+  //   const trimedKeyword = inputText.trim();
+  //   const res = await GameAPI.getSearchContentAPI({keyword: trimedKeyword})
+  //   const game_list = await res.data.game_list
+  // }
 
   return (
     <HeaderStyle>
