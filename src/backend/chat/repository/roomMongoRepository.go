@@ -115,8 +115,12 @@ func (repo *RoomMRepository) DeleteMember(room models.Room, userId string) {
 	pullFilter := bson.D{{"id", room.GetId()}}
 	pullBson := bson.D{{"$pull",
 		bson.D{{
-			"members", userId,
+			"members", bson.D{{
+				"id", userId,
+			}},
 		}},
 	}}
+	fmt.Println("Delete action" + " " + userId + " " + room.GetId())
+
 	chatCollection.UpdateOne(context.TODO(), pullFilter, pullBson)
 }

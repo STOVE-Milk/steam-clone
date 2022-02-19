@@ -300,9 +300,10 @@ func (server *WsServer) createRoom(name string, private bool, members []models.U
 	server.rooms[room] = true
 	content := ""
 	for _, member := range members {
-		content = content + member.GetName() + " "
+		content = content + member.GetName() + ","
 	}
-	server.loggingChat(room.ID, "", "", content+"님이 대화에 참여하였습니다.")
+	content = content[:len(content)-1]
+	server.loggingChat(room.ID, "", "", content+" 님이 대화에 참여하였습니다.")
 	return room
 }
 

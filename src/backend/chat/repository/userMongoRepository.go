@@ -32,6 +32,7 @@ func (repo *UserMRepository) DeleteRoom(room models.Room, userId string) {
 			"rooms", bson.D{{"id", room.GetId()}},
 		}},
 	}}
+	fmt.Println("Delete action" + " " + userId + " " + room.GetId())
 	chatCollection.UpdateOne(context.TODO(), pullFilter, pullBson)
 
 }

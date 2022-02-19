@@ -13,7 +13,7 @@ import (
 // 타겟 룸이 존재한다면 타겟 룸에 받은 채팅 메세지를 브로드캐스팅 합니다.
 // 룸에 클라이언트를 등록합니다.
 
-const goodbyeMessage = "%s leave the room"
+const goodbyeMessage = "%s 님이 채팅 방을 나갔습니다."
 
 type Room struct {
 	ID         string `json:"id"`
