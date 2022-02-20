@@ -3,7 +3,15 @@ import type { NextPage } from 'next';
 import styled, { css } from 'styled-components';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faCheck, faTimes, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faUser,
+  faCheck,
+  faTimes,
+  faSearch,
+  faUserPlus,
+  faEnvelope,
+  faEnvelopeOpenText,
+} from '@fortawesome/free-solid-svg-icons';
 
 import { IFriendInfo } from 'modules/user';
 import * as FriendAPI from 'api/friend/api';
@@ -14,10 +22,6 @@ import { TextTheme } from 'components/atoms/Text';
 import FriendBox from 'components/molecules/FriendBox';
 
 const Friend: NextPage = () => {
-  // TODO: 로그인 후, 스토어에서 유저 정보 가져오기 (스토어의 userId === 현재 url의 userId 일 때)
-  // const { user } = useSelector((state: IState) => state.user);
-  // const dispatch = useDispatch();
-
   const [tab, setTab] = useState(0); //탭 number
   const [friends, setFriends] = useState([] as IFriendInfo[]); //각 탭에서 보일 친구 목록들. 친구 객체 타입이 동일하므로 같은 state 사용
   const [searchInput, setSearchInput] = useState(''); // 친구 검색 input 값
@@ -101,19 +105,24 @@ const Friend: NextPage = () => {
 
   return (
     <Wrapper>
-      <Text types={'title'}>친구 관리</Text>
+      <Text types={'large'}>친구 관리</Text>
+      <SubTitle types={'main'}>: 내 친구들을 보세요</SubTitle>
       <TitleSection>
         <Title onClick={() => changeTab(0)} focus={tab === 0}>
           <Text types="large">친구 목록</Text>
+          <FriendActionBtn icon={faUser} inverse></FriendActionBtn>
         </Title>
         <Title onClick={() => changeTab(1)} focus={tab === 1}>
-          <Text types="large">친구 추가</Text>
+          <Text types="large">친구 찾기</Text>
+          <FriendActionBtn icon={faUserPlus} inverse></FriendActionBtn>
         </Title>
         <Title onClick={() => changeTab(2)} focus={tab === 2}>
-          <Text types="large">내가 신청한 친구 목록</Text>
+          <Text types="large">신청한 친구 목록</Text>
+          <FriendActionBtn icon={faEnvelope} inverse></FriendActionBtn>
         </Title>
         <Title onClick={() => changeTab(3)} focus={tab === 3}>
-          <Text types="large">내가 신청 받은 친구 목록</Text>
+          <Text types="large">신청 받은 친구 목록</Text>
+          <FriendActionBtn icon={faEnvelopeOpenText} inverse></FriendActionBtn>
         </Title>
       </TitleSection>
       {/* 나중에 리팩토링 하기 
@@ -156,7 +165,7 @@ const Friend: NextPage = () => {
                         ) : friend.was_requested === 1 ? (
                           <FriendActionBtn icon={faCheck} inverse></FriendActionBtn>
                         ) : (
-                          <FriendActionBtn onClick={() => sendFriendRequest(friend.id)} icon={faPlus} inverse />
+                          <FriendActionBtn onClick={() => sendFriendRequest(friend.id)} icon={faUserPlus} inverse />
                         )}
                       </FriendActionBox>
                     </FriendItem>
@@ -245,7 +254,8 @@ const Title = styled.div<{ focus: boolean }>`
   padding: 1rem;
   border-radius: 10px;
   cursor: pointer;
-
+  display: flex;
+  align-items: center;
   ${(props) =>
     props.focus
       ? css`
@@ -282,4 +292,8 @@ const ResultBox = styled.div`
 
 const FriendList = styled.div`
   padding: 1rem 0;
+`;
+
+const SubTitle = styled(Text)`
+  margin: 2rem 0 0 0;
 `;
