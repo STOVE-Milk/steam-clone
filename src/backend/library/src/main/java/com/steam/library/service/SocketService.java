@@ -269,7 +269,7 @@ public class SocketService {
 
     public Boolean synchronizeRoom(String roomId) throws NullPointerException{
         Room room = socketDataService.getRoomCache(roomId);
-        logObjectJson(room);
+        //logObjectJson(room);
 
         if(room != null) {
             return sendMessageToAll(
