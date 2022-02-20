@@ -135,7 +135,7 @@ const Name = styled(Text)`
 
 const ThumbsUp = styled(FontAwesomeIcon)<{ isEdited: boolean; recommend?: boolean }>`
   margin-left: 0.3rem;
-  color: ${(props) => (props.isEdited && props.recommend ? props.theme.colors.online : 'white')};
+  color: ${(props) => (props.isEdited && props.recommend ? props.theme.colors.activeBg : 'white')};
 `;
 
 const ThumbsDown = styled(FontAwesomeIcon)<{ isEdited: boolean; recommend?: boolean }>`
