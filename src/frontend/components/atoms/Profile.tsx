@@ -94,6 +94,7 @@ export const DropDownli = styled.li`
   }
 `;
 export const DropDownNav = styled.nav<{ active: string }>`
+  z-index: 99;
   cursor: pointer;
   background: ${(props) => props.theme.colors.secondaryBg};
   border-radius: 8px;
