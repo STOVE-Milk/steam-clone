@@ -27,9 +27,11 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*models.Review, *models.Err
 	gameId := ctx.Value("gameId").(int32)
 
 	rows, err := r.db.QueryContext(ctx, `
-	SELECT idx, user_id, displayed_name, content, recommendation, created_at, updated_at
-	FROM revie
-	WHERE game_id=?
+	SELECT r.idx, r.user_id, r.displayed_name, u.profile, r.content, r.recommendation, r.created_at, r.updated_at
+	FROM review AS r
+	join user AS u
+	on r.user_id = u.idx
+	WHERE r.game_id=?
 	`, gameId)
 	if err == sql.ErrNoRows {
 		return nil, utils.ErrorHandler(storeErr.EmptyGameDataErr, err)
@@ -43,7 +45,7 @@ func (r *Repo) GetReviewList(ctx context.Context) ([]*models.Review, *models.Err
 
 	for rows.Next() {
 		var review models.Review
-		err := rows.Scan(&review.Id, &review.UserId, &review.DisplayedName, &review.Content, &review.Recommendation, &review.CreatedAt, &review.UpdatedAt)
+		err := rows.Scan(&review.Id, &review.UserId, &review.DisplayedName, &review.Profile, &review.Content, &review.Recommendation, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
 			return nil, utils.ErrorHandler(storeErr.GetReviewScanErr, err)
 		}

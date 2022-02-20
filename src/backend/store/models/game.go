@@ -58,13 +58,14 @@ func (t RawTime) Time() (time.Time, error) {
 }
 
 type Review struct {
-	Id             int       `json:"idx"`
-	UserId         int       `json:"user_id"`
-	DisplayedName  string    `json:"displayed_name"`
-	Content        string    `json:"content"`
-	Recommendation int       `json:"recommendation"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	Id             int           `json:"idx"`
+	UserId         int           `json:"user_id"`
+	DisplayedName  string        `json:"displayed_name"`
+	Profile        StringJsonMap `json:"profile"`
+	Content        string        `json:"content"`
+	Recommendation int           `json:"recommendation"`
+	CreatedAt      time.Time     `json:"created_at"`
+	UpdatedAt      time.Time     `json:"updated_at"`
 }
 
 type GameDetail struct {

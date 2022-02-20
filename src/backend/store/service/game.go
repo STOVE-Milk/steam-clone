@@ -134,10 +134,22 @@ func (gc *GameService) GetReviewList(ctx context.Context) (*pb.ReviewListRespons
 	var pbReviewList pb.ReviewListResponse_ReviewList
 	pbReviewList.ReviewList = make([]*pb.Review, len(reviewList))
 	for i, review := range reviewList {
+		profile_image, ok := review.Profile["image"].(string)
+		if !ok {
+			profile_image = ""
+		}
+		profile_description, ok := review.Profile["description"].(string)
+		if !ok {
+			profile_description = ""
+		}
 		pbReviewList.ReviewList[i] = &pb.Review{
-			Id:             int32(review.Id),
-			UserId:         int32(review.UserId),
-			DisplayedName:  review.DisplayedName,
+			Id:            int32(review.Id),
+			UserId:        int32(review.UserId),
+			DisplayedName: review.DisplayedName,
+			Profile: &pb.Review_Profile{
+				Image:       profile_image,
+				Description: profile_description,
+			},
 			Content:        review.Content,
 			Recommendation: int32(review.Recommendation),
 			CreatedAt:      timestamppb.New(review.CreatedAt),

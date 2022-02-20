@@ -163,11 +163,18 @@ message Review{
     int32 id = 1;
     int32 user_id = 2 [json_name = "user_id"];
     string displayed_name = 3 [json_name = "displayed_name"];
-    string content = 4;
-    int32 recommendation = 5;
-    google.protobuf.Timestamp created_at = 6 [json_name = "created_at"];
-    google.protobuf.Timestamp updated_at = 7 [json_name = "updated_at"];
+    Profile profile = 4;
+    string content = 5;
+    int32 recommendation = 6;
+    google.protobuf.Timestamp created_at = 7 [json_name = "created_at"];
+    google.protobuf.Timestamp updated_at = 8 [json_name = "updated_at"];
+    message Profile{
+        string image = 1;
+        string description = 2;
+    }
 }
+
+
 
 message GameDetail{
     int32 id = 1;
