@@ -11,6 +11,7 @@ export interface Log {
   sender_id: string;
   sender_nickname: string;
   content: string;
+  profile?: string;
 }
 
 export interface Member {
@@ -56,7 +57,12 @@ export default function ChatRoom(props: IChatRoomProps) {
           return log.sender_id === '' ? (
             <AlertMsgBox key={key}>{log.content}</AlertMsgBox>
           ) : (
-            <MsgBox key={key} isMine={log.sender_id === props.userId.toString()} name={log.sender_nickname}>
+            <MsgBox
+              key={key}
+              isMine={log.sender_id === props.userId.toString()}
+              name={log.sender_nickname}
+              profile={log.profile!!}
+            >
               {log.content && log.content.split('\n').map((text, key) => <p key={key}> {text} </p>)}
             </MsgBox>
           );

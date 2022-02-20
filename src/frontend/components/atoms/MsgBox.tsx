@@ -1,16 +1,22 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { StringMappingType } from 'typescript';
+import Profile from './Profile';
 
 export interface MsgBoxProps {
   isMine: boolean; //내가 보낸 메세지인지 여부
   name: string; //보낸 사람 이름
   children: React.ReactNode; //메세지 내용
+  profile: string;
 }
 
 export default function MsgBox(props: MsgBoxProps) {
   return (
     <Wrapper>
-      <Name isMine={props.isMine}>{props.name}</Name>
+      <UserBox isMine={props.isMine}>
+        <Name>{props.name}</Name>
+        <Profile profileImg={props.profile}></Profile>
+      </UserBox>
       <MsgBoxStyle isMine={props.isMine}>{props.children}</MsgBoxStyle>
     </Wrapper>
   );
@@ -22,9 +28,15 @@ const Wrapper = styled.div`
   margin: 0.7rem 0;
 `;
 
-const Name = styled.div<{ isMine: boolean }>`
-  color: ${(props) => props.theme.colors.primaryText};
+const UserBox = styled.div<{ isMine: boolean }>`
+  display: flex;
+  align-items: center;
   align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
+`;
+
+const Name = styled.div`
+  color: ${(props) => props.theme.colors.primaryText};
+  margin: 0 0.5rem;
 `;
 
 const MsgBoxStyle = styled.span<{ isMine: boolean }>`

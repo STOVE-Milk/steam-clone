@@ -91,6 +91,7 @@ const Chat: NextPage = () => {
                     sender_id: serverMessage.sender.id,
                     sender_nickname: serverMessage.sender.name,
                     content: serverMessage.message,
+                    profile: serverMessage.sender.profile,
                   }),
                 );
               } else {
@@ -227,15 +228,13 @@ const Chat: NextPage = () => {
         {rooms.map((room) => {
           return (
             <ChatListBox key={room.id} onClick={() => enterRoom(room.id)}>
-              <Profile
-                userImage={
-                  room.private ? (
-                    <FontAwesomeIcon icon={faUser} inverse width={30} height={30} />
-                  ) : (
-                    <FontAwesomeIcon icon={faUsers} inverse width={30} height={30} />
-                  )
-                }
-              />
+              <ProfileWrapper>
+                {room.private ? (
+                  <FontAwesomeIcon icon={faUser} inverse width={30} height={30} />
+                ) : (
+                  <FontAwesomeIcon icon={faUsers} inverse width={30} height={30} />
+                )}
+              </ProfileWrapper>
               <ChatListName types={'medium'}>
                 {room.private
                   ? findNickname(room.name.split('-').filter((t) => t !== userInfo.data.idx.toString())[0])
@@ -356,5 +355,15 @@ const ChatInput = styled.textarea`
 `;
 
 const ChatButton = styled(FilledButton)``;
+
+const ProfileWrapper = styled.div`
+  min-width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 export default Chat;

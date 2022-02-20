@@ -123,7 +123,7 @@ export const DropDownNav = styled.nav<{ active: string }>`
 `;
 
 const ProfileStyle = styled.div<{ click: boolean }>`
-  min-width: 30px;
+  width: 30px;
   height: 30px;
   border-radius: 30px;
   background: ${(props) => props.theme.colors.secondaryBg};
