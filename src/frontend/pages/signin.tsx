@@ -63,6 +63,7 @@ const signin: NextPage<IState> = () => {
         //성공
         localStorage.setItem('accessToken', res.data.accessToken);
         localStorage.setItem('refreshToken', res.data.refreshToken);
+        localStorage.setItem('profileImg', res.data.profileImg);
         const result = parseToken(res.data.accessToken);
         dispatch(saveUserInfo.request(result));
 

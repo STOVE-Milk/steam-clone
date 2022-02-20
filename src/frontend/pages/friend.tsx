@@ -169,7 +169,7 @@ const Friend: NextPage = () => {
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox open={true} friendInfo={friend} />
+                <FriendBox types="" open={true} friendInfo={friend} />
                 <FriendActionBox>
                   <FriendActionBtn onClick={() => deleteFriendRequest(friend.id)} icon={faTimes} inverse />
                 </FriendActionBox>
@@ -180,7 +180,7 @@ const Friend: NextPage = () => {
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox open={true} friendInfo={friend} />
+                <FriendBox types="" open={true} friendInfo={friend} />
                 <FriendActionBox>
                   <FriendActionBtn onClick={() => acceptFriend(friend.id)} icon={faCheck} inverse />
                   <FriendActionBtn onClick={() => deleteFriendRequest(friend.id)} icon={faTimes} inverse />

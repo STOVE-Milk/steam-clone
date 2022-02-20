@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Image from 'next/image';
 
 import styled from 'styled-components';
@@ -8,10 +9,13 @@ import profileImg from 'public/Smilemates_Flame_Pose.png';
 
 import Profile from 'components/atoms/Profile';
 import SearchBox from 'components/molecules/SearchBox';
+import { IState } from 'modules';
 
 export default function Header() {
   const [option, setOption] = useState('name');
   const [inputText, setInputText] = useState('');
+
+  const userInfo = useSelector((state: IState) => state.user.userInfo);
 
   return (
     <HeaderStyle>
@@ -20,7 +24,7 @@ export default function Header() {
       </SearchBarWrapper>
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
-        <Profile userImage={<Image src={profileImg} width={30} height={30}></Image>} />
+        <Profile profileImg={userInfo.data.profileImg} />
       </AlertUserWrapper>
     </HeaderStyle>
   );

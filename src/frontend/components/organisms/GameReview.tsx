@@ -37,7 +37,7 @@ export default function GameReview(props: IReviewProps) {
   return (
     <ReviewWrapper>
       <UserBox>
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
+        <Profile profileImg={props.userInfo && props.userInfo.profileImg} />
         <Name types="medium">{props.userInfo ? props.userInfo.nickname : props.review.displayed_name}</Name>
         {isEdited ? (
           <>

@@ -5,6 +5,7 @@ export const initalUserInfo = {
   idx: 46,
   nickname: '[TEST]yanghakim',
   role: 1,
+  img: '1',
 };
 
 export const initalFriendInfo = [

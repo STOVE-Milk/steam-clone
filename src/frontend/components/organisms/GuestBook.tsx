@@ -46,7 +46,7 @@ export default function GuestBook(props: IGuestBookProps) {
       <UserBox>
         <Profile
           onClick={() => router.push(`${props.guestBook.guest_id}`)}
-          userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />}
+          profileImg={props.guestBook.profile.image}
         />
         <Name types="medium">{props.guestBook.displayed_name}</Name>
         <CreatedAt types="tiny">
