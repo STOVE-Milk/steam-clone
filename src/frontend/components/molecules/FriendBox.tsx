@@ -13,7 +13,7 @@ import { DropDownText, DropDownUl, DropDownli } from 'components/atoms/Profile';
 export interface IFriendBoxProps {
   friendInfo: IFriendInfo;
   open: boolean; //아이콘만 보이는지(false), 이름과 온라인 상태까지 보이는지 (true)
-  onClick?: (nickname: string) => void; //채팅방 생성 시 친구 선택
+  onClick?: (nickname: string, id: number) => void; //채팅방 생성 시 친구 선택
   online?: boolean;
   types: string;
 }
@@ -44,7 +44,7 @@ export default function FriendBox(props: IFriendBoxProps) {
       <FriendBoxWrapper
         open={props.open}
         onClick={() => {
-          props.onClick && props.onClick(props.friendInfo.nickname);
+          props.onClick && props.onClick(props.friendInfo.nickname, props.friendInfo.id);
           setIsActive(!isActive);
         }}
       >

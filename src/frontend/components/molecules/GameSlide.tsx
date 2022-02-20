@@ -16,7 +16,7 @@ export default function GameSlide(props: gameInfo) {
           <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
         </ImageSection>
         <InfoSection>
-          <Text types="small">{props.name}</Text>
+          <GameTitle>{props.name}</GameTitle>
           <div>
             <Text types="tiny">긍정적 평가</Text>
             <Text types="tiny">
@@ -62,4 +62,14 @@ const InfoSection = styled.div`
   color: black;
   border-radius: 0 0 10px 10px;
   line-height: normal;
+
+  > div {
+    min-width: 60px;
+  }
+`;
+
+const GameTitle = styled.div`
+  size: 1.2em;
+  font-weight: bold;
+  color: white;
 `;

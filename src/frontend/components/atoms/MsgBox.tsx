@@ -45,7 +45,7 @@ const MsgBoxStyle = styled.span<{ isMine: boolean }>`
   height: fit-content;
   width: fit-content;
   border-radius: 10px;
-  padding: 1rem;
+  padding: 0.7rem;
   margin-top: 0.5rem;
   line-height: 1.3rem;
   align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
