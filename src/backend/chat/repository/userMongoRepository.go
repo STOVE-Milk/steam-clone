@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,6 +18,9 @@ func (repo *UserMRepository) GetAllJoinedRoom(userId string) []models.RoomMongo 
 	chatCollection := repo.Db.Database("chat").Collection("users")
 	findFilter := bson.D{{"id", userId}}
 	chatCollection.FindOne(context.TODO(), findFilter).Decode(&res)
+	if res.Id == "" {
+		repo.AddUser(userId)
+	}
 	return res.Rooms
 }
 
@@ -28,6 +32,7 @@ func (repo *UserMRepository) DeleteRoom(room models.Room, userId string) {
 			"rooms", bson.D{{"id", room.GetId()}},
 		}},
 	}}
+	fmt.Println("Delete action" + " " + userId + " " + room.GetId())
 	chatCollection.UpdateOne(context.TODO(), pullFilter, pullBson)
 
 }
@@ -40,10 +45,17 @@ func (repo *UserMRepository) AddUser(userId string) {
 		Rooms: make([]models.RoomMongo, 0),
 	}
 	chatCollection.InsertOne(context.TODO(), userInfo)
+	fmt.Println("abcx")
 }
 
 func (repo *UserMRepository) AddRoom(room models.Room, userId string) {
 	chatCollection := repo.Db.Database("chat").Collection("users")
+	findFilter := bson.D{{"id", userId}}
+	check := chatCollection.FindOne(context.TODO(), findFilter)
+	if check.Err() != nil {
+		repo.AddUser(userId)
+	}
+
 	roomInfo := Room{
 		Id:      room.GetId(),
 		Name:    room.GetName(),

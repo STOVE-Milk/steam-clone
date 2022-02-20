@@ -14,9 +14,11 @@ type Room interface {
 
 type RoomRepository interface {
 	AddRoom(room Room)
-	AddMembers(room Room, members []string)
+	AddMembers(room Room, members []User)
+	DeleteMember(room Room, userId string)
+	FindRoomById(id string) Room
 	FindRoomByName(name string) Room
-	LoggingChat(chatLogData ChatLogData, content string)
+	LoggingChat(chatLogData ChatLogData, roomId string)
 	GetRoomViewData(roomId string) RoomViewData
 }
 type RoomsMongo struct {
@@ -29,9 +31,9 @@ type RoomsMongo struct {
 	CreatedAt time.Time `bson:"created_at"`
 }
 type RoomMongo struct {
-	ID      string `bson:"id"`
-	Name    string `bosn:"name"`
-	Private bool   `bson:"private"`
+	ID      string `bson:"id" json:"id"`
+	Name    string `bosn:"name" json:"name"`
+	Private bool   `bson:"private" json:"private"`
 }
 type ChatLogData struct {
 	SenderId       string    `bson:"sender_id" json:"sender_id"`
@@ -41,7 +43,7 @@ type ChatLogData struct {
 }
 
 type RoomViewData struct {
-	Members []string      `bson:"members" json:"members"`
+	Members []UserMongo   `bson:"members" json:"members"`
 	Log     []ChatLogData `bson:"chat_log" json:"log"`
 }
 

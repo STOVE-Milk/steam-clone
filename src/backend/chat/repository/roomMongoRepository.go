@@ -67,6 +67,24 @@ func (repo *RoomMRepository) GetRoomViewData(roomId string) models.RoomViewData 
 	return roomViewData
 }
 
+func (repo *RoomMRepository) FindRoomById(id string) models.Room {
+	var room Room
+	// var logList []models.ChatLogData
+	chatCollection := repo.Db.Database("chat").Collection("rooms")
+	findFilter := bson.D{{"id", id}}
+	var roomB bson.M
+	chatCollection.FindOne(context.TODO(), findFilter).Decode(&roomB)
+	if roomB == nil {
+		return nil
+	}
+	room = Room{
+		Id:      roomB["id"].(string),
+		Name:    roomB["name"].(string),
+		Private: roomB["private"].(bool),
+	}
+	return &room
+}
+
 func (repo *RoomMRepository) FindRoomByName(name string) models.Room {
 	var room Room
 	// var logList []models.ChatLogData
@@ -84,9 +102,25 @@ func (repo *RoomMRepository) FindRoomByName(name string) models.Room {
 	}
 	return &room
 }
-func (repo *RoomMRepository) AddMembers(room models.Room, members []string) {
+
+func (repo *RoomMRepository) AddMembers(room models.Room, members []models.User) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	updateFilter := bson.D{{"id", room.GetId()}}
 	updateBson := bson.D{{"$push", bson.D{{"members", bson.D{{"$each", members}}}}}}
 	chatCollection.UpdateOne(context.TODO(), updateFilter, updateBson)
+}
+
+func (repo *RoomMRepository) DeleteMember(room models.Room, userId string) {
+	chatCollection := repo.Db.Database("chat").Collection("rooms")
+	pullFilter := bson.D{{"id", room.GetId()}}
+	pullBson := bson.D{{"$pull",
+		bson.D{{
+			"members", bson.D{{
+				"id", userId,
+			}},
+		}},
+	}}
+	fmt.Println("Delete action" + " " + userId + " " + room.GetId())
+
+	chatCollection.UpdateOne(context.TODO(), pullFilter, pullBson)
 }

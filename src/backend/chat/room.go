@@ -13,7 +13,7 @@ import (
 // 타겟 룸이 존재한다면 타겟 룸에 받은 채팅 메세지를 브로드캐스팅 합니다.
 // 룸에 클라이언트를 등록합니다.
 
-const goodbyeMessage = "%s leave the room"
+const goodbyeMessage = "%s 님이 채팅 방을 나갔습니다."
 
 type Room struct {
 	ID         string `json:"id"`
@@ -67,7 +67,6 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 	if !room.Private {
 		room.notifyClientLeave(client)
 	}
-
 }
 
 func (room *Room) broadcastToClientsInRoom(message []byte) {
@@ -77,7 +76,7 @@ func (room *Room) broadcastToClientsInRoom(message []byte) {
 }
 
 func (room *Room) publishRoomMessage(message []byte) {
-	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
+	err := config.Redis.Publish(ctx, room.GetId(), message).Err()
 	if err != nil {
 		log.Println(err)
 	}
@@ -90,11 +89,13 @@ func (room *Room) notifyClientLeave(client *Client) {
 		Message: fmt.Sprintf(goodbyeMessage, client.GetName()),
 	}
 
+	client.wsServer.loggingChat(room.ID, "", "", fmt.Sprintf(goodbyeMessage, client.GetName()))
+
 	room.publishRoomMessage(message.encode())
 }
 
 func (room *Room) subscribeToRoomMessages() {
-	pubsub := config.Redis.Subscribe(ctx, room.GetName())
+	pubsub := config.Redis.Subscribe(ctx, room.GetId())
 
 	ch := pubsub.Channel()
 
