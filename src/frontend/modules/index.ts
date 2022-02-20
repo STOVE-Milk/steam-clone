@@ -1,13 +1,21 @@
 import { AnyAction, CombinedState, combineReducers } from 'redux';
-import { all } from 'redux-saga/effects';
+import { all, fork } from 'redux-saga/effects';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import game, { gameSaga, gameState } from './game';
 import user, { userSaga, IUserState } from './user';
+import cart, { cartSaga, ICartState } from './cart';
+import wishlist, { wishSaga, IWishState } from './wishlist';
+import auth, { authSaga, IAuthState } from './auth';
+import charge, { chargeSaga, IChargeState } from './charge';
 
 export interface IState {
   game: gameState;
   user: IUserState;
+  cart: ICartState;
+  wishlist: IWishState;
+  auth: IAuthState;
+  charge: IChargeState;
 }
 
 export const rootReducer = (state: IState, action: AnyAction): CombinedState<IState> => {
@@ -18,6 +26,10 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
       const combinedReducers = combineReducers({
         game: game,
         user: user,
+        cart: cart,
+        wishlist: wishlist,
+        auth: auth,
+        charge: charge,
       });
       return combinedReducers(state, action);
     }
@@ -27,5 +39,5 @@ export const rootReducer = (state: IState, action: AnyAction): CombinedState<ISt
 export default rootReducer;
 
 export function* rootSaga() {
-  yield all([gameSaga(), userSaga()]);
+  yield all([gameSaga(), userSaga(), cartSaga(), wishSaga(), authSaga(), chargeSaga()]);
 }

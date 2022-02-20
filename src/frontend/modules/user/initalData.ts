@@ -1,5 +1,3 @@
-export const initialSingup = {};
-
 export const initalUserInfo = {
   country: '[TEST]KR',
   exp: 1644223290,
@@ -8,3 +6,14 @@ export const initalUserInfo = {
   nickname: '[TEST]yanghakim',
   role: 1,
 };
+
+export const initalFriendInfo = [
+  {
+    id: 1,
+    nickname: '[TEST]nick',
+    profile: {
+      image: '',
+      description: '[TEST]desc',
+    },
+  },
+];

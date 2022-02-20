@@ -7,6 +7,27 @@ interface IGameCategory {
   curSelectedCategory: string;
   setCurSelectedCategory?: (e: any) => void;
 }
+
+export default function CategoryList({ list, curSelectedCategory, setCurSelectedCategory }: IGameCategory) {
+  return (
+    <CategoryWrapper>
+      {list.map((eachCategory, i) => {
+        return (
+          <CategoryBox
+            key={eachCategory + i}
+            className={eachCategory === curSelectedCategory ? 'checked' : ''}
+            onClick={() => {
+              setCurSelectedCategory && setCurSelectedCategory(eachCategory);
+            }}
+          >
+            {eachCategory}
+          </CategoryBox>
+        );
+      })}
+    </CategoryWrapper>
+  );
+}
+
 const CategoryWrapper = styled.section`
   display: flex;
   width: 60rem;
@@ -42,22 +63,3 @@ const CategoryBox = styled(Text)`
     border: 1px solid ${(props) => props.theme.colors.activeBg};
   }
 `;
-
-export default function CategoryList({ list, curSelectedCategory, setCurSelectedCategory }: IGameCategory) {
-  return (
-    <CategoryWrapper>
-      {list.map((eachCategory) => {
-        return (
-          <CategoryBox
-            className={eachCategory === curSelectedCategory ? 'checked' : ''}
-            onClick={() => {
-              setCurSelectedCategory && setCurSelectedCategory(eachCategory);
-            }}
-          >
-            {eachCategory}
-          </CategoryBox>
-        );
-      })}
-    </CategoryWrapper>
-  );
-}

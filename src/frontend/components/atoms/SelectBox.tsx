@@ -9,14 +9,6 @@ interface IhandleEvent {
   optionArr: Array<OptionType>;
   handleSelect: (e: any) => void;
 }
-const SelectTagBox = styled.select`
-  border: none;
-  padding: 0.8rem 0.5rem;
-  font-family: inherit;
-  border-radius: 10px;
-  background-color: ${(props) => props.theme.colors.primaryBg};
-  color: ${(props) => props.theme.colors.secondaryText};
-`;
 
 export default function SelectBox({ optionArr, handleSelect }: IhandleEvent) {
   return (
@@ -27,3 +19,12 @@ export default function SelectBox({ optionArr, handleSelect }: IhandleEvent) {
     </SelectTagBox>
   );
 }
+
+const SelectTagBox = styled.select`
+  border: none;
+  padding: 0.8rem 0.5rem;
+  font-family: inherit;
+  border-radius: 10px;
+  background-color: ${(props) => props.theme.colors.primaryBg};
+  color: ${(props) => props.theme.colors.secondaryText};
+`;

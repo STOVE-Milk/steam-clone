@@ -71,6 +71,7 @@ func main() {
 	defer cancel()
 	mux := runtime.NewServeMux(
 		runtime.WithIncomingHeaderMatcher(CustomMatcher),
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{OrigName: true, EmitDefaults: true}),
 	)
 
 	registerServiceHandlers(ctx, mux)

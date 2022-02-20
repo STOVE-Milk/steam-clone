@@ -2,267 +2,376 @@ package controller
 
 import (
 	"context"
-	"database/sql"
 
 	pb "github.com/STOVE-Milk/steam-clone/store/proto"
-
-	"github.com/STOVE-Milk/steam-clone/store/repository"
+	"github.com/STOVE-Milk/steam-clone/store/service"
+	"github.com/STOVE-Milk/steam-clone/store/token"
+	"github.com/STOVE-Milk/steam-clone/store/utils"
+	"github.com/golang/protobuf/ptypes/empty"
 )
 
-type GameController struct {
-	r *repository.Repo
+// 상점서버에서 유저들의 요청을 받고 그에대한 응답을 주는 패키지 입니다.
+
+type storeServer struct {
+	pb.StoreServer
+	GameCtr *service.GameService
 }
 
-func NewGameCtr(db *sql.DB) *GameController {
-	return &GameController{
-		r: repository.NewGameRepo(db),
-	}
+func Server() *storeServer {
+	return &storeServer{}
 }
 
-func (gc *GameController) GetParentCategoryList(ctx context.Context) (*pb.CategoryListResponse_CategoryList, error) {
-	parentCategoryList, err := gc.r.GetAllCategoryList(ctx)
+func (store *storeServer) GetCategoryList(ctx context.Context, _ *empty.Empty) (*pb.CategoryListResponse, error) {
+	res, err := store.GameCtr.GetParentCategoryList(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.CategoryListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
-
-	var pbCategoryList pb.CategoryListResponse_CategoryList
-
-	for _, category := range parentCategoryList {
-		if category.Id == category.ParentIdx {
-			pbCategoryList.CategoryList = append(pbCategoryList.CategoryList, category.Name)
-		}
-	}
-	return &pbCategoryList, nil
-}
-
-func (gc *GameController) GetUserData(ctx context.Context) (*pb.UserDataResponse_UserData, error) {
-	wishlist, err := gc.r.GetWishlist(ctx)
-	if err != nil {
-		return nil, err
-	}
-	library, err := gc.r.GetPurchaseList(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var pbUserData pb.UserDataResponse_UserData
-	pbUserData.WishList = wishlist
-	pbUserData.PurchaseList = library
-	return &pbUserData, nil
-}
-
-func (gc *GameController) GetGameDetail(ctx context.Context) (*pb.GameDetail, error) {
-	gameDetail, err := gc.r.GetGameDetail(ctx)
-	if err != nil {
-		return nil, err
-	}
-	categoryList, err := gc.r.GetCategoryListByGameId(ctx)
-	if err != nil {
-		return nil, err
-	}
-	categoryTmp := make([]string, len(categoryList))
-	for i, category := range categoryList {
-		categoryTmp[i] = category.Name
-	}
-	var imageSub []string
-	var videoSub []string
-	for _, image := range gameDetail.Image["sub"].([]interface{}) {
-		imageSub = append(imageSub, image.(string))
-	}
-	for _, video := range gameDetail.Video["sub"].([]interface{}) {
-		videoSub = append(videoSub, video.(string))
-	}
-	gamePublisher, err := gc.r.GetPublisher(ctx, gameDetail.PublisherId)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.GameDetail{
-		Id:                 int32(gameDetail.Id),
-		Name:               gameDetail.Name,
-		DescriptionSnippet: gameDetail.DescriptionSnippet,
-		Price:              int32(gameDetail.Price),
-		Sale:               int32(gameDetail.Sale),
-		Image: &pb.ContentsPath{
-			Main: gameDetail.Image["main"].(string),
-			Sub:  imageSub,
-		},
-		Video: &pb.ContentsPath{
-			Main: gameDetail.Video["main"].(string),
-			Sub:  videoSub,
-		},
-		CategoryList:  categoryTmp,
-		OsList:        gameDetail.Os.ToSlice(),
-		DownloadCount: int32(gameDetail.DownloadCount),
-		Language:      gameDetail.Language.ToSlice(),
-		Description:   gameDetail.Description,
-		Publisher: &pb.Publisher{
-			Id:   int32(gamePublisher.Id),
-			Name: gamePublisher.Name,
-		},
-		ReviewCount:    int32(gameDetail.ReviewCount),
-		RecommendCount: int32(gameDetail.RecommendCount),
+	return &pb.CategoryListResponse{
+		Code:    31000,
+		Message: "category list",
+		Data:    res,
 	}, nil
 }
 
-func (gc *GameController) GetSortingGameList(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
-	gameSimpleList, err := gc.r.GetSortingGameList(ctx)
+func (store *storeServer) GetSortingGameList(ctx context.Context, req *pb.SortingParamRequest) (*pb.GameSimpleListResponse, error) {
+	defer utils.Recover()
+	ctx = context.WithValue(ctx, "category", req.Category)
+	ctx = context.WithValue(ctx, "page", req.Page)
+	ctx = context.WithValue(ctx, "size", req.Size)
+	ctx = context.WithValue(ctx, "sort", req.Sort)
+	res, err := store.GameCtr.GetSortingGameList(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.GameSimpleListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
-	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
-	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
-	for i, game := range gameSimpleList {
-		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
-		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
-		if err != nil {
-			return nil, err
-		}
-		categoryTmp := make([]string, len(categoryList))
-		for i, category := range categoryList {
-			categoryTmp[i] = category.Name
-		}
-		var imageSub []string
-		var videoSub []string
-		for _, image := range game.Image["sub"].([]interface{}) {
-			imageSub = append(imageSub, image.(string))
-		}
-		for _, video := range game.Video["sub"].([]interface{}) {
-			videoSub = append(videoSub, video.(string))
-		}
-		pbGameSimpleList.GameList[i] = &pb.GameSimple{
-			Id:                 int32(game.Id),
-			Name:               game.Name,
-			DescriptionSnippet: game.DescriptionSnippet,
-			Price:              int32(game.Price),
-			Sale:               int32(game.Sale),
-			Image: &pb.ContentsPath{
-				Main: game.Image["main"].(string),
-				Sub:  imageSub,
-			},
-			Video: &pb.ContentsPath{
-				Main: game.Video["main"].(string),
-				Sub:  videoSub,
-			},
-			OsList:        game.Os.ToSlice(),
-			CategoryList:  categoryTmp,
-			DownloadCount: int32(game.DownloadCount),
-		}
-	}
-
-	return &pbGameSimpleList, nil
-}
-
-func (gc *GameController) GetReviewList(ctx context.Context) (*pb.ReviewListResponse_ReviewList, error) {
-	reviewList, err := gc.r.GetReviewList(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var pbReviewList pb.ReviewListResponse_ReviewList
-	pbReviewList.ReviewList = make([]*pb.Review, len(reviewList))
-	for i, review := range reviewList {
-		pbReviewList.ReviewList[i] = &pb.Review{
-			Id:             int32(review.Id),
-			UserId:         int32(review.UserId),
-			DisplayedName:  review.DisplayedName,
-			Content:        review.Content,
-			Recommendation: int32(review.Recommendation),
-		}
-	}
-	return &pbReviewList, nil
-}
-
-func (gc *GameController) GetGameListInWishlist(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, error) {
-	gameSimpleList, err := gc.r.GetGameListInWishlist(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var pbGameSimpleList pb.GameSimpleListResponse_GameSimpleList
-	pbGameSimpleList.GameList = make([]*pb.GameSimple, len(gameSimpleList))
-	for i, game := range gameSimpleList {
-		ctx = context.WithValue(ctx, "gameId", int32(game.Id))
-		categoryList, err := gc.r.GetCategoryListByGameId(ctx)
-		if err != nil {
-			return nil, err
-		}
-		categoryTmp := make([]string, len(categoryList))
-		for i, category := range categoryList {
-			categoryTmp[i] = category.Name
-		}
-		var imageSub []string
-		var videoSub []string
-		for _, image := range game.Image["sub"].([]interface{}) {
-			imageSub = append(imageSub, image.(string))
-		}
-		for _, video := range game.Video["sub"].([]interface{}) {
-			videoSub = append(videoSub, video.(string))
-		}
-		pbGameSimpleList.GameList[i] = &pb.GameSimple{
-			Id:                 int32(game.Id),
-			Name:               game.Name,
-			DescriptionSnippet: game.DescriptionSnippet,
-			Price:              int32(game.Price),
-			Sale:               int32(game.Sale),
-			Image: &pb.ContentsPath{
-				Main: game.Image["main"].(string),
-				Sub:  imageSub,
-			},
-			Video: &pb.ContentsPath{
-				Main: game.Video["main"].(string),
-				Sub:  videoSub,
-			},
-			OsList:        game.Os.ToSlice(),
-			CategoryList:  categoryTmp,
-			DownloadCount: int32(game.DownloadCount),
-		}
-	}
-	return &pbGameSimpleList, nil
-}
-
-func (gc *GameController) PostWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.PostWishlist(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.IsSuccessResponse_Success{
-		Success: isSuccess,
+	return &pb.GameSimpleListResponse{
+		Code:    31000,
+		Message: "game list by category",
+		Data:    res,
 	}, nil
 }
 
-func (gc *GameController) DeleteWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.DeleteWishlist(ctx)
+func (store *storeServer) GetGame(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.GameDetailResponse, error) {
+	defer utils.Recover()
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.GameCtr.GetGameDetail(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.GameDetailResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
-	return &pb.IsSuccessResponse_Success{
-		Success: isSuccess,
+	return &pb.GameDetailResponse{
+		Code:    31000,
+		Message: "game",
+		Data:    res,
 	}, nil
 }
 
-func (gc *GameController) PostReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.PostReview(ctx)
+func (store *storeServer) GetReviewList(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.ReviewListResponse, error) {
+	defer utils.Recover()
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.GameCtr.GetReviewList(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.ReviewListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
-	return &pb.IsSuccessResponse_Success{
-		Success: isSuccess,
+	return &pb.ReviewListResponse{
+		Code:    31000,
+		Message: "review list",
+		Data:    res,
 	}, nil
 }
 
-func (gc *GameController) PatchReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.PatchReview(ctx)
+func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.UserDataResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.UserDataResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
-	return &pb.IsSuccessResponse_Success{
-		Success: isSuccess,
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	res, err := store.GameCtr.GetUserData(ctx)
+	if err != nil {
+		return &pb.UserDataResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.UserDataResponse{
+		Code:    31000,
+		Message: "wishlist",
+		Data:    res,
 	}, nil
 }
 
-func (gc *GameController) DeleteReview(ctx context.Context) (*pb.IsSuccessResponse_Success, error) {
-	isSuccess, err := gc.r.DeleteReview(ctx)
+func (store *storeServer) GetGameIdListByUserId(ctx context.Context, req *pb.UserIdQueryParamRequest) (*pb.GameIdListResponse, error) {
+	defer utils.Recover()
+	ctx = context.WithValue(ctx, "userId", req.UserId)
+	res, err := store.GameCtr.GetGameIdListByUserId(ctx)
 	if err != nil {
-		return nil, err
+		return &pb.GameIdListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
 	}
-	return &pb.IsSuccessResponse_Success{
-		Success: isSuccess,
+	return &pb.GameIdListResponse{
+		Code:    31000,
+		Message: "game list in libarary",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) GetGameListInWishlist(ctx context.Context, _ *empty.Empty) (*pb.GameSimpleListResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.GameSimpleListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	res, err := store.GameCtr.GetGameListInWishlist(ctx)
+	if err != nil {
+		return &pb.GameSimpleListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.GameSimpleListResponse{
+		Code:    31000,
+		Message: "game list by category",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) GetGameListInCart(ctx context.Context, req *pb.GameIdListQueryParamRequest) (*pb.GameSimpleListResponse, error) {
+	defer utils.Recover()
+	ctx = context.WithValue(ctx, "gameIdList", req.GameIdList)
+	res, err := store.GameCtr.GetGameListInCart(ctx)
+	if err != nil {
+		return &pb.GameSimpleListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.GameSimpleListResponse{
+		Code:    31000,
+		Message: "game list by cart",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) PostWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.GameCtr.PostWishlist(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "찜 요청을 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) DeleteWishlist(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.GameCtr.DeleteWishlist(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "찜 취소 요청을 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) PostReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	ctx = context.WithValue(ctx, "reviewContent", req.Content)
+	ctx = context.WithValue(ctx, "reviewRecommendation", req.Recommendation)
+	res, err := store.GameCtr.PostReview(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "리뷰 포스팅을 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) PatchReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	ctx = context.WithValue(ctx, "reviewId", req.ReviewId)
+	ctx = context.WithValue(ctx, "reviewContent", req.Content)
+	ctx = context.WithValue(ctx, "reviewRecommendation", req.Recommendation)
+	res, err := store.GameCtr.PatchReview(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "리뷰 수정을 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+func (store *storeServer) DeleteReview(ctx context.Context, req *pb.ReviewQueryRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "reviewId", req.ReviewId)
+	res, err := store.GameCtr.DeleteReview(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "리뷰 삭제를 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) GameInstall(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.GameCtr.GameInstall(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "게임 인스톨 요청을 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+func (store *storeServer) GameUninstall(ctx context.Context, req *pb.GameIdQueryParamRequest) (*pb.IsSuccessResponse, error) {
+	defer utils.Recover()
+	userMetaData, err := token.ExtractMetadata(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	ctx = context.WithValue(ctx, "userId", userMetaData.UserId)
+	ctx = context.WithValue(ctx, "nickname", userMetaData.Nickname)
+	ctx = context.WithValue(ctx, "gameId", req.GameId)
+	res, err := store.GameCtr.GameUninstall(ctx)
+	if err != nil {
+		return &pb.IsSuccessResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.IsSuccessResponse{
+		Code:    31000,
+		Message: "게임 언인스톨 요청을 수행하였습니다.",
+		Data:    res,
+	}, nil
+}
+
+func (store *storeServer) GetSearchingGameList(ctx context.Context, req *pb.SearchingContentQueryParamRequest) (*pb.GameSimpleListResponse, error) {
+	defer utils.Recover()
+	ctx = context.WithValue(ctx, "content", req.Content)
+	res, err := store.GameCtr.GetSearchingGameList(ctx)
+	if err != nil {
+		return &pb.GameSimpleListResponse{
+			Code:    int32(err.Code),
+			Message: err.Message,
+		}, nil
+	}
+	return &pb.GameSimpleListResponse{
+		Code:    31000,
+		Message: "game list by cart",
+		Data:    res,
 	}, nil
 }

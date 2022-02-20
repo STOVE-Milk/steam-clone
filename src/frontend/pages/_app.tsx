@@ -1,5 +1,5 @@
 import type { AppProps } from 'next/app';
-import withReduxSaga from 'next-redux-saga';
+import { NextPage, NextPageContext } from 'next';
 import { ThemeProvider } from 'styled-components';
 
 import { GlobalStyle } from 'styles/global-styles';
@@ -11,8 +11,14 @@ import Layout from 'templates/Layout';
 import 'styles/globals.css';
 import 'styles/font.css';
 
+interface IAppProps {
+  Component: NextPage;
+  ctx: NextPageContext;
+}
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
+    //themeprovider를 이용해서 미리 정의한 테마 타입들을 뷰 단에서 사용
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Layout>

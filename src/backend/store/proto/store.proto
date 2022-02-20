@@ -5,7 +5,12 @@ package storepb;
 option go_package = "github.com/STOVE-Milk/steam-clone/store/proto;storepb";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
+
+// gRPC의 통신 방법인 proto buffer를 사용하기 위한 메세지와 서비스를 정의하는 파일입니다.
+// 데이터 통신을 적절히 하기 위해 프론트 역할의 팀원들과 많은 대화를 하며 구조화 하였습니다.
+
 
 service Store {
     rpc GetCategoryList(google.protobuf.Empty) returns (CategoryListResponse) {
@@ -28,6 +33,11 @@ service Store {
             get: "/store/games/{game_id}/reviews"
         };
     }
+    rpc GetGameListInCart(GameIdListQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/cart/{game_id_list}"
+        };
+    }
     rpc GetUserData(google.protobuf.Empty) returns (UserDataResponse){
         option (google.api.http) = {
             get: "/store/userdata"
@@ -36,6 +46,16 @@ service Store {
     rpc GetGameListInWishlist(google.protobuf.Empty) returns (GameSimpleListResponse){
         option (google.api.http) = {
             get: "/store/wishes"
+        };
+    }
+    rpc GetGameIdListByUserId(UserIdQueryParamRequest) returns (GameIdListResponse){
+        option (google.api.http) = {
+            get: "/store/users/{user_id}/games"
+        };
+    }
+    rpc GetSearchingGameList(SearchingContentQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/search"
         };
     }
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
@@ -66,8 +86,22 @@ service Store {
             delete: "/store/games/reviews/{review_id}"
         };
     }
+    rpc GameInstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            patch: "/store/games/install"
+            body: "*"
+        };
+    }
+    rpc GameUninstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
+        option (google.api.http) = {
+            patch: "/store/games/uninstall"
+            body: "*"
+        };
+    }
 }
 
+
+//응답 값을 줄 때 사용할 message
 message UserDataResponse{
     int32 code = 1;
     string message = 2;
@@ -75,6 +109,14 @@ message UserDataResponse{
     message UserData{
         repeated int32 wish_list = 1 [json_name = "wish_list"];
         repeated int32 purchase_list = 2 [json_name = "purchase_list"];
+    }
+}
+message GameIdListResponse{
+    int32 code = 1;
+    string message = 2;
+    GameIdList data = 3;
+    message GameIdList{
+        repeated int32 game_id_list = 2 [json_name = "game_id_list"];
     }
 }
 
@@ -108,7 +150,10 @@ message GameSimpleListResponse{
 message GameDetailResponse{
     int32 code = 1;
     string message = 2;
-    GameDetail data = 3;
+    Game data = 3;
+    message Game{
+        GameDetail game = 1;
+    }
 }
 
 message IsSuccessResponse{
@@ -120,13 +165,15 @@ message IsSuccessResponse{
     }
 }
 
-
+// 요청 값 및 응답값에 임베드 될 message
 message Review{
     int32 id = 1;
     int32 user_id = 2 [json_name = "user_id"];
     string displayed_name = 3 [json_name = "displayed_name"];
     string content = 4;
     int32 recommendation = 5;
+    google.protobuf.Timestamp created_at = 6 [json_name = "created_at"];
+    google.protobuf.Timestamp updated_at = 7 [json_name = "updated_at"];
 }
 
 message GameDetail{
@@ -177,19 +224,22 @@ message GameSimple {
     int32 download_count = 10 [json_name = "download_count"];
 }
 
-
-// 미디어 컨텐츠를 Response 해야할 때.
 message ContentsPath{
     string main = 1;
     repeated string sub = 2;
 }
 
 
-//Request Parameter에 사용되는 message
-
-// Client 측에서 하나의 카테고리를 Request 받을 때. 
+//요청에 사용되는 message
 message GameIdQueryParamRequest{
     int32 game_id = 1;
+}
+
+message GameIdListQueryParamRequest{
+    string game_id_list = 1;
+}
+message SearchingContentQueryParamRequest{
+    string content = 1;
 }
 
 message SortingParamRequest{
@@ -204,4 +254,7 @@ message ReviewQueryRequest{
     int32 game_id = 2 [json_name = "game_id"];
     string content = 3;
     int32 recommendation = 4;
+}
+message UserIdQueryParamRequest{
+    int32 user_id = 1;
 }

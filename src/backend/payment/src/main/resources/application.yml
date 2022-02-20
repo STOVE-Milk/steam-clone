@@ -12,4 +12,6 @@ server:
   port: 8200
 spring:
   profiles:
-    active: local
+    active: dev
+  application:
+    name: payment-service

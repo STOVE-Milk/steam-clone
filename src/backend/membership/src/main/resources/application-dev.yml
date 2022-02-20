@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/steam?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: milk
     password: milk
   jpa:
@@ -17,3 +17,11 @@ spring:
         format_sql: true
         use_sql_comments: true
         globally_quoted_identifiers: true
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

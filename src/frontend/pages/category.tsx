@@ -1,29 +1,74 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import type { NextPage } from 'next';
 
-import GameInfo from 'components/organisms/GameInfo';
-import Text from 'components/atoms/Text';
-// import IGameInfo from 'pages/category';
 import styled from 'styled-components';
-import CategoryList from 'components/molecules/CategoryList';
 
-import { useSelector, useDispatch } from 'react-redux';
-// import { END } from 'redux-saga';
-// import wrapper from 'modules/configureStore';
 import { IState } from 'modules';
-import { getCategories, getGamesByCategory } from 'modules/game';
+import * as GameAPI from 'api/game/api';
 import { gameInfo } from 'modules/game/types';
-export type GameMedia = {
-  main: string;
-  sub: Array<string>;
+
+import Text from 'components/atoms/Text';
+import CategoryList from 'components/molecules/CategoryList';
+import GameInfo from 'components/organisms/GameInfo';
+
+const Category: NextPage<IState> = () => {
+  const { userInfo } = useSelector((state: IState) => state.user);
+
+  //현재 선택된 카테고리를 체크하기 위한 옵션 -> 초기값은 ALL
+  const [curSelectedCategory, setCurSelectedCategory] = useState('ALL');
+  const [categoryList, setCategoryList] = useState([] as string[]);
+  const [gameList, setGameList] = useState([] as gameInfo[]);
+
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  useEffect(() => {
+    getGamesByCategory();
+  }, [curSelectedCategory]);
+
+  // 카테고리 리스트 불러오는 요청
+  const getCategory = async () => {
+    const res = await GameAPI.getCategoriesAPI();
+    const category_list = await res.data.category_list;
+    setCategoryList(category_list);
+  };
+
+  // 카테고리에 따른 게임 불러오는 요청
+  const getGamesByCategory = async () => {
+    const res = await GameAPI.getGamesByCategoryAPI({ category: `${curSelectedCategory}` });
+    const game_list = await res.data.game_list;
+    setGameList(game_list);
+  };
+
+  return (
+    <GameInfoWrapper>
+      {console.log(userInfo.data)}
+      <ContentWrapper>
+        <TitleStyle types="large">카테고리 리스트</TitleStyle>
+        <TitleStyle>{': 카테고리별 게임 목록을 확인해보세요!'}</TitleStyle>
+        <CategoryList
+          list={categoryList}
+          curSelectedCategory={curSelectedCategory}
+          setCurSelectedCategory={setCurSelectedCategory}
+        ></CategoryList>
+      </ContentWrapper>
+      <ContentWrapper>
+        <TitleStyle types="large">{`${curSelectedCategory} 게임 리스트 (${gameList?.length})`}</TitleStyle>
+        {gameList.map((eachGame, i) => {
+          return <GameInfo key={eachGame.id + eachGame.name} {...eachGame} />;
+        })}
+      </ContentWrapper>
+    </GameInfoWrapper>
+  );
 };
 
 const GameInfoWrapper = styled.div`
   width: fit-content;
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
-  padding-top: 2rem;
+  margin: 2rem auto;
 `;
 const TitleStyle = styled(Text)`
   margin-bottom: 2rem;
@@ -31,60 +76,5 @@ const TitleStyle = styled(Text)`
 const ContentWrapper = styled.div`
   margin-bottom: 2rem;
 `;
-const Category: NextPage<IState> = () => {
-  const [curSelectedCategory, setCurSelectedCategory] = useState('ALL');
-  const { categories, gamesByCategory } = useSelector((state: IState) => {
-    // console.log('state:', state);
-    return state.game;
-  });
-  const { userInfo } = useSelector((state: IState) => state.user);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getCategories.request({}));
-    dispatch(getGamesByCategory.request({ category: `${curSelectedCategory}` }));
-    // dispatch(getGamesByCategory.request({ category: '액션' }));
-  }, [curSelectedCategory]);
-
-  const gamesByCategoryData = gamesByCategory.data && Object.values(gamesByCategory.data);
-
-  return (
-    <GameInfoWrapper>
-      {console.log(userInfo.data)}
-      <ContentWrapper>
-        <TitleStyle types="large">카테고리 리스트</TitleStyle>
-        {categories.data && (
-          <CategoryList
-            list={Object.values(categories.data)}
-            curSelectedCategory={curSelectedCategory}
-            setCurSelectedCategory={setCurSelectedCategory}
-          ></CategoryList>
-        )}
-      </ContentWrapper>
-      <ContentWrapper>
-        <TitleStyle types="large">{`${curSelectedCategory} 게임 리스트 (${gamesByCategoryData?.length})`}</TitleStyle>
-        {gamesByCategory.loading ? (
-          <Text>Loading</Text>
-        ) : (
-          gamesByCategoryData &&
-          gamesByCategoryData.map((eachGame, i) => {
-            return <GameInfo key={i} {...eachGame} />;
-          })
-        )}
-      </ContentWrapper>
-    </GameInfoWrapper>
-  );
-};
-
-// export const getServerSideProps = wrapper.getServerSideProps((store) => async ({ params }) => {
-//   store.dispatch(getCategories.request({}));
-//   // const data = store.getState();
-//   // const gamesByCategoryData = store.getState().game;
-//   // const gamesByCategoryData = store.getState().game.gamesByCategory.data;
-//   // console.log('data client', data, 'category data ', gamesByCategoryData);
-//   // console.log(gamesByCategoryData);
-//   return { props: {} };
-// });
 
 export default Category;
