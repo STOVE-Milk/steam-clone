@@ -10,7 +10,15 @@ export const initalUserInfo = {
 export const initalFriendInfo = [
   {
     id: 52,
-    nickname: '[TEST]nick',
+    nickname: '[TEST]52',
+    profile: {
+      image: '',
+      description: '[TEST]desc',
+    },
+  },
+  {
+    id: 59,
+    nickname: '[TEST]59',
     profile: {
       image: '',
       description: '[TEST]desc',

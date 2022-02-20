@@ -9,12 +9,17 @@ import useWindowSize from 'util/Hooks/useWindowDimensions';
 import { isEmpty } from 'util/isEmpty';
 import { IState } from 'modules';
 
+import Text from 'components/atoms/Text';
+import Modal from 'components/atoms/Modal';
 import EachGame from 'components/organisms/EachGame';
+import { ModalConents } from 'components/molecules/ModalConents';
 import { commandType, IMapInfo } from 'pages/library/[id]';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import UserObject from './UserObject';
 import { colorPalette } from 'util/colorPalette';
 import { gameInfo, addGameOffset } from 'modules/game';
+
+import FilledButton from 'components/atoms/FilledButton';
 
 const absoluteVal = 500;
 
@@ -29,6 +34,7 @@ interface IMapProps {
   };
   installedGameList?: any;
   setGameOffsetList: (e: any) => void;
+  userId: any; //serversideprops에서 오는 query에 있는 숫자
 }
 interface IMoveProps {
   [index: string]: number;
@@ -80,7 +86,7 @@ interface IGlobalState {
   };
 }
 const Map = (props: IMapProps) => {
-  const { installedGame, mapInfo, gameOffsetList, setGameOffsetList, installedGameList } = props;
+  const { installedGame, mapInfo, gameOffsetList, setGameOffsetList, installedGameList, userId } = props;
   const { userInfo } = useSelector((state: IState) => state.user);
   const { gameOffsetData } = useSelector((state: IState) => state.game);
 
@@ -89,12 +95,13 @@ const Map = (props: IMapProps) => {
   const windowSize = useWindowSize();
   const width = windowSize.width;
   const height = windowSize.height;
+  const router = useRouter();
 
   // const [globalData, setGlobalData] = useState({} as IGlobalState);
   const [globalData, setGlobalData] = useState({
     //쌩 초기 더미값
     room: {
-      roomId: 52,
+      roomId: `${router.query.id}`,
       userCount: 62,
       users: {
         // '59': { nickname: 'algorithm', x: 0, y: 0 },
@@ -104,7 +111,9 @@ const Map = (props: IMapProps) => {
         side: 20,
         gameList: [],
         objectList: [],
-        games: { '2': { name: 'PUBG: BATTLEGROUNDS', x: 196, y: 50 } },
+        games: {
+          // '2': { name: 'PUBG: BATTLEGROUNDS', x: 196, y: 50 }
+        },
         objects: {},
       },
     },
@@ -119,7 +128,6 @@ const Map = (props: IMapProps) => {
 
   const [user2Y, setUser2Y] = useState(50);
   //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
-  const router = useRouter();
 
   // const [gameOffset, setGameOffsetList] = useState({ x: 0, y: 0 });
 
@@ -139,9 +147,9 @@ const Map = (props: IMapProps) => {
     console.log('Connected to Endpoint!');
   }
 
-  //   function disconnect() {
-  //   if (!ws.current)  ws.current && ws.current.close();
-  // }
+  function disconnect() {
+    if (!isEmpty(ws.current)) ws.current && ws.current.close();
+  }
 
   // function send_message() {
   //   var message = textID.value;
@@ -178,7 +186,7 @@ const Map = (props: IMapProps) => {
             return { ...state };
           }
         }
-        // if (!isEmpty(ws.current))  ws.current && ws.current.close();
+        if (!isEmpty(ws.current)) ws.current && ws.current.close();
       });
     }
   }
@@ -199,9 +207,9 @@ const Map = (props: IMapProps) => {
         onOpen(evt);
         console.log('서버와 웹 소켓 연결됨');
         // let roomId = `${router.query.id}`; //테스트를 위해 1로 고정 -> navbar 친구기능 추가되면 옮기면 됨
-        const roomId = 52;
+        const roomId = userId;
         let access = {
-          room_id: roomId, //누구의 library에 들어가는지
+          room_id: userId, //누구의 library에 들어가는지
           authorization: token, //내가 누군지
         };
         console.log('ws.current=======', ws.current);
@@ -217,7 +225,11 @@ const Map = (props: IMapProps) => {
   }
   useEffect(() => {
     connect();
-  }, []);
+  }, [userId]);
+  // useEffect(() => {
+  //   disconnect();
+  //   connect();
+  // }, [userId]);
   //소켓 코드 끝
 
   const focusRef = () => {
@@ -333,6 +345,7 @@ const Map = (props: IMapProps) => {
       setUserLocation((prev) => ({
         ...prev,
         [key]: {
+          nickname: userObj[key].nickname,
           x: userObj[key].x == 0 ? delta : userObj[key].x * delta + delta,
           y: userObj[key].y == 0 ? delta : userObj[key].y * delta + delta,
         },
@@ -340,89 +353,152 @@ const Map = (props: IMapProps) => {
     }
   }, [globalData.room.users]);
 
-  // //전체정보에서 game 정보 갱신
-  // useEffect(() => {
-  //   //현재 있는 나의 게임 정보 prev에서 갱신해야됨 globalData 로 위치 주기
-  //   const gameObj: IGameInfo = globalData.room.map.games;
-  //   for (let key in gameObj) {
-  //     setGameOffsetList((prev: any) => ({
-  //       ...prev,
-  //       [key]: {
-  //         x: gameObj[key].x == 0 ? delta : gameObj[key].x,
-  //         y: gameObj[key].y == 0 ? delta : gameObj[key].y,
-  //       },
-  //     }));
-  //   }
-  // }, [globalData.room.map.games]);
+  //전체정보에서 game 정보 갱신
+  useEffect(() => {
+    //현재 있는 나의 게임 정보 prev에서 갱신해야됨 globalData 로 위치 주기
+    const gameObj: IGameInfo = globalData.room.map.games;
+    for (let key in gameObj) {
+      setGameOffsetList((prev: any) => ({
+        ...prev,
+        [key]: {
+          name: gameObj[key].name,
+          x: gameObj[key].x == 0 ? delta : gameObj[key].x,
+          y: gameObj[key].y == 0 ? delta : gameObj[key].y,
+        },
+      }));
+    }
+  }, [globalData.room.map.games]);
 
   useEffect(() => {
     setGlobalData(globalData);
   }, []);
 
-  return (
-    <StageStyled>
-      {/* {console.log('mapInfo from library', mapInfo)} */}
-      {console.log('global data', globalData)}
-      {console.log('userLocation', userLocation)}
-      {console.log('gameOffsetData', gameOffsetData.data)}
-      <Stage id="canvas" width={absoluteVal} height={absoluteVal} ref={shapeRef} style={{}} onClick={focusRef}>
-        <Layer>
-          {userObjects(userLocation).map((eachUser, i) => {
-            if (eachUser == userInfo.data.idx) {
-              //나
-              return (
-                <Circle
-                  x={userLocation[userInfo.data.idx].x}
-                  y={userLocation[userInfo.data.idx].y}
-                  radius={50}
-                  width={absoluteVal / 10}
-                  fill={`${colorPalette[Math.round(100 % eachUser)]}`}
-                />
-              );
-            } else {
-              return (
-                <Circle
-                  x={userLocation[eachUser].x}
-                  y={userLocation[eachUser].y}
-                  radius={50}
-                  width={absoluteVal / 10}
-                  fill={`${colorPalette[Math.round(100 % eachUser)]}`}
-                />
-              );
-            }
-          })}
+  const me = userId == userInfo.data.idx.toString();
 
-          {/* <UserObject x={userX} y={userY} width={absoluteVal / 5} /> */}
-          {/* "games":{"2":{"name":"PUBG: BATTLEGROUNDS","x":196,"y":50}},"objects":{}}} */}
-          {console.log(installedGameList)}
-          {installedGame ? (
-            <EachGame
-              installedGame={installedGame} //game_id받아와서 넣어야함, idx가 그것인것
-              mapInfo={mapInfo}
-              gameOffsetList={gameOffsetList}
-              setGameOffsetList={setGameOffsetList}
-            />
-          ) : null}
-        </Layer>
-      </Stage>
-      {router.query.id == userInfo.data.idx.toString() && (
-        <button
-          id="btn"
-          onClick={() => {
-            handleBuildEvt();
-          }}
-        >
-          게임 좌표 저장하기
-        </button>
-      )}
-    </StageStyled>
+  //x좌표를 찾을 수 없다는 에러 떠서 일단 주석처리 -> 게임에 접근시 모달 띄우는 코드
+  // useEffect(() => {
+  //   enterChecker();
+  // }, [userLocation]);
+
+  // const [enteredGame, setEnteredGame] = useState({} as gameInfo);
+  // const enterChecker = () => {
+  //   for (let key in gameOffsetList) {
+  //     if (
+  //       userLocation &&
+  //       userLocation[userId].x === gameOffsetList[key].x &&
+  //       userLocation[userId].y === gameOffsetList[key].y
+  //     ) {
+  //       installedGameList.map((each: any) => {
+  //         if (each.id == key) {
+  //           setEnteredGame(each);
+  //           setShowModal(true);
+  //           console.log(each);
+  //         }
+  //       });
+  //     }
+  //   }
+  // };
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <div>
+      <SubTitleStyle>{'마이 홈'}</SubTitleStyle>
+      {/* <Modal onClose={() => setShowModal(false)} show={showModal} height="200px">
+        <ModalConents title={enteredGame.name} description={enteredGame.description_snippet}></ModalConents>
+      </Modal> */}
+      <StageStyled me={me}>
+        {/* {console.log('mapInfo from library', mapInfo)} */}
+        {console.log('global data', globalData)}
+        {console.log('userLocation', userLocation)}
+        {console.log('gameOffsetData', gameOffsetData.data)}
+        {console.log('userId', userId)}
+        <Stage id="canvas" width={absoluteVal} height={absoluteVal} ref={shapeRef} style={{}} onClick={focusRef}>
+          <Layer>
+            {userObjects(userLocation).map((eachUser, i) => {
+              if (eachUser == userInfo.data.idx) {
+                //나
+                return (
+                  <Circle
+                    x={userLocation[userInfo.data.idx].x}
+                    y={userLocation[userInfo.data.idx].y}
+                    radius={50}
+                    width={absoluteVal / 10}
+                    fill={`${colorPalette[Math.round(100 % eachUser)]}`}
+                  />
+                );
+              } else {
+                return (
+                  <Circle
+                    x={userLocation[eachUser].x}
+                    y={userLocation[eachUser].y}
+                    radius={50}
+                    width={absoluteVal / 10}
+                    fill={`${colorPalette[Math.round(100 % eachUser)]}`}
+                  />
+                );
+              }
+            })}
+            {console.log(installedGame, installedGameList)}
+
+            {installedGameList &&
+              installedGameList.map((eachGame: gameInfo) => {
+                return (
+                  <EachGame
+                    installedGame={eachGame} //game_id받아와서 넣어야함, idx가 그것인것
+                    mapInfo={mapInfo}
+                    gameOffsetList={gameOffsetList}
+                    setGameOffsetList={setGameOffsetList}
+                    curSelectedGameId={!isEmpty(installedGame) ? installedGame.id : 0}
+                  />
+                );
+              })}
+          </Layer>
+        </Stage>
+        {userId == userInfo.data.idx.toString() && (
+          <BtnWrapper>
+            <StyledBtn
+              id="btn"
+              onClick={() => {
+                handleBuildEvt();
+              }}
+            >
+              게임 좌표 저장하기
+            </StyledBtn>
+          </BtnWrapper>
+        )}
+      </StageStyled>
+    </div>
   );
 };
 
-const StageStyled = styled.div`
+const SubTitleStyle = styled(Text)`
+  margin-bottom: 1rem;
+`;
+
+const BtnWrapper = styled.div`
+  display: flex;
+`;
+const StyledBtn = styled.button`
+  background: ${(props) => props.theme.colors['secondaryBgBg']};
+  font-size: 1em;
+  cursor: pointer;
+  margin: 0 1rem;
+  padding: 0.25rem 1rem;
+  border: 1px solid ${(props) => props.theme.colors['secondaryBg']};
+  border-radius: 10px;
+  height: 50px;
+  width: fit-content;
+  white-space: nowrap;
+`;
+const StageStyled = styled.div<{ me: boolean }>`
+  ${(props) =>
+    !props.me && {
+      'pointer-events': 'none',
+    }}
   height: ${absoluteVal}px;
   width: ${absoluteVal}px;
 
+  /* background-image: url("../../public/grass.jpg"); */
   background-image: linear-gradient(45deg, #754 25%, transparent 26%, transparent 75%, #754 75%, #754),
     linear-gradient(45deg, #754 25%, transparent 26%, transparent 75%, #754 75%, #754);
   background-size: calc(50px * 2) calc(50px * 2);

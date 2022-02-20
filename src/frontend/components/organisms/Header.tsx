@@ -27,7 +27,7 @@ export default function Header() {
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
         {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
-        {userInfo.data.nickname && <Text>{userInfo.data.nickname}님 🙂</Text>}
+        {userInfo.data && <Text>{userInfo.data.nickname}님 🙂</Text>}
         <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />
       </AlertUserWrapper>
     </HeaderStyle>

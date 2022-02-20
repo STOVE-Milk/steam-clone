@@ -3,6 +3,8 @@ import { useSelector, shallowEqual } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
+
 import styled from 'styled-components';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,6 +22,7 @@ import LogoImage from 'public/steam_logo.png';
 
 import { IState } from 'modules';
 import { IFriendInfo } from 'modules/user';
+import { getGameInfoByUser } from 'modules/game';
 import { theme } from 'styles/theme';
 
 import Text from 'components/atoms/Text';
@@ -29,6 +32,8 @@ import FriendBox from 'components/molecules/FriendBox';
 export default function NavBar() {
   const [open, setOpen] = useState(true); //NavBar가 열려있는가
   const router = useRouter();
+  const dispatch = useDispatch();
+
   const { userInfo } = useSelector((state: IState) => state.user);
 
   const friends = useSelector((state: IState) => state.user.friends);
@@ -62,7 +67,10 @@ export default function NavBar() {
         <MenuBox
           open={open}
           // page={`library/${userInfo.data.idx}`}
-          page="library/52"
+          page={`library/${userInfo.data.idx}`}
+          onClick={() => {
+            dispatch(getGameInfoByUser.request({ user_id: userInfo.data.idx.toString() }));
+          }}
           icon={<FontAwesomeIcon icon={faGamepad} inverse />}
           name={'나의 라이브러리'}
         />

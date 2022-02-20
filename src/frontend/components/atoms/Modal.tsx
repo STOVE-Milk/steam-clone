@@ -7,6 +7,7 @@ export interface IModalProps {
   onClose: () => void;
   title?: string; //모달 타이틀
   children: React.ReactChild; //모달 안에 들어갈 내용
+  height: string;
 }
 
 export default function Modal(props: IModalProps) {
@@ -46,7 +47,7 @@ export default function Modal(props: IModalProps) {
 
   const modalContent = props.show ? (
     <ModalOverlay>
-      <ModalWrapper show={props.show}>
+      <ModalWrapper show={props.show} height={props.height && props.height}>
         <ModalHeader>
           <CloseBtn onClick={handleCloseClick}>x</CloseBtn>
         </ModalHeader>
@@ -76,9 +77,10 @@ const ModalOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-const ModalWrapper = styled.div<{ show: boolean }>`
+const ModalWrapper = styled.div<{ show: boolean; height: string }>`
   background: ${(props) => props.theme.colors.secondaryBg};
   width: 500px;
+  height: ${(props) => props.height} !important;
   height: 600px;
   border-radius: 15px;
   padding: 15px;
