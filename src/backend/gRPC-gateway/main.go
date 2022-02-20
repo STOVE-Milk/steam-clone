@@ -18,6 +18,7 @@ const (
 	gRPCGatewayHost       = "grpc_gateway:"
 )
 
+// 헤더의 인증 토큰을 gRPC store 서버로 전달합니다.
 func CustomMatcher(key string) (string, bool) {
 	switch key {
 	case "authorization":
@@ -77,7 +78,7 @@ func main() {
 	registerServiceHandlers(ctx, mux)
 
 	log.Printf("start HTTP server on %s port", gRPCGatewayPortNumber)
-	if err := http.ListenAndServe(":"+gRPCGatewayPortNumber, allowCORS(mux)); err != nil {
+	if err := http.ListenAndServe(":"+gRPCGatewayPortNumber, mux); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 }
