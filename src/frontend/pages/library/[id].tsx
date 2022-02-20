@@ -135,6 +135,11 @@ const library: NextPage<IState> = () => {
     setInstalledGame(installedGame);
   }, [installedGame]);
 
+  let nickname = '';
+  friends.data.forEach((each) => {
+    if (each.id == Number(router.query.id)) nickname = each.nickname;
+    else nickname = userInfo.data.nickname;
+  });
   return (
     <LibraryWrapper>
       {/* 지금 url에 있는 id 가져와서 유저 구매 게임 정보 및 정보들 가져와야함 */}
@@ -148,7 +153,7 @@ const library: NextPage<IState> = () => {
       {console.log('friends', friends.data)}
 
       <TitleWrapeer>
-        <TitleStyle types="large">{`${router.query.id}의 라이브러리`}</TitleStyle>
+        <TitleStyle types="large">{`${nickname}의 라이브러리`}</TitleStyle>
         {console.log(friends)}
       </TitleWrapeer>
       <IconWrapper>
