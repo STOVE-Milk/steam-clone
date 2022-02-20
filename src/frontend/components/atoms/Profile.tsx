@@ -49,15 +49,30 @@ export default function Profile(props: IProfileProps) {
       </ProfileStyle>
       <DropDownNav ref={dropdownRef} active={`${isActive ? 'active' : 'inactive'}`}>
         <DropDownUl>
-          <DropDownli onClick={() => router.push('/signup')}>
-            <DropDownText>회원가입</DropDownText>
-          </DropDownli>
-          <DropDownli onClick={() => router.push('/signin')}>
-            <DropDownText>로그인</DropDownText>
-          </DropDownli>
-          <DropDownli onClick={() => router.push(`/user/${userInfo.idx}`)}>
-            <DropDownText>마이페이지</DropDownText>
-          </DropDownli>
+          {userInfo ? (
+            <div>
+              <DropDownli onClick={() => router.push(`/user/${userInfo.idx}`)}>
+                <DropDownText>마이페이지</DropDownText>
+              </DropDownli>
+              <DropDownli
+                onClick={() => {
+                  router.push(`/`);
+                  localStorage.setItem('accessToken', '');
+                }}
+              >
+                <DropDownText>로그아웃</DropDownText>
+              </DropDownli>
+            </div>
+          ) : (
+            <div>
+              <DropDownli onClick={() => router.push('/signup')}>
+                <DropDownText>회원가입</DropDownText>
+              </DropDownli>
+              <DropDownli onClick={() => router.push('/signin')}>
+                <DropDownText>로그인</DropDownText>
+              </DropDownli>
+            </div>
+          )}
         </DropDownUl>
       </DropDownNav>
     </div>

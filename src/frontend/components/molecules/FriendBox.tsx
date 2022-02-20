@@ -8,7 +8,6 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { IFriendInfo } from 'modules/user';
 
-import { theme } from 'styles/theme';
 import Text, { TextStyle } from 'components/atoms/Text';
 import Status from 'components/atoms/Status';
 import Profile from 'components/atoms/Profile';
@@ -19,7 +18,7 @@ export interface IFriendBoxProps {
   open: boolean; //아이콘만 보이는지(false), 이름과 온라인 상태까지 보이는지 (true)
   selected?: boolean; //채팅방 생성 시 친구가 선택되었는지
   onClick?: (id: number) => void; //채팅방 생성 시 친구 선택
-  online: boolean;
+  online?: boolean;
   types: string;
 }
 

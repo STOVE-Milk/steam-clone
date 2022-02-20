@@ -24,6 +24,7 @@ const UserPage: NextPage<IState> = () => {
   const userId = Number(router.query.id);
 
   const [isMypage, setIsMypage] = useState(userId === userInfo.data.idx); // 현재 보고 있는 페이지가 마이 페이지인지, 다른 유저의 페이지인지 여부
+  console.log(userId, userInfo.data.idx, isMypage);
 
   const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]); // 현재 유저 페이지의 방명록
   const [userGuestBook, setUserGuestBook] = useState({} as IGuestBook); // 유저가 작성중인 방명록의 내용
@@ -89,7 +90,7 @@ const UserPage: NextPage<IState> = () => {
             <Text types={'large'}>함께 아는 친구</Text>
             <FriendList>
               {withFriend.map((friend) => {
-                <FriendBox open={true} friendInfo={friend} />;
+                <FriendBox types="" open={true} friendInfo={friend} />;
               })}
             </FriendList>
           </>
