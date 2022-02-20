@@ -32,7 +32,11 @@ export default function CarouselComponent(props: ICarouselProps) {
       <ButtonGroup>
         {props.buttons &&
           props.buttons.map((img, i) => {
-            return <Button onClick={() => goToSlide && goToSlide(i)}>{img}</Button>;
+            return (
+              <Button key={i} onClick={() => goToSlide && goToSlide(i)}>
+                {img}
+              </Button>
+            );
           })}
       </ButtonGroup>
     );
@@ -44,9 +48,6 @@ export default function CarouselComponent(props: ICarouselProps) {
       slidesToSlide={1}
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
-      autoPlay={true}
-      autoPlaySpeed={2000}
-      infinite
       removeArrowOnDeviceType={['small']}
       customButtonGroup={<CustomButtonGroup />}
       renderButtonGroupOutside={true}
@@ -73,4 +74,8 @@ const Button = styled.div`
   border-radius: 10px;
   height: calc(100vw / 12);
   position: relative;
+
+  :hover {
+    border: 1px solid white;
+  }
 `;

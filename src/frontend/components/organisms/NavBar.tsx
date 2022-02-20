@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useSelector } from 'react-redux';
+import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -19,7 +20,6 @@ import {
 import LogoImage from 'public/steam_logo.png';
 
 import { IState } from 'modules';
-import { IFriendInfo } from 'modules/user';
 import { theme } from 'styles/theme';
 
 import Text from 'components/atoms/Text';

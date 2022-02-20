@@ -6,11 +6,11 @@ export interface IResType {
 
 export interface IAddReviewReqType {
   content: string;
-  recommendation: boolean;
+  recommendation: number;
 }
 
 export interface IModifyReviewReqType {
   review_id: number;
   content: string;
-  recommendation: boolean;
+  recommendation: number;
 }
