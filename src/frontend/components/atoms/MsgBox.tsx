@@ -1,6 +1,5 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { StringMappingType } from 'typescript';
 import Profile from './Profile';
 
 export interface MsgBoxProps {
@@ -51,8 +50,9 @@ const MsgBoxStyle = styled.span<{ isMine: boolean }>`
   line-height: 1.3rem;
   align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
 
-  :after {
+  ::after {
     position: absolute;
+    content: '';
     ${(props) =>
       props.isMine
         ? css`

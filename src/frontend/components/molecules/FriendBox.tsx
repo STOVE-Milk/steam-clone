@@ -3,9 +3,6 @@ import { useRouter } from 'next/router';
 
 import styled, { css } from 'styled-components';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
-
 import { IFriendInfo } from 'modules/user';
 
 import Text, { TextStyle } from 'components/atoms/Text';
@@ -16,8 +13,7 @@ import { DropDownText, DropDownUl, DropDownli } from 'components/atoms/Profile';
 export interface IFriendBoxProps {
   friendInfo: IFriendInfo;
   open: boolean; //아이콘만 보이는지(false), 이름과 온라인 상태까지 보이는지 (true)
-  selected?: boolean; //채팅방 생성 시 친구가 선택되었는지
-  onClick?: (id: number) => void; //채팅방 생성 시 친구 선택
+  onClick?: (nickname: string) => void; //채팅방 생성 시 친구 선택
   online?: boolean;
   types: string;
 }
@@ -46,14 +42,15 @@ export default function FriendBox(props: IFriendBoxProps) {
   return (
     <div>
       <FriendBoxWrapper
+        open={props.open}
         onClick={() => {
-          props.onClick && props.onClick(props.friendInfo.id);
+          props.onClick && props.onClick(props.friendInfo.nickname);
           setIsActive(!isActive);
         }}
       >
         <Profile profileImg={props.friendInfo.profile.image} />
         {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
-        {props.open ? <FriendStatus status={props.online} /> : null}
+        {props.open && props.online !== undefined ? <FriendStatus status={props.online} /> : null}
       </FriendBoxWrapper>
       {props.types === 'navbar' && (
         <FriednDropDownNav ref={dropdownRef} active={`${isActive ? 'active' : 'inactive'}`}>
@@ -95,20 +92,20 @@ const FriednDropDownNav = styled.nav<{ active: string }>`
     }}
 `;
 
-const FriendBoxWrapper = styled.div<{ selected?: boolean }>`
+const FriendBoxWrapper = styled.div<{ open: boolean }>`
   display: flex;
   height: 50px;
   align-items: center;
-  justify-content: center;
   border-radius: 10px;
   cursor: pointer;
   padding-left: 10px;
   width: 100%;
   ${(props) =>
-    props.selected &&
-    css`
-      background: ${props.theme.colors.activeBg};
-    `}
+    !props.open
+      ? css`
+          justify-content: center;
+        `
+      : null}
 
   :hover {
     background: ${(props) => props.theme.colors.activeBg};
@@ -125,6 +122,6 @@ const FriendName = styled(Text)`
 `;
 
 const FriendStatus = styled(Status)`
-  margin-left: 20px;
-  margin-right: 30px;
+  margin-left: auto;
+  margin-right: 0.5rem;
 `;

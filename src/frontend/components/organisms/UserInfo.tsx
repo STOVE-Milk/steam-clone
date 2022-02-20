@@ -4,8 +4,7 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import profileImg from 'public/Smilemates_Flame_Pose.png';
 
-import Text from 'components/atoms/Text';
-import FilledButton from 'components/atoms/FilledButton';
+import MsgBox from 'components/atoms/MsgBox';
 
 export interface IUserInfo {
   id: number;
@@ -70,6 +69,7 @@ const Desc = styled.span`
   margin: auto 0;
 
   :after {
+    content: '';
     position: absolute;
     border-top: 15px solid ${(props) => props.theme.colors.activeBg};
     border-left: 15px solid transparent;
