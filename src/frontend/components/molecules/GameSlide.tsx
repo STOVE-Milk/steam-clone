@@ -1,5 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+
 import styled from 'styled-components';
 
 import { localePrice } from 'util/localeString';
@@ -8,15 +10,17 @@ import Text from 'components/atoms/Text';
 
 export default function GameSlide(props: gameInfo) {
   return (
-    <SlideWrapper>
-      <ImageSection>
-        <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
-      </ImageSection>
-      <InfoSection>
-        <Text types="small">{props.name}</Text>
-        <Text types="tiny">{`${localePrice(props.price, 'KR')}`}</Text>
-      </InfoSection>
-    </SlideWrapper>
+    <Link href={`/game/${props.id}`}>
+      <SlideWrapper>
+        <ImageSection>
+          <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
+        </ImageSection>
+        <InfoSection>
+          <Text types="small">{props.name}</Text>
+          <Text types="tiny">{`${localePrice(props.price, 'KR')}`}</Text>
+        </InfoSection>
+      </SlideWrapper>
+    </Link>
   );
 }
 
