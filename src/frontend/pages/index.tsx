@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
+
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFire, faTags, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 
 import { parseToken } from 'util/parseToken';
 import { IState } from 'modules';
@@ -14,14 +17,17 @@ import GameSlide from 'components/molecules/GameSlide';
 import BigGameSlide from 'components/molecules/BigGameSlide';
 import CarouselComponent from 'components/organisms/Carousel';
 import BigCarouselComponent from 'components/organisms/BigCarousel';
+import GameInfo from 'components/organisms/GameInfo';
 
 const Main: NextPage<IState> = () => {
   const [rankGames, setRankGames] = useState([] as gameInfo[]); // 다운로드 높은 게임들
   const [saleGames, setSaleGames] = useState([] as gameInfo[]); // 할인률 높은 게임들
+  const [goodGames, setGoodGames] = useState([] as gameInfo[]); // 평점 높은 게임들
 
   const getGames = async () => {
     setRankGames((await getGameListAPI('category=ALL&page=1&size=5&sort=download_count,desc')).data.game_list);
     setSaleGames((await getGameListAPI('category=ALL&page=1&size=5&sort=sale,desc')).data.game_list);
+    setGoodGames((await getGameListAPI('category=ALL&page=1&size=5&sort=recommend_count,desc')).data.game_list);
   };
 
   const dispatch = useDispatch();
@@ -74,7 +80,10 @@ const Main: NextPage<IState> = () => {
   return (
     <MainWrapper>
       <CarouselSection>
-        <Title types={'large'}>인기 게임</Title>
+        <Title types={'large'}>
+          인기 게임 <FontAwesomeIcon icon={faFire}></FontAwesomeIcon>
+        </Title>
+        <SubTitle types={'main'}>: 많은 유저들이 다운로드한 게임들을 살펴보세요!</SubTitle>
         <CarouselBox>
           <BigCarouselComponent
             slides={rankGames.map((data) => {
@@ -82,14 +91,28 @@ const Main: NextPage<IState> = () => {
             })}
           ></BigCarouselComponent>
         </CarouselBox>
-        <Title types={'large'}>할인중인 게임</Title>
+
+        <Title types={'large'}>
+          평점이 높은 게임 <FontAwesomeIcon icon={faThumbsUp}></FontAwesomeIcon>
+        </Title>
+        <SubTitle types={'main'}>: 유저들의 좋은 평가를 받은 게임들을 살펴보세요!</SubTitle>
         <CarouselBox>
           <CarouselComponent
-            slides={saleGames.map((data) => {
+            slides={goodGames.map((data) => {
               return <GameSlide key={data.id} {...data}></GameSlide>;
             })}
           ></CarouselComponent>
         </CarouselBox>
+
+        <Title types={'large'}>
+          할인중인 게임 <FontAwesomeIcon icon={faTags}></FontAwesomeIcon>
+        </Title>
+        <SubTitle types={'main'}>: 할인율이 높은 게임들을 놓치지마세요!</SubTitle>
+        <GameList>
+          {saleGames.map((game, i) => {
+            return <GameInfo key={i} {...game}></GameInfo>;
+          })}
+        </GameList>
       </CarouselSection>
     </MainWrapper>
   );
@@ -103,7 +126,11 @@ const MainWrapper = styled.div`
 `;
 
 const Title = styled(Text)`
-  margin: 3rem 0 0 3rem;
+  margin: 4rem 0 0 10rem;
+`;
+
+const SubTitle = styled(Text)`
+  margin: 2rem 0 0 10rem;
 `;
 
 const CarouselSection = styled.div`
@@ -112,6 +139,13 @@ const CarouselSection = styled.div`
 
 const CarouselBox = styled.div`
   margin: 3rem 0;
+`;
+
+const GameList = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
 `;
 
 export default Main;

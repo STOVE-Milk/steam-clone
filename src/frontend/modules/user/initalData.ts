@@ -8,13 +8,4 @@ export const initalUserInfo = {
   img: '1',
 };
 
-export const initalFriendInfo = [
-  {
-    id: 1,
-    nickname: '[TEST]nick',
-    profile: {
-      image: '',
-      description: '[TEST]desc',
-    },
-  },
-];
+export const initalFriendInfo = [];
