@@ -14,7 +14,7 @@ import (
 const (
 	gRPCGatewayPortNumber = "8100"
 	storeServerPortNumber = "8101"
-	storeServerHost       = "localhost:"
+	storeServerHost       = "store:"
 	gRPCGatewayHost       = "grpc_gateway:"
 )
 
