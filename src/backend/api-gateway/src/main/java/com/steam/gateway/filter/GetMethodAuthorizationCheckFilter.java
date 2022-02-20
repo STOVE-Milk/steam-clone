@@ -10,16 +10,22 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class AuthorizationCheckFilter extends AbstractGatewayFilterFactory<AuthorizationCheckFilter.Config>{
+public class GetMethodAuthorizationCheckFilter extends AbstractGatewayFilterFactory<GetMethodAuthorizationCheckFilter.Config>{
     private final JwtValidator jwtValidator;
 
-    public AuthorizationCheckFilter(JwtValidator jwtValidator) {
+    public GetMethodAuthorizationCheckFilter(JwtValidator jwtValidator) {
         super(Config.class);
         this.jwtValidator = jwtValidator;
     }
 
     /*
-        헤더의 authorization이 비어 있는지 검증
+        유저 검색, 유저 프로필, 유저 방명록을 확인할 때는
+        access token이 있을 경우에는 체크해주고 없으면 넘어가야 합니다.
+        있을 경우에는 유저의 친구 여부를 따로 표현해주기 위해 분기 처리를 해주었습니다.
+
+        이상적인 로직이라고 생각하지는 않고, 개선한다면 검증 없이 통과시키면서
+        클라이언트 측에서 친구 목록을 유저 ID 리스트를 로그인 시에만 따로 받아와서 처리하도록 개선할 수 있을 것 같습니다.
+
         토큰 검증 - JwtValidator
         
         권한을 판별하는 것이 아닌 인가 여부를 판단하는 상황으로
@@ -32,15 +38,12 @@ public class AuthorizationCheckFilter extends AbstractGatewayFilterFactory<Autho
         return ((exchange, chain) -> {
             List<String> authorization = exchange.getRequest().getHeaders().get("Authorization");
 
-            if(authorization == null || authorization.get(0).isBlank()) {
-                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                return exchange.getResponse().setComplete();
-            }
-
-            String accessToken = authorization.get(0);
-            if(!jwtValidator.validate(accessToken)) {
-                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                return exchange.getResponse().setComplete();
+            if(authorization != null && !authorization.isEmpty()) {
+                String accessToken = authorization.get(0);
+                if(!jwtValidator.validate(accessToken)) {
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                    return exchange.getResponse().setComplete();
+                }
             }
 
             return chain.filter(exchange);
