@@ -23,8 +23,9 @@ public class UserDto {
     }
 
     public void move(Direction direction, Integer max) {
+        // 아래를 누를 때 y가 늘어나는 이유는 왼쪽 위가 0,0
         switch (direction) {
-            case UP:
+            case DOWN:
                 if(y < max)
                     y++;
                 break;
@@ -32,7 +33,7 @@ public class UserDto {
                 if(x < max)
                     x++;
                 break;
-            case DOWN:
+            case UP:
                 if(y > 0)
                     y--;
                 break;
