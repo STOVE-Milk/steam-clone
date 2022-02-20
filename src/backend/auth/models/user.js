@@ -37,7 +37,7 @@ module.exports = class User extends Sequelize.Model {
                 profile: {
                     type: Sequelize.JSON,
                     defaultValue: {
-                        image: "",
+                        image: Math.floor(Math.random() * (0 - 9)).toString(),
                         description: "",
                     },
                 },
