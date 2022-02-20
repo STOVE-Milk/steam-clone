@@ -8,7 +8,6 @@ import { IUserInfo } from 'modules/user/types';
 import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
-import { userInfo } from 'os';
 
 export interface IReview {
   //리뷰 객체 타입

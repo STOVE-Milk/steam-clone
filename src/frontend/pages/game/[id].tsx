@@ -7,6 +7,7 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowMaximize, faAppleAlt } from '@fortawesome/free-solid-svg-icons';
+import placeHolder from 'public/game_placeholder.png';
 
 import { parseToken } from 'util/parseToken';
 import { localePrice } from 'util/localeString';
@@ -42,7 +43,6 @@ const Detail: NextPage<IState> = () => {
     setReviews(res);
 
     const myReview = res.filter((r: IReview) => r.user_id === userInfo.idx);
-    console.log(myReview);
     if (myReview.length > 0) {
       setIsFirst(false);
       setUserReview(myReview[0]);
@@ -140,7 +140,21 @@ const Detail: NextPage<IState> = () => {
           <GameBuyBox>
             <GameInfoTitle types="medium">구매 정보</GameInfoTitle>
             <div className="actionBox">
-              <Text types="medium"> {`${game.price && localePrice(game.price, 'KR')}`}</Text>
+              <div className="priceBox">
+                {game.sale != 0 && <SaleBadge>-{game.sale}%</SaleBadge>}
+                <div>
+                  {game.sale ? (
+                    <>
+                      <DefaultPrice types={'small'}>{`${game.price && localePrice(game.price, 'KR')}`}</DefaultPrice>
+                      <Text types="medium">{`${
+                        game.price && localePrice((game.price / 100) * (100 - game.sale), 'KR')
+                      }`}</Text>
+                    </>
+                  ) : (
+                    <Text types="medium">{`${game.price && localePrice(game.price, 'KR')}`}</Text>
+                  )}
+                </div>
+              </div>
               <FilledButton types={'primary'}>구매</FilledButton>
               <FilledButton types={'primary'}>장바구니</FilledButton>
             </div>
@@ -297,6 +311,31 @@ const GameBuyBox = styled(GameInfoBox)`
       justify-content: flex-start;
     }
   }
+
+  .priceBox {
+    display: flex;
+    align-items: center;
+
+    > div {
+      margin-left: 0.5rem;
+    }
+  }
+`;
+
+const SaleBadge = styled(Text)`
+  background-color: ${(props) => props.theme.colors.activeBg};
+  border-radius: 10px;
+
+  width: 4rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const DefaultPrice = styled(Text)`
+  text-decoration: line-through;
+  font-weight: 400;
 `;
 
 const ReviewSection = styled.div`
