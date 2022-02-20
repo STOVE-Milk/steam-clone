@@ -3,20 +3,20 @@
 
 ## 목차
 
-1. 팀원 소개
+1. [팀원 소개](#팀원-소개)
    1. 팀원 소개
    2. 역할
-2. 프로젝트 소개
+2. [프로젝트 소개](#프로젝트-소개)
    1. 프로젝트 진행 기간
    2. 기능
    3. 사용 기술
    4. 아키텍처
    5. 디렉토리 구조
-3. 팀 규칙
+3. [팀 규칙](#팀-규칙)
    1. 그라운드 룰
    2. 깃 규칙
 ---
-## 팀원 소개
+# 팀원 소개
 
 |<img src="https://github.com/ummaeha.png" width="300"/>|<img src="https://github.com/minjyo.png" width="300"/>|<img src="https://github.com/abc7468.png" width="300"/>|<img src="https://github.com/Tae-Hyeon.png" width="300"/>| 
 |:---:|:---:|:----:|:----:|
@@ -27,7 +27,7 @@
 - 장성현 - 상점, 채팅
 - 한태현 - 결제, 멤버십, api gateway
 ---
-## 프로젝트 소개
+# 프로젝트 소개
 > ## stove - 게이머들이 함께놀고 소통하며 만들어가는 게임 소셜 플랫폼
 
 ## 1. 프로젝트 진행 기간
@@ -53,6 +53,7 @@
 ### BE
 
  <img src="https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot" /> <img src="https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white" /> <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" /> <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" /> <img src="https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white" /> <img src="https://img.shields.io/badge/rabbitmq-%23FF6600.svg?&style=for-the-badge&logo=rabbitmq&logoColor=white" />
+ websocket, grpc
 
 ---
 ## 4. 아키텍쳐
@@ -71,10 +72,10 @@ milk
 └── src
 ```
 ---
-## 3. 팀 규칙
+# 팀 규칙
 
-### 1) 그라운드 룰
+### 1. 그라운드 룰
 [팀 그라운드 룰](https://github.com/STOVE-Milk/steam-clone/wiki/%5BMilk%5D-%ED%8C%80-%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0)
 
-### 2) 깃 규칙
+### 2. 깃 규칙
 [깃 규칙](https://github.com/STOVE-Milk/steam-clone/wiki/%5BMilk%5D-%EA%B9%83-%EA%B7%9C%EC%B9%99)
