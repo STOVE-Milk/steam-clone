@@ -51,11 +51,7 @@ export default function FriendBox(props: IFriendBoxProps) {
           setIsActive(!isActive);
         }}
       >
-        {props.friendInfo.profile.image === '' ? (
-          <Profile userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />} />
-        ) : (
-          '실제 이미지'
-        )}
+        <Profile profileImg={props.friendInfo.profile.image} />
         {props.open ? <FriendName types={'small'}>{props.friendInfo.nickname}</FriendName> : null}
         {props.open ? <FriendStatus status={props.online} /> : null}
       </FriendBoxWrapper>

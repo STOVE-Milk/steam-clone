@@ -74,6 +74,7 @@ const Button = styled.div`
   border-radius: 10px;
   height: calc(100vw / 12);
   position: relative;
+  cursor: pointer;
 
   :hover {
     border: 1px solid white;

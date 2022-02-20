@@ -16,7 +16,7 @@ export interface IFriendInfo {
   id: number;
   nickname: string;
   profile: {
-    image: string | JSX.Element;
+    image: string;
     description: string;
   };
   is_friend?: number;

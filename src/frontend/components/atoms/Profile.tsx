@@ -3,15 +3,15 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
-import img from 'public/Smilemates_Flame_Pose.png';
 import styled from 'styled-components';
+import profilePlaceHolder from 'public/Smilemates_Flame_Pose.png';
 
 import { IState } from 'modules';
 
 import Text from 'components/atoms/Text';
 
 export interface IProfileProps {
-  profileImg?: string;
+  profileImg: string;
   onClick?: () => void;
 }
 
@@ -46,10 +46,10 @@ export default function Profile(props: IProfileProps) {
           setIsActive(!isActive);
         }}
       >
-        {props.profileImg === '1' ? (
-          <Image src={img} width={30} height={30} />
+        {props.profileImg ? (
+          <Image src={props.profileImg} width={30} height={30} />
         ) : (
-          <Image src={img} width={30} height={30} />
+          <Image src={profilePlaceHolder} width={30} height={30}></Image>
         )}
       </ProfileStyle>
       <DropDownNav ref={dropdownRef} active={`${isActive ? 'active' : 'inactive'}`}>

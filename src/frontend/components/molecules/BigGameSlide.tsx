@@ -54,6 +54,7 @@ const ImageSection = styled.div`
   overflow: hidden;
   position: relative;
   border-radius: 0 0 0 10px;
+  cursor: pointer;
 `;
 
 const InfoSection = styled.div`

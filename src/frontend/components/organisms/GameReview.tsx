@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {  faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 
 import { IUserInfo } from 'modules/user/types';
 
@@ -19,6 +19,10 @@ export interface IReview {
   recommendation: boolean;
   created_at: string;
   updated_at: string;
+  profile: {
+    image: string;
+    description: string;
+  };
 }
 
 export interface IReviewProps {
@@ -33,13 +37,12 @@ export default function GameReview(props: IReviewProps) {
   const [isEdited, setEdited] = useState(props.isFirst ? true : false); //유저가 게임 리뷰를 작성하고 있는중인가
   const [content, setContent] = useState(props.isFirst ? '' : props.review.content);
   const [recommend, setRecommend] = useState(true);
-  console.log(props.userInfo, props.review);
 
   return (
     <ReviewWrapper>
       <UserBox>
-        <Profile profileImg={props.userInfo && props.userInfo.profileImg} />
-        <Name types="medium">{props.userInfo ? props.userInfo.nickname : props.review.displayed_name}</Name>
+        <Profile profileImg={props.userInfo ? props.userInfo.profileImg : props.review.profile.image} />
+        <Name types="medium">{props.review.displayed_name}</Name>
         {isEdited ? (
           <>
             <ThumbsDown

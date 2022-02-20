@@ -40,6 +40,7 @@ const SlideWrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  cursor: pointer;
 `;
 
 const ImageSection = styled.div`

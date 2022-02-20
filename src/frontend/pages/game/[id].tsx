@@ -175,7 +175,13 @@ const Detail: NextPage<IState> = () => {
           .filter((r) => r.user_id !== userInfo.idx)
           .map((review: IReview) => {
             return (
-              <GameReview key={review.id} isFirst={false} review={review} modifyReview={modifyReview}></GameReview>
+              <GameReview
+                userInfo={userInfo}
+                key={review.id}
+                isFirst={false}
+                review={review}
+                modifyReview={modifyReview}
+              ></GameReview>
             );
           })}
       </ReviewSection>
