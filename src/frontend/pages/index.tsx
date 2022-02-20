@@ -99,6 +99,7 @@ const Main: NextPage<IState> = () => {
         <CarouselBox>
           <CarouselComponent
             slides={goodGames.map((data) => {
+              console.log(data);
               return <GameSlide key={data.id} {...data}></GameSlide>;
             })}
           ></CarouselComponent>
