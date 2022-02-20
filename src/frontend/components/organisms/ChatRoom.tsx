@@ -81,11 +81,11 @@ const Wrapper = styled.div`
 
 const RoomInfoBox = styled.div`
   width: 100%;
-  height: 50px;
+  height: 55px;
   display: flex;
   border-bottom: 1px solid ${(props) => props.theme.colors.divider};
   align-items: center;
-  padding-left: 1rem;
+  padding: 1rem;
 `;
 
 const Member = styled.div`

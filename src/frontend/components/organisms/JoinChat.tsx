@@ -46,7 +46,7 @@ export default function JoinChat(props: IJoinChatProps) {
         <FriendList>
           {props.friends.map((friend) => {
             return (
-              <FriendItem key={friend.id} onClick={onSelect} friendInfo={friend} open={true} types=""></FriendItem>
+              <FriendBox key={friend.id} onClick={onSelect} friendInfo={friend} open={true} types="chat"></FriendBox>
             );
           })}
         </FriendList>
@@ -110,8 +110,6 @@ const FriendList = styled.div`
     display: none;
   }
 `;
-
-const FriendItem = styled(FriendBox)``;
 
 const SelectFriendList = styled.div`
   display: flex;

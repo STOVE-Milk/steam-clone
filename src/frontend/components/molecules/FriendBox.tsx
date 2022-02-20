@@ -43,6 +43,7 @@ export default function FriendBox(props: IFriendBoxProps) {
     <div>
       <FriendBoxWrapper
         open={props.open}
+        types={props.types}
         onClick={() => {
           props.onClick && props.onClick(props.friendInfo.nickname, props.friendInfo.id);
           setIsActive(!isActive);
@@ -92,14 +93,14 @@ const FriednDropDownNav = styled.nav<{ active: string }>`
     }}
 `;
 
-const FriendBoxWrapper = styled.div<{ open: boolean }>`
+const FriendBoxWrapper = styled.div<{ open: boolean; types: string }>`
   display: flex;
   height: 50px;
   align-items: center;
   border-radius: 10px;
   cursor: pointer;
   padding-left: 10px;
-  width: 100%;
+  min-width: 150px;
   ${(props) =>
     !props.open
       ? css`
@@ -107,18 +108,20 @@ const FriendBoxWrapper = styled.div<{ open: boolean }>`
         `
       : null}
 
-  :hover {
-    background: ${(props) => props.theme.colors.activeBg};
-  }
-
   :hover ${TextStyle} {
     color: ${(props) => props.theme.colors.primaryText};
+
+    ${(props) =>
+      props.types === 'navbar' || props.types === 'chat'
+        ? css`
+            background: ${(props) => props.theme.colors.activeBg};
+          `
+        : null}
   }
 `;
 
 const FriendName = styled(Text)`
   margin-left: 20px;
-  margin-top: 5px;
 `;
 
 const FriendStatus = styled(Status)`
