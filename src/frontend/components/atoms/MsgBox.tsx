@@ -13,8 +13,17 @@ export default function MsgBox(props: MsgBoxProps) {
   return (
     <Wrapper>
       <UserBox isMine={props.isMine}>
-        <Name>{props.name}</Name>
-        <Profile profileImg={props.profile}></Profile>
+        {props.isMine ? (
+          <>
+            <Name>{props.name}</Name>
+            <Profile profileImg={props.profile}></Profile>
+          </>
+        ) : (
+          <>
+            <Profile profileImg={props.profile}></Profile>
+            <Name>{props.name}</Name>
+          </>
+        )}
       </UserBox>
       <MsgBoxStyle isMine={props.isMine}>{props.children}</MsgBoxStyle>
     </Wrapper>

@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useEffect } from 'react';
 
 import styled from 'styled-components';
 
+import Text from 'components/atoms/Text';
 import MsgBox from 'components/atoms/MsgBox';
 import AlertMsgBox from 'components/atoms/AlertMsgBox';
 import FilledButton from 'components/atoms/FilledButton';
@@ -43,6 +44,7 @@ export default function ChatRoom(props: IChatRoomProps) {
   return (
     <Wrapper>
       <RoomInfoBox>
+        <Text types="small">멤버</Text>
         {props.members.map((member, key) => {
           return <Member key={key}>{member.name}</Member>;
         })}

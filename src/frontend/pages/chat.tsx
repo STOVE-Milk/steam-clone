@@ -4,7 +4,7 @@ import type { NextPage } from 'next';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faUsers, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faUsers, faComments, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { parseToken } from 'util/parseToken';
 import { IState } from 'modules';
@@ -16,6 +16,7 @@ import FilledButton from 'components/atoms/FilledButton';
 import Modal from 'components/atoms/Modal';
 import JoinChat from 'components/organisms/JoinChat';
 import ChatRoom, { Log, Member } from 'components/organisms/ChatRoom';
+import { preProcessFile } from 'typescript';
 
 interface IRoom {
   //채팅 방 객체 타입
@@ -84,7 +85,7 @@ const Chat: NextPage = () => {
               break;
             case 'send-message': // 메세지를 받음
               console.log('send-message', serverMessage);
-              if (serverMessage.sender) {
+              if (serverMessage.sender && serverMessage.message !== '') {
                 // 실제 채팅을 보낸 경우
                 setLogs((logs) =>
                   logs.concat({
@@ -222,8 +223,8 @@ const Chat: NextPage = () => {
   return (
     <ChatWrapper>
       <ChatListSection>
-        <CreateChatRoomBtn types={'primary'} onClick={() => setShowModal(true)}>
-          채팅방 생성
+        <CreateChatRoomBtn onClick={() => setShowModal(true)}>
+          <FontAwesomeIcon icon={faPlus} inverse width={30} height={30} size={'2x'} />
         </CreateChatRoomBtn>
         {rooms.map((room) => {
           return (
@@ -293,11 +294,26 @@ const ChatListSection = styled.div`
   ::-webkit-scrollbar {
     display: none;
   }
+  position: relative;
 `;
 
-const CreateChatRoomBtn = styled(FilledButton)`
+const CreateChatRoomBtn = styled.div`
   margin: 1rem 0;
   align-self: center;
+  position: absolute;
+  bottom: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  cursor: pointer;
+
+  :hover {
+    background: ${(props) => props.theme.colors.activeBg};
+  }
 `;
 
 const ChatListBox = styled.div`
@@ -307,6 +323,7 @@ const ChatListBox = styled.div`
   display: flex;
   align-items: center;
   padding: 0 1rem;
+  cursor: pointer;
 `;
 
 const ChatListName = styled(Text)`
