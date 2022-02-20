@@ -42,6 +42,7 @@ const Detail: NextPage<IState> = () => {
     setReviews(res);
 
     const myReview = res.filter((r: IReview) => r.user_id === userInfo.idx);
+    console.log(myReview);
     if (myReview.length > 0) {
       setIsFirst(false);
       setUserReview(myReview[0]);
@@ -49,12 +50,12 @@ const Detail: NextPage<IState> = () => {
   };
 
   const addReview = async (content: string, recommend: boolean) => {
-    await ReviewAPI.addReviewAPI(gameId, { content: content, recommendation: recommend });
+    await ReviewAPI.addReviewAPI(gameId, { content: content, recommendation: recommend ? 1 : 0 });
     getReviews();
   };
 
   const modifyReview = async (id: number, content: string, recommend: boolean) => {
-    await ReviewAPI.modifyReviewAPI(gameId, { review_id: id, content: content, recommendation: recommend });
+    await ReviewAPI.modifyReviewAPI(gameId, { review_id: id, content: content, recommendation: recommend ? 1 : 0 });
     getReviews();
   };
 
@@ -157,9 +158,13 @@ const Detail: NextPage<IState> = () => {
           modifyReview={modifyReview}
         ></GameReview>
         <ReviewTitle types="medium">다른 유저 리뷰</ReviewTitle>
-        {reviews.map((review: IReview) => {
-          return <GameReview key={review.id} review={review} modifyReview={modifyReview}></GameReview>;
-        })}
+        {reviews
+          .filter((r) => r.user_id !== userInfo.idx)
+          .map((review: IReview) => {
+            return (
+              <GameReview key={review.id} isFirst={false} review={review} modifyReview={modifyReview}></GameReview>
+            );
+          })}
       </ReviewSection>
     </DetailWrapper>
   );

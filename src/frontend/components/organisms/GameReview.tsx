@@ -22,7 +22,7 @@ export interface IReview {
 }
 
 export interface IReviewProps {
-  isFirst?: boolean;
+  isFirst: boolean;
   review: IReview;
   userInfo?: IUserInfo;
   addReview?: (content: string, recommend: boolean) => Promise<void>;
@@ -33,6 +33,7 @@ export default function GameReview(props: IReviewProps) {
   const [isEdited, setEdited] = useState(props.isFirst ? true : false); //유저가 게임 리뷰를 작성하고 있는중인가
   const [content, setContent] = useState(props.isFirst ? '' : props.review.content);
   const [recommend, setRecommend] = useState(true);
+  console.log(props.userInfo, props.review);
 
   return (
     <ReviewWrapper>
@@ -43,14 +44,14 @@ export default function GameReview(props: IReviewProps) {
           <>
             <ThumbsDown
               onClick={() => setRecommend(false)}
-              userReview={props.review}
+              recommend={recommend}
               isEdited={isEdited}
               icon={faThumbsDown}
               inverse
             />
             <ThumbsUp
               onClick={() => setRecommend(true)}
-              userReview={props.review}
+              recommend={recommend}
               isEdited={isEdited}
               icon={faThumbsUp}
               inverse
@@ -64,7 +65,7 @@ export default function GameReview(props: IReviewProps) {
               <ThumbsDown isEdited={false} icon={faThumbsDown} inverse />
             )}
             {!props.isFirst ? (
-              <CreatedAt types="tiny">{`${props.review.created_at} ${
+              <CreatedAt types="tiny">{`${new Date(props.review.created_at)} ${
                 props.review.created_at !== props.review.updated_at ? '(수정됨)' : ''
               }`}</CreatedAt>
             ) : null}
@@ -74,11 +75,15 @@ export default function GameReview(props: IReviewProps) {
           <PostActionBox>
             <FilledButton
               types="primary"
-              onClick={() =>
-                props.isFirst
-                  ? props.addReview && props.addReview(content, recommend)
-                  : props.modifyReview && props.modifyReview(props.review.id, content, recommend)
-              }
+              onClick={() => {
+                if (props.isFirst) {
+                  props.addReview && props.addReview(content, recommend);
+                  setEdited(false);
+                } else {
+                  props.modifyReview && props.modifyReview(props.review.id, content, recommend);
+                  setEdited(false);
+                }
+              }}
             >
               등록
             </FilledButton>
@@ -97,9 +102,7 @@ export default function GameReview(props: IReviewProps) {
         <EditBox value={content} onChange={(e) => setContent(e.target.value)}></EditBox>
       ) : (
         <TextBox>
-          {props.review.content.split('\n').map((text, key) => (
-            <p key={key}> {text} </p>
-          ))}
+          {props.review.content && props.review.content.split('\n').map((text, key) => <p key={key}> {text} </p>)}
         </TextBox>
       )}
     </ReviewWrapper>
@@ -125,14 +128,14 @@ const Name = styled(Text)`
   margin: 0 0.7rem 0 0.3rem;
 `;
 
-const ThumbsUp = styled(FontAwesomeIcon)<{ isEdited: boolean; userReview?: { recommendation: boolean } }>`
+const ThumbsUp = styled(FontAwesomeIcon)<{ isEdited: boolean; recommend?: boolean }>`
   margin-left: 0.3rem;
-  color: ${(props) => (props.isEdited && props.userReview?.recommendation ? props.theme.colors.activeBg : 'white')};
+  color: ${(props) => (props.isEdited && props.recommend ? props.theme.colors.online : 'white')};
 `;
 
-const ThumbsDown = styled(FontAwesomeIcon)<{ isEdited: boolean; userReview?: { recommendation: boolean } }>`
+const ThumbsDown = styled(FontAwesomeIcon)<{ isEdited: boolean; recommend?: boolean }>`
   margin: 0.7rem 0 0 0.3rem;
-  color: ${(props) => (props.isEdited && !props.userReview?.recommendation ? props.theme.colors.activeBg : 'white')};
+  color: ${(props) => (props.isEdited && !props.recommend ? props.theme.colors.offline : 'white')};
 `;
 
 const CreatedAt = styled(Text)`

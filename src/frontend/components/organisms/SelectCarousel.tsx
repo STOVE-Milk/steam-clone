@@ -32,7 +32,11 @@ export default function CarouselComponent(props: ICarouselProps) {
       <ButtonGroup>
         {props.buttons &&
           props.buttons.map((img, i) => {
-            return <Button onClick={() => goToSlide && goToSlide(i)}>{img}</Button>;
+            return (
+              <Button key={i} onClick={() => goToSlide && goToSlide(i)}>
+                {img}
+              </Button>
+            );
           })}
       </ButtonGroup>
     );

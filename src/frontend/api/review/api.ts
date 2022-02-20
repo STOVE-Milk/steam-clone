@@ -31,7 +31,7 @@ export async function modifyReviewAPI(gameId: number, param: IModifyReviewReqTyp
   const token = localStorage.getItem('accessToken');
 
   const response = await axios.patch<IResType>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/store/games/${gameId}/reviews/${param.review_id}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/store/games/reviews/${param.review_id}`,
     param,
     {
       headers: {
