@@ -1,5 +1,6 @@
 package com.steam.payment.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.steam.payment.entity.Game;
 import com.steam.payment.entity.Library;
 import com.steam.payment.entity.User;
@@ -13,6 +14,7 @@ import org.json.simple.parser.JSONParser;
 @Getter
 public class GameDto {
     private Integer id;
+    @JsonIgnore
     private Integer publisherId;
     private String name;
     private Double price;
