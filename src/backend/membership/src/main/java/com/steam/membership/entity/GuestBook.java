@@ -43,5 +43,6 @@ public class GuestBook {
 
     public void updateContent(String content) {
         this.content = content;
+        this.updatedAt = LocalDateTime.now();
     }
 }
