@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -33,5 +34,5 @@ public class Friend {
 
     @Column(name = "created_at")
     @CreationTimestamp
-    private java.sql.Timestamp createdAt;
+    private LocalDateTime createdAt;
 }

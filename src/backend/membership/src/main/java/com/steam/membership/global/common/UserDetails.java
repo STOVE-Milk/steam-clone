@@ -10,4 +10,6 @@ public class UserDetails {
     Integer role;
     String nickname;
     String country;
+    Integer iat;
+    Integer exp;
 }
