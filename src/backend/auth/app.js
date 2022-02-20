@@ -2,7 +2,6 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const redis = require("redis");
-const cors = require("cors");
 
 dotenv.config();
 
@@ -10,7 +9,7 @@ const authRouter = require("./routes/auth");
 const { sequelize } = require("./models");
 
 // redis init
-const redisClient = redis.createClient({ url: "redis://ec2-54-180-117-120.ap-northeast-2.compute.amazonaws.com:6379" });
+const redisClient = redis.createClient({ url: "redis://localhost:6379" });
 redisClient.on("error", function (err) {
     console.log("Error " + err);
 });
@@ -21,7 +20,7 @@ redisClient.connect();
 
 const app = express();
 
-app.set("port", process.env.PORT || 8101);
+app.set("port", process.env.PORT || 8081);
 
 // sequelize init
 sequelize
@@ -39,7 +38,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cors());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
