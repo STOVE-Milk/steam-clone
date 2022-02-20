@@ -43,14 +43,13 @@
   - 마이 룸 : 유저 만의 개인 공간을 꾸려 다른 유저의 참여를 지원
 - 채팅 : 1:1채팅, 그룹 채팅
 
-- 게이트웨이 : 유저의 요청에 인가작업을 하고 응답을 줄 수 있는 적절한 서버로 요청 전달 <- 아키텍처쪽으로
 
 ---
 ## 3. 사용 기술 
-### FE
+> ### FE
 <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" /> <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" /> <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" /> <img src="https://img.shields.io/badge/Yarn-2C8EBB?style=for-the-badge&logo=yarn&logoColor=white" /> <img src="https://img.shields.io/badge/AXIOS-purple?style=for-the-badge&logo=apache-pulsar&logoColor=white"/>
 ---
-### BE
+> ### BE
 
  <img src="https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot" /> <img src="https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white" /> <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" /> <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" /> <img src="https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white" /> <img src="https://img.shields.io/badge/rabbitmq-%23FF6600.svg?&style=for-the-badge&logo=rabbitmq&logoColor=white" />
  websocket, grpc
@@ -75,7 +74,7 @@ milk
 # 팀 규칙
 
 ### 1. 그라운드 룰
-[팀 그라운드 룰](https://github.com/STOVE-Milk/steam-clone/wiki/%5BMilk%5D-%ED%8C%80-%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0)
+> [팀 그라운드 룰](https://github.com/STOVE-Milk/steam-clone/wiki/%5BMilk%5D-%ED%8C%80-%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0)
 
 ### 2. 깃 규칙
-[깃 규칙](https://github.com/STOVE-Milk/steam-clone/wiki/%5BMilk%5D-%EA%B9%83-%EA%B7%9C%EC%B9%99)
+> [깃 규칙](https://github.com/STOVE-Milk/steam-clone/wiki/%5BMilk%5D-%EA%B9%83-%EA%B7%9C%EC%B9%99)
