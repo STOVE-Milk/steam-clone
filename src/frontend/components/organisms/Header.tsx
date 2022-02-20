@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
@@ -21,7 +21,7 @@ export default function Header() {
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
         {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
-        <Profile onClick={() => router.push('/user/1')} userImage={<FontAwesomeIcon icon={faUser} inverse />} />
+        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />
       </AlertUserWrapper>
     </HeaderStyle>
   );
