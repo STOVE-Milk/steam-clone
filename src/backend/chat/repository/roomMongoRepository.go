@@ -110,17 +110,16 @@ func (repo *RoomMRepository) AddMembers(room models.Room, members []models.User)
 	chatCollection.UpdateOne(context.TODO(), updateFilter, updateBson)
 }
 
-func (repo *RoomMRepository) DeleteMember(room models.Room, userId string) {
+func (repo *RoomMRepository) DeleteMember(room models.Room, user models.User) {
 	chatCollection := repo.Db.Database("chat").Collection("rooms")
 	pullFilter := bson.D{{"id", room.GetId()}}
 	pullBson := bson.D{{"$pull",
 		bson.D{{
 			"members", bson.D{{
-				"id", userId,
+				"id", user.GetId(),
 			}},
 		}},
 	}}
-	fmt.Println("Delete action" + " " + userId + " " + room.GetId())
 
 	chatCollection.UpdateOne(context.TODO(), pullFilter, pullBson)
 }

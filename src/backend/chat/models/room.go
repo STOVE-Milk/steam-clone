@@ -15,7 +15,7 @@ type Room interface {
 type RoomRepository interface {
 	AddRoom(room Room)
 	AddMembers(room Room, members []User)
-	DeleteMember(room Room, userId string)
+	DeleteMember(room Room, user User)
 	FindRoomById(id string) Room
 	FindRoomByName(name string) Room
 	LoggingChat(chatLogData ChatLogData, roomId string)
@@ -38,6 +38,7 @@ type RoomMongo struct {
 type ChatLogData struct {
 	SenderId       string    `bson:"sender_id" json:"sender_id"`
 	SenderNickname string    `bson:"sender_nickname" json:"sender_nickname"`
+	SenderProfile  string    `bson:"sender_profile" json:"sender_profile"`
 	Content        string    `bson:"content" json:"content"`
 	SendTime       time.Time `bson:"send_time" json:"send_time"`
 }

@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,47 +12,46 @@ type UserMRepository struct {
 	Db *mongo.Client
 }
 
-func (repo *UserMRepository) GetAllJoinedRoom(userId string) []models.RoomMongo {
+func (repo *UserMRepository) GetAllJoinedRoom(user models.User) []models.RoomMongo {
 	var res models.UserMongo
 	chatCollection := repo.Db.Database("chat").Collection("users")
-	findFilter := bson.D{{"id", userId}}
+	findFilter := bson.D{{"id", user.GetId()}}
 	chatCollection.FindOne(context.TODO(), findFilter).Decode(&res)
 	if res.Id == "" {
-		repo.AddUser(userId)
+		repo.AddUser(user)
 	}
 	return res.Rooms
 }
 
-func (repo *UserMRepository) DeleteRoom(room models.Room, userId string) {
+func (repo *UserMRepository) DeleteRoom(room models.Room, user models.User) {
 	chatCollection := repo.Db.Database("chat").Collection("users")
-	pullFilter := bson.D{{"id", userId}}
+	pullFilter := bson.D{{"id", user.GetId()}}
 	pullBson := bson.D{{"$pull",
 		bson.D{{
 			"rooms", bson.D{{"id", room.GetId()}},
 		}},
 	}}
-	fmt.Println("Delete action" + " " + userId + " " + room.GetId())
 	chatCollection.UpdateOne(context.TODO(), pullFilter, pullBson)
 
 }
 
 // 사용자가 등록이 돼 있지 않다면 document 생성
-func (repo *UserMRepository) AddUser(userId string) {
+func (repo *UserMRepository) AddUser(user models.User) {
 	chatCollection := repo.Db.Database("chat").Collection("users")
 	userInfo := models.UserMongo{
-		Id:    userId,
+		Id:    user.GetId(),
+		Name:  user.GetName(),
 		Rooms: make([]models.RoomMongo, 0),
 	}
 	chatCollection.InsertOne(context.TODO(), userInfo)
-	fmt.Println("abcx")
 }
 
-func (repo *UserMRepository) AddRoom(room models.Room, userId string) {
+func (repo *UserMRepository) AddRoom(room models.Room, user models.User) {
 	chatCollection := repo.Db.Database("chat").Collection("users")
-	findFilter := bson.D{{"id", userId}}
+	findFilter := bson.D{{"id", user.GetId()}}
 	check := chatCollection.FindOne(context.TODO(), findFilter)
 	if check.Err() != nil {
-		repo.AddUser(userId)
+		repo.AddUser(user)
 	}
 
 	roomInfo := Room{
@@ -61,7 +59,7 @@ func (repo *UserMRepository) AddRoom(room models.Room, userId string) {
 		Name:    room.GetName(),
 		Private: room.GetPrivate(),
 	}
-	updateFilter := bson.D{{"id", userId}}
+	updateFilter := bson.D{{"id", user.GetId()}}
 	updateBson := bson.D{{"$push",
 		bson.D{{
 			"rooms", roomInfo,
