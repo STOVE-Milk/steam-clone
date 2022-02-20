@@ -111,7 +111,7 @@ const Main: NextPage<IState> = () => {
         <SubTitle types={'main'}>: 할인율이 높은 게임들을 놓치지마세요!</SubTitle>
         <GameList>
           {saleGames.map((game, i) => {
-            return <GameInfo key={i} {...game}></GameInfo>;
+            return <GameInfo key={i} {...game} type="main"></GameInfo>;
           })}
         </GameList>
       </CarouselSection>

@@ -167,7 +167,7 @@ const PurchasedBadge = styled(Text)`
 `;
 const GameInfoBox = styled.section<{ types: string; show: string }>`
   margin-top: ${(props) => props.types === 'cart' && 0} !important;
-  width: 60rem;
+  width: ${(props) => (props.types === 'main' ? '80%' : '60rem')};
   height: 10rem;
   display: grid;
   //[explain]:  display: grid에서 사용되는 fr단위입니다.(1fr은 전체를 총 fr단위로 나눴을때 차지하는 한 칸을 의미합니다)

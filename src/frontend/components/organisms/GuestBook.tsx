@@ -44,17 +44,19 @@ export default function GuestBook(props: IGuestBookProps) {
   return (
     <Wrapper>
       <UserBox>
-        {console.log(props.guestBook)}
-        {/* <Profile
+        <Profile
           onClick={() => router.push(`${props.guestBook.guest_id}`)}
-          profileImg={props.guestBook.profile.image}
-        /> */}
+          profileImg={props.guestBook.profile && props.guestBook.profile.image}
+        />
         <Name types="medium">{props.guestBook.displayed_name}</Name>
-        <CreatedAt types="tiny">
-          {props.guestBook.updated_at === props.guestBook.created_at
-            ? props.guestBook.created_at
-            : `${props.guestBook.updated_at} (수정됨)`}
-        </CreatedAt>
+        {props.isAdd ? null : (
+          <CreatedAt types="tiny">
+            {props.guestBook.updated_at === props.guestBook.created_at
+              ? `${new Date(props.guestBook.created_at).toDateString()}`
+              : `${new Date(props.guestBook.updated_at).toDateString()} (수정됨)`}
+          </CreatedAt>
+        )}
+
         {isEdited ? (
           <PostButton
             types="primary"

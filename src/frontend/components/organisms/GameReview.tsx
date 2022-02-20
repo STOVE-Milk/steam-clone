@@ -42,7 +42,7 @@ export default function GameReview(props: IReviewProps) {
     <ReviewWrapper>
       <UserBox>
         <Profile profileImg={props.userInfo ? props.userInfo.profileImg : props.review.profile.image} />
-        <Name types="medium">{props.review.displayed_name}</Name>
+        <Name types="medium">{props.userInfo ? props.userInfo.nickname : props.review.displayed_name}</Name>
         {isEdited ? (
           <>
             <ThumbsDown
@@ -68,9 +68,11 @@ export default function GameReview(props: IReviewProps) {
               <ThumbsDown isEdited={false} icon={faThumbsDown} inverse />
             )}
             {!props.isFirst ? (
-              <CreatedAt types="tiny">{`${new Date(props.review.created_at)} ${
-                props.review.created_at !== props.review.updated_at ? '(수정됨)' : ''
-              }`}</CreatedAt>
+              <CreatedAt types="tiny">
+                {props.review.updated_at === props.review.created_at
+                  ? `${new Date(props.review.created_at).toDateString()}`
+                  : `${new Date(props.review.updated_at).toDateString()} (수정됨)`}
+              </CreatedAt>
             ) : null}
           </>
         )}

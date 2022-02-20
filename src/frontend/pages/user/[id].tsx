@@ -89,9 +89,10 @@ const UserPage: NextPage<IState> = () => {
           <>
             <Text types={'large'}>함께 아는 친구</Text>
             <FriendList>
-              {withFriend.map((friend) => {
-                <FriendBox types="" open={true} friendInfo={friend} />;
-              })}
+              {withFriend &&
+                withFriend.map((friend) => {
+                  <FriendBox types="" open={true} friendInfo={friend} />;
+                })}
             </FriendList>
           </>
         )}
