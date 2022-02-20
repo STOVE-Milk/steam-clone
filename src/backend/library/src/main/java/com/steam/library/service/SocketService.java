@@ -129,7 +129,7 @@ public class SocketService {
                 }
             } catch (NullPointerException e) {
                 e.printStackTrace();
-                log.info("subscribe failed");
+                log.info("subscribe failed" + roomId + ":" + messageStr);
             } catch (IOException e) {
                 log.info("session close failed when multi enter in same room");
             }

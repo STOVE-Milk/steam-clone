@@ -28,8 +28,6 @@ public class RabbitMQConfig {
     Queue queue() {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put( "x-queue-type" , "stream" ); // Stream 큐 사용을 위한 필수 인수
-        arguments.put("x-max-length-bytes", 20000000000L); // maximum stream size: 20 GB
-        arguments.put("x-stream-max-segment-size-bytes", 100000000); // size of segment files: 100 MB
         return new Queue(QUEUE_NAME, true, false, false, arguments);
     }
     @Bean
