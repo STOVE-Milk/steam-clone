@@ -1,8 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
-
 import Image from 'next/image';
+
 import styled from 'styled-components';
+
+import { IState } from 'modules';
 
 import Text from 'components/atoms/Text';
 
@@ -14,6 +17,7 @@ export interface IProfileProps {
 export default function Profile(props: IProfileProps) {
   const dropdownRef = useRef<any>(null);
   const [isActive, setIsActive] = useState(false);
+  const userInfo = useSelector((state: IState) => state.user.userInfo.data);
 
   useEffect(() => {
     const pageClickEvent = (e: any) => {
@@ -43,18 +47,32 @@ export default function Profile(props: IProfileProps) {
       >
         {props.userImage}
       </ProfileStyle>
-      {console.log(isActive)}
       <DropDownNav ref={dropdownRef} active={`${isActive ? 'active' : 'inactive'}`}>
         <DropDownUl>
-          <DropDownli onClick={() => router.push('/signup')}>
-            <DropDownText>회원가입</DropDownText>
-          </DropDownli>
-          <DropDownli onClick={() => router.push('/signin')}>
-            <DropDownText>로그인</DropDownText>
-          </DropDownli>
-          <DropDownli onClick={() => router.push('/user/1')}>
-            <DropDownText>마이페이지</DropDownText>
-          </DropDownli>
+          {userInfo ? (
+            <div>
+              <DropDownli onClick={() => router.push(`/user/${userInfo.idx}`)}>
+                <DropDownText>마이페이지</DropDownText>
+              </DropDownli>
+              <DropDownli
+                onClick={() => {
+                  router.push(`/`);
+                  localStorage.setItem('accessToken', '');
+                }}
+              >
+                <DropDownText>로그아웃</DropDownText>
+              </DropDownli>
+            </div>
+          ) : (
+            <div>
+              <DropDownli onClick={() => router.push('/signup')}>
+                <DropDownText>회원가입</DropDownText>
+              </DropDownli>
+              <DropDownli onClick={() => router.push('/signin')}>
+                <DropDownText>로그인</DropDownText>
+              </DropDownli>
+            </div>
+          )}
         </DropDownUl>
       </DropDownNav>
     </div>
@@ -76,6 +94,7 @@ export const DropDownli = styled.li`
   }
 `;
 export const DropDownNav = styled.nav<{ active: string }>`
+  z-index: 99;
   cursor: pointer;
   background: ${(props) => props.theme.colors.secondaryBg};
   border-radius: 8px;

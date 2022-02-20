@@ -27,6 +27,7 @@ const Friend: NextPage = () => {
     setTab(tabNumber);
 
     setFriends([]);
+    setSearchInput('');
 
     switch (tabNumber) {
       case 0:
@@ -60,6 +61,8 @@ const Friend: NextPage = () => {
   // 친구 신청
   const sendFriendRequest = async (id: number) => {
     await FriendAPI.sendFriendRequestAPI({ user_id: id });
+    const res = (await FriendAPI.searchFriendAPI(searchInput)).data.users;
+    setFriends(res);
   };
 
   // 내가 보낸 친구 신청 목록
@@ -122,7 +125,7 @@ const Friend: NextPage = () => {
           friends.map((friend) => {
             return (
               <FriendItem>
-                <FriendBox open={true} friendInfo={friend} />
+                <FriendBox types={''} open={true} friendInfo={friend} />
                 <FriendActionBox>
                   <FriendActionBtn onClick={() => deleteFriend(friend.id)} icon={faTimes} inverse />
                 </FriendActionBox>
@@ -146,11 +149,12 @@ const Friend: NextPage = () => {
                 {friends.map((friend) => {
                   return (
                     <FriendItem key={friend.id}>
-                      <FriendBox open={true} friendInfo={friend} />
-
+                      <FriendBox types={''} open={true} friendInfo={friend} />
                       <FriendActionBox>
                         {friend.is_friend && friend.is_friend === 1 ? (
                           <FriendActionBtn icon={faUser} inverse></FriendActionBtn>
+                        ) : friend.was_requested === 1 ? (
+                          <FriendActionBtn icon={faCheck} inverse></FriendActionBtn>
                         ) : (
                           <FriendActionBtn onClick={() => sendFriendRequest(friend.id)} icon={faPlus} inverse />
                         )}

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import Image from 'next/image';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import profileImg from 'public/Smilemates_Flame_Pose.png';
 
 import Profile from 'components/atoms/Profile';
 import SearchBox from 'components/molecules/SearchBox';
@@ -11,7 +12,6 @@ import SearchBox from 'components/molecules/SearchBox';
 export default function Header() {
   const [option, setOption] = useState('name');
   const [inputText, setInputText] = useState('');
-  const router = useRouter();
 
   return (
     <HeaderStyle>
@@ -20,8 +20,7 @@ export default function Header() {
       </SearchBarWrapper>
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
-        {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
-        <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} />
+        <Profile userImage={<Image src={profileImg} width={30} height={30}></Image>} />
       </AlertUserWrapper>
     </HeaderStyle>
   );

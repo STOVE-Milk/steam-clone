@@ -19,6 +19,7 @@ export interface IFriendInfo {
     description: string;
   };
   is_friend?: number;
+  was_requested?: number;
   status?: boolean;
 }
 
