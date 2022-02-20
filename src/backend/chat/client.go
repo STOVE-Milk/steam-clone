@@ -188,7 +188,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		if room := client.wsServer.findRoomByID(roomID); room != nil {
 			room.broadcast <- &message
 		}
-		client.wsServer.loggingChat(roomID, message.Sender.GetId(), message.Sender.GetName(), message.Message)
+		client.wsServer.loggingChat(roomID, message.Sender, message.Message)
 
 	case JoinRoomPublicAction:
 		client.handleJoinRoomMessage(message)
@@ -230,6 +230,7 @@ func (client *Client) handleRoomViewMessage(message Message) {
 	data := client.wsServer.getRoomViewData(room.GetId())
 	message = Message{
 		Action: RoomViewAction,
+		Target: room,
 		Data:   data,
 	}
 	client.send <- message.encode()

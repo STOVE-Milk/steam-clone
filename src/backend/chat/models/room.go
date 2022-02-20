@@ -38,6 +38,7 @@ type RoomMongo struct {
 type ChatLogData struct {
 	SenderId       string    `bson:"sender_id" json:"sender_id"`
 	SenderNickname string    `bson:"sender_nickname" json:"sender_nickname"`
+	SenderProfile  string    `bson:"sender_profile" json:"sender_profile"`
 	Content        string    `bson:"content" json:"content"`
 	SendTime       time.Time `bson:"send_time" json:"send_time"`
 }

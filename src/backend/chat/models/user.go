@@ -25,9 +25,10 @@ type UserMRepository interface {
 }
 
 type UserMongo struct {
-	Id    string      `bson:"id" json:"id"`
-	Name  string      `bson:"name" json:"name"`
-	Rooms []RoomMongo `bson:"rooms" json:"rooms,omitempty"`
+	Id      string      `bson:"id" json:"id"`
+	Name    string      `bson:"name" json:"name"`
+	Profile string      `bson:"profile" json:"profile"`
+	Rooms   []RoomMongo `bson:"rooms" json:"rooms,omitempty"`
 }
 
 type StringJsonMap map[string]interface{}

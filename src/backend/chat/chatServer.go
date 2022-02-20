@@ -174,6 +174,8 @@ func (server *WsServer) findUserByID(ID string) models.User {
 func (server *WsServer) handleUserJoined(message Message) {
 
 	friends := server.getFriends(message.Sender.GetId())
+	fmt.Println(friends["14"])
+
 	clients := server.friendsToClient(friends)
 	message.Data = nil
 	server.users[message.Sender.GetId()] = message.Sender
@@ -301,7 +303,7 @@ func (server *WsServer) createRoom(name string, private bool, members []models.U
 		content = content + member.GetName() + ","
 	}
 	content = content[:len(content)-1]
-	server.loggingChat(room.ID, "", "", content+" 님이 대화에 참여하였습니다.")
+	server.loggingChat(room.ID, nil, content+" 님이 대화에 참여하였습니다.")
 	return room
 }
 
@@ -321,10 +323,11 @@ func (server *WsServer) deleteRoom(room models.Room, user models.User) {
 	server.userMRepository.DeleteRoom(room, user)
 }
 
-func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content string) {
+func (server *WsServer) loggingChat(roomId string, sender models.User, content string) {
 	chatLogData := models.ChatLogData{
-		SenderId:       senderId,
-		SenderNickname: senderNickname,
+		SenderId:       sender.GetId(),
+		SenderNickname: sender.GetName(),
+		SenderProfile:  sender.GetProfile(),
 		Content:        content,
 		SendTime:       time.Now(),
 	}

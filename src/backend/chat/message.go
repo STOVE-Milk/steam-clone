@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/STOVE-Milk/steam-clone/chat/models"
@@ -52,6 +51,5 @@ func (message *Message) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	message.Sender = &msg.Sender
-	fmt.Println(message.Sender)
 	return nil
 }
