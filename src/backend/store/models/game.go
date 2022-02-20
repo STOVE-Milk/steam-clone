@@ -83,6 +83,8 @@ type GameSimple struct {
 	DescriptionSnippet string        `json:"description_snippet"`
 	Price              StringJsonMap `json:"price"`
 	Sale               int           `json:"sale"`
+	ReviewCount        int           `json:"review_count"`
+	RecommendCount     int           `json:"recommend_count"`
 	Image              StringJsonMap `json:"image"`
 	Video              StringJsonMap `json:"video"`
 	Os                 StringSlice   `json:"os"`

@@ -217,11 +217,13 @@ message GameSimple {
     string description_snippet = 3 [json_name = "description_snippet"];
     int32 price = 4;
     int32 sale = 5;
-    ContentsPath image = 6;
-    ContentsPath video = 7;
-    repeated string category_list = 8 [json_name = "category_list"];
-    repeated string os_list = 9 [json_name = "os_list"];
-    int32 download_count = 10 [json_name = "download_count"];
+    int32 review_count = 6 [json_name = "review_count"];
+    int32 recommend_count =7 [json_name = "recommend_count"];
+    ContentsPath image = 8;
+    ContentsPath video = 9;
+    repeated string category_list = 10 [json_name = "category_list"];
+    repeated string os_list = 11 [json_name = "os_list"];
+    int32 download_count = 12 [json_name = "download_count"];
 }
 
 message ContentsPath{

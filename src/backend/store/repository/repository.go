@@ -129,9 +129,9 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*models.GameSimple, *m
 
 	var queryBytes bytes.Buffer
 	if category_name == "ALL" {
-		queryBytes.WriteString("SELECT idx, name, description_snippet, price, sale, image, video, os, download_count FROM game ")
+		queryBytes.WriteString("SELECT idx, name, description_snippet, price, sale,review_count, recommend_count, image, video, os, download_count FROM game ")
 	} else {
-		queryBytes.WriteString("SELECT g.idx, g.name, description_snippet, price, sale, image, video, os, download_count ")
+		queryBytes.WriteString("SELECT g.idx, g.name, description_snippet, price, sale, review_count, recommend_count, image, video, os, download_count ")
 		queryBytes.WriteString("FROM steam.game_category AS gc ")
 		queryBytes.WriteString("JOIN steam.game AS g ")
 		queryBytes.WriteString("ON gc.game_id=g.idx ")
@@ -166,11 +166,12 @@ func (r *Repo) GetSortingGameList(ctx context.Context) ([]*models.GameSimple, *m
 	defer rows.Close()
 	for rows.Next() {
 		var game models.GameSimple
-		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.ReviewCount, &game.RecommendCount, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
 			return nil, utils.ErrorHandler(storeErr.GetSotingGameListScanErr, err)
 		}
 		gameSimpleList = append(gameSimpleList, &game)
+
 	}
 	return gameSimpleList, nil
 }
@@ -229,7 +230,7 @@ func (r *Repo) GetGameListByUserId(ctx context.Context) ([]*models.GameSimple, *
 	userId := ctx.Value("userId")
 	var gameSimpleList []*models.GameSimple
 	rows, err := r.db.QueryContext(ctx, `	
-	SELECT g.idx, g.name, g.description_snippet, g.price, g.sale, g.image, g.video, g.os, g.download_count
+	SELECT g.idx, g.name, g.description_snippet, g.price, g.sale, g.review_count, g.recommend_count, g.image, g.video, g.os, g.download_count
 	FROM library AS l
 	JOIN game AS g
 	ON l.game_id=g.idx
@@ -244,7 +245,7 @@ func (r *Repo) GetGameListByUserId(ctx context.Context) ([]*models.GameSimple, *
 	defer rows.Close()
 	for rows.Next() {
 		var game models.GameSimple
-		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.ReviewCount, &game.RecommendCount, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
 			return nil, utils.ErrorHandler(storeErr.GetGameListInWishlistScanErr, err)
 		}
@@ -433,7 +434,7 @@ func (r *Repo) GetSearchingGameList(ctx context.Context) ([]*models.GameSimple, 
 	content := ctx.Value("content").(string)
 	var gameSimpleList []*models.GameSimple
 	rows, err := r.db.QueryContext(ctx, `	
-	SELECT idx, name, description_snippet, price, sale, image, video, os, download_count 
+	SELECT idx, name, description_snippet, price, sale, review_count, recommend_count, image, video, os, download_count 
 	FROM steam.game
 	WHERE name like ?
 	`, "%"+content+"%")
@@ -443,7 +444,7 @@ func (r *Repo) GetSearchingGameList(ctx context.Context) ([]*models.GameSimple, 
 	defer rows.Close()
 	for rows.Next() {
 		var game models.GameSimple
-		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
+		err := rows.Scan(&game.Id, &game.Name, &game.DescriptionSnippet, &game.Price, &game.ReviewCount, &game.RecommendCount, &game.Sale, &game.Image, &game.Video, &game.Os, &game.DownloadCount)
 		if err != nil {
 			return nil, utils.ErrorHandler(storeErr.GetSearchingGameListScanErr, err)
 		}

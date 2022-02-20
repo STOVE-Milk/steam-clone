@@ -303,6 +303,8 @@ func (gc *GameService) parsingGameSimpleList(ctx context.Context, gameSimpleList
 			DescriptionSnippet: game.DescriptionSnippet,
 			Price:              int32(game.Price["KR"].(float64)),
 			Sale:               int32(game.Sale),
+			ReviewCount:        int32(game.ReviewCount),
+			RecommendCount:     int32(game.RecommendCount),
 			Image: &pb.ContentsPath{
 				Main: game.Image["main"].(string),
 				Sub:  imageSub,
