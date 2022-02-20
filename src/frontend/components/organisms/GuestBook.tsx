@@ -44,10 +44,11 @@ export default function GuestBook(props: IGuestBookProps) {
   return (
     <Wrapper>
       <UserBox>
-        <Profile
+        {console.log(props.guestBook)}
+        {/* <Profile
           onClick={() => router.push(`${props.guestBook.guest_id}`)}
           profileImg={props.guestBook.profile.image}
-        />
+        /> */}
         <Name types="medium">{props.guestBook.displayed_name}</Name>
         <CreatedAt types="tiny">
           {props.guestBook.updated_at === props.guestBook.created_at

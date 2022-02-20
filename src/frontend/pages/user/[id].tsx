@@ -24,7 +24,6 @@ const UserPage: NextPage<IState> = () => {
   const userId = Number(router.query.id);
 
   const [isMypage, setIsMypage] = useState(userId === userInfo.data.idx); // 현재 보고 있는 페이지가 마이 페이지인지, 다른 유저의 페이지인지 여부
-  console.log(userId, userInfo.data.idx, isMypage);
 
   const [guestBooks, setGuestBooks] = useState([] as IGuestBook[]); // 현재 유저 페이지의 방명록
   const [userGuestBook, setUserGuestBook] = useState({} as IGuestBook); // 유저가 작성중인 방명록의 내용
@@ -34,7 +33,7 @@ const UserPage: NextPage<IState> = () => {
   const [withFriend, setWithFriend] = useState([] as IFriendInfo[]); // 현재 유저 페이지의 유저와 함께 아는 친구. 마이페이지면 보이지 않음
 
   const getProfile = async () => {
-    const res = (await UserAPI.getProfileAPI(userInfo.data.idx)).data;
+    const res = (await UserAPI.getProfileAPI(userId)).data;
     setProfile(res);
     setUserGuestBook((prev) => ({
       ...prev,
@@ -82,7 +81,8 @@ const UserPage: NextPage<IState> = () => {
 
   return (
     <Wrapper>
-      <Text types={'title'}>유저페이지</Text>
+      <Text types={'title'}>{`${profile.nickname} 님`}</Text>
+      <SubTitle types={'main'}>: 어떤 유저일까요?</SubTitle>
       <UserInfo {...profile}></UserInfo>
       <FriendSection>
         {isMypage ? null : (
@@ -98,6 +98,7 @@ const UserPage: NextPage<IState> = () => {
       </FriendSection>
       <GuestBookSection>
         <Text types={'large'}>방명록</Text>
+        <SubTitle types={'main'}>: 발자취를 남겨보세요!</SubTitle>
         <GuestBookList>
           <GuestBook guestBook={userGuestBook} isAdd={true} addGuestBook={addGuestBook}></GuestBook>
           {guestBooks.map((guestBook) => {
@@ -139,6 +140,10 @@ const GuestBookSection = styled.div`
 
 const GuestBookList = styled.div`
   padding-top: 1rem;
+`;
+
+const SubTitle = styled(Text)`
+  margin: 2rem 0 0 0;
 `;
 
 export default UserPage;
