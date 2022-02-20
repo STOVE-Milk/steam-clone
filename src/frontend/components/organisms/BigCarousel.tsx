@@ -29,7 +29,7 @@ export default function BigCarouselComponent(props: ICarouselProps) {
     <CustomCarousel
       responsive={responsive}
       ssr={true} // means to render carousel on server-side.
-      autoPlay={true}
+      // autoPlay={true}
       autoPlaySpeed={3000}
       infinite
       showDots={true}

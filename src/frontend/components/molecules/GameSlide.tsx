@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 import { localePrice } from 'util/localeString';
 import { gameInfo } from 'modules/game';
+
 import Text from 'components/atoms/Text';
 
 export default function GameSlide(props: gameInfo) {
