@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.servlet.annotation.MultipartConfig;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,16 +48,16 @@ public class User {
     private String country;
 
     @Column(name = "created_at")
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "accessed_at")
-    private Timestamp accessedAt;
+    private LocalDateTime accessedAt;
 
     @Column(name = "updated_at")
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
-    private Timestamp deletedAt;
+    private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "user")
     List<Friend> friends = new ArrayList<>();

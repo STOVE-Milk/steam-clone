@@ -7,6 +7,7 @@ import com.steam.membership.global.util.JsonUtil;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Builder
@@ -18,8 +19,8 @@ public class GuestBookDto {
     private String displayedName;
     private ProfileDto profile;
     private String content;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static GuestBookDto of(GuestBook guestBook) {
         return GuestBookDto.builder()
