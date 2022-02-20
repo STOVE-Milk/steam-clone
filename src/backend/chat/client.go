@@ -54,6 +54,7 @@ type Client struct {
 	send     chan []byte
 	ID       string `json:"id"`
 	Name     string `json:"name"`
+	Profile  string `json:"profile"`
 	friends  map[string]models.User
 	rooms    map[*Room]bool
 }
@@ -69,6 +70,7 @@ func newClient(conn *websocket.Conn, wsServer *WsServer, user models.User) *Clie
 		rooms:    make(map[*Room]bool),
 	}
 	client.friends = wsServer.getFriends(user.GetId())
+	client.Profile = wsServer.userRepository.FindUserById(user.GetId()).GetProfile()
 	return client
 
 }
@@ -242,8 +244,8 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 	if _, ok := client.rooms[room]; ok {
 		delete(client.rooms, room)
 	}
-	client.wsServer.deleteRoom(room, client.ID)
-	client.wsServer.deleteMember(room, client.ID)
+	client.wsServer.deleteRoom(room, client)
+	client.wsServer.deleteMember(room, client)
 
 	room.unregister <- client
 }
@@ -370,4 +372,8 @@ func (client *Client) GetId() string {
 
 func (client *Client) GetName() string {
 	return client.Name
+}
+
+func (client *Client) GetProfile() string {
+	return client.Profile
 }

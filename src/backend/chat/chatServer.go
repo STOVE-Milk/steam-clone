@@ -65,11 +65,9 @@ func (server *WsServer) Run() {
 
 // 클라이언트를 서버에 등록하는 로직
 func (server *WsServer) registerClient(client *Client) {
-
 	server.listOnlineClients(client)
 	server.publishClientJoined(client)
 	server.clients[client] = true
-
 }
 
 func (server *WsServer) unregisterClient(client *Client) {
@@ -294,7 +292,7 @@ func (server *WsServer) createRoom(name string, private bool, members []models.U
 	server.roomMRepository.AddMembers(room, members)
 	// MongoDB에 user 마다 참여한 룸 정보 저장.
 	for _, member := range members {
-		server.userMRepository.AddRoom(room, member.GetId())
+		server.userMRepository.AddRoom(room, member)
 	}
 	go room.RunRoom()
 	server.rooms[room] = true
@@ -308,19 +306,19 @@ func (server *WsServer) createRoom(name string, private bool, members []models.U
 }
 
 func (server *WsServer) getAllJoinedRoom(client models.User) []models.RoomMongo {
-	return server.userMRepository.GetAllJoinedRoom(client.GetId())
+	return server.userMRepository.GetAllJoinedRoom(client)
 }
 
 func (server *WsServer) getFriends(clientId string) map[string]models.User {
 	return server.userRepository.GetFriends(clientId)
 }
 
-func (server *WsServer) deleteMember(room models.Room, userId string) {
-	server.roomMRepository.DeleteMember(room, userId)
+func (server *WsServer) deleteMember(room models.Room, user models.User) {
+	server.roomMRepository.DeleteMember(room, user)
 }
 
-func (server *WsServer) deleteRoom(room models.Room, userId string) {
-	server.userMRepository.DeleteRoom(room, userId)
+func (server *WsServer) deleteRoom(room models.Room, user models.User) {
+	server.userMRepository.DeleteRoom(room, user)
 }
 
 func (server *WsServer) loggingChat(roomId, senderId, senderNickname, content string) {

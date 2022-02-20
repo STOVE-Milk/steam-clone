@@ -40,8 +40,8 @@ func makeMongoConfig() string {
 
 func MongoConn() *mongo.Client {
 
-	// clientOptions := options.Client().ApplyURI(makeMongoConfig())
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI(makeMongoConfig())
+	// clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	conn, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
