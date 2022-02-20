@@ -30,7 +30,7 @@ type StoreClient interface {
 	GetGameListInCart(ctx context.Context, in *GameIdListQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
 	GetUserData(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDataResponse, error)
 	GetGameListInWishlist(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
-	GetGameIdListByUserId(ctx context.Context, in *UserIdQueryParamRequest, opts ...grpc.CallOption) (*GameIdListResponse, error)
+	GetGameListByUserId(ctx context.Context, in *UserIdQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
 	GetSearchingGameList(ctx context.Context, in *SearchingContentQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error)
 	PostWishlist(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
 	DeleteWishlist(ctx context.Context, in *GameIdQueryParamRequest, opts ...grpc.CallOption) (*IsSuccessResponse, error)
@@ -112,9 +112,9 @@ func (c *storeClient) GetGameListInWishlist(ctx context.Context, in *emptypb.Emp
 	return out, nil
 }
 
-func (c *storeClient) GetGameIdListByUserId(ctx context.Context, in *UserIdQueryParamRequest, opts ...grpc.CallOption) (*GameIdListResponse, error) {
-	out := new(GameIdListResponse)
-	err := c.cc.Invoke(ctx, "/storepb.Store/GetGameIdListByUserId", in, out, opts...)
+func (c *storeClient) GetGameListByUserId(ctx context.Context, in *UserIdQueryParamRequest, opts ...grpc.CallOption) (*GameSimpleListResponse, error) {
+	out := new(GameSimpleListResponse)
+	err := c.cc.Invoke(ctx, "/storepb.Store/GetGameListByUserId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +204,7 @@ type StoreServer interface {
 	GetGameListInCart(context.Context, *GameIdListQueryParamRequest) (*GameSimpleListResponse, error)
 	GetUserData(context.Context, *emptypb.Empty) (*UserDataResponse, error)
 	GetGameListInWishlist(context.Context, *emptypb.Empty) (*GameSimpleListResponse, error)
-	GetGameIdListByUserId(context.Context, *UserIdQueryParamRequest) (*GameIdListResponse, error)
+	GetGameListByUserId(context.Context, *UserIdQueryParamRequest) (*GameSimpleListResponse, error)
 	GetSearchingGameList(context.Context, *SearchingContentQueryParamRequest) (*GameSimpleListResponse, error)
 	PostWishlist(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error)
 	DeleteWishlist(context.Context, *GameIdQueryParamRequest) (*IsSuccessResponse, error)
@@ -241,8 +241,8 @@ func (UnimplementedStoreServer) GetUserData(context.Context, *emptypb.Empty) (*U
 func (UnimplementedStoreServer) GetGameListInWishlist(context.Context, *emptypb.Empty) (*GameSimpleListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGameListInWishlist not implemented")
 }
-func (UnimplementedStoreServer) GetGameIdListByUserId(context.Context, *UserIdQueryParamRequest) (*GameIdListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGameIdListByUserId not implemented")
+func (UnimplementedStoreServer) GetGameListByUserId(context.Context, *UserIdQueryParamRequest) (*GameSimpleListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGameListByUserId not implemented")
 }
 func (UnimplementedStoreServer) GetSearchingGameList(context.Context, *SearchingContentQueryParamRequest) (*GameSimpleListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSearchingGameList not implemented")
@@ -407,20 +407,20 @@ func _Store_GetGameListInWishlist_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Store_GetGameIdListByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Store_GetGameListByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserIdQueryParamRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StoreServer).GetGameIdListByUserId(ctx, in)
+		return srv.(StoreServer).GetGameListByUserId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/storepb.Store/GetGameIdListByUserId",
+		FullMethod: "/storepb.Store/GetGameListByUserId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServer).GetGameIdListByUserId(ctx, req.(*UserIdQueryParamRequest))
+		return srv.(StoreServer).GetGameListByUserId(ctx, req.(*UserIdQueryParamRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -605,8 +605,8 @@ var Store_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Store_GetGameListInWishlist_Handler,
 		},
 		{
-			MethodName: "GetGameIdListByUserId",
-			Handler:    _Store_GetGameIdListByUserId_Handler,
+			MethodName: "GetGameListByUserId",
+			Handler:    _Store_GetGameListByUserId_Handler,
 		},
 		{
 			MethodName: "GetSearchingGameList",
