@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import type { NextPage } from 'next';
-import styled, { css } from 'styled-components';
 
+import styled, { css } from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser,
@@ -13,6 +14,8 @@ import {
   faEnvelopeOpenText,
 } from '@fortawesome/free-solid-svg-icons';
 
+import { IState } from 'modules';
+import { getFriend } from 'modules/user';
 import { IFriendInfo } from 'modules/user';
 import * as FriendAPI from 'api/friend/api';
 import { verifyToken } from 'util/verifyToken';
@@ -25,6 +28,9 @@ const Friend: NextPage = () => {
   const [tab, setTab] = useState(0); //탭 number
   const [friends, setFriends] = useState([] as IFriendInfo[]); //각 탭에서 보일 친구 목록들. 친구 객체 타입이 동일하므로 같은 state 사용
   const [searchInput, setSearchInput] = useState(''); // 친구 검색 input 값
+  const curFriends = useSelector((state: IState) => state.user.friends.data);
+
+  const dispatch = useDispatch();
 
   // 화면에서 탭 전환 함수
   const changeTab = (tabNumber: number) => {
@@ -47,6 +53,7 @@ const Friend: NextPage = () => {
   // 친구 목록
   const getFriends = async () => {
     const res = (await FriendAPI.getFriendsAPI()).data.friends;
+    // dispatch(getFriend.request({}));
     setFriends(res);
   };
 
@@ -96,6 +103,8 @@ const Friend: NextPage = () => {
   const acceptFriend = async (id: number) => {
     await FriendAPI.acceptFriendAPI({ request_id: id });
     receivedFriend();
+    //친구 목록 불러와서 API에 저장
+    dispatch(getFriend.request({}));
   };
 
   useEffect(() => {
@@ -239,8 +248,7 @@ const FriendItem = styled.div`
 `;
 
 const FriendActionBox = styled.div`
-  width: fit-content;
-  padding: 0 1rem;
+  flex: 1;
   display: flex;
   align-items: center;
 `;

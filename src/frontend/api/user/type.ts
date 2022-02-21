@@ -19,4 +19,5 @@ export interface ISaveUserInfoReqtype {
   idx: number;
   nickname: string;
   role: number;
+  profileImg: string;
 }

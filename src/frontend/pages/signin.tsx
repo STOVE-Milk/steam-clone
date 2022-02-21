@@ -8,7 +8,6 @@ import { IState } from 'modules';
 import { saveUserInfo, getFriend } from 'modules/user';
 import { doSignInAPI } from 'api/auth/api';
 import { parseToken } from 'util/parseToken';
-import { getFriendsAPI } from 'api/friend/api';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
@@ -65,6 +64,7 @@ const signin: NextPage<IState> = () => {
         localStorage.setItem('refreshToken', res.data.refreshToken);
         localStorage.setItem('profileImg', res.data.profileImg);
         const result = parseToken(res.data.accessToken);
+        result['profileImg'] = res.data.profileImg;
         dispatch(saveUserInfo.request(result));
 
         router.push('/');

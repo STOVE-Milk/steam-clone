@@ -56,11 +56,3 @@ const CustomCarousel = styled(Carousel)`
     }
   }
 `;
-
-const DotBar = styled.div`
-  width: 10%;
-  height: 10px;
-  margin: 0 1rem;
-  border-radius: 10px;
-  background: ${(props) => props.theme.colors.divider};
-`;

@@ -36,8 +36,9 @@ const Main: NextPage<IState> = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
+    const profileImg = localStorage.getItem('profileImg');
     const result = token && parseToken(token);
-
+    result['profileImg'] = profileImg;
     dispatch(saveUserInfo.request(result));
 
     if (!ws.current) {
