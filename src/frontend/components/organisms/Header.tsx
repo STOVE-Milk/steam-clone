@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import profileImg from 'public/Smilemates_Flame_Pose.png';
+
+import { parseToken } from 'util/parseToken';
+import { saveUserInfo } from 'modules/user';
 
 import Profile from 'components/atoms/Profile';
 import SearchBox from 'components/molecules/SearchBox';
@@ -16,6 +17,16 @@ export default function Header() {
   const [inputText, setInputText] = useState('');
 
   const userInfo = useSelector((state: IState) => state.user.userInfo);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const profileImg = localStorage.getItem('profileImg');
+    const result = token && parseToken(token);
+    result['profileImg'] = profileImg;
+    dispatch(saveUserInfo.request(result));
+  }, []);
 
   return (
     <HeaderStyle>

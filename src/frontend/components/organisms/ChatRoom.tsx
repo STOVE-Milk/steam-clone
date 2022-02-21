@@ -12,7 +12,7 @@ export interface Log {
   sender_id: string;
   sender_nickname: string;
   content: string;
-  profile?: string;
+  sender_profile?: string;
 }
 
 export interface Member {
@@ -63,7 +63,7 @@ export default function ChatRoom(props: IChatRoomProps) {
               key={key}
               isMine={log.sender_id === props.userId.toString()}
               name={log.sender_nickname}
-              profile={log.profile!!}
+              profile={log.sender_profile!!}
             >
               {log.content && log.content.split('\n').map((text, key) => <p key={key}> {text} </p>)}
             </MsgBox>

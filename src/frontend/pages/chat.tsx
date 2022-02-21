@@ -10,13 +10,11 @@ import { parseToken } from 'util/parseToken';
 import { IState } from 'modules';
 import { saveUserInfo, SET_ONLINE, SET_OFFLINE } from 'modules/user';
 
-import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import Modal from 'components/atoms/Modal';
 import JoinChat from 'components/organisms/JoinChat';
 import ChatRoom, { Log, Member } from 'components/organisms/ChatRoom';
-import { preProcessFile } from 'typescript';
 
 interface IRoom {
   //채팅 방 객체 타입
@@ -44,8 +42,9 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
-
+    const profileImg = localStorage.getItem('profileImg');
     const result = token && parseToken(token);
+    result['profileImg'] = profileImg;
     dispatch(saveUserInfo.request(result));
   }, []);
 
@@ -92,7 +91,7 @@ const Chat: NextPage = () => {
                     sender_id: serverMessage.sender.id,
                     sender_nickname: serverMessage.sender.name,
                     content: serverMessage.message,
-                    profile: serverMessage.sender.profile,
+                    sender_profile: serverMessage.sender.profile,
                   }),
                 );
               } else {
