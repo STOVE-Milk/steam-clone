@@ -112,7 +112,7 @@ const FriendBoxWrapper = styled.div<{ open: boolean; types: string }>`
   ${(props) =>
     !props.open
       ? css`
-          justify-content: center;
+          padding-left: 3rem;
         `
       : null}
 
