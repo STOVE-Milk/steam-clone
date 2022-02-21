@@ -76,6 +76,7 @@ const cart: NextPage<IState> = (props) => {
     alert(res.message);
     // code가 77203이면 잔액부족이므로 alert 해주고 충전페이지로 redirect
     if (res.code === 77203) {
+      // 지금은 202인테 태현님이 수정 예정임 (계산오류 -> 잔액부족오류)
       router.push('/charge');
     } else {
       router.push('/category'); //일단 있는 페이지로 라우팅시킴

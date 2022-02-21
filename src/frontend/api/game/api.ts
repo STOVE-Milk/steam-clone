@@ -4,6 +4,7 @@ import {
   IResType,
   IGetGamesByCategoryReqType,
   IGetGameInfoByIdListReqType,
+  IGetGameInfoByUser,
   IGetSearchContentReqType,
 } from './type';
 
@@ -54,6 +55,12 @@ export async function getUserDataAPI() {
     },
   });
 
+  return response.data;
+}
+
+///store/userdata -> wish_list, purchase_list 관련임 (유저정보 x)
+export async function getGameInfoByUserAPI(param: IGetGameInfoByUser) {
+  const response = await axios.get<IResType>(`${process.env.NEXT_PUBLIC_BASE_URL}/store/users/${param.user_id}/games`);
   return response.data;
 }
 

@@ -9,12 +9,13 @@ export interface IMenuBoxProps {
   name: string; //메뉴 이름
   page: string; //NavBar에서 클릭 시 이용할 페이지 이름
   open: boolean; //NavBar에서 아이콘만 보이는지(false), 메뉴 이름까지 보이는지(true)
+  onClick?: (e: any) => void;
 }
 
 export default function MenuBox(props: IMenuBoxProps) {
   return (
     <Link href={`/${props.page}`}>
-      <MenuBoxWrapper>
+      <MenuBoxWrapper onClick={props.onClick}>
         <MenuIcon open={props.open}>{props.icon}</MenuIcon>
         {props.open ? <MenuTitle types={'main'}>{props.name}</MenuTitle> : null}
       </MenuBoxWrapper>

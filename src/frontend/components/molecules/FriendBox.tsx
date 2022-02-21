@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
 
 import styled, { css } from 'styled-components';
 
@@ -7,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { IFriendInfo } from 'modules/user';
+import { getGameInfoByUser } from 'modules/game';
 
 import Text, { TextStyle } from 'components/atoms/Text';
 import Status from 'components/atoms/Status';
@@ -42,6 +44,7 @@ export default function FriendBox(props: IFriendBoxProps) {
     };
   }, [isActive]);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   return (
     <div>
@@ -62,7 +65,12 @@ export default function FriendBox(props: IFriendBoxProps) {
       {props.types === 'navbar' && (
         <FriednDropDownNav ref={dropdownRef} active={`${isActive ? 'active' : 'inactive'}`}>
           <DropDownUl>
-            <DropDownli onClick={() => router.push(`/library/${props.friendInfo.id}`)}>
+            <DropDownli
+              onClick={() => {
+                dispatch(getGameInfoByUser.request({ user_id: props.friendInfo.id.toString() }));
+                router.push(`/library/${props.friendInfo.id}`);
+              }}
+            >
               <DropDownText>친구 라이브러리</DropDownText>
             </DropDownli>
             <DropDownli onClick={() => router.push('/chat')}>

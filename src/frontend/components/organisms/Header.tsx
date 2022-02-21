@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 
 import styled from 'styled-components';
@@ -6,10 +8,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import profileImg from 'public/Smilemates_Flame_Pose.png';
 
+import { IState } from 'modules';
+
+import Text from 'components/atoms/Text';
 import Profile from 'components/atoms/Profile';
 import SearchBox from 'components/molecules/SearchBox';
 
 export default function Header() {
+  const { userInfo } = useSelector((state: IState) => state.user);
+
   const [option, setOption] = useState('name');
   const [inputText, setInputText] = useState('');
 
@@ -20,6 +27,9 @@ export default function Header() {
       </SearchBarWrapper>
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
+        {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
+        {userInfo.data && <Text>{userInfo.data.nickname}님 🙂</Text>}
+        {/* <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} /> */}
         <Profile userImage={<Image src={profileImg} width={30} height={30}></Image>} />
       </AlertUserWrapper>
     </HeaderStyle>

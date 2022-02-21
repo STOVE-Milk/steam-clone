@@ -24,7 +24,7 @@ const reducer = createReducer<IUserState>(initialState, {
   }),
   [SAVE_USERINFO_FAIL]: (state, action) => ({
     ...state,
-    userInfo: asyncState.error(initalUserInfo, action.payload),
+    userInfo: asyncState.error(initalUserInfo, action.payload.data),
   }),
 
   [GET_FRIEND]: (state, action) => ({
