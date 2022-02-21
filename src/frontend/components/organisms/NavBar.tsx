@@ -58,12 +58,12 @@ export default function NavBar() {
       <LogoSection>
         <LogoBox open={open} onClick={() => router.push('/')}>
           <Image src={LogoImage} layout={'fixed'} width={30} height={30}></Image>
-          <LogoTitle>STEAM</LogoTitle>
+          <LogoTitle>STEAMILK</LogoTitle>
         </LogoBox>
         <OpenBar open={open} icon={faBars} inverse onClick={() => setOpen(!open)} />
       </LogoSection>
-      <SectionTitle>Menus</SectionTitle>
-      <MenuSection>
+      <SectionTitle open={open}>Menus</SectionTitle>
+      <MenuSection open={open}>
         <MenuBox open={open} page="category" icon={<FontAwesomeIcon icon={faBook} inverse />} name={'카테고리'} />
         <MenuBox
           open={open}
@@ -80,7 +80,7 @@ export default function NavBar() {
         <MenuBox open={open} page="charge" icon={<FontAwesomeIcon icon={faDollarSign} inverse />} name={'충전'} />
       </MenuSection>
       <SectionDivider />
-      <SectionTitle>
+      <SectionTitle open={open}>
         {open ? <Text types="main">Friends</Text> : null}
         <Link href={'/friend'}>
           <FriendSettingBtn>
@@ -144,19 +144,19 @@ const LogoTitle = styled.div`
 `;
 
 const OpenBar = styled(FontAwesomeIcon)<{ open: boolean }>`
-  margin-left: ${(props) => (props.open ? '1.5rem' : '2rem')};
+  margin-left: ${(props) => (props.open ? '1.5rem' : '3rem')};
   margin-right: ${(props) => (props.open ? '2.5rem' : '1.7rem')};
   margin-top: 0.5rem;
 `;
 
-const SectionTitle = styled.div`
+const SectionTitle = styled.div<{ open: boolean }>`
   color: ${(props) => props.theme.colors.secondaryText};
-  padding: 30px 20px 0px 27px;
+  padding: ${(props) => (props.open ? '30px 20px 0px 1rem' : ' 30px 20px 0px 3rem')};
   display: flex;
 `;
 
-const MenuSection = styled.div`
-  padding: 20px 10px 20px 10px;
+const MenuSection = styled.div<{ open: boolean }>`
+  padding: ${(props) => (props.open ? '20px 10px 20px 1rem' : '20px 10px 20px 2rem')};
 `;
 
 const SectionDivider = styled.div`
