@@ -174,7 +174,6 @@ func (server *WsServer) findUserByID(ID string) models.User {
 func (server *WsServer) handleUserJoined(message Message) {
 
 	friends := server.getFriends(message.Sender.GetId())
-	fmt.Println(friends["14"])
 
 	clients := server.friendsToClient(friends)
 	message.Data = nil
@@ -324,6 +323,9 @@ func (server *WsServer) deleteRoom(room models.Room, user models.User) {
 }
 
 func (server *WsServer) loggingChat(roomId string, sender models.User, content string) {
+	if sender == nil {
+		sender = &Client{}
+	}
 	chatLogData := models.ChatLogData{
 		SenderId:       sender.GetId(),
 		SenderNickname: sender.GetName(),
