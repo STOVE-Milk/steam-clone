@@ -7,10 +7,11 @@
         "behavior": {
             "ENTER": "유저 입장",
             "SYNC": "정보 동기화",
-            "RESET": "유저 위치 RESET_12 (아직 추가 안함)",
-            "LEAVE": "떠나기_19",
+            "RESET": "유저 위치 RESET_12 (서버 내에서 사용)",
+            "LEAVE": "떠나기",
             "MOVE": "유저 이동",
             "BUILD": "게임, 오브젝트(벽) 설치 후 정보 동기화",
+            "CLOSE_PRE_CONNECTION": "같은 방에 중복 접속할 경우 기존 연결을 끊음",
             "ERROR": "에러 발생"
         }
     },
@@ -18,7 +19,6 @@
         "code": 10,
         "mock": {
             "authorization": {
-                "secret": "5dc5085d01e85fd229e32fedbd0f1a4b10cd57e61a7f423bca91263d7ce22ac5cf298a1f8ecc5f5f8125b07627329d06cbde50d25b5d00a17286cf577fd86e8b",
                 "user_id": "access_token",
                 "1": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjEsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9.6P_NJvZhGGc4XAdVlm74rgIVIzPtXZbChaZCqBbUba4",
                 "2": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6MTIwMDAwMDAwMH0.eyJpZHgiOjIsIm5pY2tuYW1lIjoidGVzdCIsInJvbGUiOjEsImNvdW50cnkiOiJLUiJ9._mgKj7UC9YMk2Q5nq2PgX33rzDOhI0sF12X9Z4Q5Xn4",
@@ -43,9 +43,6 @@
     },
     "SYNC": {
         "code": 11,
-        "description": {
-            "SYNC": "해당 방에 대한 정보를 갱신 - user, game 등"
-        },
         "postData": {
         },
         "getData": {
@@ -68,6 +65,44 @@
                     "gameList":[],
                     "objectList":[],
                     "games":{},
+                    "objects":{}
+                }
+            }
+        }
+    },
+    "LEAVE": {
+        "code": 19,
+        "description": {
+            "LEAVE": "해당 방에 대한 정보를 갱신 - user, game 등"
+        },
+        "postData": {
+        },
+        "getData": {
+            "room": {
+                "roomId": "1",
+                "users": {
+                    "1": {
+                        "nickname":"test",
+                        "x":0,
+                        "y":0
+                    },
+                    "2": {
+                        "nickname":"fortice",
+                        "x":0,
+                        "y":0
+                    }
+                },
+                "map": {
+                    "side":20,
+                    "gameList":[],
+                    "objectList":[],
+                    "games":{
+                        "1": {
+                            "name": "로스트 아크",
+                            "x": 0,
+                            "y": 150
+                        }
+                    },
                     "objects":{}
                 }
             }
@@ -100,10 +135,10 @@
         "postData": {
             "map": {
                 "side": 20,
-                "game_list": ["1"],
-                "object_list": [],
+                "gameList": ["1"],
+                "objectList": [],
                 "games": {
-                    "game_id": {
+                    "2": {
                         "name" : "Battle Ground",
                         "x" : 0,
                         "y" : 0
@@ -115,6 +150,16 @@
             }
         },
         "getData": {
+        }
+    },
+    "CLOSE_PRE_CONNECTION": {
+        "code": 98,
+        "description": {
+        },
+        "postData": {
+        },
+        "getData": {
+            "message": "같은 방에 중복 입장하여 연결을 끊습니다."
         }
     },
     "ERROR": {
