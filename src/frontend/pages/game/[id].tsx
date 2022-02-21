@@ -7,7 +7,6 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowMaximize, faAppleAlt } from '@fortawesome/free-solid-svg-icons';
-import placeHolder from 'public/game_placeholder.png';
 
 import { parseToken } from 'util/parseToken';
 import { localePrice } from 'util/localeString';
@@ -80,7 +79,7 @@ const Detail: NextPage<IState> = () => {
               return <Image src={img} layout="fill" objectFit="cover"></Image>;
             })}
             slides={game.image.sub.slice(0, 4).map((img) => {
-              return <BigGameSlide key={game.id} id={game.id} src={img}></BigGameSlide>;
+              return <BigGameSlide key={game.id} type="" game={game}></BigGameSlide>;
             })}
           ></CarouselComponent>
         )}
@@ -176,7 +175,13 @@ const Detail: NextPage<IState> = () => {
           .filter((r) => r.user_id !== userInfo.idx)
           .map((review: IReview) => {
             return (
-              <GameReview key={review.id} isFirst={false} review={review} modifyReview={modifyReview}></GameReview>
+              <GameReview
+                userInfo={userInfo}
+                key={review.id}
+                isFirst={false}
+                review={review}
+                modifyReview={modifyReview}
+              ></GameReview>
             );
           })}
       </ReviewSection>

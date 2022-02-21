@@ -9,13 +9,14 @@ export interface IUserInfo {
   iat: number;
   idx: number;
   nickname: string;
+  profileImg: string;
 }
 
 export interface IFriendInfo {
   id: number;
   nickname: string;
   profile: {
-    image: string | JSX.Element;
+    image: string;
     description: string;
   };
   is_friend?: number;

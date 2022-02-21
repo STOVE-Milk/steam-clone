@@ -67,8 +67,7 @@ export default function NavBar() {
         <MenuBox open={open} page="category" icon={<FontAwesomeIcon icon={faBook} inverse />} name={'카테고리'} />
         <MenuBox
           open={open}
-          // page={`library/${userInfo.data.idx}`}
-          page={`library/${userInfo.data.idx}`}
+          page={`library/${userInfo.data && userInfo.data.country !== '[TEST]KR' && userInfo.data.idx}`}
           onClick={() => {
             dispatch(getGameInfoByUser.request({ user_id: userInfo.data.idx.toString() }));
           }}

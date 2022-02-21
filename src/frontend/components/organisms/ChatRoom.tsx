@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useEffect } from 'react';
 
 import styled from 'styled-components';
 
+import Text from 'components/atoms/Text';
 import MsgBox from 'components/atoms/MsgBox';
 import AlertMsgBox from 'components/atoms/AlertMsgBox';
 import FilledButton from 'components/atoms/FilledButton';
@@ -11,6 +12,7 @@ export interface Log {
   sender_id: string;
   sender_nickname: string;
   content: string;
+  sender_profile?: string;
 }
 
 export interface Member {
@@ -23,6 +25,7 @@ export interface IChatRoomProps {
   logs: Log[]; // 채팅방 메세지들
   leaveRoom: () => void;
   userId: number; // 현재 로그인한 유저 아이디
+  private: boolean;
 }
 
 export default function ChatRoom(props: IChatRoomProps) {
@@ -42,10 +45,11 @@ export default function ChatRoom(props: IChatRoomProps) {
   return (
     <Wrapper>
       <RoomInfoBox>
+        <Text types="small">멤버</Text>
         {props.members.map((member, key) => {
           return <Member key={key}>{member.name}</Member>;
         })}
-        {props.members.length > 1 && (
+        {!props.private && (
           <LeaveRoomBtn types="primary" onClick={props.leaveRoom}>
             방 나가기
           </LeaveRoomBtn>
@@ -56,7 +60,12 @@ export default function ChatRoom(props: IChatRoomProps) {
           return log.sender_id === '' ? (
             <AlertMsgBox key={key}>{log.content}</AlertMsgBox>
           ) : (
-            <MsgBox key={key} isMine={log.sender_id === props.userId.toString()} name={log.sender_nickname}>
+            <MsgBox
+              key={key}
+              isMine={log.sender_id === props.userId.toString()}
+              name={log.sender_nickname}
+              profile={log.sender_profile!!}
+            >
               {log.content && log.content.split('\n').map((text, key) => <p key={key}> {text} </p>)}
             </MsgBox>
           );
@@ -73,11 +82,11 @@ const Wrapper = styled.div`
 
 const RoomInfoBox = styled.div`
   width: 100%;
-  height: 50px;
+  height: 55px;
   display: flex;
   border-bottom: 1px solid ${(props) => props.theme.colors.divider};
   align-items: center;
-  padding-left: 1rem;
+  padding: 1rem;
 `;
 
 const Member = styled.div`

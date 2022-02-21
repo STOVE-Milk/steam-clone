@@ -46,14 +46,17 @@ export default function GuestBook(props: IGuestBookProps) {
       <UserBox>
         <Profile
           onClick={() => router.push(`${props.guestBook.guest_id}`)}
-          userImage={<FontAwesomeIcon icon={faUser} inverse width={30} height={30} />}
+          profileImg={props.guestBook.profile && props.guestBook.profile.image}
         />
         <Name types="medium">{props.guestBook.displayed_name}</Name>
-        <CreatedAt types="tiny">
-          {props.guestBook.updated_at === props.guestBook.created_at
-            ? props.guestBook.created_at
-            : `${props.guestBook.updated_at} (수정됨)`}
-        </CreatedAt>
+        {props.isAdd ? null : (
+          <CreatedAt types="tiny">
+            {props.guestBook.updated_at === props.guestBook.created_at
+              ? `${new Date(props.guestBook.created_at).toDateString()}`
+              : `${new Date(props.guestBook.updated_at).toDateString()} (수정됨)`}
+          </CreatedAt>
+        )}
+
         {isEdited ? (
           <PostButton
             types="primary"

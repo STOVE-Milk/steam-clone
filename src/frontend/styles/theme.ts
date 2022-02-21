@@ -20,7 +20,7 @@ export const theme: DefaultTheme = {
     divider: '#858c91',
 
     online: '#ADD1D4',
-    offline: '#ff0080',
+    offline: '#e26a6a',
 
     wish: '#ff0080',
   },

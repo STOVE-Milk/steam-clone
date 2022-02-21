@@ -4,13 +4,12 @@ import type { NextPage } from 'next';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faUsers, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faUsers, faComments, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { parseToken } from 'util/parseToken';
 import { IState } from 'modules';
 import { saveUserInfo, SET_ONLINE, SET_OFFLINE } from 'modules/user';
 
-import Profile from 'components/atoms/Profile';
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import Modal from 'components/atoms/Modal';
@@ -36,6 +35,7 @@ const Chat: NextPage = () => {
   const [curRoom, setCurRoom] = useState(''); // 현재 채팅방 이름
   const [members, setMembers] = useState<Member[]>([]); // 채팅방 멤버들
   const [logs, setLogs] = useState<Log[]>([]); // 채팅방 메세지들
+  const [isPrivate, setPrivate] = useState(true); // 현재 채팅방이 개인/단체 채팅방인가
 
   const dispatch = useDispatch();
 
@@ -43,8 +43,9 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
-
+    const profileImg = localStorage.getItem('profileImg');
     const result = token && parseToken(token);
+    result['profileImg'] = profileImg;
     dispatch(saveUserInfo.request(result));
   }, []);
 
@@ -81,16 +82,18 @@ const Chat: NextPage = () => {
               const data = serverMessage.data;
               setMembers(data.members);
               setLogs(data.log);
+              setPrivate(serverMessage.target.private);
               break;
             case 'send-message': // 메세지를 받음
               console.log('send-message', serverMessage);
-              if (serverMessage.sender) {
+              if (serverMessage.sender && serverMessage.message !== '') {
                 // 실제 채팅을 보낸 경우
                 setLogs((logs) =>
                   logs.concat({
                     sender_id: serverMessage.sender.id,
                     sender_nickname: serverMessage.sender.name,
                     content: serverMessage.message,
+                    sender_profile: serverMessage.sender.profile,
                   }),
                 );
               } else {
@@ -221,21 +224,19 @@ const Chat: NextPage = () => {
   return (
     <ChatWrapper>
       <ChatListSection>
-        <CreateChatRoomBtn types={'primary'} onClick={() => setShowModal(true)}>
-          채팅방 생성
+        <CreateChatRoomBtn onClick={() => setShowModal(true)}>
+          <FontAwesomeIcon icon={faPlus} inverse width={30} height={30} size={'2x'} />
         </CreateChatRoomBtn>
         {rooms.map((room) => {
           return (
             <ChatListBox key={room.id} onClick={() => enterRoom(room.id)}>
-              <Profile
-                userImage={
-                  room.private ? (
-                    <FontAwesomeIcon icon={faUser} inverse width={30} height={30} />
-                  ) : (
-                    <FontAwesomeIcon icon={faUsers} inverse width={30} height={30} />
-                  )
-                }
-              />
+              <ProfileWrapper>
+                {room.private ? (
+                  <FontAwesomeIcon icon={faUser} inverse width={30} height={30} />
+                ) : (
+                  <FontAwesomeIcon icon={faUsers} inverse width={30} height={30} />
+                )}
+              </ProfileWrapper>
               <ChatListName types={'medium'}>
                 {room.private
                   ? findNickname(room.name.split('-').filter((t) => t !== userInfo.data.idx.toString())[0])
@@ -256,6 +257,7 @@ const Chat: NextPage = () => {
               members={members.filter((member) => member.id !== userInfo.data.idx.toString())}
               logs={logs}
               leaveRoom={leaveRoom}
+              private={isPrivate}
             ></ChatRoom>
           ) : (
             <ChatRoomPlaceholder>
@@ -294,11 +296,26 @@ const ChatListSection = styled.div`
   ::-webkit-scrollbar {
     display: none;
   }
+  position: relative;
 `;
 
-const CreateChatRoomBtn = styled(FilledButton)`
+const CreateChatRoomBtn = styled.div`
   margin: 1rem 0;
   align-self: center;
+  position: absolute;
+  bottom: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  cursor: pointer;
+
+  :hover {
+    background: ${(props) => props.theme.colors.activeBg};
+  }
 `;
 
 const ChatListBox = styled.div`
@@ -308,6 +325,7 @@ const ChatListBox = styled.div`
   display: flex;
   align-items: center;
   padding: 0 1rem;
+  cursor: pointer;
 `;
 
 const ChatListName = styled(Text)`
@@ -356,5 +374,15 @@ const ChatInput = styled.textarea`
 `;
 
 const ChatButton = styled(FilledButton)``;
+
+const ProfileWrapper = styled.div`
+  min-width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 export default Chat;

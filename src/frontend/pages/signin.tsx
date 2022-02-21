@@ -8,12 +8,10 @@ import { IState } from 'modules';
 import { saveUserInfo, getFriend } from 'modules/user';
 import { doSignInAPI } from 'api/auth/api';
 import { parseToken } from 'util/parseToken';
-import { getFriendsAPI } from 'api/friend/api';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
 import AuthInput from 'components/molecules/AuthInput';
-import { isEmpty } from 'util/isEmpty';
 
 const signin: NextPage<IState> = () => {
   //[info]: userInfo.data에 accessToken에서 온 정보들이 들어가 있습니다.
@@ -69,7 +67,9 @@ const signin: NextPage<IState> = () => {
         //성공
         localStorage.setItem('accessToken', res.data.accessToken);
         localStorage.setItem('refreshToken', res.data.refreshToken);
+        localStorage.setItem('profileImg', res.data.profileImg);
         const result = parseToken(res.data.accessToken);
+        result['profileImg'] = res.data.profileImg;
         dispatch(saveUserInfo.request(result));
 
         router.push('/');

@@ -44,13 +44,11 @@ const CustomCarousel = styled(Carousel)`
   margin: 0 auto;
 
   .react-multiple-carousel__arrow--right {
-    margin-right: -3%;
-    margin-bottom: 8%;
+    margin: 3% -3% 8% 0;
     background: ${(props) => props.theme.colors.secondaryBg};
   }
   .react-multiple-carousel__arrow--left {
-    margin-left: -2%;
-    margin-bottom: 8%;
+    margin: 3% 0 8% -2%;
     background: ${(props) => props.theme.colors.secondaryBg};
   }
 `;

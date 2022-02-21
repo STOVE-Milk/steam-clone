@@ -34,7 +34,6 @@ export default function BigCarouselComponent(props: ICarouselProps) {
       infinite
       showDots={true}
       arrows={false}
-      // customDot={<DotBar />}
     >
       {props.slides}
     </CustomCarousel>
@@ -56,12 +55,4 @@ const CustomCarousel = styled(Carousel)`
       background: ${(props) => props.theme.colors.activeBg};
     }
   }
-`;
-
-const DotBar = styled.div`
-  width: 10%;
-  height: 10px;
-  margin: 0 1rem;
-  border-radius: 10px;
-  background: ${(props) => props.theme.colors.divider};
 `;

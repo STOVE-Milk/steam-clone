@@ -6,7 +6,9 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import profileImg from 'public/Smilemates_Flame_Pose.png';
+
+import { parseToken } from 'util/parseToken';
+import { saveUserInfo } from 'modules/user';
 
 import { IState } from 'modules';
 
@@ -20,6 +22,22 @@ export default function Header() {
   const [option, setOption] = useState('name');
   const [inputText, setInputText] = useState('');
 
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const profileImg = localStorage.getItem('profileImg');
+    let result;
+
+    if (token) {
+      result = token && parseToken(token);
+    }
+    if (userInfo.data.country !== '[TEST]KR') {
+      result['profileImg'] = profileImg;
+    }
+    dispatch(saveUserInfo.request(result));
+  }, []);
+
   return (
     <HeaderStyle>
       <SearchBarWrapper>
@@ -27,10 +45,8 @@ export default function Header() {
       </SearchBarWrapper>
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
-        {/* TO DO: store쪽 이슈때문에 테스트 용으로 Link연결해놓음 -> 드롭다운으로 변경 예정 */}
         {userInfo.data && <Text>{userInfo.data.nickname}님 🙂</Text>}
-        {/* <Profile userImage={<FontAwesomeIcon icon={faUser} inverse />} /> */}
-        <Profile userImage={<Image src={profileImg} width={30} height={30}></Image>} />
+        <Profile profileImg={userInfo.data && userInfo.data.profileImg} />
       </AlertUserWrapper>
     </HeaderStyle>
   );

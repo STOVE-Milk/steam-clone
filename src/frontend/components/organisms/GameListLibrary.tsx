@@ -53,7 +53,7 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
     <GameListWrapper>
       {/* 게임의 설치 상태에 따라서 button types를 다르게 */}
       {console.log(purchaseList, gamesByIdList)}
-      <SubTitleStyle>{'구매한 게임 목록'}</SubTitleStyle>
+      <SubTitleStyle types="medium">{'구매한 게임 목록'}</SubTitleStyle>
       {/* true : 나의 라이브러리 / false: 친구의 라이브러리 */}
       {router.query.id == userInfo.data.idx.toString()
         ? gamesByIdList.map((eachGame, i) => {
@@ -66,7 +66,7 @@ export const GameListLibrary = (props: IGameListLibararyProps) => {
 
                 {/* <button onClick={() => onSelect(eachGame)}>Select</button> */}
                 <FaIconWrapper>
-                  <FontAwesomeIconStyle icon={faTimes} onClick={() => resetSelect()} inverse></FontAwesomeIconStyle>
+                  {/* <FontAwesomeIconStyle icon={faTimes} onClick={() => resetSelect()} inverse></FontAwesomeIconStyle> */}
                   <FontAwesomeIconStyle
                     icon={faCheck}
                     onClick={() => {

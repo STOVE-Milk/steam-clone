@@ -180,6 +180,11 @@ const TitleStyle = styled(Text)`
 `;
 const IconWrapper = styled.div`
   display: flex;
-  margin-bottom: 2rem;
+  align-items: center;
+  background: ${(props) => props.theme.colors.secondaryBg};
+  border-radius: 10px;
+  padding: 0.5rem;
+  width: fit-content;
+  margin: 2rem 0;
 `;
 export default library;

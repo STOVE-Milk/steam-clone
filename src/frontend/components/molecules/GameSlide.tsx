@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 import styled from 'styled-components';
 
-import { localePrice } from 'util/localeString';
 import { gameInfo } from 'modules/game';
+
 import Text from 'components/atoms/Text';
 
 export default function GameSlide(props: gameInfo) {
@@ -16,8 +16,17 @@ export default function GameSlide(props: gameInfo) {
           <Image src={props.image.main} layout="fill" objectFit="cover"></Image>
         </ImageSection>
         <InfoSection>
-          <Text types="small">{props.name}</Text>
-          <Text types="tiny">{`${localePrice(props.price, 'KR')}`}</Text>
+          <GameTitle>{props.name}</GameTitle>
+          <div>
+            <Text types="tiny">긍정적 평가</Text>
+            <Text types="tiny">
+              {`${
+                props.recommend_count &&
+                props.review_count &&
+                Math.floor(props.recommend_count / props.review_count) * 100
+              }%`}
+            </Text>
+          </div>
         </InfoSection>
       </SlideWrapper>
     </Link>
@@ -31,6 +40,7 @@ const SlideWrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  cursor: pointer;
 `;
 
 const ImageSection = styled.div`
@@ -47,9 +57,19 @@ const InfoSection = styled.div`
   background: ${(props) => props.theme.colors.secondaryBg};
   padding: 0.5rem;
   display: flex;
-  flex-direction: column;
   justify-content: space-around;
+  align-items: center;
   color: black;
   border-radius: 0 0 10px 10px;
   line-height: normal;
+
+  > div {
+    min-width: 60px;
+  }
+`;
+
+const GameTitle = styled.div`
+  size: 1.2em;
+  font-weight: bold;
+  color: white;
 `;

@@ -31,12 +31,12 @@ export async function modifyGuestBookAPI(userId: number, bookId: number, param: 
 
   const response = await axios.patch<IResType>(
     `${process.env.NEXT_PUBLIC_BASE_URL}/membership/profile/${userId}/guest-book/${bookId}`,
+    param,
     {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      param,
     },
   );
 

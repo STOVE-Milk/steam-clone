@@ -4,13 +4,14 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 
 import styled from 'styled-components';
+import profilePlaceHolder from 'public/Smilemates_Flame_Pose.png';
 
 import { IState } from 'modules';
 
 import Text from 'components/atoms/Text';
 
 export interface IProfileProps {
-  userImage: JSX.Element | typeof Image;
+  profileImg: string;
   onClick?: () => void;
 }
 
@@ -45,7 +46,11 @@ export default function Profile(props: IProfileProps) {
           setIsActive(!isActive);
         }}
       >
-        {props.userImage}
+        {props.profileImg ? (
+          <Image src={props.profileImg} width={30} height={30} />
+        ) : (
+          <Image src={profilePlaceHolder} width={30} height={30}></Image>
+        )}
       </ProfileStyle>
       <DropDownNav ref={dropdownRef} active={`${isActive ? 'active' : 'inactive'}`}>
         <DropDownUl>
@@ -118,7 +123,7 @@ export const DropDownNav = styled.nav<{ active: string }>`
 `;
 
 const ProfileStyle = styled.div<{ click: boolean }>`
-  min-width: 30px;
+  width: 30px;
   height: 30px;
   border-radius: 30px;
   background: ${(props) => props.theme.colors.secondaryBg};
