@@ -32,7 +32,7 @@ export interface IGuestBookProps {
 }
 
 export default function GuestBook(props: IGuestBookProps) {
-  const [isEdited, setEdited] = useState(props.isAdd ? true : false); //유저가 방명록을 작성중인지 
+  const [isEdited, setEdited] = useState(props.isAdd ? true : false); //유저가 방명록을 작성중인지
 
   const [content, setContent] = useState(props.isAdd ? '' : props.guestBook.content); //유저가 작성중인 방명록 내용
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

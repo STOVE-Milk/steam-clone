@@ -45,7 +45,7 @@ export default function ChatRoom(props: IChatRoomProps) {
         {props.members.map((member, key) => {
           return <Member key={key}>{member.name}</Member>;
         })}
-        {props.members.length > 2 && (
+        {props.members.length > 1 && (
           <LeaveRoomBtn types="primary" onClick={props.leaveRoom}>
             방 나가기
           </LeaveRoomBtn>

@@ -8,6 +8,10 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
+// gRPC의 통신 방법인 proto buffer를 사용하기 위한 메세지와 서비스를 정의하는 파일입니다.
+// 데이터 통신을 적절히 하기 위해 프론트 역할의 팀원들과 많은 대화를 하며 구조화 하였습니다.
+
+
 service Store {
     rpc GetCategoryList(google.protobuf.Empty) returns (CategoryListResponse) {
         option (google.api.http) = {
@@ -44,9 +48,14 @@ service Store {
             get: "/store/wishes"
         };
     }
+    rpc GetGameListByUserId(UserIdQueryParamRequest) returns (GameSimpleListResponse){
+        option (google.api.http) = {
+            get: "/store/users/{user_id}/games"
+        };
+    }
     rpc GetSearchingGameList(SearchingContentQueryParamRequest) returns (GameSimpleListResponse){
         option (google.api.http) = {
-            get: "/store/games/search"
+            get: "/store/search"
         };
     }
     rpc PostWishlist(GameIdQueryParamRequest) returns (IsSuccessResponse){
@@ -85,11 +94,14 @@ service Store {
     }
     rpc GameUninstall(GameIdQueryParamRequest) returns (IsSuccessResponse){
         option (google.api.http) = {
-            delete: "/store/games/uninstall/{game_id}"
+            patch: "/store/games/uninstall"
+            body: "*"
         };
     }
 }
 
+
+//응답 값을 줄 때 사용할 message
 message UserDataResponse{
     int32 code = 1;
     string message = 2;
@@ -99,6 +111,7 @@ message UserDataResponse{
         repeated int32 purchase_list = 2 [json_name = "purchase_list"];
     }
 }
+
 
 message ReviewListResponse{
     int32 code = 1;
@@ -145,16 +158,23 @@ message IsSuccessResponse{
     }
 }
 
-
+// 요청 값 및 응답값에 임베드 될 message
 message Review{
     int32 id = 1;
     int32 user_id = 2 [json_name = "user_id"];
     string displayed_name = 3 [json_name = "displayed_name"];
-    string content = 4;
-    int32 recommendation = 5;
-    google.protobuf.Timestamp created_at = 6 [json_name = "created_at"];
-    google.protobuf.Timestamp updated_at = 7 [json_name = "updated_at"];
+    Profile profile = 4;
+    string content = 5;
+    int32 recommendation = 6;
+    google.protobuf.Timestamp created_at = 7 [json_name = "created_at"];
+    google.protobuf.Timestamp updated_at = 8 [json_name = "updated_at"];
+    message Profile{
+        string image = 1;
+        string description = 2;
+    }
 }
+
+
 
 message GameDetail{
     int32 id = 1;
@@ -197,24 +217,22 @@ message GameSimple {
     string description_snippet = 3 [json_name = "description_snippet"];
     int32 price = 4;
     int32 sale = 5;
-    ContentsPath image = 6;
-    ContentsPath video = 7;
-    repeated string category_list = 8 [json_name = "category_list"];
-    repeated string os_list = 9 [json_name = "os_list"];
-    int32 download_count = 10 [json_name = "download_count"];
+    int32 review_count = 6 [json_name = "review_count"];
+    int32 recommend_count =7 [json_name = "recommend_count"];
+    ContentsPath image = 8;
+    ContentsPath video = 9;
+    repeated string category_list = 10 [json_name = "category_list"];
+    repeated string os_list = 11 [json_name = "os_list"];
+    int32 download_count = 12 [json_name = "download_count"];
 }
 
-
-// 미디어 컨텐츠를 Response 해야할 때.
 message ContentsPath{
     string main = 1;
     repeated string sub = 2;
 }
 
 
-//Request Parameter에 사용되는 message
-
-// Client 측에서 하나의 카테고리를 Request 받을 때. 
+//요청에 사용되는 message
 message GameIdQueryParamRequest{
     int32 game_id = 1;
 }
@@ -238,4 +256,7 @@ message ReviewQueryRequest{
     int32 game_id = 2 [json_name = "game_id"];
     string content = 3;
     int32 recommendation = 4;
+}
+message UserIdQueryParamRequest{
+    int32 user_id = 1;
 }

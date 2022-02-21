@@ -17,12 +17,13 @@ import java.util.concurrent.ConcurrentMap;
 
 @Builder
 @Data
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Room {
     private Integer roomId;
     private Integer userCount;
     @JsonIgnore
+    //sessionId: session
     private ConcurrentMap<String, WebSocketSession> sessions;
+    //userId: userDto
     private Map<String, UserDto> users;
     private MapDto map;
 
@@ -33,18 +34,20 @@ public class Room {
                 this.users.put(userId, UserDto.of(userDetails));
                 this.userCount++;
             }
-            this.sessions.put(userId, session);
+            this.sessions.put(session.getId(), session);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
-    public synchronized Integer leave(String userId) {
+    public synchronized Integer leave(String userId, String sessionId) {
         try {
-            this.userCount--;
-            this.getUsers().remove(userId);
-            this.sessions.remove(userId);
+            if(users.containsKey(userId)) {
+                this.userCount--;
+                this.users.remove(userId);
+                this.sessions.remove(sessionId);
+            }
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
@@ -56,17 +59,15 @@ public class Room {
     }
 
     public void resetUserLocation() {
-        users.forEach((key, user) -> {
-            user.resetLocation();
-        });
+        users.forEach((key, user) -> user.resetLocation());
     }
 
     public void updateMap(MapDto map) {
         this.map = map;
     }
 
-    public WebSocketSession getSessionBySessionId(String userId) {
-        return sessions.get(userId);
+    public WebSocketSession getSessionBySessionId(String sessionId) {
+        return sessions.get(sessionId);
     }
 
     public RoomCache toHash() {

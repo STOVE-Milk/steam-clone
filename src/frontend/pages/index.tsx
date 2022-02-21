@@ -36,7 +36,6 @@ const Main: NextPage<IState> = () => {
 
     if (!ws.current) {
       const websocket = new WebSocket(`ws://fortice.iptime.org:8080/chat/ws?token=${token}`); //웹 소켓 연결
-      console.log(websocket);
       ws.current = websocket;
       dispatch({
         type: SET_WEBSOCKET,
@@ -79,7 +78,7 @@ const Main: NextPage<IState> = () => {
         <CarouselBox>
           <BigCarouselComponent
             slides={rankGames.map((data) => {
-              return <BigGameSlide key={data.id} {...data}></BigGameSlide>;
+              return <BigGameSlide key={data.id} id={data.id} src={data.image.main}></BigGameSlide>;
             })}
           ></BigCarouselComponent>
         </CarouselBox>

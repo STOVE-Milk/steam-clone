@@ -1,12 +1,14 @@
 package com.steam.membership.dto;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public interface UserWithIsFriend {
     Integer getIdx();
     String getNickname();
-    Integer getFriends();
+    Integer getIsFriend();
+    Integer getWasRequested();
     String getProfile();
-    Date getAccessedAt();
-    Date getCreatedAt();
+    LocalDateTime getAccessedAt();
+    LocalDateTime getCreatedAt();
 }

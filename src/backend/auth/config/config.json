@@ -3,7 +3,7 @@
         "username": "milk",
         "password": "milk",
         "database": "steam",
-        "host": "54.180.117.120",
+        "host": "localhost",
         "dialect": "mysql"
     },
     "test": {

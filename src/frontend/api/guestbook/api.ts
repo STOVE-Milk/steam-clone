@@ -2,16 +2,8 @@ import { IAddGuestBookReqType, IModifyGuestBookReqType, IResType } from './type'
 import axios from 'axios';
 
 export async function getGuestBooksAPI(userId: number) {
-  const token = localStorage.getItem('accessToken');
-
   const response = await axios.get<IResType>(
     `${process.env.NEXT_PUBLIC_BASE_URL}/membership/profile/${userId}/guest-book`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    },
   );
 
   return response.data;

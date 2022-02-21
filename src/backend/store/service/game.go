@@ -56,17 +56,6 @@ func (gc *GameService) GetUserData(ctx context.Context) (*pb.UserDataResponse_Us
 	pbUserData.PurchaseList = library
 	return &pbUserData, nil
 }
-func (gc *GameService) GetGameIdListByUserId(ctx context.Context) (*pb.GameIdListResponse_GameIdList, *models.Error) {
-	gameIdList, err := gc.r.GetPurchaseList(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	var pbGameIdList pb.GameIdListResponse_GameIdList
-	pbGameIdList.GameIdList = gameIdList
-
-	return &pbGameIdList, nil
-}
 
 func (gc *GameService) GetGameDetail(ctx context.Context) (*pb.GameDetailResponse_Game, *models.Error) {
 	gameDetail, err := gc.r.GetGameDetail(ctx)
@@ -145,10 +134,22 @@ func (gc *GameService) GetReviewList(ctx context.Context) (*pb.ReviewListRespons
 	var pbReviewList pb.ReviewListResponse_ReviewList
 	pbReviewList.ReviewList = make([]*pb.Review, len(reviewList))
 	for i, review := range reviewList {
+		profile_image, ok := review.Profile["image"].(string)
+		if !ok {
+			profile_image = ""
+		}
+		profile_description, ok := review.Profile["description"].(string)
+		if !ok {
+			profile_description = ""
+		}
 		pbReviewList.ReviewList[i] = &pb.Review{
-			Id:             int32(review.Id),
-			UserId:         int32(review.UserId),
-			DisplayedName:  review.DisplayedName,
+			Id:            int32(review.Id),
+			UserId:        int32(review.UserId),
+			DisplayedName: review.DisplayedName,
+			Profile: &pb.Review_Profile{
+				Image:       profile_image,
+				Description: profile_description,
+			},
 			Content:        review.Content,
 			Recommendation: int32(review.Recommendation),
 			CreatedAt:      timestamppb.New(review.CreatedAt),
@@ -169,7 +170,18 @@ func (gc *GameService) GetGameListInWishlist(ctx context.Context) (*pb.GameSimpl
 	}
 	return pbGameSimpleList, nil
 }
+func (gc *GameService) GetGameListByUserId(ctx context.Context) (*pb.GameSimpleListResponse_GameSimpleList, *models.Error) {
+	gameSimpleList, err := gc.r.GetGameListByUserId(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pbGameSimpleList, err := gc.parsingGameSimpleList(ctx, gameSimpleList)
+	if err != nil {
+		return nil, err
+	}
 
+	return pbGameSimpleList, nil
+}
 func (gc *GameService) PostWishlist(ctx context.Context) (*pb.IsSuccessResponse_Success, *models.Error) {
 	isSuccess, err := gc.r.PostWishlist(ctx)
 	if err != nil {
@@ -291,6 +303,8 @@ func (gc *GameService) parsingGameSimpleList(ctx context.Context, gameSimpleList
 			DescriptionSnippet: game.DescriptionSnippet,
 			Price:              int32(game.Price["KR"].(float64)),
 			Sale:               int32(game.Sale),
+			ReviewCount:        int32(game.ReviewCount),
+			RecommendCount:     int32(game.RecommendCount),
 			Image: &pb.ContentsPath{
 				Main: game.Image["main"].(string),
 				Sub:  imageSub,

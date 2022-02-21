@@ -2,6 +2,6 @@ server:
   port: 8210
 spring:
   profiles:
-    active: local
+    active: dev
   application:
-    name: robby-service
+    name: lobby-service

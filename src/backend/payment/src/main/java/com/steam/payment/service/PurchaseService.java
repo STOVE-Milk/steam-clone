@@ -2,6 +2,7 @@ package com.steam.payment.service;
 
 import com.steam.payment.dto.GameDto;
 import com.steam.payment.dto.PurchaseGamesRequest;
+import com.steam.payment.dto.PurchaseGamesResponse;
 import com.steam.payment.entity.Account;
 import com.steam.payment.entity.Library;
 import com.steam.payment.entity.User;
@@ -11,10 +12,7 @@ import com.steam.payment.global.common.UserContext;
 import com.steam.payment.global.error.CustomException;
 import com.steam.payment.global.error.ErrorCode;
 import com.steam.payment.global.util.Validator;
-import com.steam.payment.repository.AccountRepository;
-import com.steam.payment.repository.GameRepository;
-import com.steam.payment.repository.LibraryRepository;
-import com.steam.payment.repository.UserRepository;
+import com.steam.payment.repository.*;
 import com.steam.payment.repository.mongodb.PurchaseLogDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +34,7 @@ public class PurchaseService {
     private final UserRepository userRepository;
     private final LibraryRepository libraryRepository;
     private final AccountRepository accountRepository;
+    private final WishlistRepository wishlistRepository;
     private final LoggingService loggingService;
 
     /*
@@ -53,13 +52,13 @@ public class PurchaseService {
     //private final PurchaseService self;
 
     @Transactional
-    public List<GameDto> purchaseGames(PurchaseGamesRequest request) {
+    public PurchaseGamesResponse purchaseGames(PurchaseGamesRequest request) {
         String userCountry = UserContext.getUserCountry();
         /*
             게임 가격은 여러 나라에서 퍼블리싱할 상황을 대비하여 DOUBLE 형으로 만들었습니다.
             DB에는 JSON 형태로 저장하여 "국가코드":가격 형태로 저장하게 됩니다.
         */
-        List<GameDto> games = gameRepository.findAllById(request.getGamesId()).stream()
+        List<GameDto> games = gameRepository.findAllById(request.getGameIds()).stream()
                 .map(game -> GameDto.of(game, userCountry))
                 .collect(Collectors.toList());
         Double totalPrice = games.stream()
@@ -74,7 +73,7 @@ public class PurchaseService {
         List<Integer> gameIds = games.stream()
                 .map(GameDto::getId)
                 .collect(Collectors.toList());
-        List<Library> myLibraries = libraryRepository.findAllById(gameIds);
+        List<Library> myLibraries = libraryRepository.findAllByUserAndGameId(user, gameIds);
         if(!myLibraries.isEmpty())
             throw new CustomException(ErrorCode.GAME_ALEADY_PURCHASED);
 
@@ -100,6 +99,10 @@ public class PurchaseService {
 
         loggingService.logPurchaseSuccess(user.getIdx(), totalPrice);
 
-        return games;
+        return PurchaseGamesResponse.builder().games(games).build();
+    }
+
+    public void deletePurchasedGamesInWishlist(List<Integer> gameIds) {
+        wishlistRepository.deleteAllByUserIdAndGameIdIn(UserContext.getUserId(), gameIds);
     }
 }

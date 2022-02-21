@@ -1,5 +1,6 @@
 package com.steam.library.service;
 
+import com.steam.library.dto.messages.ClosePreConnectionMessage;
 import com.steam.library.dto.messages.EnterUserMessage;
 import com.steam.library.dto.messages.LeaveUserMessage;
 import com.steam.library.dto.messages.MoveUserMessage;
@@ -14,8 +15,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class PublishService {
-    private static final String EXCHANGE_KEY = "steam.robby";
-    private static final String ROUTING_KEY = "robby.normal";
+    private static final String EXCHANGE_KEY = "steam.lobby";
+    private static final String ROUTING_KEY = "lobby.normal";
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -26,19 +27,29 @@ public class PublishService {
         요청에 따라 형식이 변경될 여지가 있다고 판단하여 나누어둔 상태입니다.
     */
     public boolean publishEnterUser(String roomId, EnterUserMessage enterUserMessage) {
-        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, roomId + "|" + Behavior.ENTER.getValue() + "|" + JsonUtil.toJson(enterUserMessage));
+        String message = roomId + "|" + Behavior.ENTER.getValue() + "|" + JsonUtil.toJson(enterUserMessage);
+        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, message);
         return true;
     }
     public boolean publishMoveUser(String roomId, MoveUserMessage moveUserMessage) {
-        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, roomId + "|" + Behavior.MOVE.getValue() + "|" + JsonUtil.toJson(moveUserMessage));
+        String message = roomId + "|" + Behavior.MOVE.getValue() + "|" + JsonUtil.toJson(moveUserMessage);
+        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, message);
         return true;
     }
     public boolean publishLeaveUser(String roomId, LeaveUserMessage leaveUserMessage) {
-        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, roomId + "|" + Behavior.LEAVE.getValue() + "|" + JsonUtil.toJson(leaveUserMessage));
+        String message = roomId + "|" + Behavior.LEAVE.getValue() + "|" + JsonUtil.toJson(leaveUserMessage);
+        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, message);
         return true;
     }
     public boolean publishResetUserLocationAndSync(String roomId, String userId) {
-        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, roomId + "|" + Behavior.RESET.getValue() + "|" + userId);
+        String message = roomId + "|" + Behavior.RESET.getValue() + "|" + userId;
+        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, message);
         return true;
     }
+    public boolean publishClosePreConnection(String roomId, ClosePreConnectionMessage closePreConnectionMessage) {
+        String message = roomId + "|" + Behavior.CLOSE_PRE_SESSION.getValue() + "|" + JsonUtil.toJson(closePreConnectionMessage);
+        log.info(message);
+        rabbitTemplate.convertAndSend(EXCHANGE_KEY, ROUTING_KEY, message);
+        return true;
+    };
 }

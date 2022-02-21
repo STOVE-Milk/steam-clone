@@ -9,6 +9,8 @@ const failureRes = require("./util");
 
 const router = express.Router();
 
+const JWT_SECRET = "5dc5085d01e85fd229e32fedbd0f1a4b10cd57e61a7f423bca91263d7ce22ac5cf298a1f8ecc5f5f8125b07627329d06cbde50d25b5d00a17286cf577fd86e8b";
+
 // /auth/email 이메일 중복 확인
 router.post("/email", async (req, res, next) => {
     const { email } = req.body;
@@ -101,18 +103,14 @@ router.post("/signin", async (req, res, next) => {
                 },
             }
         );
-        const refreshToken = jwt.sign({}, `${process.env.JWT_SECRET}`, {
+        const refreshToken = jwt.sign({}, JWT_SECRET, {
             expiresIn: "14d",
         });
 
         // 서버에서 나중에 작업할 때 필요한 정보들로 accessToken을 발급한다.
-        const accessToken = jwt.sign(
-            { idx: exUser.idx, nickname: exUser.nickname, role: exUser.role, country: exUser.country },
-            `${process.env.JWT_SECRET}`,
-            {
-                expiresIn: "1h",
-            }
-        );
+        const accessToken = jwt.sign({ idx: exUser.idx, nickname: exUser.nickname, role: exUser.role, country: exUser.country }, JWT_SECRET, {
+            expiresIn: "1h",
+        });
 
         // redis에 refreshToken=accessToken 으로 저장 (key-value)
         // TODO: key-value 가 아닌 다른 방식으로 개발 필요 (from.태현님)
@@ -143,7 +141,7 @@ router.post("/token", async (req, res, next) => {
             return failureRes(res, 10105, "AccessToken Error", "잘못된 accessToken 입니다.");
         }
 
-        const decoded = jwt.decode(accessToken, `${process.env.JWT_SECRET}`);
+        const decoded = jwt.decode(accessToken, JWT_SECRET);
         let tokenInfo = { idx: 0, nickname: "", role: 0, country: "" };
 
         // 프로필 수정 이후에 토큰을 재발급 받는 경우, DB에서 User를 가져오는 것이 안전하다.
@@ -162,7 +160,7 @@ router.post("/token", async (req, res, next) => {
             };
         }
 
-        const newAccessToken = jwt.sign(tokenInfo, `${process.env.JWT_SECRET}`, {
+        const newAccessToken = jwt.sign(tokenInfo, JWT_SECRET, {
             expiresIn: "1h",
         });
 
@@ -178,7 +176,7 @@ router.post("/password", async (req, res, next) => {
     const { accessToken, curPassword, newPassword } = req.body;
 
     try {
-        const decoded = jwt.decode(accessToken, `${process.env.JWT_SECRET}`);
+        const decoded = jwt.decode(accessToken, JWT_SECRET);
         const idx = decoded.idx;
         const exUser = await User.findOne({ where: { idx: idx } });
         const compareResult = await bcrypt.compare(curPassword, exUser.password);
@@ -212,7 +210,7 @@ router.post("/password", async (req, res, next) => {
 router.post("/signout", async (req, res, next) => {
     const { accessToken } = req.body;
     try {
-        const decoded = jwt.decode(accessToken, `${process.env.JWT_SECRET}`);
+        const decoded = jwt.decode(accessToken, JWT_SECRET);
 
         User.update(
             {
@@ -240,9 +238,9 @@ router.post("/logout", async (req, res, next) => {
         // redis에서 refreshToken 삭제
         req.redisClient.del(refreshToken);
 
-        const decoded = jwt.decode(accessToken, `${process.env.JWT_SECRET}`);
+        const decoded = jwt.decode(accessToken, JWT_SECRET);
 
-        // 로그아웃 요청을 한 유저의 accessToken을 redis에 블랙리스트 등록: accessToken 남은 만료 시간만큼 등록한다.  
+        // 로그아웃 요청을 한 유저의 accessToken을 redis에 블랙리스트 등록: accessToken 남은 만료 시간만큼 등록한다.
         req.redisClient.set(accessToken, "logout", "EX", decoded.exp - decoded.iat);
 
         return successRes(res, 10000, "Signout OK", {});

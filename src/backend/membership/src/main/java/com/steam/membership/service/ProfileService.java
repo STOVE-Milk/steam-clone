@@ -41,7 +41,7 @@ public class ProfileService {
             return Body.error(ErrorCode.USER_NOT_FOUND);
 
         boolean isFriend = false;
-        if(UserContext.isLogined()) {
+        if(UserContext.isLoginedUser()) {
             final Optional<Friend> friend = friendRepository.findByUserAndFriend(user.get(), UserContext.getUser());
             isFriend = friend.isPresent();
         }

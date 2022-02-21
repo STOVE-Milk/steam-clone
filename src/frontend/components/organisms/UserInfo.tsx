@@ -1,6 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
+
 import styled from 'styled-components';
+import profileImg from 'public/Smilemates_Flame_Pose.png';
 
 import Text from 'components/atoms/Text';
 import FilledButton from 'components/atoms/FilledButton';
@@ -22,11 +24,14 @@ export default function UserInfo(props: IUserInfo) {
     <Wrapper>
       <UserSection>
         <Text types="large">{`${props.nickname} 님`}</Text>
-        {props.is_friend === 1 ? null : <AddFriendBtn types="primary">친구 추가</AddFriendBtn>}
       </UserSection>
       <ProfileSection>
         <ProfileImage>
-          {props.profile && props.profile.image !== '' ? <Image src={props.profile.image}></Image> : null}
+          {props.profile && props.profile.image !== '' ? (
+            <Image src={props.profile.image}></Image>
+          ) : (
+            <Image src={profileImg}></Image>
+          )}
         </ProfileImage>
         <Desc>{props.profile && props.profile.description}</Desc>
       </ProfileSection>
@@ -44,10 +49,6 @@ const Wrapper = styled.div`
 const UserSection = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const AddFriendBtn = styled(FilledButton)`
-  margin-left: auto;
 `;
 
 const ProfileSection = styled.div`

@@ -23,7 +23,6 @@ import (
 // 현재는 초대가 방을 생성할 때 밖에 되지 않습니다. 이후 방이 만들어 진 후에도 초대가 가능하도록 기능을 추가할 예정입니다.
 
 const (
-	//
 	writeWait = 10 * time.Second
 
 	// 응답 대기 시간
@@ -55,12 +54,14 @@ type Client struct {
 	send     chan []byte
 	ID       string `json:"id"`
 	Name     string `json:"name"`
+	Profile  string `json:"profile"`
+	friends  map[string]models.User
 	rooms    map[*Room]bool
 }
 
-// 존재하는 룸을 웹 서버에 등록
+// DB에 등록된 클라이언트을 웹 서버에 등록
 func newClient(conn *websocket.Conn, wsServer *WsServer, user models.User) *Client {
-	return &Client{
+	client := &Client{
 		ID:       user.GetId(),
 		Name:     user.GetName(),
 		conn:     conn,
@@ -68,6 +69,9 @@ func newClient(conn *websocket.Conn, wsServer *WsServer, user models.User) *Clie
 		send:     make(chan []byte, 256),
 		rooms:    make(map[*Room]bool),
 	}
+	client.friends = wsServer.getFriends(user.GetId())
+	client.Profile = wsServer.userRepository.FindUserById(user.GetId()).GetProfile()
+	return client
 
 }
 
@@ -90,6 +94,7 @@ func (client *Client) readPump() {
 			break
 		}
 		client.handleNewMessage(jsonMessage)
+		fmt.Println("클라이언트 : " + string(jsonMessage))
 	}
 
 }
@@ -103,7 +108,6 @@ func (client *Client) writePump() {
 	for {
 		select {
 		case message, ok := <-client.send:
-			fmt.Println("서버 : " + string(message))
 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The WsServer closed the channel.
@@ -117,7 +121,6 @@ func (client *Client) writePump() {
 			}
 			w.Write(message)
 
-			// Attach queued chat messages to the current websocket message.
 			n := len(client.send)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
@@ -140,7 +143,6 @@ func (client *Client) disconnect() {
 	//가입된 방을 가져온다.
 	//가입된 방에 client가 등록 돼 있으면 제거한다.
 	client.wsServer.unregister <- client
-
 	close(client.send)
 	client.conn.Close()
 }
@@ -155,12 +157,12 @@ func ServeWs(wsServer *WsServer, w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	// 토큰에서 유저의 정보를 가져옴
 	loginUser, _ := models.ExtractMetadata(r)
-	for _, u := range wsServer.users {
-		if u.GetName() == loginUser.Nickname {
-			user = u
-			break
-		}
+	user = &Client{
+		ID:   string(loginUser.UserId),
+		Name: loginUser.Nickname,
 	}
+	wsServer.setUser(user)
+
 	client := newClient(conn, wsServer, user)
 
 	go client.writePump()
@@ -178,7 +180,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		log.Printf("Error on unmarshal JSON message %s", err)
 		return
 	}
-	fmt.Println("클라이언트 : " + string(message.encode()))
 
 	message.Sender = client
 	switch message.Action {
@@ -187,7 +188,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		if room := client.wsServer.findRoomByID(roomID); room != nil {
 			room.broadcast <- &message
 		}
-		client.wsServer.loggingChat(roomID, message.Sender.GetId(), message.Sender.GetName(), message.Message)
+		client.wsServer.loggingChat(roomID, message.Sender, message.Message)
 
 	case JoinRoomPublicAction:
 		client.handleJoinRoomMessage(message)
@@ -200,17 +201,28 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 
 	case RoomViewAction:
 		client.handleRoomViewMessage(message)
+
+	case RoomGetAction:
+		client.handleRoomGetAction(message)
 	}
 
 }
 
+func (client *Client) handleRoomGetAction(message Message) {
+	rooms := client.wsServer.getAllJoinedRoom(client)
+
+	message = Message{
+		Action: RoomGetAction,
+		Data:   rooms,
+	}
+	client.send <- message.encode()
+}
+
 // 채팅 방을 클릭하면 채팅방의 정보를 보여 줌.
 func (client *Client) handleRoomViewMessage(message Message) {
-	room := client.wsServer.findRoomByName(message.Target.Name)
-
+	room := client.wsServer.findRoomByID(message.Target.ID)
 	// 채팅 방을 클릭했을 때 그 방에
 	if !client.isInRoom(room) {
-		fmt.Println(room)
 		client.rooms[room] = true
 		room.register <- client
 	}
@@ -218,6 +230,7 @@ func (client *Client) handleRoomViewMessage(message Message) {
 	data := client.wsServer.getRoomViewData(room.GetId())
 	message = Message{
 		Action: RoomViewAction,
+		Target: room,
 		Data:   data,
 	}
 	client.send <- message.encode()
@@ -232,16 +245,14 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 	if _, ok := client.rooms[room]; ok {
 		delete(client.rooms, room)
 	}
-	client.wsServer.userMRepository.DeleteRoom(room, client.ID)
+	client.wsServer.deleteRoom(room, client)
+	client.wsServer.deleteMember(room, client)
+
 	room.unregister <- client
 }
 
 func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	target := client.wsServer.findUserByID(message.Message)
-
-	if target == nil {
-		return
-	}
 
 	// 1:1 대화에 참여하는 유저 아이디를 오름차순 소팅하여 룸 이름으로 사용.
 	userA, _ := strconv.Atoi(message.Message)
@@ -251,8 +262,16 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	}
 	roomName := fmt.Sprintf("%v-%v", userA, userB)
 
+	members := []models.User{client, client.friends[message.Message]}
+
 	// Join room
-	joinedRoom := client.joinRoom(roomName, target, []string{client.ID, message.Message})
+	joinedRoom := client.joinRoom("", roomName, target, members)
+
+	// 접속 중인 회원이 아니라면 방 까지만 만들고 상대방에게 방을 보이게 할 필요는 없다.
+	if target == nil {
+		return
+	}
+
 	// Invite target user
 	if joinedRoom != nil {
 		client.invitePrivateRoom(target, joinedRoom)
@@ -260,24 +279,36 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 
 }
 
-func (client *Client) handleJoinRoomMessage(message Message) {
+func (client *Client) handleJoinRoomMessage(message Message) { //메세지밖에엄슴
+	var members []models.User
 	strArr := strings.Split(message.Message, "-") // strArr[0] = 방 이름, strArr[1] = 초대한 사람, strArr[2~n] = 초대 받은 사람
 	roomName := strArr[0]
-	members := strArr[1:]
-	joinedRoom := client.joinRoom(roomName, nil, members)
+	friends := strArr[2:]
+	members = append(members, client)
+	for _, friend := range friends {
+		members = append(members, client.friends[friend])
+	}
+	joinedRoom := client.joinRoom("public", roomName, nil, members)
 	if joinedRoom != nil {
 		client.invitePublicRoom(members, joinedRoom)
 	}
 
 }
 
-func (client *Client) joinRoom(roomName string, sender models.User, members []string) *Room {
-	room := client.wsServer.findRoomByName(roomName)
+func (client *Client) joinRoom(roomId, roomName string, sender models.User, members []models.User) *Room {
+
+	var room *Room
+	if roomId == "" {
+		//그룹 채팅방
+		room = client.wsServer.findRoomByName(roomName)
+	} else {
+		//1:1 채팅방
+		room = client.wsServer.findRoomByID(roomId)
+	}
 	if room == nil {
 		room = client.wsServer.createRoom(roomName, sender != nil, members)
 	}
 
-	// Don't allow to join private rooms through public room message
 	if sender == nil && room.Private {
 		return nil
 	}
@@ -285,7 +316,6 @@ func (client *Client) joinRoom(roomName string, sender models.User, members []st
 
 		client.rooms[room] = true
 		room.register <- client
-		fmt.Println(room)
 		client.notifyRoomJoined(room, sender)
 	}
 	return room
@@ -312,11 +342,11 @@ func (client *Client) invitePrivateRoom(target models.User, room *Room) {
 	}
 }
 
-func (client *Client) invitePublicRoom(members []string, room *Room) {
+func (client *Client) invitePublicRoom(members []models.User, room *Room) {
 	for _, member := range members {
 		inviteMessage := &Message{
 			Action:  JoinRoomPublicAction,
-			Message: member,
+			Message: member.GetId(),
 			Target:  room,
 			Sender:  client,
 		}
@@ -343,4 +373,8 @@ func (client *Client) GetId() string {
 
 func (client *Client) GetName() string {
 	return client.Name
+}
+
+func (client *Client) GetProfile() string {
+	return client.Profile
 }
