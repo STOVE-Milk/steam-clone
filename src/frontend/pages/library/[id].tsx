@@ -17,11 +17,6 @@ import { getGameInfoByUser, getUserData } from 'modules/game';
 
 import Text from 'components/atoms/Text';
 import { GameListLibrary } from 'components/organisms/GameListLibrary';
-// import * as GameAPI from 'api/game/api'; //getGameInfoByIdListAPI
-
-// import { getGameInfoByUserAPI } from 'api/game/api';
-// import { gameInfo } from 'modules/game/types';
-// import { isEmpty } from '../../util/isEmpty';
 
 const NoSSRMap = dynamic(() => import('components/organisms/Map'), {
   ssr: false,
@@ -104,22 +99,6 @@ const library: NextPage<IState> = () => {
     setInstalledGame({});
   };
 
-  // useEffect(() => {
-  //   typeof router.query.id == 'string' ? dispatch(getGameInfoByUser.request({ user_id: router.query.id })) : null;
-  //   setInstalledGame(installedGameList);
-  // }, [router.query.id]);
-  // const userId = router.query.id;
-  // useEffect(() => {
-  //   getGameInfoByUser();
-  // }, [userId]);
-
-  // const getGameInfoByUser = async () => {
-  //   if (userId == 'string') {
-  //     const res = await GameAPI.getGameInfoByUserAPI({ user_id: userId });
-  //     const game_list = await res.data.game_list;
-  //     setInstalledGameList(game_list);
-  //   }
-  // };
   //초기값(더미)으로 초기화되는 것을 막기 위함
   useEffect(() => {
     setGameOffsetList(gameOffsetList);
@@ -144,14 +123,6 @@ const library: NextPage<IState> = () => {
   return (
     <LibraryWrapper>
       {/* 지금 url에 있는 id 가져와서 유저 구매 게임 정보 및 정보들 가져와야함 */}
-      {console.log(router.query.id)}
-      {console.log(userInfo.data)}
-      {console.log('mapInfo', mapInfo)}
-      {console.log('gameInfoByUser', gameInfoByUser)}
-      {console.log('gameOffsetList', gameOffsetList)}
-      {console.log('installedGameList', gameInfoByUser.data)}
-      {console.log('installedGame', installedGame)}
-      {console.log('friends', friends.data)}
 
       <TitleWrapeer>
         <TitleStyle types="large">{`${nickname}의 라이브러리`}</TitleStyle>

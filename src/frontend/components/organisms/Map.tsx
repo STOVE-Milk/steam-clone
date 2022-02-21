@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
 
-import useWindowSize from 'util/Hooks/useWindowDimensions';
 import { isEmpty } from 'util/isEmpty';
 import { IState } from 'modules';
 
@@ -16,7 +15,6 @@ import { ModalConents } from 'components/molecules/ModalConents';
 import { commandType, IMapInfo } from 'pages/library/[id]';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import UserObject from './UserObject';
-import { colorPalette } from 'util/colorPalette';
 import { gameInfo, addGameOffset } from 'modules/game';
 
 import FilledButton from 'components/atoms/FilledButton';
@@ -92,12 +90,8 @@ const Map = (props: IMapProps) => {
 
   const dispatch = useDispatch();
 
-  const windowSize = useWindowSize();
-  const width = windowSize.width;
-  const height = windowSize.height;
   const router = useRouter();
 
-  // const [globalData, setGlobalData] = useState({} as IGlobalState);
   const [globalData, setGlobalData] = useState({
     //쌩 초기 더미값
     room: {
@@ -111,9 +105,7 @@ const Map = (props: IMapProps) => {
         side: 20,
         gameList: [],
         objectList: [],
-        games: {
-          // '2': { name: 'PUBG: BATTLEGROUNDS', x: 196, y: 50 }
-        },
+        games: {},
         objects: {},
       },
     },
@@ -127,11 +119,6 @@ const Map = (props: IMapProps) => {
   const [userLocation, setUserLocation] = useState({ 52: { x: 50, y: 50 } } as ILocationData);
 
   const [user2Y, setUser2Y] = useState(50);
-  //TO DO: min, max를 줘서 넘어가면 min, max로 set되게 하면 밖으로 나가는거 해결할 수 있을듯? -> 렌더링은 일어나지만, 뷰적으로는 밖으로 나지 않게 설정함
-
-  // const [gameOffset, setGameOffsetList] = useState({ x: 0, y: 0 });
-
-  // const [game1Y, setGame1Y] = useState(height - (height - 400));
 
   const shapeRef = React.useRef(null);
 
@@ -225,11 +212,6 @@ const Map = (props: IMapProps) => {
   useEffect(() => {
     connect();
   }, [userId]);
-  // useEffect(() => {
-  //   disconnect();
-  //   connect();
-  // }, [userId]);
-  //소켓 코드 끝
 
   const focusRef = () => {
     focus();
@@ -406,11 +388,6 @@ const Map = (props: IMapProps) => {
         <ModalConents title={enteredGame.name} description={enteredGame.description_snippet}></ModalConents>
       </Modal>
       <StageStyled me={me}>
-        {/* {console.log('mapInfo from library', mapInfo)} */}
-        {console.log('global data', globalData)}
-        {console.log('userLocation', userLocation)}
-        {console.log('gameOffsetData', gameOffsetData.data)}
-        {console.log('userId', userId)}
         <Stage id="canvas" width={absoluteVal} height={absoluteVal} ref={shapeRef} style={{}} onClick={focusRef}>
           <Layer>
             {userObjects(userLocation).map((eachUser, i) => {
