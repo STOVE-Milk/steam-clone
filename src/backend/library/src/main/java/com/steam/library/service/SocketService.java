@@ -2,6 +2,8 @@ package com.steam.library.service;
 
 import com.steam.library.dto.MapDto;
 import com.steam.library.dto.Room;
+import com.steam.library.dto.UserConnection;
+import com.steam.library.dto.UserDto;
 import com.steam.library.global.common.Behavior;
 import com.steam.library.global.common.UserDetails;
 import com.steam.library.dto.messages.*;
@@ -11,7 +13,7 @@ import com.steam.library.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -32,8 +34,8 @@ public class SocketService {
         여러 스레드에서 동시에 객체에 접근하다보니 동시성 문제가 발생했고,
         이에 따라 Concurrent 패키지를 이용해 동시성 처리를 했습니다.
     */
-    // userId : sessionId
-    private static final Map<String, String> user_session = new ConcurrentHashMap<>();
+    // userId : UserConnection(roomId, sessionId)
+    // private static final Map<String, List<UserConnection>> userConnections = new ConcurrentHashMap<>();
     // sessionId : UserDetails
     private static final Map<String, UserDetails> userData = new ConcurrentHashMap<>();
     // sessionId : roomId
@@ -58,9 +60,22 @@ public class SocketService {
         concurrency 옵션을 통해 소비하는 속도를 높여보려 했지만 concurrency 수 만큼 메세지를 중복으로 소비해서 방법을 찾고있습니다.
         동일한 채널에서 concurrency 수 만큼 구독하게 되는데, 채널이 같아서 구독한 목록 중 배분해서 소비할 줄 알았지만, 전체가 함께 소비합니다.
     */
-    @RabbitListener(queues = "lobby.queue", concurrency = "1")
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    value = @Queue(
+                            value = "lobby.queue",
+                            arguments = @Argument(name = "x-queue-type", value = "stream")
+                    ),
+                    exchange = @Exchange(value = "steam.lobby", type = "topic")
+            )
+    )
     public void receiveMessage(final Message message) {
         String messageStr = new String(message.getBody(), StandardCharsets.UTF_8);
+        if(messageStr.isBlank()) {
+            log.info("consume no message");
+            return;
+        }
+
         messageStr = messageStr.substring(1, messageStr.length() - 1).replace("\\", "");
         String[] messages = messageStr.split("\\|");
         String roomId = messages[0];
@@ -77,7 +92,7 @@ public class SocketService {
                         String userId = messages[2];
                         lobby.get(roomId).updateMap(socketDataService.getUserMap(Integer.parseInt(userId)));
                         lobby.get(roomId).resetUserLocation();
-                        synchronizeRoom(roomId, userId);
+                        synchronizeRoom(roomId);
                         break;
                     case LEAVE:
                         LeaveUserMessage leaveUserMessage = JsonUtil.toObject(messages[2], LeaveUserMessage.class);
@@ -87,15 +102,76 @@ public class SocketService {
                         MoveUserMessage moveUserMessage = JsonUtil.toObject(messages[2], MoveUserMessage.class);
                         sendMessageToRoom(roomId, moveUserMessage.getUserId(), Behavior.MOVE, moveUserMessage);
                         break;
+                    case CLOSE_PRE_SESSION:
+                        // 같은 방에 중복 입장 시 기존 연결을 끊는 메세지
+                        ClosePreConnectionMessage closePreConnectionMessage = JsonUtil.toObject(messages[2], ClosePreConnectionMessage.class);
+                        String preSessionId = closePreConnectionMessage.getPreSessionId();
+                        if(session_room.containsKey(preSessionId)) {
+                            log.info("session close multi enter... " + closePreConnectionMessage.getUserId());
+                            session_room.remove(preSessionId);
+                            userData.remove(preSessionId);
+                            WebSocketSession preSession = lobby.get(roomId).getSessionBySessionId(preSessionId);
+                            /*
+                                만약 새로 접속한 세션의 Id가 서버 내 변수에 등록되어 있다면 같은 로비 서버에 접근한 것이고,
+                                입장 메소드에서 갱신되므로. 유저 데이터는 삭제가 필요 없음
+                            */
+                            if(!session_room.containsKey(closePreConnectionMessage.getPostSessionId())) {
+                                lobby.get(roomId).leave(closePreConnectionMessage.getUserId(), preSessionId);
+                            } else {
+                                // session 정보는 삭제해줘야함
+                                lobby.get(roomId).getSessions().remove(preSessionId);
+                            }
+
+                            sendMessageToMe(preSession, Behavior.CLOSE_PRE_SESSION, ErrorMessage.of(ErrorCode.ENTER_SAME_ROOM));
+                            preSession.close(CloseStatus.NORMAL);
+                        }
+                        break;
                 }
             } catch (NullPointerException e) {
                 e.printStackTrace();
-                log.info("subscribe failed");
+                log.info("subscribe failed" + roomId + ":" + messageStr);
+            } catch (IOException e) {
+                log.info("session close failed when multi enter in same room");
             }
         }
     }
 
-    public synchronized Boolean enter(WebSocketSession session, EnterRequestMessage enterRequestMessage) throws NullPointerException{
+    public synchronized boolean checkMultiConnectionToSameRoom(WebSocketSession session, EnterRequestMessage enterRequestMessage) {
+        if(enterRequestMessage == null) {
+            sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
+            return false;
+        }
+
+        UserDetails userDetails = JwtUtil.getPayload(enterRequestMessage.getAuthorization());
+        if(userDetails == null) {
+            sendErrorMessage(session, ErrorCode.UNAUTHORIZED);
+            return false;
+        }
+
+        // roomId:sessionId 로 roomId를 가지고 이전 sessionId를 가져옴
+        String preSessionId = socketDataService.getPreSessionIdByRoomId(userDetails.getIdx().toString(), enterRequestMessage.getRoomId());
+        // 이전 세션이 존재한다는 것이 중복 접근이라는 것, null일 경우는 같은 방에 접속한 것이 아니라는 것
+        if(preSessionId != null) {
+            ClosePreConnectionMessage closePreConnectionMessage = ClosePreConnectionMessage.builder()
+                    .userId(userDetails.getIdx().toString())
+                    .preSessionId(preSessionId)
+                    .postSessionId(session.getId())
+                    .build();
+
+            publishService.publishClosePreConnection(enterRequestMessage.getRoomId(), closePreConnectionMessage);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isEnteredUserSession(String sessionId) {
+        return session_room.containsKey(sessionId);
+    }
+    /*
+        synchronized 참고자료 : https://jgrammer.tistory.com/entry/Java-%ED%98%BC%EB%8F%99%EB%90%98%EB%8A%94-synchronized-%EB%8F%99%EA%B8%B0%ED%99%94-%EC%A0%95%EB%A6%AC
+    */
+    public synchronized Boolean enter(WebSocketSession session, EnterRequestMessage enterRequestMessage, boolean isAlreadyEntered) throws NullPointerException{
         if(enterRequestMessage == null)
             return sendErrorMessage(session, ErrorCode.MESSAGE_PARSE_UNAVAILABLE);
 
@@ -106,23 +182,6 @@ public class SocketService {
         String roomId = enterRequestMessage.getRoomId();
         String userId = userDetails.getIdx().toString();
         String sessionId = session.getId();
-
-        /*
-           한 유저가 재접속, 다른방 입장, 새 창으로 접속 시 기존 데이터가 남아있는 문제가 발생할 수 있습니다.
-           유저-세션 정보를 유지해놓고, 유저 데이터가 남아있는 경우 세션 종료를 시킵니다.
-
-           TODO: 유저가 다른 서버에 등록되어 있을 경우 처리 필요.
-        */
-        if(user_session.containsKey(userId)) {
-            String preSessionId = user_session.get(userId);
-            String preRoomId = session_room.get(preSessionId);
-            WebSocketSession preSession = lobby.get(preRoomId).getSessionBySessionId(userId);
-            log.info("이전 세션, 방: " + preSessionId + "|" + preRoomId + "|" + (preSession == null));
-            if(preSession != null) {
-                sendErrorMessage(preSession, ErrorCode.CONNECT_TO_OTHER_ROOM);
-                closeConnection(preSession);
-            }
-        }
 
         // 방 생성
         Room room;
@@ -135,18 +194,22 @@ public class SocketService {
 
         // 방 입장
         room.enter(userDetails, session);
-        user_session.put(userId, sessionId);
         userData.put(sessionId, userDetails);
         session_room.put(sessionId, roomId);
 
-        // 입장 메세지 발행
-        EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
-        publishService.publishEnterUser(roomId, enterUserMessage);
-        // 본인이 발행한 메세지까지 소비해서 주석처리
-        // sendMessageToRoom(roomId, userId, Behavior.ENTER, enterUserMessage);
-
         // Redis 갱신 & 데이터 동기화
-        Room cachedRoom = socketDataService.addUserToRedis(roomId, userId, userDetails);
+        socketDataService.addUserConnectionToRedis(userId, roomId, sessionId);
+        Room cachedRoom;
+
+        if(!isAlreadyEntered) {
+            cachedRoom = socketDataService.addUserToRedis(roomId, userId, UserDto.of(userDetails));
+            // 입장 메세지 발행
+            EnterUserMessage enterUserMessage = EnterUserMessage.of(userDetails);
+            publishService.publishEnterUser(roomId, enterUserMessage);
+        } else {
+            cachedRoom = socketDataService.getRoomCache(roomId);
+        }
+
         SyncRoomMessage syncRoomMessage = SyncRoomMessage.of(cachedRoom);
         sendMessageToMe(session, Behavior.SYNC, syncRoomMessage);
 
@@ -168,9 +231,6 @@ public class SocketService {
         // 이동 메세지 발행
         MoveUserMessage moveUserMessage = MoveUserMessage.of(userId, moveRequestMessage.getDirection());
         publishService.publishMoveUser(roomId, moveUserMessage);
-
-        // 본인이 발행한 메세지까지 소비해서 주석처리
-        // sendMessageToRoom(roomId, userId, Behavior.MOVE, moveUserMessage);
 
         return true;
     }
@@ -201,22 +261,19 @@ public class SocketService {
             lobby.get(roomId).resetUserLocation();
             publishService.publishResetUserLocationAndSync(roomId, userId);
             socketDataService.resetUserLocationAndUpdateMap(roomId, buildRequestMessage.getMap());
-            // 본인이 발행한 메세지까지 소비해서 주석처리
-            //sendMessageToRoom(roomId, userDetails.getIdx().toString(), Behavior.SYNC, lobby.get(roomId));
             return true;
         } else {
             return sendErrorMessage(session, ErrorCode.SERVER_ERROR);
         }
     }
 
-    public Boolean synchronizeRoom(String roomId, String userId) throws NullPointerException{
+    public Boolean synchronizeRoom(String roomId) throws NullPointerException{
         Room room = socketDataService.getRoomCache(roomId);
-        logObjectJson(room);
+        //logObjectJson(room);
 
         if(room != null) {
-            return sendMessageToRoom(
+            return sendMessageToAll(
                     roomId,
-                    userId,
                     Behavior.SYNC,
                     SyncRoomMessage.of(room)
             );
@@ -244,25 +301,25 @@ public class SocketService {
     public synchronized Boolean closeConnection(WebSocketSession session) {
         String sessionId = session.getId();
         String roomId = session_room.get(sessionId);
-        String userId = userData.get(sessionId).getIdx().toString();
 
-        log.info("Close Connection : "  + sessionId + " " +userId);
+        if(lobby.containsKey(roomId)) {
+            String userId = userData.get(sessionId).getIdx().toString();
 
-        LeaveUserMessage leaveUserMessage = LeaveUserMessage.of(userId);
-        publishService.publishLeaveUser(roomId, leaveUserMessage);
+            log.info("Close Connection : "  + sessionId + " " +userId);
 
-        // 본인이 발행한 메세지까지 소비해서 주석처리
-        // sendMessageToRoom(roomId, userId, Behavior.LEAVE,leaveUserMessage);
+            // 떠나기
+            Integer userNum = lobby.get(roomId).leave(userId, sessionId);
+            if (userNum.equals(0))
+                lobby.remove(roomId);
+            userData.remove(sessionId);
+            session_room.remove(sessionId);
 
-        // 떠나기
-        Integer userNum = lobby.get(roomId).leave(userId);
-        if(userNum.equals(0))
-            lobby.remove(roomId);
-        user_session.remove(userId);
-        userData.remove(sessionId);
-        session_room.remove(sessionId);
+            socketDataService.removeUserConnectionToRedis(userId, roomId);
+            socketDataService.removeUserInRedis(roomId, userId);
 
-        socketDataService.removeUserInRedis(roomId, userId);
+            LeaveUserMessage leaveUserMessage = LeaveUserMessage.of(userId);
+            publishService.publishLeaveUser(roomId, leaveUserMessage);
+        }
 
         try {
             session.close(CloseStatus.NORMAL);
@@ -304,7 +361,8 @@ public class SocketService {
     public boolean sendMessageToMe(WebSocketSession session, TextMessage message) throws NullPointerException{
         try {
             synchronized (session) {
-                session.sendMessage(message);
+                if(session != null && session.isOpen())
+                    session.sendMessage(message);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -323,11 +381,12 @@ public class SocketService {
     public synchronized boolean sendMessageToRoom(String roomId, String myId, TextMessage message) throws NullPointerException{
         if(lobby.containsKey(roomId)) {
             final Map<String, WebSocketSession> sessions = lobby.get(roomId).getSessions();
-            sessions.forEach( (sessionId, session) -> {
+            sessions.forEach( (userId, session) -> {
                 try {
                     if (!userData.get(session.getId()).getIdx().toString().equals(myId)) {
                         synchronized (session) {
-                            session.sendMessage(message);
+                            if(session != null && session.isOpen())
+                                session.sendMessage(message);
                         }
                     }
                 } catch (IOException e) {
@@ -348,10 +407,11 @@ public class SocketService {
     public synchronized boolean sendMessageToAll(String roomId, TextMessage message) throws NullPointerException{
         if(lobby.containsKey(roomId)) {
             final Map<String, WebSocketSession> sessions = lobby.get(roomId).getSessions();
-            sessions.forEach( (sessionId, session) -> {
+            sessions.forEach( (userId, session) -> {
                 try {
                     synchronized (session) {
-                        session.sendMessage(message);
+                        if(session != null && session.isOpen())
+                            session.sendMessage(message);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

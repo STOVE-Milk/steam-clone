@@ -2,6 +2,6 @@ server:
   port: 8201
 spring:
   profiles:
-    active: local
+    active: dev
   application:
     name: membership-service

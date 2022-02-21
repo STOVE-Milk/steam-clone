@@ -15,7 +15,7 @@ public class PurchaseGamesRequest {
     @NotNull(message = "장바구니에 구매할 게임이 없습니다.")
     List<GameDto> games = new ArrayList<>();
 
-    public List<Integer> getGamesId() {
+    public List<Integer> getGameIds() {
         return games.stream()
                 .map(GameDto::getId)
                 .collect(Collectors.toList());

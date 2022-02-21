@@ -115,19 +115,19 @@ func (store *storeServer) GetUserData(ctx context.Context, _ *empty.Empty) (*pb.
 	}, nil
 }
 
-func (store *storeServer) GetGameIdListByUserId(ctx context.Context, req *pb.UserIdQueryParamRequest) (*pb.GameIdListResponse, error) {
+func (store *storeServer) GetGameListByUserId(ctx context.Context, req *pb.UserIdQueryParamRequest) (*pb.GameSimpleListResponse, error) {
 	defer utils.Recover()
 	ctx = context.WithValue(ctx, "userId", req.UserId)
-	res, err := store.GameCtr.GetGameIdListByUserId(ctx)
+	res, err := store.GameCtr.GetGameListByUserId(ctx)
 	if err != nil {
-		return &pb.GameIdListResponse{
+		return &pb.GameSimpleListResponse{
 			Code:    int32(err.Code),
 			Message: err.Message,
 		}, nil
 	}
-	return &pb.GameIdListResponse{
+	return &pb.GameSimpleListResponse{
 		Code:    31000,
-		Message: "game list in libarary",
+		Message: "game list in library",
 		Data:    res,
 	}, nil
 }

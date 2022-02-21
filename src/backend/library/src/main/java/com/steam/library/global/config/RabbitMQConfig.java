@@ -11,11 +11,14 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class RabbitMQConfig {
-    private static final String EXCHANGE_NAME = "steam.robby";
-    private static final String QUEUE_NAME = "robby.queue";
-    private static final String ROUTING_KEY = "robby.normal";
+    private static final String EXCHANGE_NAME = "steam.lobby";
+    private static final String QUEUE_NAME = "lobby.queue";
+    private static final String ROUTING_KEY = "lobby.normal";
 
     @Bean
     TopicExchange exchange() {
@@ -23,7 +26,9 @@ public class RabbitMQConfig {
     }
     @Bean
     Queue queue() {
-        return new Queue(QUEUE_NAME);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put( "x-queue-type" , "stream" ); // Stream 큐 사용을 위한 필수 인수
+        return new Queue(QUEUE_NAME, true, false, false, arguments);
     }
     @Bean
     Binding binding (Queue queue, TopicExchange exchange) {

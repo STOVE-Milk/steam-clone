@@ -45,7 +45,7 @@ public class SearchService {
     public Body<Object> searchUsersByNickname(String nickname, Integer page) {
         Integer start = page * 20;
         List<UserWithIsFriend> users;
-        if(UserContext.isLogined()) {
+        if(UserContext.isLoginedUser()) {
             users = userRepository.findAllByNicknameStartsWith(UserContext.getUserId(), nickname, start, 20);
         } else {
             users = userRepository.findAllByNicknameStartsWith(nickname, start, 20);

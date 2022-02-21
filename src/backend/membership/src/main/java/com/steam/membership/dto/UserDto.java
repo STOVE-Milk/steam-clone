@@ -8,6 +8,7 @@ import com.steam.membership.global.util.JsonUtil;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Builder
@@ -18,9 +19,10 @@ public class UserDto {
     private Integer id;
     private String nickname;
     private Integer isFriend;
+    private Integer wasRequested;
     private ProfileDto profile;
-    private Date accessedAt;
-    private Date createdAt;
+    private LocalDateTime accessedAt;
+    private LocalDateTime createdAt;
 
     public static UserDto of(final User user) {
         return UserDto.builder()
@@ -36,14 +38,15 @@ public class UserDto {
         return UserDto.builder()
                 .id(user.getIdx())
                 .nickname(user.getNickname())
-                .isFriend(user.getFriends())
+                .isFriend(user.getIsFriend())
+                .wasRequested(user.getWasRequested())
                 .profile(JsonUtil.toObject(user.getProfile(), ProfileDto.class))
                 .accessedAt(user.getAccessedAt())
                 .createdAt(user.getCreatedAt())
                 .build();
     }
 
-    public static UserDto of(final User user, Date createdAt) {
+    public static UserDto of(final User user, LocalDateTime createdAt) {
         return UserDto.builder()
                 .id(user.getIdx())
                 .nickname(user.getNickname())
