@@ -115,23 +115,30 @@ const cart: NextPage<IState> = (props) => {
             </RedirectBtn>
           </TitleStyle>
         ) : (
-          gameList.map((eachGame, i) => {
-            if (!userData.data.purchase_list.includes(eachGame.id)) {
-              return (
-                <>
-                  <ChenknGameInfoWrapper key={eachGame + i.toString()}>
-                    <input type="checkbox" id={eachGame.name} name="game" onClick={() => handleCheckEvt(eachGame.id)} />
-                    <label htmlFor={eachGame.name}>
-                      <GameInfo key={eachGame.id} type={'cart'} {...eachGame} />
-                    </label>
-                  </ChenknGameInfoWrapper>
-                  <Purchasebtn types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>
-                    구매하기
-                  </Purchasebtn>
-                </>
-              );
-            }
-          })
+          <div>
+            {gameList.map((eachGame, i) => {
+              if (!userData.data.purchase_list.includes(eachGame.id)) {
+                return (
+                  <>
+                    <ChenknGameInfoWrapper key={eachGame + i.toString()}>
+                      <input
+                        type="checkbox"
+                        id={eachGame.name}
+                        name="game"
+                        onClick={() => handleCheckEvt(eachGame.id)}
+                      />
+                      <label htmlFor={eachGame.name}>
+                        <GameInfo key={eachGame.id} type={'cart'} {...eachGame} />
+                      </label>
+                    </ChenknGameInfoWrapper>
+                  </>
+                );
+              }
+            })}
+            <Purchasebtn types={'primary'} onClick={doPurchase} disabled={checkedGame.length ? false : true}>
+              구매하기
+            </Purchasebtn>
+          </div>
         )}
       </div>
     </CartInfoWrapper>

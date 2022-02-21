@@ -357,36 +357,36 @@ const Map = (props: IMapProps) => {
   const me = userId == userInfo.data.idx.toString();
 
   // x좌표를 찾을 수 없다는 에러 떠서 일단 주석처리 -> 게임에 접근시 모달 띄우는 코드
-  useEffect(() => {
-    enterChecker();
-  }, [userLocation]);
+  // useEffect(() => {
+  //   enterChecker();
+  // }, [userLocation]);
 
-  const [enteredGame, setEnteredGame] = useState({} as gameInfo);
-  const enterChecker = () => {
-    for (let key in gameOffsetList) {
-      if (
-        userLocation &&
-        userLocation[userId].x === gameOffsetList[key].x &&
-        userLocation[userId].y === gameOffsetList[key].y
-      ) {
-        installedGameList.map((each: any) => {
-          if (each.id == key) {
-            setEnteredGame(each);
-            setShowModal(true);
-            console.log(each);
-          }
-        });
-      }
-    }
-  };
+  // const [enteredGame, setEnteredGame] = useState({} as gameInfo);
+  // const enterChecker = () => {
+  //   for (let key in gameOffsetList) {
+  //     if (
+  //       userLocation &&
+  //       userLocation[userId].x === gameOffsetList[key].x &&
+  //       userLocation[userId].y === gameOffsetList[key].y
+  //     ) {
+  //       installedGameList.map((each: any) => {
+  //         if (each.id == key) {
+  //           setEnteredGame(each);
+  //           setShowModal(true);
+  //           console.log(each);
+  //         }
+  //       });
+  //     }
+  //   }
+  // };
   const [showModal, setShowModal] = useState(false);
 
   return (
     <div>
-      <SubTitleStyle>{'마이 홈'}</SubTitleStyle>
-      <Modal onClose={() => setShowModal(false)} show={showModal} height="200px">
+      <SubTitleStyle types="medium">{'마이 룸'}</SubTitleStyle>
+      {/* <Modal onClose={() => setShowModal(false)} show={showModal} height="200px">
         <ModalConents title={enteredGame.name} description={enteredGame.description_snippet}></ModalConents>
-      </Modal>
+      </Modal> */}
       <StageStyled me={me}>
         <Stage id="canvas" width={absoluteVal} height={absoluteVal} ref={shapeRef} style={{}} onClick={focusRef}>
           <Layer>
@@ -473,9 +473,8 @@ const StageStyled = styled.div<{ me: boolean }>`
   height: ${absoluteVal}px;
   width: ${absoluteVal}px;
 
-  /* background-image: url("../../public/grass.jpg"); */
-  background-image: linear-gradient(45deg, #754 25%, transparent 26%, transparent 75%, #754 75%, #754),
-    linear-gradient(45deg, #754 25%, transparent 26%, transparent 75%, #754 75%, #754);
+  background-image: linear-gradient(45deg, #313640 25%, transparent 26%, transparent 75%, #313640 75%, #313640),
+    linear-gradient(45deg, #313640 25%, transparent 26%, transparent 75%, #313640 75%, #313640);
   background-size: calc(50px * 2) calc(50px * 2);
   background-position: 0 0, 50px 50px;
   margin: auto;

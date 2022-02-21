@@ -27,8 +27,14 @@ export default function Header() {
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     const profileImg = localStorage.getItem('profileImg');
-    const result = token && parseToken(token);
-    result['profileImg'] = profileImg;
+    let result;
+
+    if (token) {
+      result = token && parseToken(token);
+    }
+    if (userInfo.data.country !== '[TEST]KR') {
+      result['profileImg'] = profileImg;
+    }
     dispatch(saveUserInfo.request(result));
   }, []);
 
@@ -40,7 +46,7 @@ export default function Header() {
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
         {userInfo.data && <Text>{userInfo.data.nickname}님 🙂</Text>}
-        <Profile profileImg={userInfo.data.profileImg} />
+        <Profile profileImg={userInfo.data && userInfo.data.profileImg} />
       </AlertUserWrapper>
     </HeaderStyle>
   );
