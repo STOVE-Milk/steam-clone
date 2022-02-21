@@ -298,6 +298,16 @@
             "code":31102,
             "message":"이미 삭제한 게임입니다.",
             "description":"삭제 값 변경 없음."
+        },
+        "EMPTY_GAME_DATA_ERR":{
+            "code":31001,
+            "message":"요청 결과에 맞는 게임데이터가 없습니다.",
+            "description":"문법에 맞는 쿼리지만 결과값이 없습니다."
+        },
+        "EMPTY_CART_ERR":{
+            "code":31002,
+            "message":"사용자의 장바구니가 비어있습니다.",
+            "description":"장바구니가 비어있기 때문에 쿼리가 맞지 않습니다."
         }
     },
     "membership": {
