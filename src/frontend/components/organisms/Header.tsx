@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,15 +10,17 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { parseToken } from 'util/parseToken';
 import { saveUserInfo } from 'modules/user';
 
-import Profile from 'components/atoms/Profile';
-import SearchBox from 'components/molecules/SearchBox';
 import { IState } from 'modules';
 
+import Text from 'components/atoms/Text';
+import Profile from 'components/atoms/Profile';
+import SearchBox from 'components/molecules/SearchBox';
+
 export default function Header() {
+  const { userInfo } = useSelector((state: IState) => state.user);
+
   const [option, setOption] = useState('name');
   const [inputText, setInputText] = useState('');
-
-  const userInfo = useSelector((state: IState) => state.user.userInfo);
 
   const dispatch = useDispatch();
 
@@ -35,6 +39,7 @@ export default function Header() {
       </SearchBarWrapper>
       <AlertUserWrapper>
         <FontAwesomeIcon icon={faBell} inverse />
+        {userInfo.data && <Text>{userInfo.data.nickname}님 🙂</Text>}
         <Profile profileImg={userInfo.data.profileImg} />
       </AlertUserWrapper>
     </HeaderStyle>

@@ -37,4 +37,5 @@ const ContentSection = styled.div`
     width: calc(100vw - 117px);
   }
   float: right;
+  overflow-x: hidden;
 `;

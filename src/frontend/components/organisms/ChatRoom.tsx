@@ -25,6 +25,7 @@ export interface IChatRoomProps {
   logs: Log[]; // 채팅방 메세지들
   leaveRoom: () => void;
   userId: number; // 현재 로그인한 유저 아이디
+  private: boolean;
 }
 
 export default function ChatRoom(props: IChatRoomProps) {
@@ -48,7 +49,7 @@ export default function ChatRoom(props: IChatRoomProps) {
         {props.members.map((member, key) => {
           return <Member key={key}>{member.name}</Member>;
         })}
-        {props.members.length > 1 && (
+        {!props.private && (
           <LeaveRoomBtn types="primary" onClick={props.leaveRoom}>
             방 나가기
           </LeaveRoomBtn>

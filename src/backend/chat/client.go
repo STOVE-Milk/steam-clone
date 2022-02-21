@@ -265,7 +265,7 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	members := []models.User{client, client.friends[message.Message]}
 
 	// Join room
-	joinedRoom := client.joinRoom("", roomName, target, members)
+	joinedRoom := client.joinRoom("", roomName, client, members)
 
 	// 접속 중인 회원이 아니라면 방 까지만 만들고 상대방에게 방을 보이게 할 필요는 없다.
 	if target == nil {

@@ -95,7 +95,7 @@ export default function GameInfo(props: IGameInfo) {
               return (
                 <FontAwesomeIcon
                   key={eachOs + i}
-                  icon={eachOs.toLocaleLowerCase().indexOf('window') ? faWindowMaximize : faAppleAlt}
+                  icon={eachOs.toLocaleLowerCase().indexOf('window') != -1 ? faWindowMaximize : faAppleAlt}
                   inverse
                 />
               );

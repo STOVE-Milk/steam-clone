@@ -35,6 +35,7 @@ const Chat: NextPage = () => {
   const [curRoom, setCurRoom] = useState(''); // 현재 채팅방 이름
   const [members, setMembers] = useState<Member[]>([]); // 채팅방 멤버들
   const [logs, setLogs] = useState<Log[]>([]); // 채팅방 메세지들
+  const [isPrivate, setPrivate] = useState(true); // 현재 채팅방이 개인/단체 채팅방인가
 
   const dispatch = useDispatch();
 
@@ -81,6 +82,7 @@ const Chat: NextPage = () => {
               const data = serverMessage.data;
               setMembers(data.members);
               setLogs(data.log);
+              setPrivate(serverMessage.target.private);
               break;
             case 'send-message': // 메세지를 받음
               console.log('send-message', serverMessage);
@@ -255,6 +257,7 @@ const Chat: NextPage = () => {
               members={members.filter((member) => member.id !== userInfo.data.idx.toString())}
               logs={logs}
               leaveRoom={leaveRoom}
+              private={isPrivate}
             ></ChatRoom>
           ) : (
             <ChatRoomPlaceholder>

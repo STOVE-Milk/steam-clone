@@ -19,12 +19,13 @@
     "@typescript-eslint/parser": "^5.8.0",
     "axios": "^0.24.0",
     "konva": "^8.3.2",
-    "next": "^12.0.7",
+    "next": "^12.0.10",
     "next-redux-saga": "^4.1.2",
     "next-redux-wrapper": "^7.0.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-konva": "^17.0.2-5",
+    "react-konva-utils": "^0.2.0",
     "react-multi-carousel": "^2.6.5",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
@@ -33,7 +34,8 @@
     "socket.io-client": "^4.4.1",
     "styled-components": "^5.3.3",
     "typesafe-actions": "^5.1.0",
-    "ws": "^8.4.2"
+    "use-image": "^1.0.8",
+    "ws": "^8.5.0"
   },
   "devDependencies": {
     "@types/node": "17.0.5",
