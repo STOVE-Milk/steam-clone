@@ -56,6 +56,7 @@
 
 ---
 ## 4. 아키텍쳐
+![](https://i.imgur.com/cNhTlng.png)
 
 ---
 ## 5. 디렉토리 구조
