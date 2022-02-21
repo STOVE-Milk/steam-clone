@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useSelector, useDispatch } from 'react-redux';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -11,7 +12,7 @@ import { saveUserInfo } from 'modules/user';
 import { getItemFromLocalStorage } from 'util/getItemFromLocalStorage';
 import { parseToken } from 'util/parseToken';
 import { makeUniqueArr } from 'util/makeUniqueArr';
-import { colorPalette } from 'util/colorPalette';
+import { source } from 'util/imageSource';
 import { getGameInfoByUser, getUserData } from 'modules/game';
 
 import Text from 'components/atoms/Text';
@@ -158,8 +159,7 @@ const library: NextPage<IState> = () => {
       </TitleWrapeer>
       <IconWrapper>
         <Text>{'내 캐릭터 '}</Text>
-        {/* friends.filter() */}
-        <MyColor color={`${colorPalette[Math.round(100 % userInfo.data.idx)]}`}></MyColor>
+        <Image src={`${source[Math.floor(userInfo.data.idx % 10)]}`} width="50px" height="50px" />
       </IconWrapper>
       <LibraryContentWrapper>
         <NoSSRMap

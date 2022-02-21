@@ -175,18 +175,17 @@ const Map = (props: IMapProps) => {
       //다른유저 방 입장
       setUserLocation((prev) => ({ ...prev, [data.user_id]: { x: 50, y: 50 } })); // 처음 들어오는 유저는 좌상단으로 입장
     } else if (code == '19') {
+      alert(`${data.user_id}번 유저가 나갔습니다.`);
       //19{"user_id":"67"}
       //setUserLocation delete 그 유저 -> 잘 되는지 콘솔로 확인 해봐야함, 남아있는 듯
       setUserLocation((prev: any) => {
         for (let key in prev) {
           const state = prev;
           console.log(key, data.user_id);
-          if (key == data.user_id) {
-            delete state.key;
-            return { ...state };
-          }
+          delete state.data.user_id;
+          return { ...state };
         }
-        if (!isEmpty(ws.current)) ws.current && ws.current.close();
+        // if (!isEmpty(ws.current)) ws.current && ws.current.close();
       });
     }
   }
@@ -375,37 +374,37 @@ const Map = (props: IMapProps) => {
 
   const me = userId == userInfo.data.idx.toString();
 
-  //x좌표를 찾을 수 없다는 에러 떠서 일단 주석처리 -> 게임에 접근시 모달 띄우는 코드
-  // useEffect(() => {
-  //   enterChecker();
-  // }, [userLocation]);
+  // x좌표를 찾을 수 없다는 에러 떠서 일단 주석처리 -> 게임에 접근시 모달 띄우는 코드
+  useEffect(() => {
+    enterChecker();
+  }, [userLocation]);
 
-  // const [enteredGame, setEnteredGame] = useState({} as gameInfo);
-  // const enterChecker = () => {
-  //   for (let key in gameOffsetList) {
-  //     if (
-  //       userLocation &&
-  //       userLocation[userId].x === gameOffsetList[key].x &&
-  //       userLocation[userId].y === gameOffsetList[key].y
-  //     ) {
-  //       installedGameList.map((each: any) => {
-  //         if (each.id == key) {
-  //           setEnteredGame(each);
-  //           setShowModal(true);
-  //           console.log(each);
-  //         }
-  //       });
-  //     }
-  //   }
-  // };
+  const [enteredGame, setEnteredGame] = useState({} as gameInfo);
+  const enterChecker = () => {
+    for (let key in gameOffsetList) {
+      if (
+        userLocation &&
+        userLocation[userId].x === gameOffsetList[key].x &&
+        userLocation[userId].y === gameOffsetList[key].y
+      ) {
+        installedGameList.map((each: any) => {
+          if (each.id == key) {
+            setEnteredGame(each);
+            setShowModal(true);
+            console.log(each);
+          }
+        });
+      }
+    }
+  };
   const [showModal, setShowModal] = useState(false);
 
   return (
     <div>
       <SubTitleStyle>{'마이 홈'}</SubTitleStyle>
-      {/* <Modal onClose={() => setShowModal(false)} show={showModal} height="200px">
+      <Modal onClose={() => setShowModal(false)} show={showModal} height="200px">
         <ModalConents title={enteredGame.name} description={enteredGame.description_snippet}></ModalConents>
-      </Modal> */}
+      </Modal>
       <StageStyled me={me}>
         {/* {console.log('mapInfo from library', mapInfo)} */}
         {console.log('global data', globalData)}
@@ -418,22 +417,20 @@ const Map = (props: IMapProps) => {
               if (eachUser == userInfo.data.idx) {
                 //나
                 return (
-                  <Circle
+                  <UserObject
                     x={userLocation[userInfo.data.idx].x}
                     y={userLocation[userInfo.data.idx].y}
-                    radius={50}
                     width={absoluteVal / 10}
-                    fill={`${colorPalette[Math.round(100 % eachUser)]}`}
+                    idx={userInfo.data.idx}
                   />
                 );
               } else {
                 return (
-                  <Circle
+                  <UserObject
                     x={userLocation[eachUser].x}
                     y={userLocation[eachUser].y}
-                    radius={50}
                     width={absoluteVal / 10}
-                    fill={`${colorPalette[Math.round(100 % eachUser)]}`}
+                    idx={eachUser}
                   />
                 );
               }
@@ -462,7 +459,7 @@ const Map = (props: IMapProps) => {
                 handleBuildEvt();
               }}
             >
-              게임 좌표 저장하기
+              마이 홈 정보 저장하기
             </StyledBtn>
           </BtnWrapper>
         )}
@@ -487,8 +484,9 @@ const StyledBtn = styled.button`
   border: 1px solid ${(props) => props.theme.colors['secondaryBg']};
   border-radius: 10px;
   height: 50px;
-  width: fit-content;
+  width: 100%;
   white-space: nowrap;
+  margin-top: 1rem;
 `;
 const StageStyled = styled.div<{ me: boolean }>`
   ${(props) =>
