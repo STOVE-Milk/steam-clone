@@ -32,8 +32,11 @@ public class PurchaseLog {
                 .build();
     }
 
-    public void success(Double totalPrice) {
+    public void subtractAfterMoney(Double totalPrice) {
         this.afterMoney -= totalPrice;
+    }
+
+    public void success() {
         this.status = "SUCCESS";
         this.createdAt = new Date();
     }

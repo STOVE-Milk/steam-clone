@@ -18,15 +18,20 @@ public class ChargeLog {
     private String status;
     private Date createdAt;
 
-    public void successApproval(Double money) {
+    public void initializeMoney(Double money) {
         this.beforeMoney = money;
         this.afterMoney = money;
+    }
+    public void setAfterMoney(Double money) {
+        this.afterMoney = money;
+    }
+
+    public void successApproval() {
         this.status = "APPROVAL SUCCESSED";
         this.createdAt = new Date();
     }
 
-    public void successAll(Double afterMoney) {
-        this.afterMoney = afterMoney;
+    public void successAll() {
         this.status = "ALL SUCCESSED";
         this.createdAt = new Date();
     }

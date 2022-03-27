@@ -10,7 +10,6 @@ import com.steam.payment.entity.Giftcard;
 import com.steam.payment.entity.User;
 import com.steam.payment.entity.mongodb.ChargeLog;
 import com.steam.payment.entity.mongodb.ChargeLogDocument;
-import com.steam.payment.global.common.Body;
 import com.steam.payment.global.common.EmptyData;
 import com.steam.payment.global.common.UserContext;
 import com.steam.payment.global.error.CustomException;
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
 public class ChargeService {
     private final GiftcardRepository giftcardRepository;
     private final UserRepository userRepository;
-    private final ChargeLogDocumentRepository chargeLogDocumentRepository;
+    private final LoggingService loggingService;
     private final KakaoPay kakaoPay;
 
     public Balance getBalance() {
@@ -73,35 +72,25 @@ public class ChargeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         GiftcardDto giftcardDto = GiftcardDto.of(giftcard);
 
-        ChargeLogDocument chargeLogDocument = chargeLogDocumentRepository.findById(UserContext.getUserId().toString())
-                .orElseGet(() -> ChargeLogDocument.newUser(UserContext.getUserId()));
-        chargeLogDocument.addLog(request.toLog(giftcardDto));
-        chargeLogDocumentRepository.save(chargeLogDocument);
+        Integer logCount = loggingService.logChargeReady(request, giftcardDto);
 
-        return kakaoPay.ready(giftcardDto, chargeLogDocument.getCount());
+        return kakaoPay.callReadyAPI(giftcardDto, logCount);
     }
 
     public EmptyData chargeApprove(ChargeApproveRequest request) {
         User user = userRepository.findById(UserContext.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        ChargeLogDocument chargeLogDoc = chargeLogDocumentRepository.findById(user.getIdx().toString())
-                .orElseThrow(() -> new CustomException(ErrorCode.LOGGING_FAILED));
-        // 충전 관련 로그 중 마지막 로그를 가져와 성공 여부에 따라 갱신하는 식으로 구현했습니다.
-        ChargeLog chargeLog = chargeLogDoc.getLastChargeLog();
 
-        KakaoPayApproveResponse response = kakaoPay.approve(request.getTid(), request.getPgToken());
+        KakaoPayApproveResponse response = kakaoPay.callApproveAPI(request.getTid(), request.getPgToken());
 
-        chargeLog.successApproval(user.getMoney());
-        chargeLogDocumentRepository.save(chargeLogDoc);
+        loggingService.logChargeApprove(user);
 
         try {
             addUserMoney(user, response.getAmount().getTotal());
-            chargeLog.successAll(user.getMoney());
-            chargeLogDocumentRepository.save(chargeLogDoc);
+            loggingService.logChargeSuccess(user);
         } catch (RuntimeException e) {
-            kakaoPay.cancel(request.getTid());
-            chargeLog.cancel();
-            chargeLogDocumentRepository.save(chargeLogDoc);
+            kakaoPay.callCancelAPI(request.getTid());
+            loggingService.logChargeCancel();
             throw new CustomException(ErrorCode.USER_CHARGE_CANCLED);
         }
         return new EmptyData();

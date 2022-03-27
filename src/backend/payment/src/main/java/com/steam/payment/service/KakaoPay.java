@@ -19,7 +19,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class KakaoPay {
+public class KakaoPay implements PaymentService {
     @Value("${milk.kakaopay.api-url}")
     private String kakaopayUrl;
     @Value("${milk.kakaopay.cid}")
@@ -42,14 +42,15 @@ public class KakaoPay {
         카카오페이 API를 실제적으로 호출하는 서비스입니다.
         Request 객체를 만들어 API Call 메소드에 넘겨주어 처리합니다. --> 93번줄
     */
-    public KakaoPayReadyResponse ready(GiftcardDto giftcard, Integer orderCount) {
+    @Override
+    public KakaoPayReadyResponse callReadyAPI(GiftcardDto giftcard, Integer orderCount) {
         KakaoPayReadyRequest kakaoPayReadyRequest = KakaoPayReadyRequest.of(UserContext.getUserId(), giftcard, orderCount);
         kakaoPayReadyRequest.setCid(this.cid);
         kakaoPayReadyRequest.setApprovalUrl(this.approvalUrl);
         kakaoPayReadyRequest.setCancelUrl(this.cancelUrl);
         kakaoPayReadyRequest.setFailUrl(this.failUrl);
 
-        KakaoPayReadyResponse kakaoPayReadyResponse = callKakaopayAPI(
+        KakaoPayReadyResponse kakaoPayReadyResponse = callExternalAPI(
                 "ready",
                 kakaoPayReadyRequest,
                 KakaoPayReadyResponse.class,
@@ -63,12 +64,13 @@ public class KakaoPay {
 
     }
 
-    public KakaoPayApproveResponse approve(String tid, String pgToken) {
+    @Override
+    public KakaoPayApproveResponse callApproveAPI(String tid, String pgToken) {
         KakaoPayReadyCache cache = kakaoPayReadyCacheRepository.findById(tid)
                 .orElseThrow(() -> new CustomException(ErrorCode.KAKAOPAY_CACHE_DATA_NOT_FOUND));
         KakaoPayApproveRequest kakaoPayApproveRequest = KakaoPayApproveRequest.of(cache, pgToken);
 
-        return callKakaopayAPI(
+        return callExternalAPI(
                 "approve",
                 kakaoPayApproveRequest,
                 KakaoPayApproveResponse.class,
@@ -76,12 +78,13 @@ public class KakaoPay {
         );
     }
 
-    public void cancel(String tid) {
+    @Override
+    public void callCancelAPI(String tid) {
         KakaoPayReadyCache cache = kakaoPayReadyCacheRepository.findById(tid)
                 .orElseThrow(() -> new CustomException(ErrorCode.KAKAOPAY_CACHE_DATA_NOT_FOUND));
         KakaoPayCancelRequest kakaoPayCancelRequest = KakaoPayCancelRequest.of(cache);
 
-        callKakaopayAPI(
+        callExternalAPI(
                 "cancel",
                 kakaoPayCancelRequest,
                 KakaoPayCancelResponse.class,
@@ -97,7 +100,8 @@ public class KakaoPay {
             발생할 수 있는 에러를 받아 처리
             RestTemplate를 이용한 동기적 API Call
     */
-    private <T> T callKakaopayAPI(String apiType, Object data, Class<T> returnClass, ErrorCode error) {
+    @Override
+    public <T> T callExternalAPI(String apiType, Object data, Class<T> returnClass, ErrorCode error) {
         HttpHeaders headers = new KakaoPayHeader(accessToken);
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.setAll(jsonUtil.of(data));
