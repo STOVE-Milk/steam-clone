@@ -77,7 +77,7 @@ public class PurchaseService {
         if(!myLibraries.isEmpty())
             throw new CustomException(ErrorCode.GAME_ALEADY_PURCHASED);
 
-        loggingService.logPurchaseReady(user, games, totalPrice);
+        loggingService.logPurchaseReadyStateAndRequestData(user, games, totalPrice);
 
         List<Library> libraries = games.stream()
                 .map(game -> game.toLibraryEntity(user))
@@ -97,7 +97,7 @@ public class PurchaseService {
         libraryRepository.saveAll(libraries);
         userRepository.save(user);
 
-        loggingService.logPurchaseSuccess(user.getIdx(), totalPrice);
+        loggingService.logPurchaseSuccessStateAndUpdateMoneyChange(user.getIdx(), totalPrice) ;
 
         return PurchaseGamesResponse.builder().games(games).build();
     }

@@ -27,14 +27,14 @@ public class LoggingService {
     private final PurchaseLogDocumentRepository purchaseLogDocumentRepository;
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public void logPurchaseReady(final User user, List<GameDto> gameDatas, Double totalPrice) {
+    public void logPurchaseReadyStateAndRequestData(final User user, List<GameDto> gameDatas, Double totalPrice) {
         PurchaseLogDocument purchaseLogDocument = purchaseLogDocumentRepository.findById(UserContext.getUserId().toString())
                 .orElseGet(() -> PurchaseLogDocument.newUser(user.getIdx()));
         purchaseLogDocument.addLog(PurchaseLog.of(user.getMoney(), gameDatas, totalPrice));
         purchaseLogDocumentRepository.save(purchaseLogDocument);
     }
 
-    public void logPurchaseSuccess(Integer userId, Double totalPrice) {
+    public void logPurchaseSuccessStateAndUpdateMoneyChange(Integer userId, Double totalPrice) {
         PurchaseLogDocument purchaseLogDocument = purchaseLogDocumentRepository.findById(UserContext.getUserId().toString())
                 .orElseGet(() -> PurchaseLogDocument.newUser(userId));
         purchaseLogDocument.getLastPurchaseLog().subtractAfterMoney(totalPrice);
@@ -42,7 +42,7 @@ public class LoggingService {
         purchaseLogDocumentRepository.save(purchaseLogDocument);
     }
 
-    public Integer logChargeReady(ChargeReadyRequest request, GiftcardDto giftcardDto) {
+    public Integer logChargeReadyStateAndRequestData(ChargeReadyRequest request, GiftcardDto giftcardDto) {
         ChargeLogDocument chargeLogDocument = chargeLogDocumentRepository.findById(UserContext.getUserId().toString())
                 .orElseGet(() -> ChargeLogDocument.newUser(UserContext.getUserId()));
         chargeLogDocument.addLog(request.toLog(giftcardDto));
@@ -50,7 +50,7 @@ public class LoggingService {
         return chargeLogDocument.getCount();
     }
 
-    public void logChargeApprove(User user) {
+    public void logChargeApproveStateAndUpdateMoneyChange(User user) {
         ChargeLogDocument chargeLogDoc = chargeLogDocumentRepository.findById(UserContext.getUserId().toString())
                 .orElseThrow(() -> new CustomException(ErrorCode.LOGGING_FAILED));
         // 충전 관련 로그 중 마지막 로그를 가져와 성공 여부에 따라 갱신하는 식으로 구현했습니다.
@@ -60,7 +60,7 @@ public class LoggingService {
         chargeLogDocumentRepository.save(chargeLogDoc);
     }
 
-    public void logChargeSuccess(User user) {
+    public void logChargeSuccessStateAndUpdateMoneyChange(User user) {
         ChargeLogDocument chargeLogDoc = chargeLogDocumentRepository.findById(UserContext.getUserId().toString())
                 .orElseThrow(() -> new CustomException(ErrorCode.LOGGING_FAILED));
         // 충전 관련 로그 중 마지막 로그를 가져와 성공 여부에 따라 갱신하는 식으로 구현했습니다.
@@ -70,7 +70,7 @@ public class LoggingService {
         chargeLogDocumentRepository.save(chargeLogDoc);
     }
 
-    public void logChargeCancel() {
+    public void logChargeCancelState() {
         ChargeLogDocument chargeLogDoc = chargeLogDocumentRepository.findById(UserContext.getUserId().toString())
                 .orElseThrow(() -> new CustomException(ErrorCode.LOGGING_FAILED));
         // 충전 관련 로그 중 마지막 로그를 가져와 성공 여부에 따라 갱신하는 식으로 구현했습니다.

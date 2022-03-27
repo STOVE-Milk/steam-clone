@@ -72,33 +72,28 @@ public class ChargeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         GiftcardDto giftcardDto = GiftcardDto.of(giftcard);
 
-        Integer logCount = loggingService.logChargeReady(request, giftcardDto);
+        Integer logCount = loggingService.logChargeReadyStateAndRequestData(request, giftcardDto);
 
         return kakaoPay.callReadyAPI(giftcardDto, logCount);
     }
 
     public EmptyData chargeApprove(ChargeApproveRequest request) {
-        User user = userRepository.findById(UserContext.getUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        KakaoPayApproveResponse response = kakaoPay.callApproveAPI(request.getTid(), request.getPgToken());
-
-        loggingService.logChargeApprove(user);
-
         try {
-            addUserMoney(user, response.getAmount().getTotal());
-            loggingService.logChargeSuccess(user);
+            User user = userRepository.findById(UserContext.getUserId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+            KakaoPayApproveResponse response = kakaoPay.callApproveAPI(request.getTid(), request.getPgToken());
+            loggingService.logChargeApproveStateAndUpdateMoneyChange(user);
+
+            user.addMoney(Double.valueOf(response.getAmount().getTotal()));
+            userRepository.save(user);
+
+            loggingService.logChargeSuccessStateAndUpdateMoneyChange(user);
         } catch (RuntimeException e) {
             kakaoPay.callCancelAPI(request.getTid());
-            loggingService.logChargeCancel();
+            loggingService.logChargeCancelState();
             throw new CustomException(ErrorCode.USER_CHARGE_CANCLED);
         }
         return new EmptyData();
-    }
-
-    @Transactional
-    protected void addUserMoney(User user, Integer money) {
-        user.addMoney(Double.valueOf(money));
-        userRepository.save(user);
     }
 }
